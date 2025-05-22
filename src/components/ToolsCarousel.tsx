@@ -22,6 +22,17 @@ const ToolsCarousel = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<{[key: string]: boolean}>({});
+
+  // Handle image load error
+  const handleImageError = (toolName: string) => {
+    console.log(`Error loading image for ${toolName}`);
+  };
+
+  // Handle image load success
+  const handleImageLoad = (toolName: string) => {
+    setLoadedImages(prev => ({...prev, [toolName]: true}));
+  };
 
   // Handle intersection observer for scroll animations
   useEffect(() => {
@@ -90,6 +101,7 @@ const ToolsCarousel = () => {
           <button
             className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
             onClick={() => navigate("prev")}
+            aria-label="Previous tool"
           >
             <ChevronLeft className="h-6 w-6 text-senvia-500" />
           </button>
@@ -119,7 +131,9 @@ const ToolsCarousel = () => {
                     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xs md:max-w-md mx-auto flex flex-col items-center glow-box">
                       <img 
                         src={tool.logo} 
-                        alt={tool.name} 
+                        alt={`${tool.name} logo`}
+                        onError={() => handleImageError(tool.name)}
+                        onLoad={() => handleImageLoad(tool.name)}
                         className="h-20 md:h-28 w-auto object-contain mb-4"
                       />
                       <h3 className="text-xl font-semibold text-senvia-700">{tool.name}</h3>
@@ -133,6 +147,7 @@ const ToolsCarousel = () => {
           <button
             className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
             onClick={() => navigate("next")}
+            aria-label="Next tool"
           >
             <ChevronRight className="h-6 w-6 text-senvia-500" />
           </button>
@@ -147,6 +162,7 @@ const ToolsCarousel = () => {
                     : "bg-senvia-200"
                 }`}
                 onClick={() => setActiveIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>

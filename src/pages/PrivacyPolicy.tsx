@@ -1,9 +1,7 @@
-
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
-import MetaPixel from "../components/MetaPixel";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
@@ -15,7 +13,6 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <MetaPixel />
       <Navbar />
       
       <main className="container mx-auto px-4 py-16 md:py-24">

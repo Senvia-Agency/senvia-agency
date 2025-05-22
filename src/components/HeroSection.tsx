@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from "react";
-import { TypeWriter, ShineBorder } from "@/components/ui/hero-designali";
+import { renderCanvas, TypeWriter, ShineBorder } from "@/components/ui/hero-designali";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
@@ -23,6 +23,8 @@ const HeroSection = () => {
     };
     
     document.addEventListener("mousemove", handleMouseMove);
+    // Initialize the canvas effect
+    renderCanvas();
     
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
@@ -54,6 +56,11 @@ const HeroSection = () => {
         <div className="absolute bottom-1/4 right-1/2 w-20 h-20 border-2 border-senvia-400 rounded-lg opacity-25 animate-float parallax" data-speed="0.04" style={{ animationDelay: "1s" }}></div>
         <div className="absolute top-1/3 right-1/4 w-12 h-12 border-2 border-senvia-600 rounded-lg opacity-30 animate-float parallax" data-speed="0.08" style={{ animationDelay: "2s" }}></div>
       </div>
+      
+      <canvas
+        className="pointer-events-none absolute inset-0 mx-auto"
+        id="canvas"
+      ></canvas>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center">

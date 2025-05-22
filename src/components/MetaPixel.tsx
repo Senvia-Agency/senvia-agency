@@ -22,7 +22,7 @@ const MetaPixel = () => {
       n.loaded = true;
       n.version = '2.0';
       n.queue = [];
-      t = b.createElement(e);
+      t = b.createElement(e) as HTMLScriptElement;
       t.async = true;
       t.src = v;
       if (s && s.parentNode) {
@@ -34,7 +34,7 @@ const MetaPixel = () => {
       'script', 
       'https://connect.facebook.net/en_US/fbevents.js',
       undefined,
-      document.createElement('script'),
+      undefined,
       document.getElementsByTagName('script')[0]
     );
     

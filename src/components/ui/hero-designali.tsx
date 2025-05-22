@@ -2,6 +2,19 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Typed from "react-typed"; // Fixed import
+
+// Define proper type for pos object
+interface Position {
+  x: number;
+  y: number;
+}
+
+// Define proper type for context
+interface CustomCanvasRenderingContext2D extends CanvasRenderingContext2D {
+  running: boolean;
+  frame: number;
+}
 
 // @ts-ignore
 function n(e) {
@@ -185,11 +198,11 @@ function resizeCanvas() {
 }
 
 // @ts-ignore
-var ctx,
+var ctx: CustomCanvasRenderingContext2D | null = null,
   // @ts-ignore
   f,
   e = 0,
-  pos = {},
+  pos: Position = { x: 0, y: 0 }, // Initialize pos with proper type and values
   // @ts-ignore
   lines = [],
   E = {
@@ -209,9 +222,11 @@ function Node() {
 
 const renderCanvas = function () {
   // @ts-ignore
-  ctx = document.getElementById("canvas").getContext("2d");
-  ctx.running = true;
-  ctx.frame = 1;
+  ctx = document.getElementById("canvas")?.getContext("2d") as CustomCanvasRenderingContext2D;
+  if (ctx) {
+    ctx.running = true;
+    ctx.frame = 1;
+  }
   f = new n({
     phase: Math.random() * 2 * Math.PI,
     amplitude: 85,
@@ -224,7 +239,7 @@ const renderCanvas = function () {
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("focus", () => {
     // @ts-ignore
-    if (!ctx.running) {
+    if (ctx && !ctx.running) {
       // @ts-ignore
       ctx.running = true;
       render();
@@ -232,21 +247,18 @@ const renderCanvas = function () {
   });
   window.addEventListener("blur", () => {
     // @ts-ignore
-    ctx.running = true;
+    if (ctx) ctx.running = true;
   });
   resizeCanvas();
 };
-
-import { ReactTyped } from "react-typed";
 
 interface TypeWriterProps {
   strings: string[];
 }
 
-
 const TypeWriter = ({ strings }: TypeWriterProps) => {
   return (
-    <ReactTyped
+    <Typed
       loop
       typeSpeed={80}
       backSpeed={20}

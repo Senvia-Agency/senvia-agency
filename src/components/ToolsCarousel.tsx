@@ -4,18 +4,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // List of tools logos shown in the carousel
 const tools = [
-  { name: "Photoshop", logo: "https://cdn.worldvectorlogo.com/logos/photoshop-cc-4.svg" },
-  { name: "Illustrator", logo: "https://cdn.worldvectorlogo.com/logos/adobe-illustrator-cc-icon.svg" },
-  { name: "Figma", logo: "https://cdn.worldvectorlogo.com/logos/figma-1.svg" },
-  { name: "WordPress", logo: "https://cdn.worldvectorlogo.com/logos/wordpress-blue.svg" },
-  { name: "React", logo: "https://cdn.worldvectorlogo.com/logos/react-2.svg" },
-  { name: "Vue.js", logo: "https://cdn.worldvectorlogo.com/logos/vue-9.svg" },
-  { name: "Google Ads", logo: "https://cdn.worldvectorlogo.com/logos/google-ads-2.svg" },
-  { name: "Facebook Ads", logo: "https://cdn.worldvectorlogo.com/logos/facebook-3.svg" },
-  { name: "Shopify", logo: "https://cdn.worldvectorlogo.com/logos/shopify.svg" },
-  { name: "WooCommerce", logo: "https://cdn.worldvectorlogo.com/logos/woocommerce.svg" },
-  { name: "Adobe XD", logo: "https://cdn.worldvectorlogo.com/logos/adobe-xd-1.svg" },
-  { name: "TailwindCSS", logo: "https://cdn.worldvectorlogo.com/logos/tailwindcss.svg" },
+  { name: "Photoshop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg" },
+  { name: "Illustrator", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg" },
+  { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
+  { name: "WordPress", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-plain.svg" },
+  { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Vue.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
+  { name: "Google Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Ads_logo.svg/512px-Google_Ads_logo.svg.png" },
+  { name: "Facebook Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Facebook_icon_2013.svg/512px-Facebook_icon_2013.svg.png" },
+  { name: "Shopify", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/shopify/shopify-original.svg" },
+  { name: "WooCommerce", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/woocommerce/woocommerce-original.svg" },
+  { name: "Adobe XD", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-plain.svg" },
+  { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
 ];
 
 const ToolsCarousel = () => {

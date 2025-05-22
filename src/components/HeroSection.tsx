@@ -1,5 +1,6 @@
 
 import { useEffect, useRef } from "react";
+import { TextParticle } from "@/components/ui/text-particle";
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -50,7 +51,18 @@ const HeroSection = () => {
                 <div className="w-6 h-6 bg-senvia-500 rounded transform rotate-45 animate-pulse-glow" style={{ animationDelay: "0.2s" }}></div>
                 <div className="w-6 h-6 bg-senvia-500 rounded transform rotate-45 animate-pulse-glow" style={{ animationDelay: "0.4s" }}></div>
               </div>
-              <h1 className="text-6xl md:text-8xl font-bold text-senvia-500 glow">SENVIA</h1>
+              
+              {/* Replaced the h1 with TextParticle component */}
+              <div className="h-24 md:h-32 w-full">
+                <TextParticle 
+                  text="SENVIA"
+                  fontSize={100}
+                  particleColor="#0073ff"
+                  particleSize={1.5}
+                  particleDensity={6}
+                  className="glow"
+                />
+              </div>
             </div>
           </div>
           

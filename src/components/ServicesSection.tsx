@@ -11,6 +11,7 @@ import {
   Mail,
   MessageCircle
 } from "lucide-react";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const ServicesSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -107,11 +108,21 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <div 
               key={index}
-              className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover animate-on-scroll"
+              className="relative bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover animate-on-scroll"
             >
-              <div className="mb-5">{service.icon}</div>
-              <h3 className="text-xl font-semibold mb-3 text-senvia-800">{service.title}</h3>
-              <p className="text-muted-foreground">{service.description}</p>
+              <GlowingEffect 
+                spread={30} 
+                glow={true} 
+                disabled={false} 
+                proximity={50}
+                inactiveZone={0.01}
+                borderWidth={2}
+              />
+              <div className="relative z-10">
+                <div className="mb-5">{service.icon}</div>
+                <h3 className="text-xl font-semibold mb-3 text-senvia-800">{service.title}</h3>
+                <p className="text-muted-foreground">{service.description}</p>
+              </div>
             </div>
           ))}
         </div>

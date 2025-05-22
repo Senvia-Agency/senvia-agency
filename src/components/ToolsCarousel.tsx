@@ -1,30 +1,27 @@
 
 import { useEffect, useRef, useState } from "react";
-import AutoScroll from "embla-carousel-auto-scroll";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // List of tools logos shown in the carousel
 const tools = [
-  { id: "photoshop", name: "Photoshop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg" },
-  { id: "illustrator", name: "Illustrator", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg" },
-  { id: "figma", name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
-  { id: "wordpress", name: "WordPress", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-plain.svg" },
-  { id: "react", name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-  { id: "vuejs", name: "Vue.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
-  { id: "googleads", name: "Google Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Ads_logo.svg/512px-Google_Ads_logo.svg.png" },
-  { id: "facebookads", name: "Facebook Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Facebook_icon_2013.svg/512px-Facebook_icon_2013.svg.png" },
-  { id: "shopify", name: "Shopify", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/shopify/shopify-original.svg" },
-  { id: "woocommerce", name: "WooCommerce", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/woocommerce/woocommerce-original.svg" },
-  { id: "adobexd", name: "Adobe XD", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-plain.svg" },
-  { id: "tailwindcss", name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
+  { name: "Photoshop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg" },
+  { name: "Illustrator", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg" },
+  { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
+  { name: "WordPress", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-plain.svg" },
+  { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Vue.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
+  { name: "Google Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Ads_logo.svg/512px-Google_Ads_logo.svg.png" },
+  { name: "Facebook Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Facebook_icon_2013.svg/512px-Facebook_icon_2013.svg.png" },
+  { name: "Shopify", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/shopify/shopify-original.svg" },
+  { name: "WooCommerce", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/woocommerce/woocommerce-original.svg" },
+  { name: "Adobe XD", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-plain.svg" },
+  { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
 ];
 
 const ToolsCarousel = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<{[key: string]: boolean}>({});
 
   // Handle image load error
@@ -66,6 +63,24 @@ const ToolsCarousel = () => {
     };
   }, []);
 
+  // Auto-rotate carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % tools.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle carousel navigation
+  const navigate = (direction: "next" | "prev") => {
+    if (direction === "next") {
+      setActiveIndex((prev) => (prev + 1) % tools.length);
+    } else {
+      setActiveIndex((prev) => (prev - 1 + tools.length) % tools.length);
+    }
+  };
+
   return (
     <section
       id="ferramentas"
@@ -82,36 +97,74 @@ const ToolsCarousel = () => {
           </p>
         </div>
 
-        <div className="pt-10">
-          <div className="relative mx-auto flex items-center justify-center lg:max-w-5xl">
-            <Carousel
-              opts={{ loop: true }}
-              plugins={AutoScroll({ playOnInit: true, speed: 1 })}
-            >
-              <CarouselContent className="ml-0">
-                {tools.map((tool) => (
-                  <CarouselItem
-                    key={tool.id}
-                    className="flex basis-1/3 justify-center pl-0 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+        <div className="relative max-w-4xl mx-auto">
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
+            onClick={() => navigate("prev")}
+            aria-label="Previous tool"
+          >
+            <ChevronLeft className="h-6 w-6 text-senvia-500" />
+          </button>
+          
+          <div className="overflow-hidden px-12" ref={containerRef}>
+            <div className="relative h-64 md:h-80">
+              {tools.map((tool, index) => {
+                const isActive = index === activeIndex;
+                const prevIndex = (activeIndex - 1 + tools.length) % tools.length;
+                const nextIndex = (activeIndex + 1) % tools.length;
+                
+                let position = "opacity-0 scale-75";
+                
+                if (isActive) {
+                  position = "opacity-100 scale-100 z-20";
+                } else if (index === prevIndex) {
+                  position = "opacity-60 scale-75 -translate-x-1/2 z-10";
+                } else if (index === nextIndex) {
+                  position = "opacity-60 scale-75 translate-x-1/2 z-10";
+                }
+                
+                return (
+                  <div
+                    key={tool.name}
+                    className={`absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center transition-all duration-500 transform ${position}`}
                   >
-                    <div className="mx-8 flex shrink-0 items-center justify-center">
-                      <div className="bg-white p-6 rounded-2xl shadow-lg w-full flex flex-col items-center glow-box">
-                        <img
-                          src={tool.logo}
-                          alt={`${tool.name} logo`}
-                          onError={() => handleImageError(tool.name)}
-                          onLoad={() => handleImageLoad(tool.name)}
-                          className="h-16 md:h-20 w-auto object-contain mb-2"
-                        />
-                        <h3 className="text-md font-semibold text-senvia-700">{tool.name}</h3>
-                      </div>
+                    <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xs md:max-w-md mx-auto flex flex-col items-center glow-box">
+                      <img 
+                        src={tool.logo} 
+                        alt={`${tool.name} logo`}
+                        onError={() => handleImageError(tool.name)}
+                        onLoad={() => handleImageLoad(tool.name)}
+                        className="h-20 md:h-28 w-auto object-contain mb-4"
+                      />
+                      <h3 className="text-xl font-semibold text-senvia-700">{tool.name}</h3>
                     </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-blue-50 to-transparent"></div>
-            <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-blue-50 to-transparent"></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
+            onClick={() => navigate("next")}
+            aria-label="Next tool"
+          >
+            <ChevronRight className="h-6 w-6 text-senvia-500" />
+          </button>
+          
+          <div className="flex justify-center mt-6 space-x-2">
+            {tools.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === activeIndex
+                    ? "bg-senvia-500 w-4"
+                    : "bg-senvia-200"
+                }`}
+                onClick={() => setActiveIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>

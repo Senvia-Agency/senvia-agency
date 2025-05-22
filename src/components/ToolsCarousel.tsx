@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import {
@@ -85,7 +86,7 @@ const ToolsCarousel = () => {
           <div className="relative mx-auto flex items-center justify-center lg:max-w-5xl">
             <Carousel
               opts={{ loop: true }}
-              plugins={AutoScroll({ playOnInit: true, speed: 1 })}
+              plugins={[AutoScroll({ playOnInit: true, speed: 1 })]}
             >
               <CarouselContent className="ml-0">
                 {tools.map((tool) => (

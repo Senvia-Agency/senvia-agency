@@ -5,17 +5,17 @@ import { useEffect } from 'react';
 declare global {
   interface Window {
     fbq: any;
-    _fbq?: any; // Add optional _fbq property
+    _fbq?: any;
   }
 }
 
 const MetaPixel = () => {
   useEffect(() => {
     // Initialize Facebook Pixel with correct TypeScript syntax
-    (function(f: Window, b: Document, e: string, v: string, n: any, t: HTMLScriptElement, s: HTMLElement | null) {
+    (function(f, b, e, v, n, t, s) {
       if (f.fbq) return;
       n = f.fbq = function() {
-        (n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments));
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
       };
       if (!f._fbq) f._fbq = n;
       n.push = n;
@@ -25,9 +25,18 @@ const MetaPixel = () => {
       t = b.createElement(e);
       t.async = true;
       t.src = v;
-      s = b.getElementsByTagName(e)[0];
-      s?.parentNode?.insertBefore(t, s);
-    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      if (s && s.parentNode) {
+        s.parentNode.insertBefore(t, s);
+      }
+    })(
+      window as any, 
+      document, 
+      'script', 
+      'https://connect.facebook.net/en_US/fbevents.js',
+      undefined,
+      document.createElement('script'),
+      document.getElementsByTagName('script')[0]
+    );
     
     // Initialize with your pixel ID
     window.fbq('init', '2027821837745963');

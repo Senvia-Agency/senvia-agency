@@ -12,7 +12,7 @@ declare global {
 const MetaPixel = () => {
   useEffect(() => {
     // Initialize Facebook Pixel with correct TypeScript syntax
-    (function(f, b, e, v, n, t, s) {
+    (function(f: Window, b: Document, e: string, v: string, n: any, t: any, s: HTMLScriptElement | null) {
       if (f.fbq) return;
       n = f.fbq = function() {
         n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -25,17 +25,18 @@ const MetaPixel = () => {
       t = b.createElement(e) as HTMLScriptElement;
       t.async = true;
       t.src = v;
+      s = b.getElementsByTagName(e)[0] as HTMLScriptElement;
       if (s && s.parentNode) {
         s.parentNode.insertBefore(t, s);
       }
     })(
-      window as any, 
+      window, 
       document, 
       'script', 
-      'https://connect.facebook.net/en_US/fbevents.js',
+      'https://connect.facebook.net/en_US/fbevents.js', 
       undefined,
       undefined,
-      document.getElementsByTagName('script')[0]
+      null
     );
     
     // Initialize with your pixel ID

@@ -1,5 +1,5 @@
-
 import { Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -106,7 +106,7 @@ const Footer = () => {
               <Shield className="h-4 w-4 mr-1" />
               Livro de Reclamações
             </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Política de Privacidade</a>
+            <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Política de Privacidade</Link>
             <a href="#" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Termos de Serviço</a>
           </div>
         </div>

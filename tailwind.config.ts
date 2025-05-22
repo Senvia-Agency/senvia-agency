@@ -101,6 +101,11 @@ export default {
 						filter: 'brightness(1.5) blur(4px)'
 					}
 				},
+				'shine-pulse': {
+					'0%': { backgroundPosition: '0% 0%' },
+					'50%': { backgroundPosition: '100% 100%' },
+					'100%': { backgroundPosition: '0% 0%' }
+				},
 				'scale': {
 					'0%, 100%': { transform: 'scale(1)' },
 					'50%': { transform: 'scale(1.05)' }
@@ -136,6 +141,7 @@ export default {
 				'float': 'float 6s ease-in-out infinite',
 				'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
 				'scale': 'scale 5s ease-in-out infinite',
+				'shine-pulse': 'shine-pulse var(--shine-pulse-duration, 14s) infinite linear',
 				'slide-up': 'slide-up 0.8s ease-out',
 				'slide-down': 'slide-down 0.8s ease-out',
 				'slide-in-right': 'slide-in-right 0.8s ease-out',

@@ -10,16 +10,24 @@ import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import ScrollAnimator from "../components/ScrollAnimator";
 import MetaPixel from "../components/MetaPixel";
+import { renderCanvas } from "@/components/ui/hero-designali";
 
 const Index = () => {
   useEffect(() => {
     // Update document title
     document.title = "SENVIA Agency | Marketing & Tecnologia";
+    
+    // Initialize canvas effect for the entire page
+    renderCanvas();
   }, []);
 
   return (
     <div className="min-h-screen">
       <MetaPixel />
+      <canvas
+        className="pointer-events-none fixed inset-0 mx-auto -z-10"
+        id="canvas"
+      ></canvas>
       <Navbar />
       <HeroSection />
       <ServicesSection />

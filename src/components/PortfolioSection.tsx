@@ -1,5 +1,5 @@
+
 import { useEffect, useRef, useState } from "react";
-import { AnimatedTestimonials } from "./ui/animated-testimonials";
 
 const portfolioItems = [
   {
@@ -38,40 +38,6 @@ const portfolioItems = [
     image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     description: "Um aplicativo móvel para uma startup de serviços de entrega."
   }
-];
-
-// Testimonial data
-const testimonials = [
-  {
-    quote: "A SENVIA transformou completamente nossa presença online. O site que criaram superou todas as nossas expectativas.",
-    name: "Carlos Oliveira",
-    designation: "CEO da TechSolutions",
-    src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    quote: "A campanha de marketing digital desenvolvida pela SENVIA aumentou nossas conversões em 200%. Resultados incríveis!",
-    name: "Ana Silva",
-    designation: "Diretora de Marketing da GrowthBiz",
-    src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    quote: "Profissionalismo, criatividade e pontualidade. A equipe da SENVIA entendeu perfeitamente o que precisávamos.",
-    name: "Marcelo Santos",
-    designation: "Fundador da InnovateBrand",
-    src: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    quote: "O aplicativo desenvolvido pela SENVIA revolucionou nosso atendimento ao cliente. Interface intuitiva e performance excepcional.",
-    name: "Juliana Costa",
-    designation: "COO da MobileTech",
-    src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    quote: "Parceria de sucesso! A SENVIA nos ajudou a implementar soluções tecnológicas que impulsionaram nosso crescimento.",
-    name: "Roberto Almeida",
-    designation: "Diretor de Inovação da FutureCorp",
-    src: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-  },
 ];
 
 const PortfolioSection = () => {
@@ -231,20 +197,6 @@ const PortfolioSection = () => {
               <p className="text-muted-foreground">Nenhum projeto encontrado nesta categoria.</p>
             </div>
           )}
-        </div>
-
-        {/* Testimonials Section */}
-        <div className="mt-32">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-on-scroll">
-              <span className="text-gradient">O Que Dizem Nossos Clientes</span>
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-on-scroll">
-              Veja o que nossos parceiros e clientes têm a dizer sobre os resultados que entregamos.
-            </p>
-          </div>
-          
-          <AnimatedTestimonials testimonials={testimonials} autoplay={true} />
         </div>
       </div>
     </section>

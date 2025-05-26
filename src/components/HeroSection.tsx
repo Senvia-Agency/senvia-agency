@@ -1,7 +1,6 @@
 
 import { useEffect, useRef } from "react";
 import { renderCanvas, TypeWriter, ShineBorder } from "@/components/ui/hero-designali";
-import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -39,6 +38,13 @@ const HeroSection = () => {
     "Tráfego Pago",
     "Agentes de IA",
   ];
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section 
@@ -103,36 +109,36 @@ const HeroSection = () => {
             </span>
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in" style={{ animationDelay: "0.5s" }}>
             <ShineBorder
               borderWidth={2}
               className="border h-auto w-auto p-2 bg-white/5 backdrop-blur-md"
               color={["#0073ff", "#33a1ff", "#66c2ff"]}
             >
-              <a 
-                href="#servicos"
-                className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box inline-block"
+              <button 
+                onClick={() => scrollToSection('servicos')}
+                className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box"
               >
                 Os Nossos Serviços
-              </a>
+              </button>
             </ShineBorder>
             
-            <a 
-              href="#contacto"
+            <button 
+              onClick={() => scrollToSection('contacto')}
               className="px-8 py-3 bg-white hover:bg-senvia-50 text-senvia-500 rounded-full border border-senvia-500 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Contacte-nos
-            </a>
+            </button>
           </div>
         </div>
       </div>
       
       <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <a href="#servicos" className="text-senvia-500">
+        <button onClick={() => scrollToSection('servicos')} className="text-senvia-500">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
-        </a>
+        </button>
       </div>
     </section>
   );

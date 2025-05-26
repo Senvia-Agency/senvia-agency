@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   Phone, 
@@ -32,48 +33,69 @@ const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
+    const formData = {
+      name: formState.name,
+      email: formState.email,
+      phone: formState.phone,
+      message: formState.message,
+      timestamp: new Date().toISOString(),
+      source: "website_contact_form"
+    };
+    
+    console.log("Dados do formulário a serem enviados:", formData);
+    
     try {
-      console.log("Sending form data to webhook:", formState);
+      console.log("Enviando para webhook:", "http://158.220.122.62:5678/webhook/lovable-lead");
       
       const response = await fetch("http://158.220.122.62:5678/webhook/lovable-lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
-        mode: "no-cors", // Add this to handle CORS issues
-        body: JSON.stringify({
-          name: formState.name,
-          email: formState.email,
-          phone: formState.phone,
-          message: formState.message,
-          timestamp: new Date().toISOString(),
-          source: "website_contact_form"
-        }),
+        body: JSON.stringify(formData),
       });
 
-      // With no-cors mode, we can't check response.ok, so we assume success
-      console.log("Request sent to webhook");
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
       
-      setIsSubmitted(true);
-      setFormState({
-        name: "",
-        email: "",
-        phone: "",
-        message: ""
-      });
+      // Tentar ler a resposta
+      try {
+        const responseText = await response.text();
+        console.log("Response body:", responseText);
+      } catch (readError) {
+        console.log("Não foi possível ler o body da resposta:", readError);
+      }
       
-      toast({
-        title: "Mensagem enviada com sucesso!",
-        description: "Obrigado pelo seu contacto. Responderemos o mais breve possível.",
-      });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
+      if (response.ok || response.status === 0) {
+        console.log("Webhook chamado com sucesso");
+        
+        setIsSubmitted(true);
+        setFormState({
+          name: "",
+          email: "",
+          phone: "",
+          message: ""
+        });
+        
+        toast({
+          title: "Mensagem enviada com sucesso!",
+          description: "Obrigado pelo seu contacto. Responderemos o mais breve possível.",
+        });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
     } catch (error) {
-      console.error("Error sending form:", error);
+      console.error("Erro detalhado ao enviar form:", error);
+      console.error("Tipo do erro:", typeof error);
+      console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace');
+      
       toast({
         title: "Erro ao enviar mensagem",
         description: "Ocorreu um erro ao enviar a sua mensagem. Tente novamente.",

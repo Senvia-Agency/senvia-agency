@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Send, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -43,9 +42,9 @@ const ContactForm = () => {
     console.log("Dados do formulário a serem enviados:", formData);
     
     try {
-      console.log("Enviando para webhook:", "http://158.220.122.62:5678/webhook/lovable-lead");
+      console.log("Enviando para webhook:", "https://n8n.senvia.pt/webhook/lovable-lead");
       
-      const response = await fetch("http://158.220.122.62:5678/webhook/lovable-lead", {
+      const response = await fetch("https://n8n.senvia.pt/webhook/lovable-lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

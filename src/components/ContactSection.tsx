@@ -10,6 +10,7 @@ import {
   Send,
   Check
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const ContactSection = () => {
   const [formState, setFormState] = useState({
@@ -21,32 +22,66 @@ const ContactSection = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { toast } = useToast();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormState({
-        name: "",
-        email: "",
-        phone: "",
-        message: ""
-      });
+    try {
+      console.log("Sending form data to webhook:", formState);
       
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
-    }, 1500);
+      const response = await fetch("http://158.220.122.62:5678/webhook/lovable-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          phone: formState.phone,
+          message: formState.message,
+          timestamp: new Date().toISOString(),
+          source: "website_contact_form"
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormState({
+          name: "",
+          email: "",
+          phone: "",
+          message: ""
+        });
+        
+        toast({
+          title: "Mensagem enviada com sucesso!",
+          description: "Obrigado pelo seu contacto. Responderemos o mais breve possível.",
+        });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error sending form:", error);
+      toast({
+        title: "Erro ao enviar mensagem",
+        description: "Ocorreu um erro ao enviar a sua mensagem. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

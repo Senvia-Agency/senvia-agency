@@ -4,36 +4,36 @@ import { ExternalLink, ArrowRight } from "lucide-react";
 
 const portfolioItems = [
   {
-    title: "CRM Distância",
-    category: "Plataformas",
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Sistema completo de gestão de relacionamento com clientes para empresas de ensino à distância.",
+    title: "Distância Arrojada",
+    category: "Landing Pages",
+    image: "/lovable-uploads/1eb268ed-2dd6-49ab-8eff-d6bc955a2223.png",
+    description: "Landing page profissional para motoristas TVDE com design elegante e chamadas para ação eficazes.",
     link: "https://crmdistancia.senvia.pt/",
-    tags: ["CRM", "Gestão", "Educação"]
+    tags: ["Landing Page", "TVDE", "Conversão"]
   },
   {
-    title: "CRM DASP",
-    category: "Plataformas",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Plataforma avançada de CRM personalizada para otimização de processos empresariais.",
+    title: "DASP Rent",
+    category: "Landing Pages",
+    image: "/lovable-uploads/040f5578-af33-41a8-9271-e8cfeda9dbac.png",
+    description: "Site moderno para empresa de aluguel de carros com foco em experiência do usuário e conversões.",
     link: "https://crmdasp.senvia.pt/",
-    tags: ["CRM", "Automação", "Negócios"]
+    tags: ["Website", "Rent a Car", "Business"]
   },
   {
     title: "Thais Lorrayne",
-    category: "Web Design",
-    image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Website profissional e elegante para marca pessoal com design moderno e responsivo.",
+    category: "Sites Profissionais",
+    image: "/lovable-uploads/3424b149-f302-4d53-89c7-332d69bfcf98.png",
+    description: "Website profissional para maquiadora com design elegante e identidade visual marcante.",
     link: "https://thaislorrayne.senvia.pt/",
-    tags: ["Portfolio", "Pessoal", "Design"]
+    tags: ["Portfolio", "Beleza", "Profissional"]
   },
   {
     title: "Daniel Freitas",
-    category: "Web Design",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Site profissional com identidade visual única e experiência de usuário otimizada.",
+    category: "Sites Profissionais",
+    image: "/lovable-uploads/a2455a7c-3f41-4cd3-aabf-a79473014089.png",
+    description: "Site para consultor de viagens com design atrativo e foco na geração de leads qualificados.",
     link: "https://danielfreitas.senvia.pt/",
-    tags: ["Portfolio", "Profissional", "UX"]
+    tags: ["Consultoria", "Viagens", "Landing Page"]
   }
 ];
 

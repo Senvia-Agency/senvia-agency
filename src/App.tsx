@@ -18,6 +18,7 @@ import Blog from "./pages/Blog";
 import FAQ from "./pages/FAQ";
 import TermosServico from "./pages/TermosServico";
 import MetaPixel from "./components/MetaPixel";
+import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTopOnRouteChange />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/websites" element={<Websites />} />

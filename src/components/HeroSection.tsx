@@ -50,7 +50,7 @@ const HeroSection = () => {
     <section 
       ref={heroRef}
       id="hero" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white to-blue-50 pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-background to-secondary pt-20"
     >
       {/* Background geometric elements */}
       <div className="absolute inset-0 overflow-hidden">

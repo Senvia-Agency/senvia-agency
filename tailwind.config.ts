@@ -30,16 +30,16 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				senvia: {
-					50: '#e6f1ff',
-					100: '#cce3ff',
-					200: '#99c7ff',
-					300: '#66abff',
-					400: '#338fff',
-					500: '#0073ff',  // primary blue
-					600: '#005ccc',
-					700: '#004499',
-					800: '#002d66',
-					900: '#001733',
+					50: '#e6fffc',
+					100: '#ccfff8',
+					200: '#99fff1',
+					300: '#66ffea',
+					400: '#33ffe3',
+					500: '#00c3ff',  // primary cyan
+					600: '#009ccc',
+					700: '#007599',
+					800: '#004e66',
+					900: '#002733',
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',

@@ -116,7 +116,7 @@ const ContactForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
           Nome Completo
         </label>
         <input
@@ -126,13 +126,13 @@ const ContactForm = () => {
           value={formState.name}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-senvia-500 focus:border-senvia-500 outline-none transition-all"
+          className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all text-foreground"
           placeholder="Seu nome"
         />
       </div>
       
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
           Email
         </label>
         <input
@@ -142,13 +142,13 @@ const ContactForm = () => {
           value={formState.email}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-senvia-500 focus:border-senvia-500 outline-none transition-all"
+          className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all text-foreground"
           placeholder="seu-email@exemplo.com"
         />
       </div>
       
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1">
           Telefone
         </label>
         <input
@@ -157,13 +157,13 @@ const ContactForm = () => {
           name="phone"
           value={formState.phone}
           onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-senvia-500 focus:border-senvia-500 outline-none transition-all"
+          className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all text-foreground"
           placeholder="+351 XXX XXX XXX"
         />
       </div>
       
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="message" className="block text-sm font-medium text-foreground mb-1">
           Mensagem
         </label>
         <textarea
@@ -173,7 +173,7 @@ const ContactForm = () => {
           onChange={handleChange}
           required
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-senvia-500 focus:border-senvia-500 outline-none transition-all resize-none"
+          className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all resize-none text-foreground"
           placeholder="Como podemos ajudar?"
         ></textarea>
       </div>

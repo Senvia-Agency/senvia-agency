@@ -110,7 +110,7 @@ const PortfolioSection = () => {
     <section
       id="portfolio"
       ref={sectionRef}
-      className="py-24 bg-gradient-to-b from-white to-blue-50"
+      className="py-24 bg-background"
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
@@ -129,7 +129,7 @@ const PortfolioSection = () => {
               className={`px-6 py-2 rounded-full transition-all duration-300 ${
                 filter === category
                   ? "bg-senvia-500 text-white shadow-md"
-                  : "bg-white text-senvia-700 border border-senvia-200 hover:border-senvia-500"
+                  : "bg-card text-foreground border border-border hover:border-senvia-500"
               }`}
               onClick={() => setFilter(category)}
             >
@@ -177,7 +177,7 @@ const PortfolioSection = () => {
                 ))}
               </div>
 
-              <div className="bg-white p-8 rounded-2xl shadow-lg animate-on-scroll">
+              <div className="bg-card p-8 rounded-2xl shadow-lg animate-on-scroll border border-border">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                   <img
                     src={filteredItems[activeItem].image}
@@ -186,7 +186,7 @@ const PortfolioSection = () => {
                   />
                   <div>
                     <span className="text-senvia-500 font-medium">{filteredItems[activeItem].category}</span>
-                    <h3 className="text-2xl font-bold mb-3">{filteredItems[activeItem].title}</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-foreground">{filteredItems[activeItem].title}</h3>
                     <p className="text-muted-foreground">{filteredItems[activeItem].description}</p>
                   </div>
                 </div>

@@ -5,7 +5,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
+    <footer className="bg-background border-t border-border pt-16 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
@@ -91,7 +91,7 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground text-sm mb-4 md:mb-0">
             &copy; {currentYear} SENVIA Agency. Todos os direitos reservados.
           </p>

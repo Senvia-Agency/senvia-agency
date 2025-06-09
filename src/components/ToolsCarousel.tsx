@@ -85,7 +85,7 @@ const ToolsCarousel = () => {
     <section
       id="ferramentas"
       ref={sectionRef}
-      className="py-24 bg-gradient-to-b from-blue-50 to-white overflow-hidden"
+      className="py-24 bg-background overflow-hidden"
     >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
@@ -99,7 +99,7 @@ const ToolsCarousel = () => {
 
         <div className="relative max-w-4xl mx-auto">
           <button
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-card/80 p-2 rounded-full shadow-md hover:bg-card transition-all duration-300 border border-border"
             onClick={() => navigate("prev")}
             aria-label="Previous tool"
           >
@@ -128,7 +128,7 @@ const ToolsCarousel = () => {
                     key={tool.name}
                     className={`absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center transition-all duration-500 transform ${position}`}
                   >
-                    <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xs md:max-w-md mx-auto flex flex-col items-center glow-box">
+                    <div className="bg-card p-8 rounded-2xl shadow-lg w-full max-w-xs md:max-w-md mx-auto flex flex-col items-center glow-box border border-border">
                       <img 
                         src={tool.logo} 
                         alt={`${tool.name} logo`}
@@ -136,7 +136,7 @@ const ToolsCarousel = () => {
                         onLoad={() => handleImageLoad(tool.name)}
                         className="h-20 md:h-28 w-auto object-contain mb-4"
                       />
-                      <h3 className="text-xl font-semibold text-senvia-700">{tool.name}</h3>
+                      <h3 className="text-xl font-semibold text-foreground">{tool.name}</h3>
                     </div>
                   </div>
                 );
@@ -145,7 +145,7 @@ const ToolsCarousel = () => {
           </div>
           
           <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all duration-300"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-card/80 p-2 rounded-full shadow-md hover:bg-card transition-all duration-300 border border-border"
             onClick={() => navigate("next")}
             aria-label="Next tool"
           >

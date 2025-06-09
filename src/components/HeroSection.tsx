@@ -84,7 +84,7 @@ const HeroSection = () => {
                 <div className="w-6 h-6 bg-senvia-500 rounded transform rotate-45 animate-pulse-glow" style={{ animationDelay: "0.4s" }}></div>
               </div>
               
-              <div className="border-text-red-500 relative mx-auto h-full bg-background py-6 px-4 [mask-image:radial-gradient(800rem_96rem_at_center,white,transparent)]">
+              <div className="relative mx-auto h-full py-6 px-4">
                 <h1 className="text-6xl md:text-8xl font-bold text-senvia-500 glow">SENVIA</h1>
                 
                 <div className="flex items-center mt-2 justify-center gap-1">

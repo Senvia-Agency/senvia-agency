@@ -93,7 +93,7 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section id="servicos" ref={sectionRef} className="py-24 bg-white">
+    <section id="servicos" ref={sectionRef} className="py-24 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 animate-on-scroll">
@@ -108,7 +108,7 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <div 
               key={index}
-              className="relative bg-white p-6 rounded-2xl shadow-lg border border-gray-100 card-hover animate-on-scroll"
+              className="relative bg-card p-6 rounded-2xl shadow-lg border border-border card-hover animate-on-scroll"
             >
               <GlowingEffect 
                 spread={30} 
@@ -120,7 +120,7 @@ const ServicesSection = () => {
               />
               <div className="relative z-10">
                 <div className="mb-5">{service.icon}</div>
-                <h3 className="text-xl font-semibold mb-3 text-senvia-800">{service.title}</h3>
+                <h3 className="text-xl font-semibold mb-3 text-foreground">{service.title}</h3>
                 <p className="text-muted-foreground">{service.description}</p>
               </div>
             </div>

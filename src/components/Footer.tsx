@@ -55,21 +55,21 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Serviços</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Websites & Páginas Web</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">E-commerce</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Social Media</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Tráfego Pago</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Agentes de IA</a></li>
+              <li><Link to="/websites" className="text-muted-foreground hover:text-senvia-500 transition-colors">Websites & Páginas Web</Link></li>
+              <li><Link to="/ecommerce" className="text-muted-foreground hover:text-senvia-500 transition-colors">E-commerce</Link></li>
+              <li><Link to="/social-media" className="text-muted-foreground hover:text-senvia-500 transition-colors">Social Media</Link></li>
+              <li><Link to="/trafego-pago" className="text-muted-foreground hover:text-senvia-500 transition-colors">Tráfego Pago</Link></li>
+              <li><Link to="/agentes-ia" className="text-muted-foreground hover:text-senvia-500 transition-colors">Agentes de IA</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Recursos</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Projetos</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Ferramentas</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">Blog</a></li>
-              <li><a href="#" className="text-muted-foreground hover:text-senvia-500 transition-colors">FAQ</a></li>
+              <li><Link to="/projetos" className="text-muted-foreground hover:text-senvia-500 transition-colors">Projetos</Link></li>
+              <li><Link to="/ferramentas" className="text-muted-foreground hover:text-senvia-500 transition-colors">Ferramentas</Link></li>
+              <li><Link to="/blog" className="text-muted-foreground hover:text-senvia-500 transition-colors">Blog</Link></li>
+              <li><Link to="/faq" className="text-muted-foreground hover:text-senvia-500 transition-colors">FAQ</Link></li>
             </ul>
           </div>
           
@@ -107,7 +107,7 @@ const Footer = () => {
               Livro de Reclamações
             </a>
             <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Política de Privacidade</Link>
-            <a href="#" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Termos de Serviço</a>
+            <Link to="/termos-servico" className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors">Termos de Serviço</Link>
           </div>
         </div>
       </div>

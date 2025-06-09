@@ -9,143 +9,347 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      analytics: {
+      agents: {
         Row: {
-          click_count: number | null
-          created_at: string
+          created_at: string | null
+          description: string | null
           id: string
-          landing_page_id: string
-          updated_at: string
-          visit_count: number | null
+          name: string
+          status: boolean | null
+          system_prompt: string | null
         }
         Insert: {
-          click_count?: number | null
-          created_at?: string
+          created_at?: string | null
+          description?: string | null
           id?: string
-          landing_page_id: string
-          updated_at?: string
-          visit_count?: number | null
+          name: string
+          status?: boolean | null
+          system_prompt?: string | null
         }
         Update: {
-          click_count?: number | null
-          created_at?: string
+          created_at?: string | null
+          description?: string | null
           id?: string
-          landing_page_id?: string
-          updated_at?: string
-          visit_count?: number | null
+          name?: string
+          status?: boolean | null
+          system_prompt?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "analytics_landing_page_id_fkey"
-            columns: ["landing_page_id"]
-            isOneToOne: false
-            referencedRelation: "landing_pages"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      contatos_agente: {
+        Row: {
+          agente: string | null
+          created_at: string | null
+          email: string | null
+          id: number
+          interesse_duvida: string | null
+          role: string | null
+          status: string | null
+          user_name: string | null
+          user_number: string | null
+          user_profile: string | null
+        }
+        Insert: {
+          agente?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          interesse_duvida?: string | null
+          role?: string | null
+          status?: string | null
+          user_name?: string | null
+          user_number?: string | null
+          user_profile?: string | null
+        }
+        Update: {
+          agente?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          interesse_duvida?: string | null
+          role?: string | null
+          status?: string | null
+          user_name?: string | null
+          user_number?: string | null
+          user_profile?: string | null
+        }
+        Relationships: []
+      }
+      follow_up: {
+        Row: {
+          created_at: string | null
+          id: number
+          last_message: string | null
+          user_number: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          last_message?: string | null
+          user_number?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          last_message?: string | null
+          user_number?: string | null
+        }
+        Relationships: []
       }
       landing_pages: {
         Row: {
           created_at: string
-          custom_url: string | null
-          description: string
-          email: string
-          has_logo: boolean | null
+          description: string | null
           id: string
-          image_link: string | null
-          name: string
-          objective: string
-          primary_color: string | null
-          secondary_color: string | null
-          services: string | null
+          lead_id: string | null
+          notes: string | null
+          priority: number | null
           status: string
-          testimonial: string | null
+          title: string
           updated_at: string
-          user_id: string
-          whatsapp: string
         }
         Insert: {
           created_at?: string
-          custom_url?: string | null
-          description: string
-          email: string
-          has_logo?: boolean | null
+          description?: string | null
           id?: string
-          image_link?: string | null
-          name: string
-          objective: string
-          primary_color?: string | null
-          secondary_color?: string | null
-          services?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          priority?: number | null
           status?: string
-          testimonial?: string | null
+          title: string
           updated_at?: string
-          user_id: string
-          whatsapp: string
         }
         Update: {
           created_at?: string
-          custom_url?: string | null
-          description?: string
-          email?: string
-          has_logo?: boolean | null
+          description?: string | null
           id?: string
-          image_link?: string | null
-          name?: string
-          objective?: string
-          primary_color?: string | null
-          secondary_color?: string | null
-          services?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          priority?: number | null
           status?: string
-          testimonial?: string | null
+          title?: string
           updated_at?: string
-          user_id?: string
-          whatsapp?: string
         }
         Relationships: [
           {
-            foreignKeyName: "landing_pages_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "landing_pages_lead_id_fkey"
+            columns: ["lead_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
         ]
       }
       leads: {
         Row: {
+          call_to_action: string | null
+          client_testimonials: string | null
+          company_email: string
+          company_name: string
+          company_whatsapp: string
+          competitive_advantage: string | null
+          contact_channels: Json | null
           created_at: string
+          data_consent: boolean | null
+          desired_style: string | null
           email: string | null
           id: string
-          landing_page_id: string
-          message: string | null
-          name: string | null
-          phone: string | null
+          landing_page_objective: string | null
+          logo_images: Json | null
+          main_product_service: string | null
+          payment_status: string | null
+          social_networks: string | null
+          stripe_customer_id: string | null
+          stripe_payment_id: string | null
+          stripe_session_id: string | null
+          target_audience: string | null
+          updated_at: string
+          utm_source: string | null
+          whatsapp: string | null
         }
         Insert: {
+          call_to_action?: string | null
+          client_testimonials?: string | null
+          company_email?: string
+          company_name?: string
+          company_whatsapp?: string
+          competitive_advantage?: string | null
+          contact_channels?: Json | null
           created_at?: string
+          data_consent?: boolean | null
+          desired_style?: string | null
           email?: string | null
           id?: string
-          landing_page_id: string
-          message?: string | null
-          name?: string | null
-          phone?: string | null
+          landing_page_objective?: string | null
+          logo_images?: Json | null
+          main_product_service?: string | null
+          payment_status?: string | null
+          social_networks?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          utm_source?: string | null
+          whatsapp?: string | null
         }
         Update: {
+          call_to_action?: string | null
+          client_testimonials?: string | null
+          company_email?: string
+          company_name?: string
+          company_whatsapp?: string
+          competitive_advantage?: string | null
+          contact_channels?: Json | null
           created_at?: string
+          data_consent?: boolean | null
+          desired_style?: string | null
           email?: string | null
           id?: string
-          landing_page_id?: string
-          message?: string | null
-          name?: string | null
-          phone?: string | null
+          landing_page_objective?: string | null
+          logo_images?: Json | null
+          main_product_service?: string | null
+          payment_status?: string | null
+          social_networks?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          utm_source?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          agent_name: string | null
+          created_at: string | null
+          id: string
+          message: string
+          sender: string
+          user_id: string | null
+        }
+        Insert: {
+          agent_name?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          sender: string
+          user_id?: string | null
+        }
+        Update: {
+          agent_name?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          sender?: string
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "leads_landing_page_id_fkey"
-            columns: ["landing_page_id"]
+            foreignKeyName: "messages_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "landing_pages"
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      n8n_fila_mensagens: {
+        Row: {
+          id: string
+          id_mensagem: string
+          mensagem: string
+          telefone: string
+          timestamp: string
+        }
+        Insert: {
+          id?: string
+          id_mensagem: string
+          mensagem: string
+          telefone: string
+          timestamp?: string
+        }
+        Update: {
+          id?: string
+          id_mensagem?: string
+          mensagem?: string
+          telefone?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      n8n_historico_mensagens: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          role: string
+          session_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          role: string
+          session_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          email: string
+          id: string
+          lead_id: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          email: string
+          id?: string
+          lead_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          email?: string
+          id?: string
+          lead_id?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
         ]
@@ -153,71 +357,98 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email: string | null
+          full_name: string | null
           id: string
-          is_admin: boolean
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          is_admin?: boolean
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_admin?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      subscriptions: {
-        Row: {
-          created_at: string
-          end_date: string | null
-          id: string
-          plan_type: string
-          start_date: string
-          status: string
+          role: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          end_date?: string | null
+          email?: string | null
+          full_name?: string | null
           id?: string
-          plan_type: string
-          start_date?: string
-          status?: string
+          role?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          end_date?: string | null
+          email?: string | null
+          full_name?: string | null
           id?: string
-          plan_type?: string
-          start_date?: string
-          status?: string
+          role?: string
           updated_at?: string
           user_id?: string
         }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          active_agent: string
+          context: Json | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          active_agent: string
+          context?: Json | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          active_agent?: string
+          context?: Json | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "subscriptions_user_id_fkey"
+            foreignKeyName: "sessions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          nome: string | null
+          whatsapp_number: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          whatsapp_number: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          nome?: string | null
+          whatsapp_number?: string
+        }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_uuid?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

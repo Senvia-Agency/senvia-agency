@@ -1,52 +1,47 @@
 
 import { useEffect, useRef, useState } from "react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 
 const portfolioItems = [
   {
-    title: "Website Corporativo",
-    category: "Web Design",
-    image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Um website moderno e profissional para uma empresa de consultoria financeira."
-  },
-  {
-    title: "Loja Online",
-    category: "E-commerce",
-    image: "https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Uma loja online completa para uma marca de moda sustentável."
-  },
-  {
-    title: "Campanha de Marketing",
-    category: "Social Media",
-    image: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Uma campanha de marketing digital que aumentou o engajamento nas redes sociais em 300%."
-  },
-  {
-    title: "Chatbot de Atendimento",
-    category: "IA",
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Um assistente virtual que otimizou o atendimento ao cliente, reduzindo o tempo de espera em 80%."
-  },
-  {
-    title: "Sistema de Gestão",
+    title: "CRM Distância",
     category: "Plataformas",
-    image: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Uma plataforma personalizada para gestão financeira e controle de estoque."
+    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Sistema completo de gestão de relacionamento com clientes para empresas de ensino à distância.",
+    link: "https://crmdistancia.senvia.pt/",
+    tags: ["CRM", "Gestão", "Educação"]
   },
   {
-    title: "App Mobile",
-    category: "Desenvolvimento",
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    description: "Um aplicativo móvel para uma startup de serviços de entrega."
+    title: "CRM DASP",
+    category: "Plataformas",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Plataforma avançada de CRM personalizada para otimização de processos empresariais.",
+    link: "https://crmdasp.senvia.pt/",
+    tags: ["CRM", "Automação", "Negócios"]
+  },
+  {
+    title: "Thais Lorrayne",
+    category: "Web Design",
+    image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Website profissional e elegante para marca pessoal com design moderno e responsivo.",
+    link: "https://thaislorrayne.senvia.pt/",
+    tags: ["Portfolio", "Pessoal", "Design"]
+  },
+  {
+    title: "Daniel Freitas",
+    category: "Web Design",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    description: "Site profissional com identidade visual única e experiência de usuário otimizada.",
+    link: "https://danielfreitas.senvia.pt/",
+    tags: ["Portfolio", "Profissional", "UX"]
   }
 ];
 
 const PortfolioSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeItem, setActiveItem] = useState(0);
   const [categories, setCategories] = useState<string[]>([]);
   const [filter, setFilter] = useState("Todos");
   const [filteredItems, setFilteredItems] = useState(portfolioItems);
-  const [animation, setAnimation] = useState("");
 
   useEffect(() => {
     // Extract unique categories
@@ -62,7 +57,7 @@ const PortfolioSection = () => {
             elements.forEach((el, index) => {
               setTimeout(() => {
                 el.classList.add("visible");
-              }, index * 100);
+              }, index * 150);
             });
           }
         });
@@ -74,37 +69,21 @@ const PortfolioSection = () => {
       observer.observe(sectionRef.current);
     }
 
-    // Auto rotate active item
-    const interval = setInterval(() => {
-      setActiveItem(prev => (prev + 1) % filteredItems.length);
-    }, 5000);
-
     return () => {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
-      clearInterval(interval);
     };
-  }, [filteredItems.length]);
+  }, []);
 
   // Handle filter change
   useEffect(() => {
-    setAnimation("animate-fade-out");
-    
-    setTimeout(() => {
-      if (filter === "Todos") {
-        setFilteredItems(portfolioItems);
-      } else {
-        setFilteredItems(portfolioItems.filter(item => item.category === filter));
-      }
-      setActiveItem(0);
-      setAnimation("animate-fade-in");
-    }, 300);
+    if (filter === "Todos") {
+      setFilteredItems(portfolioItems);
+    } else {
+      setFilteredItems(portfolioItems.filter(item => item.category === filter));
+    }
   }, [filter]);
-
-  const handleItemClick = (index: number) => {
-    setActiveItem(index);
-  };
 
   return (
     <section
@@ -138,62 +117,74 @@ const PortfolioSection = () => {
           ))}
         </div>
 
-        <div className={`relative min-h-[500px] ${animation}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredItems.length > 0 ? (
-            <>
-              <div className="grid grid-cols-4 md:grid-cols-6 gap-3 mb-8">
-                {filteredItems.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`cursor-pointer transition-all duration-300 ${
-                      activeItem === index
-                        ? "col-span-4 md:col-span-3 row-span-2"
-                        : "col-span-2 md:col-span-1"
-                    }`}
-                    onClick={() => handleItemClick(index)}
-                  >
-                    <div
-                      className={`h-full rounded-lg overflow-hidden shadow-md transition-transform duration-300 ${
-                        activeItem === index
-                          ? "transform scale-100"
-                          : "hover:scale-105"
-                      }`}
-                    >
-                      <div className="relative h-full">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 z-10"></div>
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="h-full w-full object-cover"
-                        />
-                        {activeItem !== index && (
-                          <div className="absolute bottom-0 left-0 right-0 p-2 text-white z-20">
-                            <h4 className="text-sm font-medium truncate">{item.title}</h4>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-card p-8 rounded-2xl shadow-lg animate-on-scroll border border-border">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
+            filteredItems.map((item, index) => (
+              <div
+                key={index}
+                className="group relative bg-card/50 backdrop-blur-sm rounded-3xl overflow-hidden border border-border/50 hover:border-senvia-500/50 transition-all duration-500 animate-on-scroll"
+              >
+                {/* Background Gradient Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-senvia-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Image Section */}
+                <div className="relative h-64 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10" />
                   <img
-                    src={filteredItems[activeItem].image}
-                    alt={filteredItems[activeItem].title}
-                    className="rounded-lg w-full md:w-1/3 aspect-video object-cover shadow-md"
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  <div>
-                    <span className="text-senvia-500 font-medium">{filteredItems[activeItem].category}</span>
-                    <h3 className="text-2xl font-bold mb-3 text-foreground">{filteredItems[activeItem].title}</h3>
-                    <p className="text-muted-foreground">{filteredItems[activeItem].description}</p>
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4 z-20">
+                    <span className="px-3 py-1 bg-senvia-500/90 text-white text-sm font-medium rounded-full backdrop-blur-sm">
+                      {item.category}
+                    </span>
                   </div>
                 </div>
+
+                {/* Content Section */}
+                <div className="relative p-8 z-10">
+                  <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-senvia-400 transition-colors duration-300">
+                    {item.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    {item.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {item.tags.map((tag, tagIndex) => (
+                      <span
+                        key={tagIndex}
+                        className="px-3 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full border border-border/50"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Visit Button */}
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-senvia-500 to-senvia-400 text-white font-medium rounded-xl hover:from-senvia-400 hover:to-senvia-300 transition-all duration-300 group/btn"
+                  >
+                    <span>Visitar Projeto</span>
+                    <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                  </a>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-senvia-500/10 rounded-full blur-3xl group-hover:bg-senvia-500/20 transition-colors duration-700" />
+                <div className="absolute -bottom-10 -left-10 w-30 h-30 bg-senvia-400/10 rounded-full blur-2xl group-hover:bg-senvia-400/20 transition-colors duration-700" />
               </div>
-            </>
+            ))
           ) : (
-            <div className="text-center py-12 animate-on-scroll">
+            <div className="col-span-full text-center py-12 animate-on-scroll">
               <p className="text-muted-foreground">Nenhum projeto encontrado nesta categoria.</p>
             </div>
           )}

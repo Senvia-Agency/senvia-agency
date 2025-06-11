@@ -116,7 +116,7 @@ const HeroSection = () => {
                 className="border h-auto w-auto p-2 bg-white/5 backdrop-blur-md"
                 color={["#0073ff", "#33a1ff", "#66c2ff"]}
               >
-                <div className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box" style={{ color: '#ffffff' }}>
+                <div className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box" style={{ color: '#000000' }}>
                   Os Nossos Serviços
                 </div>
               </ShineBorder>

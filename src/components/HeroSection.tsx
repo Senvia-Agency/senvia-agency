@@ -124,7 +124,8 @@ const HeroSection = () => {
             
             <button 
               onClick={() => scrollToSection('contacto')}
-              className="px-8 py-3 bg-white hover:bg-senvia-50 text-senvia-500 rounded-full border border-senvia-500 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-8 py-3 bg-white hover:bg-senvia-50 rounded-full border border-senvia-500 shadow-lg hover:shadow-xl transition-all duration-300"
+              style={{ color: '#000000' }}
             >
               Contacte-nos
             </button>
@@ -133,7 +134,7 @@ const HeroSection = () => {
       </div>
       
       <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <button onClick={() => scrollToSection('servicos')} className="text-senvia-500">
+        <button onClick={() => scrollToSection('servicos')} style={{ color: '#000000' }}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>

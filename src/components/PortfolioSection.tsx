@@ -171,7 +171,8 @@ const PortfolioSection = () => {
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-senvia-500 to-senvia-400 text-white font-medium rounded-xl hover:from-senvia-400 hover:to-senvia-300 transition-all duration-300 group/btn"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-senvia-500 to-senvia-400 font-medium rounded-xl hover:from-senvia-400 hover:to-senvia-300 transition-all duration-300 group/btn"
+                    style={{ color: '#000000' }}
                   >
                     <span>Visitar Projeto</span>
                     <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />

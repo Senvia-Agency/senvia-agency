@@ -110,18 +110,17 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            <ShineBorder
-              borderWidth={2}
-              className="border h-auto w-auto p-2 bg-white/5 backdrop-blur-md"
-              color={["#0073ff", "#33a1ff", "#66c2ff"]}
-            >
-              <button 
-                onClick={() => scrollToSection('servicos')}
-                className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box"
+            <div onClick={() => scrollToSection('servicos')} className="cursor-pointer">
+              <ShineBorder
+                borderWidth={2}
+                className="border h-auto w-auto p-2 bg-white/5 backdrop-blur-md"
+                color={["#0073ff", "#33a1ff", "#66c2ff"]}
               >
-                Os Nossos Serviços
-              </button>
-            </ShineBorder>
+                <div className="px-8 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 glow-box">
+                  Os Nossos Serviços
+                </div>
+              </ShineBorder>
+            </div>
             
             <button 
               onClick={() => scrollToSection('contacto')}

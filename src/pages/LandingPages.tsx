@@ -464,13 +464,31 @@ const LandingPages = () => {
                           <FormItem>
                             <FormLabel>País *</FormLabel>
                             <FormControl>
-                              <Select
+                               <Select
                                 options={countryOptions}
                                 placeholder="Código"
                                 value={countryOptions.find(option => option.value === field.value)}
                                 onChange={(option) => field.onChange(option?.value || "")}
                                 className="react-select-container"
                                 classNamePrefix="react-select"
+                                styles={{
+                                  control: (base) => ({
+                                    ...base,
+                                    color: '#000000'
+                                  }),
+                                  singleValue: (base) => ({
+                                    ...base,
+                                    color: '#000000'
+                                  }),
+                                  option: (base) => ({
+                                    ...base,
+                                    color: '#000000'
+                                  }),
+                                  placeholder: (base) => ({
+                                    ...base,
+                                    color: '#666666'
+                                  })
+                                }}
                               />
                             </FormControl>
                             <FormMessage />
@@ -530,13 +548,31 @@ const LandingPages = () => {
                         <FormItem>
                           <FormLabel>Objetivo principal *</FormLabel>
                           <FormControl>
-                            <Select
+                             <Select
                               options={objectiveOptions}
                               placeholder="Selecione seu objetivo"
                               value={objectiveOptions.find(option => option.value === field.value)}
                               onChange={(option) => field.onChange(option?.value || "")}
                               className="react-select-container"
                               classNamePrefix="react-select"
+                              styles={{
+                                control: (base) => ({
+                                  ...base,
+                                  color: '#000000'
+                                }),
+                                singleValue: (base) => ({
+                                  ...base,
+                                  color: '#000000'
+                                }),
+                                option: (base) => ({
+                                  ...base,
+                                  color: '#000000'
+                                }),
+                                placeholder: (base) => ({
+                                  ...base,
+                                  color: '#666666'
+                                })
+                              }}
                             />
                           </FormControl>
                           <FormMessage />

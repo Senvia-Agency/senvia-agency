@@ -71,14 +71,15 @@ const SenviaAssistant = () => {
             </p>
             
             <div className="flex justify-center items-center mb-12">
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
-                style={{ color: '#000000' }}
-              >
-                Começar Teste Grátis de 7 Dias
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+            <Button 
+              size="lg" 
+              className="text-lg px-8 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
+              style={{ color: '#000000' }}
+              onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
+            >
+              Começar Teste Grátis de 7 Dias
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             </div>
 
             <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-senvia-500/20 max-w-md mx-auto">
@@ -247,6 +248,7 @@ const SenviaAssistant = () => {
                   size="lg" 
                   className="w-full text-lg py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                   style={{ color: '#000000' }}
+                  onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
                 >
                   Começar Teste Grátis Agora
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -278,6 +280,7 @@ const SenviaAssistant = () => {
                 size="lg" 
                 className="text-xl px-10 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                 style={{ color: '#000000' }}
+                onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
               >
                 Começar Agora - É Grátis!
                 <ArrowRight className="ml-2 h-6 w-6" />

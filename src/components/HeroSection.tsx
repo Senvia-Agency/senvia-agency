@@ -1,8 +1,10 @@
 
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { renderCanvas, TypeWriter, ShineBorder } from "@/components/ui/hero-designali";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -128,6 +130,13 @@ const HeroSection = () => {
               style={{ color: '#000000' }}
             >
               Contacte-nos
+            </button>
+
+            <button 
+              onClick={() => navigate('/auth')}
+              className="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-600"
+            >
+              Área Restrita
             </button>
           </div>
         </div>

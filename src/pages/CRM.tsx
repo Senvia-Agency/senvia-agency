@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -12,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
 import { Textarea } from "../components/ui/textarea";
 import { useToast } from "../hooks/use-toast";
-import { Search, Plus, Eye, Edit, Star, Calendar, User, Target, TrendingUp, Users, Phone, Mail } from "lucide-react";
+import { Search, Plus, Eye, Edit, Star, Calendar, User, Target, TrendingUp, Users, Phone, Mail, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -42,6 +43,7 @@ interface Lead {
 const CRM = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -239,6 +241,11 @@ const CRM = () => {
     return objectiveMap[objective] || objective;
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -257,9 +264,24 @@ const CRM = () => {
       
       <div className="container mx-auto px-4 pt-32 pb-20">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">CRM - Gestão de Leads</h1>
-          <p className="text-muted-foreground">Gerencie todos os leads da sua landing page inteligente</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">CRM - Gestão de Leads</h1>
+            <p className="text-muted-foreground">Gerencie todos os leads da sua landing page inteligente</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted-foreground">
+              Bem-vindo, {user?.email}
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sair
+            </Button>
+          </div>
         </div>
 
         {/* Stats Dashboard */}

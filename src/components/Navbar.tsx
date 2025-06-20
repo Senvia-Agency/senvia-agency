@@ -53,6 +53,12 @@ const Navbar = () => {
             Ferramentas
           </a>
           <a
+            href="/crm"
+            className="text-foreground hover:text-senvia-500 font-medium transition-colors"
+          >
+            CRM
+          </a>
+          <a
             href="#contacto"
             className="text-foreground hover:text-senvia-500 font-medium transition-colors"
           >
@@ -97,6 +103,13 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Ferramentas
+            </a>
+            <a
+              href="/crm"
+              className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              CRM
             </a>
             <a
               href="#contacto"

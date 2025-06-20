@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
 import { CheckCircle, ArrowRight, Clock, Users, Zap, Target, MessageSquare, Shield, Star, ChevronDown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
@@ -68,8 +69,23 @@ const LandingPages = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Aqui você pode integrar com n8n ou outro webhook
-      console.log("Form data:", data);
+      // Salvar o lead na base de dados
+      const { error } = await supabase
+        .from('landing_page_leads')
+        .insert({
+          full_name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          country_code: data.countryCode,
+          business_name: data.businessName,
+          website: data.website,
+          objective: data.objective,
+          status: 'new',
+          priority: 1,
+          source: 'landing_page'
+        });
+
+      if (error) throw error;
       
       toast({
         title: "Proposta solicitada!",
@@ -78,6 +94,7 @@ const LandingPages = () => {
       
       form.reset();
     } catch (error) {
+      console.error('Erro ao salvar lead:', error);
       toast({
         title: "Erro",
         description: "Tente novamente ou contacte-nos diretamente.",

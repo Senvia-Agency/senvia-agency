@@ -19,6 +19,7 @@ import FAQ from "./pages/FAQ";
 import TermosServico from "./pages/TermosServico";
 import SenviaAssistant from "./pages/SenviaAssistant";
 import LandingPages from "./pages/LandingPages";
+import CRM from "./pages/CRM";
 import MetaPixel from "./components/MetaPixel";
 import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/termos-servico" element={<TermosServico />} />
           <Route path="/senvia-assistant" element={<SenviaAssistant />} />
           <Route path="/landing-pages" element={<LandingPages />} />
+          <Route path="/crm" element={<CRM />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -21,6 +21,7 @@ import FAQ from "./pages/FAQ";
 import TermosServico from "./pages/TermosServico";
 import SenviaAssistant from "./pages/SenviaAssistant";
 import LandingPages from "./pages/LandingPages";
+import ThankYou from "./pages/ThankYou";
 import CRM from "./pages/CRM";
 import Auth from "./pages/Auth";
 import MetaPixel from "./components/MetaPixel";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/termos-servico" element={<TermosServico />} />
             <Route path="/senvia-assistant" element={<SenviaAssistant />} />
             <Route path="/landing-pages" element={<LandingPages />} />
+            <Route path="/obrigado" element={<ThankYou />} />
             <Route path="/auth" element={<Auth />} />
             <Route 
               path="/crm" 

@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
-import { CheckCircle, ArrowRight, Clock, Users, Zap, Target, MessageSquare, Shield, Star, ChevronDown } from "lucide-react";
+import { CheckCircle, ArrowRight, Clock, Users, Zap, Target, MessageSquare, Shield, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
 import { Card, CardContent } from "../components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
@@ -18,24 +18,13 @@ import { useToast } from "../hooks/use-toast";
 const formSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("E-mail inválido"),
-  phone: z.string().min(10, "Telefone inválido"),
-  countryCode: z.string().min(1, "Selecione o código do país"),
+  phone: z.string().min(9, "Telefone inválido"),
   businessName: z.string().optional(),
   website: z.string().optional(),
   objective: z.string().min(1, "Selecione um objetivo")
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-const countryOptions = [
-  { value: "+351", label: "🇵🇹 Portugal (+351)", country: "PT" },
-  { value: "+55", label: "🇧🇷 Brasil (+55)", country: "BR" },
-  { value: "+34", label: "🇪🇸 Espanha (+34)", country: "ES" },
-  { value: "+33", label: "🇫🇷 França (+33)", country: "FR" },
-  { value: "+49", label: "🇩🇪 Alemanha (+49)", country: "DE" },
-  { value: "+44", label: "🇬🇧 Reino Unido (+44)", country: "GB" },
-  { value: "+1", label: "🇺🇸 Estados Unidos (+1)", country: "US" }
-];
 
 const objectiveOptions = [
   { value: "aumentar-vendas", label: "Aumentar vendas" },
@@ -47,6 +36,7 @@ const objectiveOptions = [
 
 const LandingPages = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -59,7 +49,6 @@ const LandingPages = () => {
       fullName: "",
       email: "",
       phone: "",
-      countryCode: "",
       businessName: "",
       website: "",
       objective: ""
@@ -76,7 +65,7 @@ const LandingPages = () => {
           full_name: data.fullName,
           email: data.email,
           phone: data.phone,
-          country_code: data.countryCode,
+          country_code: '+351',
           business_name: data.businessName,
           website: data.website,
           objective: data.objective,
@@ -87,12 +76,8 @@ const LandingPages = () => {
 
       if (error) throw error;
       
-      toast({
-        title: "Proposta solicitada!",
-        description: "Nossa equipa entrará em contacto em breve."
-      });
-      
-      form.reset();
+      // Redirecionar para página de agradecimento
+      navigate('/obrigado');
     } catch (error) {
       console.error('Erro ao salvar lead:', error);
       toast({
@@ -473,62 +458,19 @@ const LandingPages = () => {
                       )}
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="countryCode"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>País *</FormLabel>
-                            <FormControl>
-                               <Select
-                                options={countryOptions}
-                                placeholder="Código"
-                                value={countryOptions.find(option => option.value === field.value)}
-                                onChange={(option) => field.onChange(option?.value || "")}
-                                className="react-select-container"
-                                classNamePrefix="react-select"
-                                styles={{
-                                  control: (base) => ({
-                                    ...base,
-                                    color: '#000000'
-                                  }),
-                                  singleValue: (base) => ({
-                                    ...base,
-                                    color: '#000000'
-                                  }),
-                                  option: (base) => ({
-                                    ...base,
-                                    color: '#000000'
-                                  }),
-                                  placeholder: (base) => ({
-                                    ...base,
-                                    color: '#666666'
-                                  })
-                                }}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="md:col-span-2">
-                        <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>WhatsApp *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Seu número de WhatsApp" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>WhatsApp *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="910320111" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <FormField
                       control={form.control}

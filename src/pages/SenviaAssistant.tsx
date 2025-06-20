@@ -70,7 +70,7 @@ const SenviaAssistant = () => {
               Seu assistente virtual trabalha 24/7, responde áudios, marca na agenda e nunca perde um cliente.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <div className="flex justify-center items-center mb-12">
               <Button 
                 size="lg" 
                 className="text-lg px-8 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
@@ -78,14 +78,6 @@ const SenviaAssistant = () => {
               >
                 Começar Teste Grátis de 7 Dias
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="text-lg px-8 py-6"
-                style={{ color: '#000000' }}
-              >
-                Ver Demonstração
               </Button>
             </div>
 
@@ -202,52 +194,52 @@ const SenviaAssistant = () => {
           </div>
 
           <div className="max-w-lg mx-auto">
-            <div className="bg-gradient-to-br from-senvia-500/10 via-card/50 to-senvia-400/10 backdrop-blur-sm rounded-3xl p-8 border-2 border-senvia-500/30 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-senvia-500/10 via-card/50 to-senvia-400/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 border-2 border-senvia-500/30 relative">
               {/* Badge */}
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-to-r from-senvia-500 to-senvia-400 text-black px-6 py-2 rounded-full text-sm font-bold">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-gradient-to-r from-senvia-500 to-senvia-400 text-black px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap">
                   🚀 OFERTA DE LANÇAMENTO
                 </div>
               </div>
 
-              <div className="text-center mt-6">
-                <h3 className="text-2xl font-bold mb-2">SENVIA Assistant Pro</h3>
+              <div className="text-center pt-6">
+                <h3 className="text-2xl font-bold mb-3">SENVIA Assistant Pro</h3>
                 <p className="text-muted-foreground mb-6">Perfeito para começar a automatizar</p>
                 
                 <div className="mb-8">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-5xl font-bold text-gradient">20€</span>
-                    <span className="text-muted-foreground">/mês</span>
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <span className="text-4xl md:text-5xl font-bold text-gradient">20€</span>
+                    <span className="text-muted-foreground text-lg">/mês</span>
                   </div>
                   <div className="bg-senvia-500/20 text-senvia-400 px-4 py-2 rounded-full text-sm font-medium inline-block">
                     7 dias grátis • Sem compromisso
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-8 text-left">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Até 1.000 conversas/mês</span>
+                <div className="space-y-4 mb-8 text-left">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Até 1.000 conversas/mês</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Integração Google Calendar</span>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Integração Google Calendar</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Mensagens de áudio</span>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Mensagens de áudio</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Notificações por email</span>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Notificações por email</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Personalização completa</span>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Personalização completa</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-senvia-400" />
-                    <span>Suporte 24/7</span>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-senvia-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">Suporte 24/7</span>
                   </div>
                 </div>
 
@@ -260,7 +252,7 @@ const SenviaAssistant = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
 
-                <p className="text-xs text-muted-foreground mt-4">
+                <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
                   Cancele a qualquer momento • Sem taxas de setup
                 </p>
               </div>

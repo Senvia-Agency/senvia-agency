@@ -42,7 +42,9 @@ const DashboardProfile = () => {
         .eq('user_id', user.id)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
       if (data) {
         setProfile({
@@ -50,14 +52,20 @@ const DashboardProfile = () => {
           email: data.email || user.email || '',
           date_of_birth: data.date_of_birth || ''
         });
+      } else {
+        // Se não existir perfil, usar dados do usuário
+        setProfile({
+          full_name: user.user_metadata?.full_name || '',
+          email: user.email || '',
+          date_of_birth: user.user_metadata?.date_of_birth || ''
+        });
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      // Set default values from user if profile not found
-      setProfile({
-        full_name: user.user_metadata?.full_name || '',
-        email: user.email || '',
-        date_of_birth: ''
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o perfil.",
+        variant: "destructive"
       });
     }
   };
@@ -72,8 +80,10 @@ const DashboardProfile = () => {
         .upsert({
           user_id: user.id,
           full_name: profile.full_name,
-          email: profile.email,
+          email: user.email, // Sempre usar o email do auth.users
           date_of_birth: profile.date_of_birth || null
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;
@@ -189,7 +199,6 @@ const DashboardProfile = () => {
                     id="email"
                     type="email"
                     value={profile.email}
-                    onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
                     className="bg-background border-senvia-500/20 text-white"
                     disabled
                   />

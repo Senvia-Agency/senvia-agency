@@ -5,10 +5,10 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import ProductCard from "@/components/dashboard/ProductCard";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DashboardProducts = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products'],

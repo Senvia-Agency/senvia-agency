@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, CreditCard, FileText, TrendingUp } from "lucide-react";
 import DashboardStats from "./DashboardStats";
@@ -9,7 +9,7 @@ import RecentActivity from "./RecentActivity";
 import ActiveSubscriptions from "./ActiveSubscriptions";
 
 const DashboardOverview = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
 
   const { data: subscriptions, isLoading: subscriptionsLoading } = useQuery({
     queryKey: ['customer-subscriptions', user?.id],

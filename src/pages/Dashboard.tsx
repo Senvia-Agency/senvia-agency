@@ -1,27 +1,27 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 
 const Dashboard = () => {
-  const { user, isLoading } = useAuthContext();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!loading && !user) {
       navigate('/auth');
     }
-  }, [user, isLoading, navigate]);
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     document.title = "Dashboard | SENVIA";
   }, []);
 
-  if (isLoading) {
+  if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
   }
 

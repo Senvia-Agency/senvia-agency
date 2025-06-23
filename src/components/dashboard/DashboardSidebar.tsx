@@ -12,7 +12,7 @@ import {
   Bell
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Visão Geral", path: "/dashboard" },
@@ -24,7 +24,7 @@ const sidebarItems = [
 ];
 
 const DashboardSidebar = () => {
-  const { signOut } = useAuthContext();
+  const { signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 

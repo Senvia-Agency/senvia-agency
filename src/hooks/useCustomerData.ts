@@ -1,11 +1,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useCustomerSubscriptions = () => {
-  const { user } = useAuthContext();
-
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['customer-subscriptions', user?.id],
     queryFn: async () => {
@@ -26,8 +26,8 @@ export const useCustomerSubscriptions = () => {
 };
 
 export const useCustomerInvoices = () => {
-  const { user } = useAuthContext();
-
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['customer-invoices', user?.id],
     queryFn: async () => {
@@ -45,8 +45,8 @@ export const useCustomerInvoices = () => {
 };
 
 export const useCustomerSettings = () => {
-  const { user } = useAuthContext();
-
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['customer-settings', user?.id],
     queryFn: async () => {
@@ -56,7 +56,7 @@ export const useCustomerSettings = () => {
         .eq('user_id', user?.id)
         .single();
       
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       return data;
     },
     enabled: !!user?.id,

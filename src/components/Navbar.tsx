@@ -13,7 +13,7 @@ import {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +27,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    window.location.href = '/';
+  };
 
   return (
     <header
@@ -74,7 +79,7 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-black">
                   <User className="h-4 w-4" />
-                  Área do Cliente
+                  {user.user_metadata?.full_name || user.email}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-card border-senvia-500/20">
@@ -95,6 +100,12 @@ const Navbar = () => {
                   className="text-white hover:bg-senvia-500/20"
                 >
                   Perfil
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="text-red-400 hover:bg-red-900/20"
+                >
+                  Sair
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -172,6 +183,9 @@ const Navbar = () => {
             
             {user ? (
               <div className="border-t border-border pt-4">
+                <div className="text-white py-2 font-medium">
+                  {user.user_metadata?.full_name || user.email}
+                </div>
                 <a
                   href="/dashboard"
                   className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
@@ -193,6 +207,12 @@ const Navbar = () => {
                 >
                   Perfil
                 </a>
+                <button
+                  onClick={handleLogout}
+                  className="text-red-400 hover:text-red-300 font-medium transition-colors py-2 block w-full text-left"
+                >
+                  Sair
+                </button>
               </div>
             ) : (
               <div className="border-t border-border pt-4">

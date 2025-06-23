@@ -1,65 +1,64 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { Package, ArrowRight } from "lucide-react";
+import { Package, ExternalLink } from "lucide-react";
 
 interface ActiveSubscriptionsProps {
   subscriptions: any[];
 }
 
 const ActiveSubscriptions = ({ subscriptions }: ActiveSubscriptionsProps) => {
-  const navigate = useNavigate();
-
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
+    <Card className="bg-card/50 border-senvia-500/20">
+      <CardHeader>
+        <CardTitle className="text-white flex items-center gap-2">
+          <Package className="w-5 h-5" />
           Assinaturas Ativas
         </CardTitle>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => navigate('/dashboard/subscriptions')}
-        >
-          Ver todas <ArrowRight className="h-4 w-4 ml-1" />
-        </Button>
       </CardHeader>
       <CardContent>
         {subscriptions.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Nenhuma assinatura ativa</p>
+          <div className="text-center py-6">
+            <p className="text-muted-foreground mb-4">
+              Você não possui assinaturas ativas no momento.
+            </p>
             <Button 
-              variant="outline" 
-              className="mt-4"
-              onClick={() => navigate('/dashboard/products')}
+              onClick={() => window.location.href = '/dashboard/products'}
+              className="bg-white text-black hover:bg-gray-200"
             >
-              Explorar Produtos
+              Ver Produtos Disponíveis
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
-            {subscriptions.slice(0, 3).map((subscription) => (
-              <div
-                key={subscription.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div>
-                  <h4 className="font-medium">{subscription.products?.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Plano {subscription.product_plans?.name}
-                  </p>
+            {subscriptions.map((subscription) => (
+              <div key={subscription.id} className="border border-senvia-500/20 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-medium text-white">
+                    {subscription.products?.name || 'Produto'}
+                  </h4>
+                  <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-sm">
+                    Ativo
+                  </span>
                 </div>
-                <div className="text-right">
-                  <Badge variant="secondary" className="mb-1">
-                    {subscription.status}
-                  </Badge>
-                  <p className="text-sm text-muted-foreground">
-                    €{subscription.product_plans?.price_monthly}/mês
-                  </p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {subscription.product_plans?.name || 'Plano'}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    Próxima cobrança: {subscription.next_billing_date 
+                      ? new Date(subscription.next_billing_date).toLocaleDateString('pt-PT')
+                      : 'N/A'
+                    }
+                  </span>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="bg-white text-black border-white hover:bg-gray-200"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-1" />
+                    Gerenciar
+                  </Button>
                 </div>
               </div>
             ))}

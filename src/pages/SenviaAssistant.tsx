@@ -1,13 +1,28 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle, MessageSquare, Calendar, Volume2, Mail, Smartphone, Clock, Star, ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SenviaAssistant = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   useEffect(() => {
     document.title = "SENVIA Assistant | Robô de Agendamento por IA";
   }, []);
+
+  const handleStartTrial = () => {
+    if (user) {
+      // Se já estiver logado, vai direto para produtos
+      navigate("/dashboard/products");
+    } else {
+      // Se não estiver logado, vai para autenticação
+      navigate("/auth");
+    }
+  };
 
   const features = [
     {
@@ -75,7 +90,7 @@ const SenviaAssistant = () => {
               size="lg" 
               className="text-lg px-8 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
               style={{ color: '#000000' }}
-              onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
+              onClick={handleStartTrial}
             >
               Começar Teste Grátis de 7 Dias
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -248,7 +263,7 @@ const SenviaAssistant = () => {
                   size="lg" 
                   className="w-full text-lg py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                   style={{ color: '#000000' }}
-                  onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
+                  onClick={handleStartTrial}
                 >
                   Começar Teste Grátis Agora
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -280,7 +295,7 @@ const SenviaAssistant = () => {
                 size="lg" 
                 className="text-xl px-10 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                 style={{ color: '#000000' }}
-                onClick={() => window.open('https://buy.stripe.com/dRmeVdcsteTugNSd3T9AA02', '_blank')}
+                onClick={handleStartTrial}
               >
                 Começar Agora - É Grátis!
                 <ArrowRight className="ml-2 h-6 w-6" />

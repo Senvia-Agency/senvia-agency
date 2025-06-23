@@ -24,6 +24,8 @@ import LandingPages from "./pages/LandingPages";
 import ThankYou from "./pages/ThankYou";
 import CRM from "./pages/CRM";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import DashboardProducts from "./pages/DashboardProducts";
 import MetaPixel from "./components/MetaPixel";
 import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
 

@@ -1,234 +1,189 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showClientMenu, setShowClientMenu] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await signOut();
-    window.location.href = '/';
+    navigate("/");
+    setShowClientMenu(false);
   };
 
+  const navLinks = [
+    { to: "/websites", label: "Websites" },
+    { to: "/ecommerce", label: "E-commerce" },
+    { to: "/social-media", label: "Social Media" },
+    { to: "/trafego-pago", label: "Tráfego Pago" },
+    { to: "/agentes-ia", label: "Agentes IA" },
+    { to: "/projetos", label: "Projetos" },
+    { to: "/blog", label: "Blog" },
+  ];
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/90 backdrop-blur-md shadow-md py-3"
-          : "bg-transparent py-5"
-      }`}
-    >
-      <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <a href="#hero" className="flex items-center space-x-2">
-          <div className="text-3xl font-bold text-senvia-500 glow">SENVIA</div>
-        </a>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "bg-transparent"
+    }`}>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="text-2xl font-bold text-senvia-500 glow">
+            SENVIA
+          </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <a
-            href="#servicos"
-            className="text-foreground hover:text-senvia-500 font-medium transition-colors"
-          >
-            Serviços
-          </a>
-          <a
-            href="#portfolio"
-            className="text-foreground hover:text-senvia-500 font-medium transition-colors"
-          >
-            Portfólio
-          </a>
-          <a
-            href="#ferramentas"
-            className="text-foreground hover:text-senvia-500 font-medium transition-colors"
-          >
-            Ferramentas
-          </a>
-          <a
-            href="#contacto"
-            className="text-foreground hover:text-senvia-500 font-medium transition-colors"
-          >
-            Contacto
-          </a>
-
-          {/* Área do Cliente */}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-black">
-                  <User className="h-4 w-4" />
-                  {user.user_metadata?.full_name || user.email}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-card border-senvia-500/20">
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/dashboard'}
-                  className="text-white hover:bg-senvia-500/20"
-                >
-                  Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/dashboard/products'}
-                  className="text-white hover:bg-senvia-500/20"
-                >
-                  Meus Produtos
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/dashboard/profile'}
-                  className="text-white hover:bg-senvia-500/20"
-                >
-                  Perfil
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleLogout}
-                  className="text-red-400 hover:bg-red-900/20"
-                >
-                  Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-black">
-                  <User className="h-4 w-4" />
-                  Área do Cliente
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-card border-senvia-500/20">
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/auth'}
-                  className="text-white hover:bg-senvia-500/20"
-                >
-                  Login
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => window.location.href = '/auth'}
-                  className="text-white hover:bg-senvia-500/20"
-                >
-                  Criar Conta
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-foreground"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-md shadow-md py-4">
-          <div className="container mx-auto px-4 flex flex-col space-y-4">
-            <a
-              href="#servicos"
-              className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Serviços
-            </a>
-            <a
-              href="#portfolio"
-              className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Portfólio
-            </a>
-            <a
-              href="#ferramentas"
-              className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Ferramentas
-            </a>
-            <a
-              href="#contacto"
-              className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contacto
-            </a>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-foreground hover:text-senvia-500 transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
             
             {user ? (
-              <div className="border-t border-border pt-4">
-                <div className="text-white py-2 font-medium">
-                  {user.user_metadata?.full_name || user.email}
-                </div>
-                <a
-                  href="/dashboard"
-                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
-                </a>
-                <a
-                  href="/dashboard/products"
-                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Meus Produtos
-                </a>
-                <a
-                  href="/dashboard/profile"
-                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Perfil
-                </a>
+              <div className="relative">
                 <button
-                  onClick={handleLogout}
-                  className="text-red-400 hover:text-red-300 font-medium transition-colors py-2 block w-full text-left"
+                  onClick={() => setShowClientMenu(!showClientMenu)}
+                  className="flex items-center gap-2 text-foreground hover:text-senvia-500 transition-colors"
                 >
-                  Sair
+                  Área do Cliente ({user.email})
+                  <ChevronDown className="w-4 h-4" />
                 </button>
+                
+                {showClientMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      to="/dashboard"
+                      className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
+                      onClick={() => setShowClientMenu(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/crm"
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
+                        onClick={() => setShowClientMenu(false)}
+                      >
+                        CRM
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sair
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="border-t border-border pt-4">
-                <a
-                  href="/auth"
-                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login / Criar Conta
-                </a>
-              </div>
+              <Link to="/auth">
+                <Button className="bg-senvia-500 hover:bg-senvia-400 text-black">
+                  Área do Cliente
+                </Button>
+              </Link>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-foreground hover:text-senvia-500"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="lg:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              
+              {user ? (
+                <div className="border-t border-border pt-2">
+                  <div className="px-3 py-2 text-sm text-muted-foreground">
+                    {user.email}
+                  </div>
+                  <Link
+                    to="/dashboard"
+                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/crm"
+                      className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      CRM
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-foreground hover:text-senvia-500 transition-colors flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sair
+                  </button>
+                </div>
+              ) : (
+                <div className="border-t border-border pt-2">
+                  <Link
+                    to="/auth"
+                    className="block px-3 py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button className="w-full bg-senvia-500 hover:bg-senvia-400 text-black">
+                      Área do Cliente
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 };
 

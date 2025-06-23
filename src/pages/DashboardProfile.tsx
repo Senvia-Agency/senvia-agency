@@ -17,7 +17,8 @@ const DashboardProfile = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [profile, setProfile] = useState({
     full_name: '',
-    email: ''
+    email: '',
+    date_of_birth: ''
   });
   const [passwords, setPasswords] = useState({
     newPassword: '',
@@ -27,12 +28,39 @@ const DashboardProfile = () => {
   useEffect(() => {
     document.title = "Perfil | SENVIA";
     if (user) {
-      setProfile({
-        full_name: user.user_metadata?.full_name || '',
-        email: user.email || ''
-      });
+      fetchProfile();
     }
   }, [user]);
+
+  const fetchProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name, email, date_of_birth')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setProfile({
+          full_name: data.full_name || '',
+          email: data.email || user.email || '',
+          date_of_birth: data.date_of_birth || ''
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      // Set default values from user if profile not found
+      setProfile({
+        full_name: user.user_metadata?.full_name || '',
+        email: user.email || '',
+        date_of_birth: ''
+      });
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -44,7 +72,8 @@ const DashboardProfile = () => {
         .upsert({
           user_id: user.id,
           full_name: profile.full_name,
-          email: profile.email
+          email: profile.email,
+          date_of_birth: profile.date_of_birth || null
         });
 
       if (error) throw error;
@@ -54,6 +83,7 @@ const DashboardProfile = () => {
         description: "Suas informações foram salvas com sucesso."
       });
     } catch (error) {
+      console.error('Error updating profile:', error);
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o perfil.",
@@ -101,6 +131,7 @@ const DashboardProfile = () => {
         confirmPassword: ''
       });
     } catch (error) {
+      console.error('Error updating password:', error);
       toast({
         title: "Erro",
         description: "Não foi possível alterar a senha.",
@@ -136,6 +167,18 @@ const DashboardProfile = () => {
                     id="full_name"
                     value={profile.full_name}
                     onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
+                    className="bg-background border-senvia-500/20 text-white"
+                    placeholder="Digite seu nome completo"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="date_of_birth" className="text-white">Data de Nascimento</Label>
+                  <Input
+                    id="date_of_birth"
+                    type="date"
+                    value={profile.date_of_birth}
+                    onChange={(e) => setProfile(prev => ({ ...prev, date_of_birth: e.target.value }))}
                     className="bg-background border-senvia-500/20 text-white"
                   />
                 </div>

@@ -28,8 +28,14 @@ const ProductCard = ({ product, hasSubscription }: ProductCardProps) => {
     }
   };
 
+  const handleSubscribe = (plan: any) => {
+    if (plan.stripe_price_id_monthly) {
+      window.open(plan.stripe_price_id_monthly, '_blank');
+    }
+  };
+
   return (
-    <Card className="relative">
+    <Card className="relative bg-card/50 border-senvia-500/20">
       {hasSubscription && (
         <div className="absolute top-4 right-4">
           <Badge variant="default" className="bg-green-500">
@@ -43,7 +49,7 @@ const ProductCard = ({ product, hasSubscription }: ProductCardProps) => {
         <div className="flex items-center gap-3">
           <span className="text-2xl">{getCategoryIcon(product.category)}</span>
           <div>
-            <CardTitle className="text-lg">{product.name}</CardTitle>
+            <CardTitle className="text-lg text-white">{product.name}</CardTitle>
             <p className="text-sm text-muted-foreground">{product.description}</p>
           </div>
         </div>
@@ -53,12 +59,12 @@ const ProductCard = ({ product, hasSubscription }: ProductCardProps) => {
         <div className="space-y-4">
           {/* Features */}
           <div>
-            <h4 className="font-medium mb-2">Funcionalidades:</h4>
+            <h4 className="font-medium mb-2 text-white">Funcionalidades:</h4>
             <div className="space-y-1">
               {Object.entries(features).slice(0, 3).map(([key, value]) => (
                 <div key={key} className="flex items-center gap-2 text-sm">
                   <Check className="w-3 h-3 text-green-500" />
-                  <span className="capitalize">{key.replace(/_/g, ' ')}</span>
+                  <span className="capitalize text-gray-300">{key.replace(/_/g, ' ')}</span>
                 </div>
               ))}
             </div>
@@ -66,12 +72,12 @@ const ProductCard = ({ product, hasSubscription }: ProductCardProps) => {
 
           {/* Plans */}
           <div>
-            <h4 className="font-medium mb-2">Planos disponíveis:</h4>
+            <h4 className="font-medium mb-2 text-white">Planos disponíveis:</h4>
             <div className="space-y-2">
               {plans.slice(0, 2).map((plan: any) => (
                 <div key={plan.id} className="flex justify-between items-center text-sm">
-                  <span>{plan.name}</span>
-                  <span className="font-medium">
+                  <span className="text-gray-300">{plan.name}</span>
+                  <span className="font-medium text-white">
                     €{plan.price_monthly?.toFixed(2)}/mês
                   </span>
                 </div>
@@ -85,7 +91,10 @@ const ProductCard = ({ product, hasSubscription }: ProductCardProps) => {
                 Gerenciar Assinatura
               </Button>
             ) : (
-              <Button className="w-full bg-senvia-500 hover:bg-senvia-600">
+              <Button 
+                className="w-full bg-senvia-500 hover:bg-senvia-600"
+                onClick={() => handleSubscribe(plans[0])}
+              >
                 Assinar Agora
               </Button>
             )}

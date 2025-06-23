@@ -1,10 +1,19 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +67,46 @@ const Navbar = () => {
           >
             Contacto
           </a>
+
+          {/* Área do Cliente */}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Área do Cliente
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.location.href = '/dashboard/products'}>
+                  Meus Produtos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.location.href = '/dashboard/profile'}>
+                  Perfil
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Área do Cliente
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => window.location.href = '/auth'}>
+                  Login
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.location.href = '/auth'}>
+                  Criar Conta
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -105,6 +154,35 @@ const Navbar = () => {
             >
               Contacto
             </a>
+            
+            {user ? (
+              <div className="border-t border-border pt-4">
+                <a
+                  href="/dashboard"
+                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </a>
+                <a
+                  href="/dashboard/products"
+                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Meus Produtos
+                </a>
+              </div>
+            ) : (
+              <div className="border-t border-border pt-4">
+                <a
+                  href="/auth"
+                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login / Criar Conta
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}

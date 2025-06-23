@@ -4,12 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Package, 
-  CreditCard, 
-  FileText, 
   Settings, 
   LogOut,
-  User,
-  Bell
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,8 +14,6 @@ import { useAuth } from "@/contexts/AuthContext";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Visão Geral", path: "/dashboard" },
   { icon: Package, label: "Meus Produtos", path: "/dashboard/products" },
-  { icon: CreditCard, label: "Assinaturas", path: "/dashboard/subscriptions" },
-  { icon: FileText, label: "Faturas", path: "/dashboard/invoices" },
   { icon: User, label: "Perfil", path: "/dashboard/profile" },
   { icon: Settings, label: "Configurações", path: "/dashboard/settings" },
 ];
@@ -40,7 +35,7 @@ const DashboardSidebar = () => {
           <div className="w-8 h-8 bg-senvia-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">S</span>
           </div>
-          <span className="font-bold text-lg">SENVIA</span>
+          <span className="font-bold text-lg text-white">SENVIA</span>
         </div>
 
         <nav className="space-y-2">
@@ -52,8 +47,8 @@ const DashboardSidebar = () => {
               <Button
                 key={item.path}
                 variant={isActive ? "default" : "ghost"}
-                className={`w-full justify-start ${
-                  isActive ? "bg-senvia-500 hover:bg-senvia-600" : ""
+                className={`w-full justify-start text-white ${
+                  isActive ? "bg-senvia-500 hover:bg-senvia-600" : "hover:bg-gray-700"
                 }`}
                 onClick={() => navigate(item.path)}
               >
@@ -67,7 +62,7 @@ const DashboardSidebar = () => {
         <div className="mt-8 pt-4 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />

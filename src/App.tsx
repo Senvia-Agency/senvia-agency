@@ -26,6 +26,8 @@ import CRM from "./pages/CRM";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DashboardProducts from "./pages/DashboardProducts";
+import DashboardProfile from "./pages/DashboardProfile";
+import DashboardSettings from "./pages/DashboardSettings";
 import MetaPixel from "./components/MetaPixel";
 import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
 
@@ -69,6 +71,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardProducts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/profile" 
+              element={
+                <ProtectedRoute>
+                  <DashboardProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/settings" 
+              element={
+                <ProtectedRoute>
+                  <DashboardSettings />
                 </ProtectedRoute>
               } 
             />

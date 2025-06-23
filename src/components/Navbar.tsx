@@ -5,6 +5,12 @@ import { Button } from "./ui/button";
 import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,16 +34,6 @@ const Navbar = () => {
     setShowClientMenu(false);
   };
 
-  const navLinks = [
-    { to: "/websites", label: "Websites" },
-    { to: "/ecommerce", label: "E-commerce" },
-    { to: "/social-media", label: "Social Media" },
-    { to: "/trafego-pago", label: "Tráfego Pago" },
-    { to: "/agentes-ia", label: "Agentes IA" },
-    { to: "/projetos", label: "Projetos" },
-    { to: "/blog", label: "Blog" },
-  ];
-
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "bg-transparent"
@@ -51,15 +47,26 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-foreground hover:text-senvia-500 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-senvia-500 transition-colors cursor-pointer">
+                Produtos
+                <ChevronDown className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-background border border-border">
+                <DropdownMenuItem 
+                  className="cursor-pointer hover:bg-muted"
+                  onClick={() => navigate("/senvia-assistant")}
+                >
+                  Senvia Assistant
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="cursor-pointer hover:bg-muted"
+                  onClick={() => navigate("/landing-pages")}
+                >
+                  Senvia Landing Page
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {user ? (
               <div className="relative">
@@ -123,16 +130,29 @@ const Navbar = () => {
         {isOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <div className="px-3 py-2">
+                <span className="text-foreground font-medium">Produtos</span>
+                <div className="ml-4 mt-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      navigate("/senvia-assistant");
+                      setIsOpen(false);
+                    }}
+                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                  >
+                    Senvia Assistant
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/landing-pages");
+                      setIsOpen(false);
+                    }}
+                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                  >
+                    Senvia Landing Page
+                  </button>
+                </div>
+              </div>
               
               {user ? (
                 <div className="border-t border-border pt-2">

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,7 +24,7 @@ const Auth = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate("/crm");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
@@ -66,7 +67,7 @@ const Auth = () => {
         title: "Login realizado!",
         description: "Bem-vindo de volta!"
       });
-      navigate("/crm");
+      navigate("/dashboard");
     }
     
     setLoading(false);

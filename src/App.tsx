@@ -57,6 +57,22 @@ const App = () => (
             <Route path="/obrigado" element={<ThankYou />} />
             <Route path="/auth" element={<Auth />} />
             <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/products" 
+              element={
+                <ProtectedRoute>
+                  <DashboardProducts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/crm" 
               element={
                 <ProtectedRoute>

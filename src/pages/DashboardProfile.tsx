@@ -14,9 +14,14 @@ const DashboardProfile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [profile, setProfile] = useState({
     full_name: '',
     email: ''
+  });
+  const [passwords, setPasswords] = useState({
+    newPassword: '',
+    confirmPassword: ''
   });
 
   useEffect(() => {
@@ -59,6 +64,53 @@ const DashboardProfile = () => {
     }
   };
 
+  const handlePasswordChange = async () => {
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwords.newPassword.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwords.newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Senha alterada",
+        description: "Sua senha foi alterada com sucesso."
+      });
+
+      setPasswords({
+        newPassword: '',
+        confirmPassword: ''
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível alterar a senha.",
+        variant: "destructive"
+      });
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-white">
       <div className="flex">
@@ -72,6 +124,7 @@ const DashboardProfile = () => {
               </p>
             </div>
 
+            {/* Informações Pessoais */}
             <Card className="bg-card/50 border-senvia-500/20">
               <CardHeader>
                 <CardTitle className="text-white">Informações Pessoais</CardTitle>
@@ -105,9 +158,49 @@ const DashboardProfile = () => {
                 <Button 
                   onClick={handleSave}
                   disabled={loading}
-                  className="bg-senvia-500 hover:bg-senvia-600"
+                  className="bg-senvia-500 hover:bg-senvia-600 text-white"
                 >
                   {loading ? "Salvando..." : "Salvar Alterações"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Alterar Senha */}
+            <Card className="bg-card/50 border-senvia-500/20">
+              <CardHeader>
+                <CardTitle className="text-white">Alterar Senha</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new_password" className="text-white">Nova Senha</Label>
+                  <Input
+                    id="new_password"
+                    type="password"
+                    value={passwords.newPassword}
+                    onChange={(e) => setPasswords(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="bg-background border-senvia-500/20 text-white"
+                    placeholder="Digite sua nova senha"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirm_password" className="text-white">Confirmar Nova Senha</Label>
+                  <Input
+                    id="confirm_password"
+                    type="password"
+                    value={passwords.confirmPassword}
+                    onChange={(e) => setPasswords(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="bg-background border-senvia-500/20 text-white"
+                    placeholder="Confirme sua nova senha"
+                  />
+                </div>
+
+                <Button 
+                  onClick={handlePasswordChange}
+                  disabled={passwordLoading || !passwords.newPassword || !passwords.confirmPassword}
+                  className="bg-senvia-500 hover:bg-senvia-600 text-white"
+                >
+                  {passwordLoading ? "Alterando..." : "Alterar Senha"}
                 </Button>
               </CardContent>
             </Card>

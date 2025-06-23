@@ -72,19 +72,28 @@ const Navbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-black">
                   <User className="h-4 w-4" />
                   Área do Cliente
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
+              <DropdownMenuContent className="bg-card border-senvia-500/20">
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = '/dashboard'}
+                  className="text-white hover:bg-senvia-500/20"
+                >
                   Dashboard
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.location.href = '/dashboard/products'}>
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = '/dashboard/products'}
+                  className="text-white hover:bg-senvia-500/20"
+                >
                   Meus Produtos
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.location.href = '/dashboard/profile'}>
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = '/dashboard/profile'}
+                  className="text-white hover:bg-senvia-500/20"
+                >
                   Perfil
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -92,16 +101,22 @@ const Navbar = () => {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2 text-white border-white hover:bg-white hover:text-black">
                   <User className="h-4 w-4" />
                   Área do Cliente
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => window.location.href = '/auth'}>
+              <DropdownMenuContent className="bg-card border-senvia-500/20">
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = '/auth'}
+                  className="text-white hover:bg-senvia-500/20"
+                >
                   Login
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.location.href = '/auth'}>
+                <DropdownMenuItem 
+                  onClick={() => window.location.href = '/auth'}
+                  className="text-white hover:bg-senvia-500/20"
+                >
                   Criar Conta
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -170,6 +185,13 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Meus Produtos
+                </a>
+                <a
+                  href="/dashboard/profile"
+                  className="text-foreground hover:text-senvia-500 font-medium transition-colors py-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Perfil
                 </a>
               </div>
             ) : (

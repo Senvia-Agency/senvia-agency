@@ -48,7 +48,7 @@ const DashboardSidebar = () => {
                 key={item.path}
                 variant={isActive ? "default" : "ghost"}
                 className={`w-full justify-start text-white ${
-                  isActive ? "bg-senvia-500 hover:bg-senvia-600" : "hover:bg-gray-700"
+                  isActive ? "bg-senvia-500 hover:bg-senvia-600 text-white" : "hover:bg-gray-700 text-white"
                 }`}
                 onClick={() => navigate(item.path)}
               >

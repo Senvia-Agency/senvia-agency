@@ -82,128 +82,157 @@ const LandingPageForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="fullName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome completo *</FormLabel>
-              <FormControl>
-                <Input placeholder="Seu nome completo" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="w-full max-w-md mx-auto">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Nome completo *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Seu nome completo" 
+                      className="w-full h-11 text-sm"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-mail *</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="seu@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">E-mail *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="email" 
+                      placeholder="seu@email.com"
+                      className="w-full h-11 text-sm"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>WhatsApp *</FormLabel>
-              <FormControl>
-                <Input placeholder="910320111" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">WhatsApp *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="910320111"
+                      className="w-full h-11 text-sm"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="businessName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome do negócio</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome da sua empresa/marca" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="businessName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Nome do negócio</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Nome da sua empresa/marca"
+                      className="w-full h-11 text-sm"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="website"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Website / Instagram</FormLabel>
-              <FormControl>
-                <Input placeholder="www.seusite.com ou @seuinstagram" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Website / Instagram</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="www.seusite.com ou @seuinstagram"
+                      className="w-full h-11 text-sm"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="objective"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Objetivo principal *</FormLabel>
-              <FormControl>
-                <Select
-                  options={objectiveOptions}
-                  placeholder="Selecione seu objetivo"
-                  value={objectiveOptions.find(option => option.value === field.value)}
-                  onChange={(option) => field.onChange(option?.value || "")}
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      color: '#000000'
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: '#000000'
-                    }),
-                    option: (base) => ({
-                      ...base,
-                      color: '#000000'
-                    }),
-                    placeholder: (base) => ({
-                      ...base,
-                      color: '#666666'
-                    })
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="objective"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Objetivo principal *</FormLabel>
+                  <FormControl>
+                    <Select
+                      options={objectiveOptions}
+                      placeholder="Selecione seu objetivo"
+                      value={objectiveOptions.find(option => option.value === field.value)}
+                      onChange={(option) => field.onChange(option?.value || "")}
+                      className="react-select-container w-full"
+                      classNamePrefix="react-select"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: '44px',
+                          color: '#000000',
+                          fontSize: '14px'
+                        }),
+                        singleValue: (base) => ({
+                          ...base,
+                          color: '#000000'
+                        }),
+                        option: (base) => ({
+                          ...base,
+                          color: '#000000',
+                          fontSize: '14px'
+                        }),
+                        placeholder: (base) => ({
+                          ...base,
+                          color: '#666666',
+                          fontSize: '14px'
+                        })
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-        <Button 
-          type="submit" 
-          className="w-full text-lg py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
-          style={{ color: '#000000' }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Enviando..." : "Falar com especialista"}
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
-      </form>
-    </Form>
+          <Button 
+            type="submit" 
+            className="w-full h-12 text-base font-medium bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mt-6"
+            style={{ color: '#000000' }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Enviando..." : "Falar com especialista"}
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
 

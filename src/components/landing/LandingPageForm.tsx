@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -84,22 +83,22 @@ const LandingPageForm = () => {
   return (
     <div className="w-full max-w-none mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <FormField
               control={form.control}
               name="fullName"
               render={({ field }) => (
-                <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">Nome completo *</FormLabel>
+                <FormItem className="md:col-span-1">
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">Nome completo *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Seu nome completo" 
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg px-4 sm:px-6 border-2 focus:border-senvia-500"
+                      className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 border-2 focus:border-senvia-500"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
@@ -108,17 +107,17 @@ const LandingPageForm = () => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">E-mail *</FormLabel>
+                <FormItem className="md:col-span-1">
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">E-mail *</FormLabel>
                   <FormControl>
                     <Input 
                       type="email" 
                       placeholder="seu@email.com"
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg px-4 sm:px-6 border-2 focus:border-senvia-500"
+                      className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 border-2 focus:border-senvia-500"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
@@ -127,16 +126,16 @@ const LandingPageForm = () => {
               control={form.control}
               name="phone"
               render={({ field }) => (
-                <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">WhatsApp *</FormLabel>
+                <FormItem className="md:col-span-1">
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">WhatsApp *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="910320111"
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg px-4 sm:px-6 border-2 focus:border-senvia-500"
+                      className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 border-2 focus:border-senvia-500"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
@@ -145,36 +144,36 @@ const LandingPageForm = () => {
               control={form.control}
               name="businessName"
               render={({ field }) => (
-                <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">Nome do negócio</FormLabel>
+                <FormItem className="md:col-span-1">
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">Nome do negócio</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Nome da sua empresa/marca"
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg px-4 sm:px-6 border-2 focus:border-senvia-500"
+                      className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 border-2 focus:border-senvia-500"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
             <FormField
               control={form.control}
               name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">Website / Instagram</FormLabel>
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">Website / Instagram</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="www.seusite.com ou @seuinstagram"
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg px-4 sm:px-6 border-2 focus:border-senvia-500"
+                      className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 border-2 focus:border-senvia-500"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
@@ -184,7 +183,7 @@ const LandingPageForm = () => {
               name="objective"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base sm:text-lg font-semibold block mb-2">Objetivo principal *</FormLabel>
+                  <FormLabel className="text-sm sm:text-base md:text-lg font-semibold block mb-1 sm:mb-2">Objetivo principal *</FormLabel>
                   <FormControl>
                     <Select
                       options={objectiveOptions}
@@ -196,13 +195,28 @@ const LandingPageForm = () => {
                       styles={{
                         control: (base) => ({
                           ...base,
-                          minHeight: '48px',
+                          minHeight: '44px',
                           '@media (min-width: 640px)': {
+                            minHeight: '48px',
+                          },
+                          '@media (min-width: 768px)': {
                             minHeight: '56px',
                           },
                           color: '#000000',
-                          fontSize: '16px',
-                          paddingLeft: '12px',
+                          fontSize: '14px',
+                          '@media (min-width: 640px)': {
+                            fontSize: '16px',
+                          },
+                          '@media (min-width: 768px)': {
+                            fontSize: '18px',
+                          },
+                          paddingLeft: '8px',
+                          '@media (min-width: 640px)': {
+                            paddingLeft: '12px',
+                          },
+                          '@media (min-width: 768px)': {
+                            paddingLeft: '16px',
+                          },
                           border: '2px solid #e2e8f0',
                           '&:hover': {
                             borderColor: '#00c3ff'
@@ -211,40 +225,64 @@ const LandingPageForm = () => {
                         singleValue: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '16px'
+                          fontSize: '14px',
+                          '@media (min-width: 640px)': {
+                            fontSize: '16px',
+                          },
+                          '@media (min-width: 768px)': {
+                            fontSize: '18px',
+                          }
                         }),
                         option: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '16px',
-                          padding: '10px 12px'
+                          fontSize: '14px',
+                          '@media (min-width: 640px)': {
+                            fontSize: '16px',
+                          },
+                          '@media (min-width: 768px)': {
+                            fontSize: '18px',
+                          },
+                          padding: '8px 10px',
+                          '@media (min-width: 640px)': {
+                            padding: '10px 12px',
+                          },
+                          '@media (min-width: 768px)': {
+                            padding: '12px 16px',
+                          }
                         }),
                         placeholder: (base) => ({
                           ...base,
                           color: '#666666',
-                          fontSize: '16px'
+                          fontSize: '14px',
+                          '@media (min-width: 640px)': {
+                            fontSize: '16px',
+                          },
+                          '@media (min-width: 768px)': {
+                            fontSize: '18px',
+                          }
                         })
                       }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs sm:text-sm" />
                 </FormItem>
               )}
             />
           </div>
 
-          <div className="pt-4 sm:pt-6">
+          <div className="pt-3 sm:pt-4 md:pt-6">
             <Button 
               type="submit" 
-              className="w-full h-auto py-4 sm:py-6 px-6 sm:px-8 text-base sm:text-lg font-semibold bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 min-h-[56px] sm:min-h-[64px] rounded-xl"
+              className="w-full h-auto py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-8 text-sm sm:text-base md:text-lg font-semibold bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 min-h-[48px] sm:min-h-[56px] md:min-h-[64px] rounded-xl"
               style={{ color: '#000000' }}
               disabled={isSubmitting}
             >
               <span className="flex items-center justify-center gap-2 sm:gap-3">
-                <span className="text-base sm:text-lg font-semibold">
+                <span className="text-sm sm:text-base md:text-lg font-semibold">
                   {isSubmitting ? "Enviando..." : "Falar com especialista"}
                 </span>
-                {!isSubmitting && <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />}
+                {!isSubmitting && <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 flex-shrink-0" />}
               </span>
             </Button>
           </div>

@@ -202,13 +202,7 @@ const LandingPageForm = () => {
                           },
                           color: '#000000',
                           fontSize: '16px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '18px',
-                          },
                           paddingLeft: '12px',
-                          '@media (min-width: 640px)': {
-                            paddingLeft: '16px',
-                          },
                           border: '2px solid #e2e8f0',
                           '&:hover': {
                             borderColor: '#00c3ff'
@@ -217,30 +211,18 @@ const LandingPageForm = () => {
                         singleValue: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '16px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '18px',
-                          }
+                          fontSize: '16px'
                         }),
                         option: (base) => ({
                           ...base,
                           color: '#000000',
                           fontSize: '16px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '18px',
-                          },
-                          padding: '10px 12px',
-                          '@media (min-width: 640px)': {
-                            padding: '12px 16px',
-                          }
+                          padding: '10px 12px'
                         }),
                         placeholder: (base) => ({
                           ...base,
                           color: '#666666',
-                          fontSize: '16px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '18px',
-                          }
+                          fontSize: '16px'
                         })
                       }}
                     />

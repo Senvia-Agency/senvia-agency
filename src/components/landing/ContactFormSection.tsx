@@ -16,7 +16,7 @@ const ContactFormSection = () => {
           </p>
         </div>
 
-        <div className="max-w-lg mx-auto px-4">
+        <div className="max-w-2xl mx-auto px-4">
           <Card className="bg-card/50 backdrop-blur-sm border border-senvia-500/20">
             <CardContent className="p-6 md:p-8">
               <LandingPageForm />

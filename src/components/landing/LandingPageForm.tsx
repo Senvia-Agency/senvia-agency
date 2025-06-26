@@ -82,20 +82,20 @@ const LandingPageForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Nome completo *</FormLabel>
+                  <FormLabel className="text-base font-medium">Nome completo *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Seu nome completo" 
-                      className="w-full h-11 text-sm"
+                      className="w-full h-12 text-base px-4"
                       {...field} 
                     />
                   </FormControl>
@@ -109,12 +109,12 @@ const LandingPageForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">E-mail *</FormLabel>
+                  <FormLabel className="text-base font-medium">E-mail *</FormLabel>
                   <FormControl>
                     <Input 
                       type="email" 
                       placeholder="seu@email.com"
-                      className="w-full h-11 text-sm"
+                      className="w-full h-12 text-base px-4"
                       {...field} 
                     />
                   </FormControl>
@@ -128,11 +128,11 @@ const LandingPageForm = () => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">WhatsApp *</FormLabel>
+                  <FormLabel className="text-base font-medium">WhatsApp *</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="910320111"
-                      className="w-full h-11 text-sm"
+                      className="w-full h-12 text-base px-4"
                       {...field} 
                     />
                   </FormControl>
@@ -146,11 +146,11 @@ const LandingPageForm = () => {
               name="businessName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Nome do negócio</FormLabel>
+                  <FormLabel className="text-base font-medium">Nome do negócio</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Nome da sua empresa/marca"
-                      className="w-full h-11 text-sm"
+                      className="w-full h-12 text-base px-4"
                       {...field} 
                     />
                   </FormControl>
@@ -158,17 +158,19 @@ const LandingPageForm = () => {
                 </FormItem>
               )}
             />
+          </div>
 
+          <div className="grid grid-cols-1 gap-6">
             <FormField
               control={form.control}
               name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Website / Instagram</FormLabel>
+                  <FormLabel className="text-base font-medium">Website / Instagram</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="www.seusite.com ou @seuinstagram"
-                      className="w-full h-11 text-sm"
+                      className="w-full h-12 text-base px-4"
                       {...field} 
                     />
                   </FormControl>
@@ -182,7 +184,7 @@ const LandingPageForm = () => {
               name="objective"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Objetivo principal *</FormLabel>
+                  <FormLabel className="text-base font-medium">Objetivo principal *</FormLabel>
                   <FormControl>
                     <Select
                       options={objectiveOptions}
@@ -194,9 +196,10 @@ const LandingPageForm = () => {
                       styles={{
                         control: (base) => ({
                           ...base,
-                          minHeight: '44px',
+                          minHeight: '48px',
                           color: '#000000',
-                          fontSize: '14px'
+                          fontSize: '16px',
+                          paddingLeft: '8px'
                         }),
                         singleValue: (base) => ({
                           ...base,
@@ -205,12 +208,12 @@ const LandingPageForm = () => {
                         option: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '14px'
+                          fontSize: '16px'
                         }),
                         placeholder: (base) => ({
                           ...base,
                           color: '#666666',
-                          fontSize: '14px'
+                          fontSize: '16px'
                         })
                       }}
                     />
@@ -223,12 +226,14 @@ const LandingPageForm = () => {
 
           <Button 
             type="submit" 
-            className="w-full h-12 text-base font-medium bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mt-6"
+            className="w-full h-14 text-base md:text-lg font-medium bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mt-8"
             style={{ color: '#000000' }}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Enviando..." : "Falar com especialista"}
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <span className="flex items-center justify-center gap-2 px-2">
+              {isSubmitting ? "Enviando..." : "Falar com especialista"}
+              <ArrowRight className="h-5 w-5 flex-shrink-0" />
+            </span>
           </Button>
         </form>
       </Form>

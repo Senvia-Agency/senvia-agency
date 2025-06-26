@@ -195,28 +195,10 @@ const LandingPageForm = () => {
                       styles={{
                         control: (base) => ({
                           ...base,
-                          minHeight: '44px',
-                          '@media (min-width: 640px)': {
-                            minHeight: '48px',
-                          },
-                          '@media (min-width: 768px)': {
-                            minHeight: '56px',
-                          },
+                          minHeight: '48px',
                           color: '#000000',
-                          fontSize: '14px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '16px',
-                          },
-                          '@media (min-width: 768px)': {
-                            fontSize: '18px',
-                          },
-                          paddingLeft: '8px',
-                          '@media (min-width: 640px)': {
-                            paddingLeft: '12px',
-                          },
-                          '@media (min-width: 768px)': {
-                            paddingLeft: '16px',
-                          },
+                          fontSize: '16px',
+                          paddingLeft: '12px',
                           border: '2px solid #e2e8f0',
                           '&:hover': {
                             borderColor: '#00c3ff'
@@ -225,42 +207,18 @@ const LandingPageForm = () => {
                         singleValue: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '14px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '16px',
-                          },
-                          '@media (min-width: 768px)': {
-                            fontSize: '18px',
-                          }
+                          fontSize: '16px'
                         }),
                         option: (base) => ({
                           ...base,
                           color: '#000000',
-                          fontSize: '14px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '16px',
-                          },
-                          '@media (min-width: 768px)': {
-                            fontSize: '18px',
-                          },
-                          padding: '8px 10px',
-                          '@media (min-width: 640px)': {
-                            padding: '10px 12px',
-                          },
-                          '@media (min-width: 768px)': {
-                            padding: '12px 16px',
-                          }
+                          fontSize: '16px',
+                          padding: '12px 16px'
                         }),
                         placeholder: (base) => ({
                           ...base,
                           color: '#666666',
-                          fontSize: '14px',
-                          '@media (min-width: 640px)': {
-                            fontSize: '16px',
-                          },
-                          '@media (min-width: 768px)': {
-                            fontSize: '18px',
-                          }
+                          fontSize: '16px'
                         })
                       }}
                     />

@@ -18,13 +18,18 @@ const HeroSection = () => {
           
           <Button 
             size="lg" 
-            className="text-base md:text-lg px-6 md:px-8 py-4 md:py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mb-8 md:mb-12 w-full sm:w-auto min-h-[56px] md:min-h-[64px]"
+            className="text-sm md:text-base px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mb-8 md:mb-12 w-full sm:w-auto h-auto min-h-[48px] md:min-h-[56px]"
             style={{ color: '#000000' }}
             onClick={() => document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            <span className="flex items-center justify-center gap-2 px-2">
-              Quero a minha estrutura inteligente
-              <ArrowRight className="h-5 w-5 flex-shrink-0" />
+            <span className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-center leading-tight">
+              <span className="text-xs sm:text-sm md:text-base font-medium">
+                Quero a minha estrutura
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="text-xs sm:text-sm md:text-base font-medium">inteligente</span>
+                <ArrowRight className="h-4 w-4 flex-shrink-0" />
+              </span>
             </span>
           </Button>
 

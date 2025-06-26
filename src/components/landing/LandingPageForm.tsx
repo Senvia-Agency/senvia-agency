@@ -82,7 +82,7 @@ const LandingPageForm = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -226,13 +226,15 @@ const LandingPageForm = () => {
 
           <Button 
             type="submit" 
-            className="w-full h-14 text-base md:text-lg font-medium bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mt-8"
+            className="w-full h-auto py-4 px-6 text-sm md:text-base font-medium bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 mt-8 min-h-[56px]"
             style={{ color: '#000000' }}
             disabled={isSubmitting}
           >
-            <span className="flex items-center justify-center gap-2 px-2">
-              {isSubmitting ? "Enviando..." : "Falar com especialista"}
-              <ArrowRight className="h-5 w-5 flex-shrink-0" />
+            <span className="flex items-center justify-center gap-2 text-center leading-tight">
+              <span className="text-sm md:text-base font-medium">
+                {isSubmitting ? "Enviando..." : "Falar com especialista"}
+              </span>
+              <ArrowRight className="h-4 w-4 flex-shrink-0" />
             </span>
           </Button>
         </form>

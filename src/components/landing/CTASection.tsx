@@ -8,13 +8,18 @@ const CTASection = () => {
       <div className="container mx-auto text-center max-w-4xl">
         <Button 
           size="lg" 
-          className="text-base md:text-lg px-8 md:px-10 py-4 md:py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 w-full sm:w-auto min-h-[56px] md:min-h-[64px]"
+          className="text-sm md:text-base px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 w-full sm:w-auto h-auto min-h-[48px] md:min-h-[56px] max-w-md mx-auto"
           style={{ color: '#000000' }}
           onClick={() => document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' })}
         >
-          <span className="flex items-center justify-center gap-2 px-2">
-            Solicitar minha estrutura personalizada
-            <ArrowRight className="h-5 w-5 flex-shrink-0" />
+          <span className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center leading-tight">
+            <span className="text-xs sm:text-sm md:text-base font-medium">
+              Solicitar minha estrutura
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="text-xs sm:text-sm md:text-base font-medium">personalizada</span>
+              <ArrowRight className="h-4 w-4 flex-shrink-0" />
+            </span>
           </span>
         </Button>
       </div>

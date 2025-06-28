@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +16,8 @@ import {
   TrendingUp,
   UserCheck,
   Zap,
-  ExternalLink
+  ExternalLink,
+  Sync
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -27,63 +27,21 @@ const AdminProdutosAssinaturas = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
-  // Buscar produtos REAIS do Stripe (simulado - implementar edge function)
-  const { data: stripeProducts, refetch: refetchStripeProducts } = useQuery({
-    queryKey: ['stripe-products'],
+  // Buscar produtos REAIS do Supabase (sincronizados do Stripe)
+  const { data: products, refetch: refetchProducts, isLoading: productsLoading } = useQuery({
+    queryKey: ['admin-products-real'],
     queryFn: async () => {
-      // Simular sincronização com Stripe API real
-      return [
-        {
-          id: 'prod_landing_page_service',
-          name: 'Landing Page Premium',
-          description: 'Criação de landing pages profissionais',
-          price: 499, // €4.99
-          currency: 'eur',
-          type: 'one_time',
-          active: true,
-          created: Date.now(),
-          sales_count: 25,
-          total_revenue: 124.75
-        },
-        {
-          id: 'prod_senvia_assistant_basic',
-          name: 'Senvia Assistant Basic',
-          description: 'Assistente virtual básico',
-          price: 2000, // €20.00
-          currency: 'eur',
-          type: 'subscription',
-          interval: 'month',
-          active: true,
-          created: Date.now(),
-          subscribers: 8,
-          monthly_revenue: 160.00
-        },
-        {
-          id: 'prod_senvia_assistant_pro',
-          name: 'Senvia Assistant Pro',
-          description: 'Assistente virtual avançado',
-          price: 5000, // €50.00
-          currency: 'eur',
-          type: 'subscription',
-          interval: 'month',
-          active: true,
-          created: Date.now(),
-          subscribers: 3,
-          monthly_revenue: 150.00
-        },
-        {
-          id: 'prod_website_builder',
-          name: 'Website Builder Pro',
-          description: 'Criação de websites completos',
-          price: 9900, // €99.00
-          currency: 'eur',
-          type: 'one_time',
-          active: true,
-          created: Date.now(),
-          sales_count: 5,
-          total_revenue: 495.00
-        }
-      ];
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_plans (*)
+        `)
+        .eq('active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
     },
   });
 
@@ -122,20 +80,24 @@ const AdminProdutosAssinaturas = () => {
   const syncWithStripe = async () => {
     setIsLoading(true);
     try {
-      // Simular sincronização real com Stripe
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      await refetchStripeProducts();
+      const { data, error } = await supabase.functions.invoke('sync-stripe-products');
+      
+      if (error) throw error;
+      
+      // Refetch dos dados após sincronização
+      await refetchProducts();
       await refetchSubscriptions();
       await refetchSales();
       
       toast({
         title: "Sincronização concluída",
-        description: "Produtos e assinaturas sincronizados com o Stripe."
+        description: `Produtos sincronizados com sucesso! ${data?.results?.products_synced || 0} produtos e ${data?.results?.plans_synced || 0} planos sincronizados.`
       });
     } catch (error) {
+      console.error('Sync error:', error);
       toast({
         title: "Erro na sincronização",
-        description: "Não foi possível sincronizar com o Stripe.",
+        description: "Não foi possível sincronizar com o Stripe. Verifique os logs.",
         variant: "destructive"
       });
     } finally {
@@ -144,7 +106,7 @@ const AdminProdutosAssinaturas = () => {
   };
 
   const calculateStats = () => {
-    const totalProducts = stripeProducts?.length || 0;
+    const totalProducts = products?.length || 0;
     const totalSubscriptions = activeSubscriptions?.length || 0;
     const totalSales = oneTimeSales?.length || 0;
     
@@ -169,19 +131,30 @@ const AdminProdutosAssinaturas = () => {
 
   const stats = calculateStats();
 
+  const getProductIcon = (category: string) => {
+    const iconMap: { [key: string]: any } = {
+      'assistant': Users,
+      'landing_pages': Package,
+      'websites': CreditCard,
+      'ecommerce': TrendingUp
+    };
+    const Icon = iconMap[category] || Package;
+    return <Icon className="h-5 w-5" />;
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Produtos & Assinaturas</h1>
-          <p className="text-gray-400">Gerencie produtos do Stripe e acompanhe assinaturas</p>
+          <h1 className="text-3xl font-bold mb-2 text-slate-100">Produtos & Assinaturas</h1>
+          <p className="text-slate-400">Gerencie produtos do Stripe e acompanhe assinaturas</p>
         </div>
         <div className="flex gap-2">
           <Button 
             variant="outline"
             onClick={() => window.open('https://dashboard.stripe.com/products', '_blank')}
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Abrir Stripe
@@ -189,143 +162,290 @@ const AdminProdutosAssinaturas = () => {
           <Button 
             onClick={syncWithStripe}
             disabled={isLoading}
-            className="bg-senvia-500 hover:bg-senvia-400 text-black"
+            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-medium"
           >
             {isLoading ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <Sync className="h-4 w-4 mr-2" />
             )}
-            Sincronizar
+            Sincronizar Stripe
           </Button>
         </div>
       </div>
 
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Produtos Stripe</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">Produtos Stripe</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-blue-500" />
-              <span className="text-2xl font-bold">{stats.totalProducts}</span>
+              <Package className="h-4 w-4 text-blue-400" />
+              <span className="text-2xl font-bold text-slate-100">{stats.totalProducts}</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Assinaturas Ativas</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">Assinaturas Ativas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <UserCheck className="h-4 w-4 text-purple-500" />
-              <span className="text-2xl font-bold">{stats.activeSubscriptions}</span>
+              <UserCheck className="h-4 w-4 text-purple-400" />
+              <span className="text-2xl font-bold text-slate-100">{stats.activeSubscriptions}</span>
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-slate-400">
               {stats.trialSubscriptions} em trial
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Vendas Únicas</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">Vendas Únicas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-green-500" />
-              <span className="text-2xl font-bold">{stats.totalSales}</span>
+              <CreditCard className="h-4 w-4 text-green-400" />
+              <span className="text-2xl font-bold text-slate-100">{stats.totalSales}</span>
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-slate-400">
               produtos vendidos
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Receita Total</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">Receita Total</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-orange-500" />
-              <span className="text-2xl font-bold">€{stats.totalRevenue.toFixed(2)}</span>
+              <TrendingUp className="h-4 w-4 text-orange-400" />
+              <span className="text-2xl font-bold text-slate-100">€{stats.totalRevenue.toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Produtos do Stripe */}
-      <Card className="bg-gray-800 border-gray-700">
+      {/* Produtos Sincronizados do Stripe */}
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-slate-100">
             <Package className="h-5 w-5 text-senvia-500" />
-            Catálogo de Produtos (Stripe)
+            Catálogo de Produtos (Sincronizados do Stripe)
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {stripeProducts?.map((product) => (
-              <Card key={product.id} className="bg-gray-700 border-gray-600">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg text-white">{product.name}</CardTitle>
-                      <p className="text-sm text-gray-400">{product.description}</p>
+          {productsLoading ? (
+            <div className="text-center py-8 text-slate-400">
+              Carregando produtos...
+            </div>
+          ) : products && products.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {products.map((product) => (
+                <Card key={product.id} className="bg-slate-700/70 border-slate-600/50">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-senvia-500/20 rounded-lg">
+                          {getProductIcon(product.category)}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg text-slate-100">{product.name}</CardTitle>
+                          <p className="text-sm text-slate-400 capitalize">{product.category.replace('_', ' ')}</p>
+                        </div>
+                      </div>
+                      <Badge variant={product.active ? "default" : "secondary"} className={product.active ? "bg-green-500/20 text-green-400 border-green-500/50" : ""}>
+                        {product.active ? 'Ativo' : 'Inativo'}
+                      </Badge>
                     </div>
-                    <Badge variant={product.active ? "default" : "secondary"}>
-                      {product.active ? 'Ativo' : 'Inativo'}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Preço:</span>
-                    <span className="font-bold text-senvia-500">
-                      €{(product.price / 100).toFixed(2)}
-                      {product.type === 'subscription' && `/${product.interval}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Tipo:</span>
-                    <Badge variant="outline" className="capitalize">
-                      {product.type === 'subscription' ? 'Assinatura' : 'Pagamento único'}
-                    </Badge>
-                  </div>
-                  {product.type === 'subscription' ? (
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Assinantes:</span>
-                      <span className="text-gray-300">{product.subscribers || 0}</span>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-slate-300 text-sm line-clamp-2">
+                      {product.description || 'Sem descrição disponível'}
+                    </p>
+
+                    {/* Product Plans */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-slate-300">Planos Disponíveis:</h4>
+                      <div className="space-y-1">
+                        {product.product_plans?.slice(0, 3).map((plan: any) => (
+                          <div key={plan.id} className="flex justify-between items-center text-sm">
+                            <span className="text-slate-400">{plan.name}</span>
+                            <span className="text-senvia-400 font-medium">
+                              €{plan.price_monthly || plan.price_yearly || 0}
+                              {plan.price_monthly ? '/mês' : plan.price_yearly ? '/ano' : ''}
+                            </span>
+                          </div>
+                        ))}
+                        {product.product_plans?.length > 3 && (
+                          <div className="text-xs text-slate-500">
+                            +{product.product_plans.length - 3} mais planos
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Vendas:</span>
-                      <span className="text-gray-300">{product.sales_count || 0}</span>
+
+                    {/* Stripe Info */}
+                    {product.stripe_product_id && (
+                      <div className="pt-2 border-t border-slate-600/50">
+                        <div className="text-xs text-slate-500">
+                          Stripe ID: {product.stripe_product_id}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50"
+                            onClick={() => setSelectedItem(product)}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver Detalhes
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl bg-slate-800 border-slate-600">
+                          <DialogHeader>
+                            <DialogTitle className="text-slate-100">Detalhes do Produto</DialogTitle>
+                          </DialogHeader>
+                          
+                          {selectedItem && (
+                            <div className="space-y-6">
+                              {/* Basic Info */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Nome</label>
+                                  <p className="text-sm text-slate-400">{selectedItem.name}</p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Categoria</label>
+                                  <p className="text-sm text-slate-400 capitalize">
+                                    {selectedItem.category.replace('_', ' ')}
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Status</label>
+                                  <p className="text-sm text-slate-400">
+                                    {selectedItem.status === 'active' && selectedItem.active ? 'Ativo' : 'Inativo'}
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Modelo de Preços</label>
+                                  <p className="text-sm text-slate-400 capitalize">
+                                    {selectedItem.pricing_model}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Description */}
+                              <div>
+                                <label className="text-sm font-medium text-slate-300">Descrição</label>
+                                <p className="text-sm text-slate-400 mt-1">
+                                  {selectedItem.description || 'Sem descrição disponível'}
+                                </p>
+                              </div>
+
+                              {/* Features */}
+                              {selectedItem.features && (
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Funcionalidades</label>
+                                  <div className="mt-2 space-y-1">
+                                    {Object.entries(selectedItem.features).map(([key, value]) => (
+                                      <div key={key} className="flex justify-between text-sm">
+                                        <span className="text-slate-400 capitalize">{key.replace('_', ' ')}</span>
+                                        <span className="text-slate-300">
+                                          {typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value)}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Plans */}
+                              <div>
+                                <label className="text-sm font-medium text-slate-300">Planos</label>
+                                <div className="mt-2 space-y-2">
+                                  {selectedItem.product_plans?.map((plan: any) => (
+                                    <Card key={plan.id} className="bg-slate-700 border-slate-600">
+                                      <CardContent className="p-3">
+                                        <div className="flex justify-between items-start">
+                                          <div>
+                                            <h4 className="font-medium text-white">{plan.name}</h4>
+                                            <p className="text-xs text-slate-400">{plan.description}</p>
+                                          </div>
+                                          <div className="text-right">
+                                            <div className="text-sm font-bold text-senvia-500">
+                                              €{plan.price_monthly}/mês
+                                            </div>
+                                            {plan.price_yearly && (
+                                              <div className="text-xs text-slate-400">
+                                                €{plan.price_yearly}/ano
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Metadata */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-600">
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Data de Criação</label>
+                                  <p className="text-sm text-slate-400">
+                                    {format(new Date(selectedItem.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                  </p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-slate-300">Última Atualização</label>
+                                  <p className="text-sm text-slate-400">
+                                    {format(new Date(selectedItem.updated_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
                     </div>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-600"
-                    onClick={() => setSelectedItem(product)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Ver Detalhes
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Package className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-200 mb-2">Nenhum produto encontrado</h3>
+              <p className="text-slate-400 mb-4">Sincronize com o Stripe para importar seus produtos.</p>
+              <Button 
+                onClick={syncWithStripe}
+                disabled={isLoading}
+                className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
+              >
+                <Sync className="h-4 w-4 mr-2" />
+                Sincronizar com Stripe
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Assinaturas Ativas */}
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-slate-100">
             <Users className="h-5 w-5 text-senvia-500" />
             Assinaturas Ativas ({activeSubscriptions?.length || 0})
           </CardTitle>
@@ -333,12 +453,12 @@ const AdminProdutosAssinaturas = () => {
         <CardContent>
           <div className="space-y-4">
             {activeSubscriptions?.slice(0, 10).map((subscription) => (
-              <div key={subscription.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
+              <div key={subscription.id} className="flex items-center justify-between p-4 bg-slate-700/70 rounded-lg border border-slate-600/50">
                 <div className="flex items-center gap-3">
-                  <Zap className="h-5 w-5 text-purple-500" />
+                  <Zap className="h-5 w-5 text-purple-400" />
                   <div>
-                    <div className="font-medium text-white">{subscription.email}</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="font-medium text-slate-100">{subscription.email}</div>
+                    <div className="text-sm text-slate-400">
                       {subscription.plan_type} - €{subscription.monthly_price || 20}/mês
                     </div>
                   </div>
@@ -346,16 +466,16 @@ const AdminProdutosAssinaturas = () => {
                 <div className="flex items-center gap-3">
                   <Badge 
                     variant={subscription.status === 'active' ? 'default' : 'secondary'}
-                    className={subscription.status === 'trial' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500' : ''}
+                    className={subscription.status === 'trial' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50' : ''}
                   >
                     {subscription.status === 'trial' ? 'Trial' : subscription.status}
                   </Badge>
                   <div className="text-right">
-                    <div className="text-sm text-gray-300">
+                    <div className="text-sm text-slate-300">
                       {format(new Date(subscription.created_at), 'dd/MM/yyyy', { locale: ptBR })}
                     </div>
                     {subscription.trial_end_date && subscription.status === 'trial' && (
-                      <div className="text-xs text-yellow-500">
+                      <div className="text-xs text-yellow-400">
                         Trial até {format(new Date(subscription.trial_end_date), 'dd/MM', { locale: ptBR })}
                       </div>
                     )}
@@ -365,8 +485,8 @@ const AdminProdutosAssinaturas = () => {
             ))}
             
             {(!activeSubscriptions || activeSubscriptions.length === 0) && (
-              <div className="text-center py-8 text-gray-400">
-                <Users className="h-12 w-12 mx-auto mb-4 text-gray-600" />
+              <div className="text-center py-8 text-slate-400">
+                <Users className="h-12 w-12 mx-auto mb-4 text-slate-600" />
                 <p>Nenhuma assinatura ativa encontrada</p>
               </div>
             )}
@@ -376,9 +496,9 @@ const AdminProdutosAssinaturas = () => {
 
       {/* Performance Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-slate-100">
               <TrendingUp className="h-5 w-5 text-senvia-500" />
               Performance por Produto
             </CardTitle>
@@ -386,14 +506,14 @@ const AdminProdutosAssinaturas = () => {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Receita de Assinaturas</div>
-                <div className="text-sm text-gray-400">Mensal recorrente</div>
+                <div className="font-medium text-slate-200">Receita de Assinaturas</div>
+                <div className="text-sm text-slate-400">Mensal recorrente</div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-purple-500">
+                <div className="font-bold text-purple-400">
                   €{stats.subscriptionRevenue.toFixed(2)}
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-slate-400">
                   {stats.totalSubscriptions} assinaturas
                 </div>
               </div>
@@ -401,14 +521,14 @@ const AdminProdutosAssinaturas = () => {
             
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Receita de Vendas</div>
-                <div className="text-sm text-gray-400">Pagamentos únicos</div>
+                <div className="font-medium text-slate-200">Receita de Vendas</div>
+                <div className="text-sm text-slate-400">Pagamentos únicos</div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-green-500">
+                <div className="font-bold text-green-400">
                   €{stats.salesRevenue.toFixed(2)}
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-slate-400">
                   {stats.totalSales} vendas
                 </div>
               </div>
@@ -416,31 +536,31 @@ const AdminProdutosAssinaturas = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-slate-100">
               <Calendar className="h-5 w-5 text-senvia-500" />
               Estatísticas de Assinaturas
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
-              <div className="font-medium">Assinaturas Ativas</div>
-              <div className="font-bold text-green-500">
+              <div className="font-medium text-slate-200">Assinaturas Ativas</div>
+              <div className="font-bold text-green-400">
                 {stats.activeSubscriptions}
               </div>
             </div>
             
             <div className="flex justify-between items-center">
-              <div className="font-medium">Em Período Trial</div>
-              <div className="font-bold text-yellow-500">
+              <div className="font-medium text-slate-200">Em Período Trial</div>
+              <div className="font-bold text-yellow-400">
                 {stats.trialSubscriptions}
               </div>
             </div>
             
             <div className="flex justify-between items-center">
-              <div className="font-medium">Taxa de Ativação</div>
-              <div className="font-bold text-blue-500">
+              <div className="font-medium text-slate-200">Taxa de Ativação</div>
+              <div className="font-bold text-blue-400">
                 {stats.totalSubscriptions > 0 ? 
                   ((stats.activeSubscriptions / stats.totalSubscriptions) * 100).toFixed(1) : 0}%
               </div>
@@ -448,72 +568,6 @@ const AdminProdutosAssinaturas = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Modal de Detalhes */}
-      <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
-          <DialogHeader>
-            <DialogTitle className="text-white">Detalhes do Produto</DialogTitle>
-          </DialogHeader>
-          
-          {selectedItem && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-300">ID do Produto</label>
-                  <p className="text-sm text-gray-400 font-mono">{selectedItem.id}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Nome</label>
-                  <p className="text-sm text-gray-400">{selectedItem.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Preço</label>
-                  <p className="text-sm text-gray-400">
-                    €{(selectedItem.price / 100).toFixed(2)}
-                    {selectedItem.type === 'subscription' && `/${selectedItem.interval}`}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Tipo</label>
-                  <p className="text-sm text-gray-400 capitalize">
-                    {selectedItem.type === 'subscription' ? 'Assinatura' : 'Pagamento único'}
-                  </p>
-                </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium text-gray-300">Descrição</label>
-                <p className="text-sm text-gray-400">{selectedItem.description}</p>
-              </div>
-              
-              {selectedItem.type === 'subscription' ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Assinantes</label>
-                    <p className="text-sm text-gray-400">{selectedItem.subscribers || 0}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Receita Mensal</label>
-                    <p className="text-sm text-gray-400">€{selectedItem.monthly_revenue?.toFixed(2) || '0.00'}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Vendas</label>
-                    <p className="text-sm text-gray-400">{selectedItem.sales_count || 0}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-300">Receita Total</label>
-                    <p className="text-sm text-gray-400">€{selectedItem.total_revenue?.toFixed(2) || '0.00'}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -11,57 +11,57 @@ export const useAdminRevenue = (dateRange: number) => {
       
       console.log('Buscando métricas de receita desde:', startDate.toISOString());
       
-      // Buscar pagamentos confirmados da tabela payments (sistema antigo)
-      const { data: legacyPayments, error: paymentsError } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('status', 'paid')
-        .gte('created_at', startDate.toISOString());
-
-      // Buscar transações de clientes (sistema novo)
+      // Buscar transações de clientes (sistema novo - dados reais)
       const { data: customerTransactions, error: transactionsError } = await supabase
         .from('customer_transactions')
         .select('*')
         .eq('status', 'completed')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar assinaturas ativas
+      // Buscar pagamentos confirmados da tabela payments (sistema legado)
+      const { data: legacyPayments, error: paymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('status', 'paid')
+        .gte('created_at', startDate.toISOString());
+
+      // Buscar assinaturas ativas do Senvia Assistant
       const { data: activeSubscriptions, error: subsError } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      if (paymentsError || transactionsError || subsError) {
-        console.error('Erro ao buscar dados de receita:', paymentsError || transactionsError || subsError);
-        throw paymentsError || transactionsError || subsError;
+      if (transactionsError || paymentsError || subsError) {
+        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError);
+        throw transactionsError || paymentsError || subsError;
       }
 
       console.log('Dados encontrados:', {
-        legacyPayments: legacyPayments?.length,
         customerTransactions: customerTransactions?.length,
+        legacyPayments: legacyPayments?.length,
         activeSubscriptions: activeSubscriptions?.length
       });
 
-      // Calcular receita dos pagamentos legacy (convertendo de centavos para euros)
-      const legacyPaymentsRevenue = (legacyPayments || [])
-        .reduce((sum, payment) => sum + (payment.amount / 100), 0);
-      
       // Calcular receita das transações de clientes (já em euros)
       const customerTransactionsRevenue = (customerTransactions || [])
         .reduce((sum, transaction) => sum + Number(transaction.amount), 0);
       
-      // Receita das assinaturas
+      // Calcular receita dos pagamentos legacy (convertendo de centavos para euros)
+      const legacyPaymentsRevenue = (legacyPayments || [])
+        .reduce((sum, payment) => sum + (payment.amount / 100), 0);
+      
+      // Receita das assinaturas do Senvia Assistant
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
       
-      const totalLandingPageRevenue = legacyPaymentsRevenue + customerTransactionsRevenue;
+      const totalLandingPageRevenue = customerTransactionsRevenue + legacyPaymentsRevenue;
       const totalRevenue = totalLandingPageRevenue + subscriptionsRevenue;
-      const totalTransactions = (legacyPayments?.length || 0) + (customerTransactions?.length || 0) + (activeSubscriptions?.length || 0);
+      const totalTransactions = (customerTransactions?.length || 0) + (legacyPayments?.length || 0) + (activeSubscriptions?.length || 0);
       
       console.log('Cálculo final das receitas:', {
-        legacyPaymentsRevenue,
         customerTransactionsRevenue,
+        legacyPaymentsRevenue,
         totalLandingPageRevenue,
         subscriptionsRevenue,
         totalRevenue,
@@ -73,7 +73,7 @@ export const useAdminRevenue = (dateRange: number) => {
         landing_page_revenue: totalLandingPageRevenue,
         assistant_revenue: subscriptionsRevenue,
         total_transactions: totalTransactions,
-        landing_page_sales: (legacyPayments?.length || 0) + (customerTransactions?.length || 0),
+        landing_page_sales: (customerTransactions?.length || 0) + (legacyPayments?.length || 0),
         active_subscriptions: activeSubscriptions?.length || 0
       };
     },

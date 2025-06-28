@@ -451,90 +451,6 @@ export type Database = {
           },
         ]
       }
-      landing_page_leads: {
-        Row: {
-          assigned_to: string | null
-          business_name: string | null
-          conversion_date: string | null
-          conversion_value: number | null
-          converted: boolean | null
-          country_code: string
-          created_at: string
-          email: string
-          full_name: string
-          id: string
-          ip_address: string | null
-          last_contact: string | null
-          next_followup: string | null
-          notes: string | null
-          objective: string
-          phone: string
-          priority: number | null
-          source: string | null
-          status: string
-          updated_at: string
-          user_agent: string | null
-          utm_campaign: string | null
-          utm_medium: string | null
-          utm_source: string | null
-          website: string | null
-        }
-        Insert: {
-          assigned_to?: string | null
-          business_name?: string | null
-          conversion_date?: string | null
-          conversion_value?: number | null
-          converted?: boolean | null
-          country_code: string
-          created_at?: string
-          email: string
-          full_name: string
-          id?: string
-          ip_address?: string | null
-          last_contact?: string | null
-          next_followup?: string | null
-          notes?: string | null
-          objective: string
-          phone: string
-          priority?: number | null
-          source?: string | null
-          status?: string
-          updated_at?: string
-          user_agent?: string | null
-          utm_campaign?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
-          website?: string | null
-        }
-        Update: {
-          assigned_to?: string | null
-          business_name?: string | null
-          conversion_date?: string | null
-          conversion_value?: number | null
-          converted?: boolean | null
-          country_code?: string
-          created_at?: string
-          email?: string
-          full_name?: string
-          id?: string
-          ip_address?: string | null
-          last_contact?: string | null
-          next_followup?: string | null
-          notes?: string | null
-          objective?: string
-          phone?: string
-          priority?: number | null
-          source?: string | null
-          status?: string
-          updated_at?: string
-          user_agent?: string | null
-          utm_campaign?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
-          website?: string | null
-        }
-        Relationships: []
-      }
       payments: {
         Row: {
           amount: number
@@ -1048,6 +964,10 @@ export type Database = {
         Returns: boolean
       }
       migrate_existing_leads: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      migrate_paid_leads_to_customers: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

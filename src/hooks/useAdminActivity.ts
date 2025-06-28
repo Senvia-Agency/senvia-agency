@@ -15,25 +15,25 @@ export const useAdminActivity = () => {
         .order('created_at', { ascending: false })
         .limit(15);
       
-      // Buscar pagamentos confirmados
-      const { data: recentPayments, error: paymentsError } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('status', 'paid')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      // Buscar transações de clientes
-      const { data: recentTransactions, error: transactionsError } = await supabase
+      // Buscar transações de clientes recentes
+      const { data: recentCustomerTransactions, error: customerTransactionsError } = await supabase
         .from('customer_transactions')
         .select('*')
         .eq('status', 'completed')
         .order('created_at', { ascending: false })
         .limit(10);
+
+      // Buscar pagamentos confirmados (sistema legado)
+      const { data: legacyPayments, error: paymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('status', 'paid')
+        .order('created_at', { ascending: false })
+        .limit(5);
       
-      if (unifiedError || paymentsError || transactionsError) {
-        console.error('Erro ao buscar atividade recente:', unifiedError || paymentsError || transactionsError);
-        throw unifiedError || paymentsError || transactionsError;
+      if (unifiedError || customerTransactionsError || paymentsError) {
+        console.error('Erro ao buscar atividade recente:', unifiedError || customerTransactionsError || paymentsError);
+        throw unifiedError || customerTransactionsError || paymentsError;
       }
       
       // Formatar leads unificados
@@ -47,16 +47,24 @@ export const useAdminActivity = () => {
         is_paid: lead.payment_status === 'paid' || lead.converted === true
       }));
 
-      // Combinar pagamentos
+      // Combinar pagamentos (transações de clientes + pagamentos legacy)
       const allPayments = [
-        ...(recentPayments || []),
-        ...(recentTransactions || [])
+        ...(recentCustomerTransactions || []).map(transaction => ({
+          ...transaction,
+          // Adicionar email do cliente se disponível
+          email: transaction.email || 'Cliente não identificado',
+          // Converter amount para centavos se necessário para compatibilidade
+          amount: Math.round(Number(transaction.amount) * 100)
+        })),
+        ...(legacyPayments || [])
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 10);
       
       console.log('Atividade recente processada:', {
         leads: formattedUnifiedLeads.length,
-        payments: allPayments.length
+        payments: allPayments.length,
+        customerTransactions: recentCustomerTransactions?.length || 0,
+        legacyPayments: legacyPayments?.length || 0
       });
       
       return {

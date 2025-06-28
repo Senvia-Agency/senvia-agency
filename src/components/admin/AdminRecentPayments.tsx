@@ -21,15 +21,20 @@ const AdminRecentPayments = ({ recentActivity }: AdminRecentPaymentsProps) => {
               <div>
                 <div className="font-medium">{payment.email}</div>
                 <div className="text-sm text-gray-400">
-                  €{(payment.amount / 100).toFixed(2)}
+                  €{payment.amount ? (payment.amount / 100).toFixed(2) : '0.00'}
                 </div>
+                {payment.product_description && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    {payment.product_description}
+                  </div>
+                )}
               </div>
               <div className="text-right">
                 <Badge 
                   variant="default"
                   className="text-xs bg-green-500/20 text-green-500"
                 >
-                  Pago ✓
+                  {payment.status === 'completed' ? 'Concluído' : 'Pago'} ✓
                 </Badge>
                 <div className="text-xs text-gray-400 mt-1">
                   {format(new Date(payment.created_at), 'dd/MM HH:mm', { locale: ptBR })}

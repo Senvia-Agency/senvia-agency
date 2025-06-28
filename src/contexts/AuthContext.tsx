@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
-  const [initialized, setInitialized] = useState(false);
 
   // Memoize the admin check function to prevent unnecessary calls
   const checkAdminStatus = useCallback(async (userId: string) => {
@@ -61,10 +60,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, []);
 
-  // Initialize auth state only once
+  // Initialize auth state
   useEffect(() => {
-    if (initialized) return;
-
     let isMounted = true;
     let subscription: any;
 
@@ -93,7 +90,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
           
           setLoading(false);
-          setInitialized(true);
         }
 
         // Set up auth state listener
@@ -108,9 +104,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (currentSession?.user && event !== 'TOKEN_REFRESHED') {
             setAdminLoading(true);
             // Use setTimeout to prevent blocking the auth state change
-            setTimeout(() => {
+            setTimeout(async () => {
               if (isMounted) {
-                checkAdminStatus(currentSession.user.id);
+                await checkAdminStatus(currentSession.user.id);
               }
             }, 100);
           } else if (!currentSession?.user) {
@@ -130,7 +126,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (isMounted) {
           setLoading(false);
           setAdminLoading(false);
-          setInitialized(true);
         }
       }
     };
@@ -143,7 +138,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         subscription.data?.subscription?.unsubscribe();
       }
     };
-  }, [initialized, checkAdminStatus]);
+  }, [checkAdminStatus]);
 
   // Memoize auth functions to prevent unnecessary re-renders
   const signIn = useCallback(async (email: string, password: string) => {

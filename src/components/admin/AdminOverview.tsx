@@ -403,20 +403,17 @@ const AdminOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentActivity?.leads?.map((lead, index) => (
+              {recentActivity?.leads?.map((lead: any, index) => (
                 <div key={`${lead.id}-${index}`} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium">
                       {lead.lead_type === 'senvia_free' 
                         ? (lead.full_name || 'Nome não informado')
-                        : (lead.company_name || 'Nome não informado')
+                        : (lead.business_name || lead.company_name || 'Nome não informado')
                       }
                     </div>
                     <div className="text-sm text-gray-400">
-                      {lead.lead_type === 'senvia_free' 
-                        ? (lead.email || 'Email não informado')
-                        : (lead.company_email || 'Email não informado')
-                      }
+                      {lead.email || lead.company_email || 'Email não informado'}
                     </div>
                   </div>
                   <div className="text-right">

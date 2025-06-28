@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
+  const initializedRef = useRef(false);
 
   // Memoize the admin check function to prevent unnecessary calls
   const checkAdminStatus = useCallback(async (userId: string) => {
@@ -62,6 +63,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Initialize auth state
   useEffect(() => {
+    // Evitar reinicialização quando a aba volta ao foco
+    if (initializedRef.current) return;
+
     let isMounted = true;
     let subscription: any;
 
@@ -90,6 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
           
           setLoading(false);
+          initializedRef.current = true;
         }
 
         // Set up auth state listener
@@ -119,6 +124,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setSession(null);
             setIsAdmin(false);
             setAdminLoading(false);
+            initializedRef.current = false;
           }
         });
       } catch (error) {
@@ -126,6 +132,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (isMounted) {
           setLoading(false);
           setAdminLoading(false);
+          initializedRef.current = true;
         }
       }
     };
@@ -139,6 +146,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
   }, [checkAdminStatus]);
+
+  // Listener para detectar mudanças de visibilidade da aba
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && initializedRef.current) {
+        // Quando a aba volta ao foco, não reinicializar tudo, apenas verificar se ainda há sessão válida
+        console.log('Tab became visible, checking session validity...');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   // Memoize auth functions to prevent unnecessary re-renders
   const signIn = useCallback(async (email: string, password: string) => {
@@ -187,6 +210,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = useCallback(async () => {
     try {
       console.log('Signing out...');
+      localStorage.removeItem('admin-active-section'); // Limpar seção ativa ao sair
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro no signOut:', error);

@@ -12,7 +12,18 @@ import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinatura
 const AdminDashboard = () => {
   const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('overview');
+  
+  // Recuperar a seção ativa do localStorage ou usar 'overview' como padrão
+  const [activeSection, setActiveSection] = useState(() => {
+    const savedSection = localStorage.getItem('admin-active-section');
+    return savedSection || 'overview';
+  });
+
+  // Salvar a seção ativa no localStorage sempre que mudar
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    localStorage.setItem('admin-active-section', section);
+  };
 
   useEffect(() => {
     if (!authLoading && !adminLoading && (!user || !isAdmin)) {
@@ -23,6 +34,25 @@ const AdminDashboard = () => {
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
+
+  // Adicionar um listener para detectar quando a aba volta ao foco
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Quando a aba volta ao foco, recuperar a seção ativa do localStorage
+        const savedSection = localStorage.getItem('admin-active-section');
+        if (savedSection && savedSection !== activeSection) {
+          setActiveSection(savedSection);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [activeSection]);
 
   if (authLoading || adminLoading) {
     return (
@@ -61,7 +91,7 @@ const AdminDashboard = () => {
       <div className="flex">
         <AdminSidebar 
           activeSection={activeSection} 
-          setActiveSection={setActiveSection} 
+          setActiveSection={handleSectionChange} 
         />
         <main className="flex-1 p-6 lg:p-8 ml-64">
           <div className="max-w-7xl mx-auto">

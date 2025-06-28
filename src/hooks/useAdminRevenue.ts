@@ -41,7 +41,7 @@ export const useAdminRevenue = (dateRange: number) => {
       // Calcular receita total REAL dos pagamentos (convertendo de centavos para euros)
       const totalPaymentsRevenue = (paidPayments || [])
         .reduce((sum, p) => {
-          console.log('Processando pagamento:', p.id, 'Amount:', p.amount);
+          console.log('Processando pagamento:', p.id, 'Amount:', p.amount, 'Convertido:', p.amount / 100);
           return sum + (p.amount / 100);
         }, 0);
       
@@ -51,7 +51,7 @@ export const useAdminRevenue = (dateRange: number) => {
       
       const totalRevenue = totalPaymentsRevenue + totalSubscriptionsRevenue;
       
-      console.log('Cálculo final das receitas:', {
+      console.log('Cálculo FINAL das receitas:', {
         totalPaymentsRevenue,
         totalSubscriptionsRevenue,
         totalRevenue,

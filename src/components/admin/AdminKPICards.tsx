@@ -14,6 +14,15 @@ interface AdminKPICardsProps {
 }
 
 const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICardsProps) => {
+  console.log('AdminKPICards - Dados recebidos:', {
+    revenueMetrics,
+    leadsStats,
+    subscriptions
+  });
+
+  const totalRevenue = revenueMetrics?.total_revenue || 0;
+  const totalTransactions = revenueMetrics?.total_transactions || 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card className="bg-gray-800 border-gray-700">
@@ -25,10 +34,10 @@ const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICa
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-500">
-            €{revenueMetrics?.total_revenue?.toFixed(2) || '0.00'}
+            €{totalRevenue.toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            {revenueMetrics?.total_transactions || 0} transações
+            {totalTransactions} transações
           </div>
         </CardContent>
       </Card>

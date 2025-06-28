@@ -7,6 +7,12 @@ interface AdminRevenueBreakdownProps {
 }
 
 const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) => {
+  console.log('AdminRevenueBreakdown - Dados recebidos:', revenueMetrics);
+
+  const landingPageRevenue = revenueMetrics?.landing_page_revenue || 0;
+  const assistantRevenue = revenueMetrics?.assistant_revenue || 0;
+  const totalRevenue = revenueMetrics?.total_revenue || 0;
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -19,11 +25,11 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
         <div className="flex justify-between items-center">
           <div>
             <div className="font-medium">Landing Pages</div>
-            <div className="text-sm text-gray-400">€4.99 por venda</div>
+            <div className="text-sm text-gray-400">Pagamentos confirmados</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-green-500">
-              €{revenueMetrics?.landing_page_revenue?.toFixed(2) || '0.00'}
+              €{landingPageRevenue.toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
               {revenueMetrics?.landing_page_sales || 0} vendas
@@ -38,7 +44,7 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
           </div>
           <div className="text-right">
             <div className="font-bold text-purple-500">
-              €{revenueMetrics?.assistant_revenue?.toFixed(2) || '0.00'}
+              €{assistantRevenue.toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
               {revenueMetrics?.active_subscriptions || 0} assinaturas
@@ -50,7 +56,7 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
           <div className="flex justify-between items-center">
             <div className="font-medium">Total</div>
             <div className="font-bold text-senvia-500">
-              €{revenueMetrics?.total_revenue?.toFixed(2) || '0.00'}
+              €{totalRevenue.toFixed(2)}
             </div>
           </div>
         </div>

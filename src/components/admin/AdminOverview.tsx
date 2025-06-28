@@ -40,7 +40,8 @@ const AdminOverview = () => {
   // Função para gerar mensagem baseada no dia
   const generateDailyMessage = () => {
     const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const startOfYear = new Date(today.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
     const messageIndex = dayOfYear % inspirationalMessages.length;
     return inspirationalMessages[messageIndex];
   };

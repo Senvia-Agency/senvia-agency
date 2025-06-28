@@ -14,13 +14,14 @@ export const useAdminLeads = (dateRange: number) => {
       // Buscar leads da Landing Page €4.99 (tabela leads)
       const { data: basicLeads, error: basicError } = await supabase
         .from('leads')
-        .select('id')
+        .select('id, payment_status')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar leads da Landing Page Premium (tabela landing_page_leads)
+      // Buscar leads da Landing Page Premium (tabela landing_page_leads) 
+      // Verificar se tem campo de status de pagamento ou usar campo 'status'
       const { data: premiumLeads, error: premiumError } = await supabase
         .from('landing_page_leads')
-        .select('id')
+        .select('id, status')
         .gte('created_at', startDate.toISOString());
 
       console.log('Leads encontrados:', {
@@ -33,45 +34,11 @@ export const useAdminLeads = (dateRange: number) => {
         throw basicError || premiumError;
       }
 
-      // Extrair IDs dos leads
-      const basicLeadIds = basicLeads?.map(lead => lead.id) || [];
-      const premiumLeadIds = premiumLeads?.map(lead => lead.id) || [];
-
-      // Buscar pagamentos confirmados relacionados aos leads básicos
-      let basicPaidCount = 0;
-      if (basicLeadIds.length > 0) {
-        const { data: basicPayments, error: basicPaymentsError } = await supabase
-          .from('payments')
-          .select('*')
-          .eq('status', 'paid')
-          .in('lead_id', basicLeadIds)
-          .gte('created_at', startDate.toISOString());
-
-        if (basicPaymentsError) {
-          console.error('Erro ao buscar pagamentos básicos:', basicPaymentsError);
-        } else {
-          basicPaidCount = basicPayments?.length || 0;
-          console.log('Pagamentos básicos encontrados:', basicPayments);
-        }
-      }
-
-      // Buscar pagamentos confirmados relacionados aos leads premium
-      let premiumPaidCount = 0;
-      if (premiumLeadIds.length > 0) {
-        const { data: premiumPayments, error: premiumPaymentsError } = await supabase
-          .from('payments')
-          .select('*')
-          .eq('status', 'paid')
-          .in('lead_id', premiumLeadIds)
-          .gte('created_at', startDate.toISOString());
-
-        if (premiumPaymentsError) {
-          console.error('Erro ao buscar pagamentos premium:', premiumPaymentsError);
-        } else {
-          premiumPaidCount = premiumPayments?.length || 0;
-          console.log('Pagamentos premium encontrados:', premiumPayments);
-        }
-      }
+      // Contar leads básicos pagos (payment_status = 'paid')
+      const basicPaidCount = basicLeads?.filter(lead => lead.payment_status === 'paid').length || 0;
+      
+      // Contar leads premium pagos (status = 'paid' ou similar)
+      const premiumPaidCount = premiumLeads?.filter(lead => lead.status === 'paid').length || 0;
 
       const totalLeads = (basicLeads?.length || 0) + (premiumLeads?.length || 0);
       const totalConfirmedConversions = basicPaidCount + premiumPaidCount;
@@ -79,7 +46,9 @@ export const useAdminLeads = (dateRange: number) => {
       console.log('Contagens finais calculadas:', {
         basicPaidCount,
         premiumPaidCount,
-        totalConfirmedConversions
+        totalConfirmedConversions,
+        basicLeadsWithStatus: basicLeads?.map(l => ({ id: l.id, payment_status: l.payment_status })),
+        premiumLeadsWithStatus: premiumLeads?.map(l => ({ id: l.id, status: l.status }))
       });
       
       return {

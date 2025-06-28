@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,18 +52,19 @@ const LandingPageForm = () => {
     setIsSubmitting(true);
     try {
       const { error } = await supabase
-        .from('landing_page_leads')
+        .from('unified_leads')
         .insert({
           full_name: data.fullName,
           email: data.email,
           phone: data.phone,
           country_code: '+351',
-          business_name: data.businessName,
+          company_name: data.businessName,
           website: data.website,
+          source_page: 'landing_page_premium',
+          interest_type: 'premium_landing_page',
           objective: data.objective,
-          status: 'new',
-          priority: 1,
-          source: 'landing_page'
+          lead_status: 'new',
+          priority: 1
         });
 
       if (error) throw error;

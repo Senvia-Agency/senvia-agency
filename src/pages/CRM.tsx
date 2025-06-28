@@ -25,13 +25,13 @@ interface Lead {
   email: string;
   phone: string;
   country_code: string;
-  business_name?: string;
+  company_name?: string;
   website?: string;
   objective: string;
-  status: string;
+  lead_status: string;
   priority: number;
   assigned_to?: string;
-  source: string;
+  source_page: string;
   notes?: string;
   last_contact?: string;
   next_followup?: string;
@@ -74,7 +74,7 @@ const CRM = () => {
   const fetchLeads = async () => {
     try {
       const { data, error } = await supabase
-        .from('landing_page_leads')
+        .from('unified_leads')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -99,17 +99,17 @@ const CRM = () => {
       filtered = filtered.filter(lead =>
         lead.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.phone.includes(searchTerm) ||
-        (lead.business_name && lead.business_name.toLowerCase().includes(searchTerm.toLowerCase()))
+        (lead.phone && lead.phone.includes(searchTerm)) ||
+        (lead.company_name && lead.company_name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter(lead => lead.status === statusFilter);
+      filtered = filtered.filter(lead => lead.lead_status === statusFilter);
     }
 
     if (priorityFilter !== "all") {
-      filtered = filtered.filter(lead => lead.priority.toString() === priorityFilter);
+      filtered = filtered.filter(lead => lead.priority && lead.priority.toString() === priorityFilter);
     }
 
     setFilteredLeads(filtered);
@@ -117,9 +117,9 @@ const CRM = () => {
 
   const calculateStats = () => {
     const total = leads.length;
-    const newLeads = leads.filter(lead => lead.status === 'new').length;
-    const contacted = leads.filter(lead => lead.status === 'contacted').length;
-    const qualified = leads.filter(lead => lead.status === 'qualified').length;
+    const newLeads = leads.filter(lead => lead.lead_status === 'new').length;
+    const contacted = leads.filter(lead => lead.lead_status === 'contacted').length;
+    const qualified = leads.filter(lead => lead.lead_status === 'qualified').length;
     const converted = leads.filter(lead => lead.converted).length;
     const conversionRate = total > 0 ? (converted / total) * 100 : 0;
 
@@ -136,9 +136,9 @@ const CRM = () => {
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('landing_page_leads')
+        .from('unified_leads')
         .update({ 
-          status: newStatus,
+          lead_status: newStatus,
           last_contact: newStatus !== 'new' ? new Date().toISOString() : null
         })
         .eq('id', leadId);
@@ -163,7 +163,7 @@ const CRM = () => {
   const updateLeadNotes = async (leadId: string, notes: string) => {
     try {
       const { error } = await supabase
-        .from('landing_page_leads')
+        .from('unified_leads')
         .update({ notes })
         .eq('id', leadId);
 
@@ -445,7 +445,7 @@ const CRM = () => {
                       
                       <TableCell>
                         <div>
-                          <div className="font-medium">{lead.business_name || '-'}</div>
+                          <div className="font-medium">{lead.company_name || '-'}</div>
                           {lead.website && (
                             <div className="text-sm text-muted-foreground">{lead.website}</div>
                           )}
@@ -454,22 +454,22 @@ const CRM = () => {
                       
                       <TableCell>
                         <Badge variant="outline">
-                          {getObjectiveLabel(lead.objective)}
+                          {getObjectiveLabel(lead.objective || '')}
                         </Badge>
                       </TableCell>
                       
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${getStatusColor(lead.status)}`}></div>
-                          <span className="text-sm">{getStatusLabel(lead.status)}</span>
+                          <div className={`w-2 h-2 rounded-full ${getStatusColor(lead.lead_status)}`}></div>
+                          <span className="text-sm">{getStatusLabel(lead.lead_status)}</span>
                         </div>
                       </TableCell>
                       
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Star className={`h-4 w-4 ${getPriorityColor(lead.priority)}`} />
-                          <span className={`text-sm ${getPriorityColor(lead.priority)}`}>
-                            {getPriorityLabel(lead.priority)}
+                          <Star className={`h-4 w-4 ${getPriorityColor(lead.priority || 1)}`} />
+                          <span className={`text-sm ${getPriorityColor(lead.priority || 1)}`}>
+                            {getPriorityLabel(lead.priority || 1)}
                           </span>
                         </div>
                       </TableCell>
@@ -521,7 +521,7 @@ const CRM = () => {
                                     <div>
                                       <label className="text-sm font-medium">Empresa</label>
                                       <p className="text-sm text-muted-foreground">
-                                        {selectedLead.business_name || 'Não informado'}
+                                        {selectedLead.company_name || 'Não informado'}
                                       </p>
                                     </div>
                                     <div>
@@ -533,7 +533,7 @@ const CRM = () => {
                                     <div>
                                       <label className="text-sm font-medium">Objetivo</label>
                                       <p className="text-sm text-muted-foreground">
-                                        {getObjectiveLabel(selectedLead.objective)}
+                                        {getObjectiveLabel(selectedLead.objective || '')}
                                       </p>
                                     </div>
                                   </div>
@@ -543,7 +543,7 @@ const CRM = () => {
                                     <div>
                                       <label className="text-sm font-medium">Status</label>
                                       <Select 
-                                        value={selectedLead.status} 
+                                        value={selectedLead.lead_status} 
                                         onValueChange={(value) => updateLeadStatus(selectedLead.id, value)}
                                       >
                                         <SelectTrigger className="mt-1">
@@ -563,9 +563,9 @@ const CRM = () => {
                                     <div>
                                       <label className="text-sm font-medium">Prioridade</label>
                                       <div className="flex items-center gap-1 mt-1">
-                                        <Star className={`h-4 w-4 ${getPriorityColor(selectedLead.priority)}`} />
-                                        <span className={`text-sm ${getPriorityColor(selectedLead.priority)}`}>
-                                          {getPriorityLabel(selectedLead.priority)}
+                                        <Star className={`h-4 w-4 ${getPriorityColor(selectedLead.priority || 1)}`} />
+                                        <span className={`text-sm ${getPriorityColor(selectedLead.priority || 1)}`}>
+                                          {getPriorityLabel(selectedLead.priority || 1)}
                                         </span>
                                       </div>
                                     </div>

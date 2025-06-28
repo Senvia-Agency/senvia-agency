@@ -15,10 +15,13 @@ export const useAdminActivity = () => {
         .order('created_at', { ascending: false })
         .limit(15);
       
-      // Buscar transações de clientes recentes
+      // Buscar transações de clientes recentes com dados do cliente
       const { data: recentCustomerTransactions, error: customerTransactionsError } = await supabase
         .from('customer_transactions')
-        .select('*')
+        .select(`
+          *,
+          customers!inner(email, full_name)
+        `)
         .eq('status', 'completed')
         .order('created_at', { ascending: false })
         .limit(10);
@@ -51,8 +54,8 @@ export const useAdminActivity = () => {
       const allPayments = [
         ...(recentCustomerTransactions || []).map(transaction => ({
           ...transaction,
-          // Adicionar email do cliente se disponível
-          email: transaction.email || 'Cliente não identificado',
+          // Pegar email do cliente relacionado
+          email: transaction.customers?.email || 'Cliente não identificado',
           // Converter amount para centavos se necessário para compatibilidade
           amount: Math.round(Number(transaction.amount) * 100)
         })),

@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
@@ -11,8 +10,7 @@ import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 
 const AdminDashboard = () => {
-  const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useAdmin();
+  const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('overview');
 

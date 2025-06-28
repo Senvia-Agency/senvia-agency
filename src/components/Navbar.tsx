@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +14,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showClientMenu, setShowClientMenu] = useState(false);
-  const { user, signOut } = useAuth();
-  const { isAdmin } = useAdmin();
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

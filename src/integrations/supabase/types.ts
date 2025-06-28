@@ -559,8 +559,26 @@ export type Database = {
           price_yearly: number | null
           product_id: string
           status: string
+          stripe_active: boolean | null
+          stripe_billing_scheme: string | null
+          stripe_created: number | null
+          stripe_currency_options: Json | null
+          stripe_custom_unit_amount: Json | null
+          stripe_lookup_key: string | null
+          stripe_metadata: Json | null
+          stripe_nickname: string | null
           stripe_price_id_monthly: string | null
           stripe_price_id_yearly: string | null
+          stripe_product_id: string | null
+          stripe_recurring: Json | null
+          stripe_tax_behavior: string | null
+          stripe_tiers: Json | null
+          stripe_tiers_mode: string | null
+          stripe_transform_quantity: Json | null
+          stripe_type: string | null
+          stripe_unit_amount: number | null
+          stripe_unit_amount_decimal: string | null
+          stripe_updated: number | null
           updated_at: string
         }
         Insert: {
@@ -575,8 +593,26 @@ export type Database = {
           price_yearly?: number | null
           product_id: string
           status?: string
+          stripe_active?: boolean | null
+          stripe_billing_scheme?: string | null
+          stripe_created?: number | null
+          stripe_currency_options?: Json | null
+          stripe_custom_unit_amount?: Json | null
+          stripe_lookup_key?: string | null
+          stripe_metadata?: Json | null
+          stripe_nickname?: string | null
           stripe_price_id_monthly?: string | null
           stripe_price_id_yearly?: string | null
+          stripe_product_id?: string | null
+          stripe_recurring?: Json | null
+          stripe_tax_behavior?: string | null
+          stripe_tiers?: Json | null
+          stripe_tiers_mode?: string | null
+          stripe_transform_quantity?: Json | null
+          stripe_type?: string | null
+          stripe_unit_amount?: number | null
+          stripe_unit_amount_decimal?: string | null
+          stripe_updated?: number | null
           updated_at?: string
         }
         Update: {
@@ -591,8 +627,26 @@ export type Database = {
           price_yearly?: number | null
           product_id?: string
           status?: string
+          stripe_active?: boolean | null
+          stripe_billing_scheme?: string | null
+          stripe_created?: number | null
+          stripe_currency_options?: Json | null
+          stripe_custom_unit_amount?: Json | null
+          stripe_lookup_key?: string | null
+          stripe_metadata?: Json | null
+          stripe_nickname?: string | null
           stripe_price_id_monthly?: string | null
           stripe_price_id_yearly?: string | null
+          stripe_product_id?: string | null
+          stripe_recurring?: Json | null
+          stripe_tax_behavior?: string | null
+          stripe_tiers?: Json | null
+          stripe_tiers_mode?: string | null
+          stripe_transform_quantity?: Json | null
+          stripe_type?: string | null
+          stripe_unit_amount?: number | null
+          stripe_unit_amount_decimal?: string | null
+          stripe_updated?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -618,7 +672,17 @@ export type Database = {
           pricing_model: string
           service_type: string | null
           status: string
+          stripe_created: number | null
+          stripe_default_price_id: string | null
+          stripe_images: string[] | null
+          stripe_package_dimensions: Json | null
           stripe_product_id: string | null
+          stripe_shippable: boolean | null
+          stripe_statement_descriptor: string | null
+          stripe_tax_code: string | null
+          stripe_unit_label: string | null
+          stripe_updated: number | null
+          stripe_url: string | null
           updated_at: string
         }
         Insert: {
@@ -633,7 +697,17 @@ export type Database = {
           pricing_model?: string
           service_type?: string | null
           status?: string
+          stripe_created?: number | null
+          stripe_default_price_id?: string | null
+          stripe_images?: string[] | null
+          stripe_package_dimensions?: Json | null
           stripe_product_id?: string | null
+          stripe_shippable?: boolean | null
+          stripe_statement_descriptor?: string | null
+          stripe_tax_code?: string | null
+          stripe_unit_label?: string | null
+          stripe_updated?: number | null
+          stripe_url?: string | null
           updated_at?: string
         }
         Update: {
@@ -648,7 +722,17 @@ export type Database = {
           pricing_model?: string
           service_type?: string | null
           status?: string
+          stripe_created?: number | null
+          stripe_default_price_id?: string | null
+          stripe_images?: string[] | null
+          stripe_package_dimensions?: Json | null
           stripe_product_id?: string | null
+          stripe_shippable?: boolean | null
+          stripe_statement_descriptor?: string | null
+          stripe_tax_code?: string | null
+          stripe_unit_label?: string | null
+          stripe_updated?: number | null
+          stripe_url?: string | null
           updated_at?: string
         }
         Relationships: []

@@ -28,12 +28,25 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     website: '',
     project_status: 'pending' as const,
     customer_tier: 'basic' as const,
+    conversion_value: 0,
     notes: ''
   });
 
   // Preencher automaticamente os dados do lead quando o modal abrir
   useEffect(() => {
     if (lead && isOpen) {
+      // Calcular valor baseado na fonte do lead
+      const getValueBySource = (sourcePage: string) => {
+        switch (sourcePage) {
+          case 'landing_page_basic':
+            return 4.99;
+          case 'landing_page_premium':
+            return 49.99;
+          default:
+            return 0;
+        }
+      };
+
       setFormData({
         full_name: lead.full_name || '',
         email: lead.email || '',
@@ -42,6 +55,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
         website: lead.website || '',
         project_status: 'pending',
         customer_tier: 'basic',
+        conversion_value: lead.conversion_value || getValueBySource(lead.source_page),
         notes: lead.notes || ''
       });
     }
@@ -71,7 +85,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -158,22 +172,37 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
             </div>
           </div>
 
-          {/* Categoria do Cliente */}
-          <div>
-            <Label className="text-sm font-medium text-gray-300">Categoria do Cliente</Label>
-            <Select 
-              value={formData.customer_tier} 
-              onValueChange={(value) => handleInputChange('customer_tier', value)}
-            >
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="basic">Básico</SelectItem>
-                <SelectItem value="premium">Premium</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Categoria e Valor */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium text-gray-300">Categoria do Cliente</Label>
+              <Select 
+                value={formData.customer_tier} 
+                onValueChange={(value) => handleInputChange('customer_tier', value)}
+              >
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="basic">Básico</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-300">Valor Pago (€)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.conversion_value}
+                onChange={(e) => handleInputChange('conversion_value', parseFloat(e.target.value) || 0)}
+                className="bg-gray-700 border-gray-600 text-white mt-1"
+                placeholder="0.00"
+              />
+            </div>
           </div>
 
           {/* Notas */}
@@ -213,7 +242,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
               <div>
                 <span className="font-medium">Origem:</span>
                 <p className="mt-1">
-                  {lead.source_page === 'landing_page_basic' ? 'Landing Page Básica' : 'Landing Page Premium'}
+                  {lead.source_page === 'landing_page_basic' ? 'Landing Page Básica (€4.99)' : 'Landing Page Premium (€49.99)'}
                 </p>
               </div>
             </div>

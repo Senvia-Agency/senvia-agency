@@ -40,8 +40,7 @@ export const useAdminRevenue = (dateRange: number) => {
 
       // Calcular receitas baseadas nos valores REAIS dos pagamentos
       const landingPageRevenue = (paidPayments || [])
-        .filter(p => p.amount === 499) // €4.99 para landing pages
-        .reduce((sum, p) => sum + (p.amount / 100), 0);
+        .reduce((sum, p) => sum + (p.amount / 100), 0); // Converter de centavos para euros
       
       const assistantRevenue = (activeSubscriptions || [])
         .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
@@ -59,7 +58,7 @@ export const useAdminRevenue = (dateRange: number) => {
         landing_page_revenue: landingPageRevenue,
         assistant_revenue: assistantRevenue,
         total_transactions: (paidPayments?.length || 0) + (activeSubscriptions?.length || 0),
-        landing_page_sales: paidPayments?.filter(p => p.amount === 499).length || 0,
+        landing_page_sales: paidPayments?.length || 0,
         active_subscriptions: activeSubscriptions?.length || 0
       };
     },

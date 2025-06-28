@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,12 +40,11 @@ const AdminFinanceiro = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - selectedPeriod);
       
-      // Receitas de Landing Pages (€4.99)
-      const { data: landingPagePayments } = await supabase
+      // Buscar APENAS pagamentos confirmados (status = 'paid')
+      const { data: paidPayments } = await supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
-        .eq('amount', 499)
         .gte('created_at', startDate.toISOString());
 
       // Receitas do Senvia Assistant
@@ -56,14 +54,18 @@ const AdminFinanceiro = () => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      const landingPageRevenue = (landingPagePayments?.length || 0) * 4.99;
-      const assistantRevenue = (assistantSubs?.length || 0) * 20;
+      // Calcular receitas reais baseadas nos amounts
+      const landingPageRevenue = (paidPayments || [])
+        .reduce((sum, p) => sum + (p.amount / 100), 0); // Converter de centavos para euros
+      
+      const assistantRevenue = (assistantSubs || [])
+        .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
       
       return {
         landing_pages: {
-          count: landingPagePayments?.length || 0,
+          count: paidPayments?.length || 0,
           revenue: landingPageRevenue,
-          transactions: landingPagePayments || []
+          transactions: paidPayments || []
         },
         senvia_assistant: {
           count: assistantSubs?.length || 0,
@@ -242,7 +244,7 @@ const AdminFinanceiro = () => {
             <div className="flex justify-between items-center">
               <div>
                 <div className="font-medium">Landing Pages</div>
-                <div className="text-sm text-gray-400">€4.99 por venda</div>
+                <div className="text-sm text-gray-400">Valor variável</div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-green-500">
@@ -376,7 +378,7 @@ const AdminFinanceiro = () => {
                     <div className="text-xs text-gray-400">{transaction.email}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-green-500">€4.99</div>
+                    <div className="font-bold text-green-500">€{(transaction.amount / 100).toFixed(2)}</div>
                     <div className="text-xs text-gray-400">
                       {format(new Date(transaction.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                     </div>

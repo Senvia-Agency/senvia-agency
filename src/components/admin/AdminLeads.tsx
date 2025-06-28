@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -252,7 +253,7 @@ const AdminLeads = () => {
         lead={convertLead}
         isOpen={!!convertLead}
         onClose={() => setConvertLead(null)}
-        onSuccess={handleConvertSuccess}
+        onConvert={handleConvertSuccess}
       />
     </div>
   );

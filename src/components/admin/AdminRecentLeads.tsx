@@ -25,23 +25,24 @@ const AdminRecentLeads = ({ recentActivity }: AdminRecentLeadsProps) => {
                 <div className="text-sm text-gray-400">
                   {lead.email_contact}
                 </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {lead.source}
+                </div>
               </div>
               <div className="text-right">
                 <div className="flex flex-col gap-1">
                   <Badge 
-                    variant={lead.lead_type === 'organic' ? 'secondary' : 'default'}
+                    variant={lead.lead_type === 'premium' ? 'secondary' : 'default'}
                     className="text-xs"
                   >
-                    {lead.lead_type === 'organic' ? 'Orgânico' : 'Pago'}
+                    {lead.lead_type === 'premium' ? 'Premium' : '€4.99'}
                   </Badge>
-                  {lead.lead_type === 'paid' && (
-                    <Badge 
-                      variant={lead.is_paid ? 'default' : 'destructive'}
-                      className={`text-xs ${lead.is_paid ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}
-                    >
-                      {lead.is_paid ? 'Pago ✓' : 'Não Pago'}
-                    </Badge>
-                  )}
+                  <Badge 
+                    variant={lead.is_paid ? 'default' : 'destructive'}
+                    className={`text-xs ${lead.is_paid ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}
+                  >
+                    {lead.is_paid ? 'Pago ✓' : 'Não Pago'}
+                  </Badge>
                 </div>
                 <div className="text-xs text-gray-400 mt-1">
                   {format(new Date(lead.created_at), 'dd/MM HH:mm', { locale: ptBR })}

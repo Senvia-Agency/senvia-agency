@@ -6,20 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
   Search, 
-  Filter,
   Eye,
   Mail,
   Phone,
-  Building,
   Calendar,
-  CreditCard,
   CheckCircle,
   XCircle,
   Clock
@@ -38,13 +34,13 @@ const AdminLeads = () => {
   const { data: leads, refetch, isLoading } = useQuery({
     queryKey: ['admin-leads'],
     queryFn: async () => {
-      // Buscar leads pagos (landing pages)
+      // Buscar leads pagos (Landing Page €4.99)
       const { data: paidLeads, error: paidError } = await supabase
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Buscar leads gratuitos (senvia)
+      // Buscar leads gratuitos (Landing Page Premium)
       const { data: freeLeads, error: freeError } = await supabase
         .from('landing_page_leads')
         .select('*')
@@ -56,20 +52,20 @@ const AdminLeads = () => {
       const combinedLeads = [
         ...(paidLeads || []).map(lead => ({
           ...lead,
-          lead_type: 'paid',
+          lead_type: 'basic',
           name: lead.company_name,
           phone_number: lead.company_whatsapp,
           email_address: lead.company_email,
-          source: 'Landing Page Paga',
+          source: 'Landing Page €4.99',
           status: lead.lead_status || 'new'
         })),
         ...(freeLeads || []).map(lead => ({
           ...lead,
-          lead_type: 'free',
+          lead_type: 'premium',
           name: lead.business_name || lead.full_name,
           phone_number: lead.phone,
           email_address: lead.email,
-          source: 'Senvia Orgânico',
+          source: 'Landing Page Premium',
           company_name: lead.business_name
         }))
       ];
@@ -81,27 +77,11 @@ const AdminLeads = () => {
     refetchInterval: 30000,
   });
 
-  // Verificar status de pagamento no Stripe
-  const checkPaymentStatus = async (leadId: string, email: string) => {
-    try {
-      const { data: payment } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('email', email)
-        .eq('status', 'paid')
-        .single();
-
-      return payment ? 'paid' : 'pending';
-    } catch {
-      return 'pending';
-    }
-  };
-
   // Atualizar status do lead
   const updateLeadStatus = async (leadId: string, leadType: string, newStatus: string) => {
     try {
-      const table = leadType === 'paid' ? 'leads' : 'landing_page_leads';
-      const statusField = leadType === 'paid' ? 'lead_status' : 'status';
+      const table = leadType === 'basic' ? 'leads' : 'landing_page_leads';
+      const statusField = leadType === 'basic' ? 'lead_status' : 'status';
       
       const { error } = await supabase
         .from(table)
@@ -143,7 +123,7 @@ const AdminLeads = () => {
       case 'new': return <Clock className="h-4 w-4 text-blue-500" />;
       case 'contacted': return <Phone className="h-4 w-4 text-yellow-500" />;
       case 'qualified': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'converted': return <CreditCard className="h-4 w-4 text-purple-500" />;
+      case 'converted': return <CheckCircle className="h-4 w-4 text-purple-500" />;
       case 'lost': return <XCircle className="h-4 w-4 text-red-500" />;
       default: return <Clock className="h-4 w-4 text-gray-500" />;
     }
@@ -222,8 +202,8 @@ const AdminLeads = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as fontes</SelectItem>
-                <SelectItem value="paid">Landing Page Paga</SelectItem>
-                <SelectItem value="free">Senvia Orgânico</SelectItem>
+                <SelectItem value="basic">Landing Page €4.99</SelectItem>
+                <SelectItem value="premium">Landing Page Premium</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -268,8 +248,8 @@ const AdminLeads = () => {
                     {lead.status || 'new'}
                   </Badge>
                   
-                  <Badge variant={lead.lead_type === 'paid' ? 'default' : 'secondary'}>
-                    {lead.lead_type === 'paid' ? 'Pago' : 'Gratuito'}
+                  <Badge variant={lead.lead_type === 'basic' ? 'default' : 'secondary'}>
+                    {lead.lead_type === 'basic' ? '€4.99' : 'Premium'}
                   </Badge>
 
                   <Button
@@ -324,7 +304,7 @@ const AdminLeads = () => {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-300">Fonte</label>
-                  <Badge variant={selectedLead.lead_type === 'paid' ? 'default' : 'secondary'}>
+                  <Badge variant={selectedLead.lead_type === 'basic' ? 'default' : 'secondary'}>
                     {selectedLead.source}
                   </Badge>
                 </div>

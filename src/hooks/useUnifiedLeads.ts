@@ -1,23 +1,17 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useUnifiedLeads = (dateRange?: number) => {
+export const useUnifiedLeads = () => {
   return useQuery({
-    queryKey: ['unified-leads', dateRange],
+    queryKey: ['unified-leads'],
     queryFn: async () => {
-      let query = supabase
+      console.log('Buscando leads unificados...');
+      
+      const { data, error } = await supabase
         .from('unified_leads')
         .select('*')
         .order('created_at', { ascending: false });
-
-      if (dateRange) {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - dateRange);
-        query = query.gte('created_at', startDate.toISOString());
-      }
-
-      const { data, error } = await query;
 
       if (error) {
         console.error('Erro ao buscar leads unificados:', error);
@@ -31,55 +25,33 @@ export const useUnifiedLeads = (dateRange?: number) => {
   });
 };
 
-export const useUnifiedLeadsStats = (dateRange: number) => {
-  return useQuery({
-    queryKey: ['unified-leads-stats', dateRange],
-    queryFn: async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
+export const useUpdateUnifiedLead = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ leadId, updates }: { leadId: string; updates: any }) => {
+      console.log('Atualizando lead unificado:', leadId, updates);
       
-      console.log('Buscando estatísticas de leads unificados desde:', startDate.toISOString());
-      
-      const { data: allLeads, error } = await supabase
+      const { data, error } = await supabase
         .from('unified_leads')
-        .select('*')
-        .gte('created_at', startDate.toISOString());
+        .update(updates)
+        .eq('id', leadId)
+        .select()
+        .single();
 
       if (error) {
-        console.error('Erro ao buscar leads unificados:', error);
+        console.error('Erro ao atualizar lead:', error);
         throw error;
       }
 
-      // Separar por origem
-      const basicLeads = allLeads?.filter(lead => lead.source_page === 'landing_page_basic') || [];
-      const premiumLeads = allLeads?.filter(lead => lead.source_page === 'landing_page_premium') || [];
-      
-      // Contar conversões por status de pagamento
-      const basicPaidCount = basicLeads.filter(lead => lead.payment_status === 'paid').length;
-      const premiumConvertedCount = premiumLeads.filter(lead => lead.converted === true).length;
-      
-      const totalLeads = allLeads?.length || 0;
-      const totalConversions = basicPaidCount + premiumConvertedCount;
-      
-      console.log('Estatísticas dos leads unificados:', {
-        totalLeads,
-        basicLeads: basicLeads.length,
-        premiumLeads: premiumLeads.length,
-        basicPaidCount,
-        premiumConvertedCount,
-        totalConversions
-      });
-      
-      return {
-        total_leads: totalLeads,
-        basic_leads: basicLeads.length,
-        premium_leads: premiumLeads.length,
-        basic_paid: basicPaidCount,
-        premium_converted: premiumConvertedCount,
-        total_conversions: totalConversions,
-        conversion_rate: totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0
-      };
+      return data;
     },
-    refetchInterval: 10000,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unified-leads'] });
+      console.log('Lead atualizado com sucesso!');
+    },
+    onError: (error) => {
+      console.error('Erro na atualização:', error);
+    }
   });
 };

@@ -1,7 +1,5 @@
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,10 +16,13 @@ import {
   Calendar,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  ArrowRight
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useUnifiedLeads, useUpdateUnifiedLead } from "@/hooks/useUnifiedLeads";
+import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
 
 const AdminLeads = () => {
   const { toast } = useToast();
@@ -30,65 +31,17 @@ const AdminLeads = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
 
-  // Buscar todos os leads
-  const { data: leads, refetch, isLoading } = useQuery({
-    queryKey: ['admin-leads'],
-    queryFn: async () => {
-      // Buscar leads pagos (Landing Page €4.99)
-      const { data: paidLeads, error: paidError } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      // Buscar leads gratuitos (Landing Page Premium)
-      const { data: freeLeads, error: freeError } = await supabase
-        .from('landing_page_leads')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (paidError || freeError) throw paidError || freeError;
-
-      // Combinar e padronizar dados
-      const combinedLeads = [
-        ...(paidLeads || []).map(lead => ({
-          ...lead,
-          lead_type: 'basic',
-          name: lead.company_name,
-          phone_number: lead.company_whatsapp,
-          email_address: lead.company_email,
-          source: 'Landing Page €4.99',
-          status: lead.lead_status || 'new'
-        })),
-        ...(freeLeads || []).map(lead => ({
-          ...lead,
-          lead_type: 'premium',
-          name: lead.business_name || lead.full_name,
-          phone_number: lead.phone,
-          email_address: lead.email,
-          source: 'Landing Page Premium',
-          company_name: lead.business_name
-        }))
-      ];
-
-      return combinedLeads.sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    },
-    refetchInterval: 30000,
-  });
+  const { data: leads, refetch, isLoading } = useUnifiedLeads();
+  const updateLeadMutation = useUpdateUnifiedLead();
+  const convertLeadMutation = useConvertLeadToCustomer();
 
   // Atualizar status do lead
-  const updateLeadStatus = async (leadId: string, leadType: string, newStatus: string) => {
+  const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
-      const table = leadType === 'basic' ? 'leads' : 'landing_page_leads';
-      const statusField = leadType === 'basic' ? 'lead_status' : 'status';
-      
-      const { error } = await supabase
-        .from(table)
-        .update({ [statusField]: newStatus })
-        .eq('id', leadId);
-
-      if (error) throw error;
+      await updateLeadMutation.mutateAsync({
+        leadId,
+        updates: { lead_status: newStatus }
+      });
 
       toast({
         title: "Status atualizado",
@@ -105,15 +58,39 @@ const AdminLeads = () => {
     }
   };
 
+  // Converter lead para cliente
+  const convertToCustomer = async (leadId: string) => {
+    try {
+      await convertLeadMutation.mutateAsync(leadId);
+      
+      toast({
+        title: "Lead convertido",
+        description: "O lead foi convertido para cliente com sucesso."
+      });
+
+      refetch();
+      setSelectedLead(null);
+    } catch (error) {
+      toast({
+        title: "Erro na conversão",
+        description: "Não foi possível converter o lead para cliente.",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Filtrar leads
   const filteredLeads = leads?.filter(lead => {
     const matchesSearch = 
-      lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.email_address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.phone_number?.includes(searchTerm);
+      lead.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.phone?.includes(searchTerm) ||
+      lead.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-    const matchesSource = sourceFilter === "all" || lead.lead_type === sourceFilter;
+    const matchesStatus = statusFilter === "all" || lead.lead_status === statusFilter;
+    const matchesSource = sourceFilter === "all" || 
+      (sourceFilter === "basic" && lead.source_page === "landing_page_basic") ||
+      (sourceFilter === "premium" && lead.source_page === "landing_page_premium");
     
     return matchesSearch && matchesStatus && matchesSource;
   });
@@ -137,6 +114,14 @@ const AdminLeads = () => {
       case 'converted': return 'bg-purple-500/20 text-purple-500';
       case 'lost': return 'bg-red-500/20 text-red-500';
       default: return 'bg-gray-500/20 text-gray-500';
+    }
+  };
+
+  const getSourceLabel = (sourcePage: string) => {
+    switch (sourcePage) {
+      case 'landing_page_basic': return 'Landing Page €4.99';
+      case 'landing_page_premium': return 'Landing Page Premium';
+      default: return sourcePage;
     }
   };
 
@@ -218,22 +203,22 @@ const AdminLeads = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 flex-1">
                   <div className="flex items-center gap-2">
-                    {getStatusIcon(lead.status)}
+                    {getStatusIcon(lead.lead_status)}
                     <div>
-                      <div className="font-medium text-white">{lead.name || 'Nome não informado'}</div>
-                      <div className="text-sm text-gray-400">{lead.source}</div>
+                      <div className="font-medium text-white">{lead.full_name || lead.company_name || 'Nome não informado'}</div>
+                      <div className="text-sm text-gray-400">{getSourceLabel(lead.source_page)}</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-6 flex-1">
                     <div className="flex items-center gap-2 text-sm text-gray-400">
                       <Mail className="h-4 w-4" />
-                      {lead.email_address || 'N/A'}
+                      {lead.email || 'N/A'}
                     </div>
                     
                     <div className="flex items-center gap-2 text-sm text-gray-400">
                       <Phone className="h-4 w-4" />
-                      {lead.phone_number || 'N/A'}
+                      {lead.phone || 'N/A'}
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -244,13 +229,26 @@ const AdminLeads = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Badge className={getStatusColor(lead.status)}>
-                    {lead.status || 'new'}
+                  <Badge className={getStatusColor(lead.lead_status)}>
+                    {lead.lead_status || 'new'}
                   </Badge>
                   
-                  <Badge variant={lead.lead_type === 'basic' ? 'default' : 'secondary'}>
-                    {lead.lead_type === 'basic' ? '€4.99' : 'Premium'}
+                  <Badge variant={lead.source_page === 'landing_page_basic' ? 'default' : 'secondary'}>
+                    {lead.source_page === 'landing_page_basic' ? '€4.99' : 'Premium'}
                   </Badge>
+
+                  {lead.lead_status !== 'converted' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => convertToCustomer(lead.id)}
+                      className="border-green-600 text-green-400 hover:bg-green-700"
+                      disabled={convertLeadMutation.isPending}
+                    >
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Converter
+                    </Button>
+                  )}
 
                   <Button
                     variant="outline"
@@ -291,21 +289,31 @@ const AdminLeads = () => {
               {/* Informações Básicas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Nome/Empresa</label>
-                  <p className="text-sm text-gray-400">{selectedLead.name || 'Não informado'}</p>
+                  <label className="text-sm font-medium text-gray-300">Nome Completo</label>
+                  <p className="text-sm text-gray-400">{selectedLead.full_name || 'Não informado'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-300">Email</label>
-                  <p className="text-sm text-gray-400">{selectedLead.email_address || 'Não informado'}</p>
+                  <p className="text-sm text-gray-400">{selectedLead.email || 'Não informado'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-300">Telefone</label>
-                  <p className="text-sm text-gray-400">{selectedLead.phone_number || 'Não informado'}</p>
+                  <p className="text-sm text-gray-400">{selectedLead.phone || 'Não informado'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-300">Empresa</label>
+                  <p className="text-sm text-gray-400">{selectedLead.company_name || 'Não informado'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-300">Fonte</label>
-                  <Badge variant={selectedLead.lead_type === 'basic' ? 'default' : 'secondary'}>
-                    {selectedLead.source}
+                  <Badge variant={selectedLead.source_page === 'landing_page_basic' ? 'default' : 'secondary'}>
+                    {getSourceLabel(selectedLead.source_page)}
+                  </Badge>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-300">Convertido</label>
+                  <Badge variant={selectedLead.converted ? 'default' : 'secondary'}>
+                    {selectedLead.converted ? 'Sim' : 'Não'}
                   </Badge>
                 </div>
               </div>
@@ -314,8 +322,8 @@ const AdminLeads = () => {
               <div>
                 <label className="text-sm font-medium text-gray-300">Status do Lead</label>
                 <Select 
-                  value={selectedLead.status} 
-                  onValueChange={(value) => updateLeadStatus(selectedLead.id, selectedLead.lead_type, value)}
+                  value={selectedLead.lead_status} 
+                  onValueChange={(value) => updateLeadStatus(selectedLead.id, value)}
                 >
                   <SelectTrigger className="mt-2 bg-gray-700 border-gray-600">
                     <SelectValue />
@@ -345,6 +353,13 @@ const AdminLeads = () => {
                 </div>
               )}
 
+              {selectedLead.notes && (
+                <div>
+                  <label className="text-sm font-medium text-gray-300">Notas</label>
+                  <p className="text-sm text-gray-400 mt-1">{selectedLead.notes}</p>
+                </div>
+              )}
+
               {/* Data de Criação */}
               <div>
                 <label className="text-sm font-medium text-gray-300">Data de Cadastro</label>
@@ -352,6 +367,20 @@ const AdminLeads = () => {
                   {format(new Date(selectedLead.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                 </p>
               </div>
+
+              {/* Ação de Conversão */}
+              {selectedLead.lead_status !== 'converted' && !selectedLead.converted && (
+                <div className="pt-4 border-t border-gray-700">
+                  <Button
+                    onClick={() => convertToCustomer(selectedLead.id)}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={convertLeadMutation.isPending}
+                  >
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    Converter para Cliente
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>

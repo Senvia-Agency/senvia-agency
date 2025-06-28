@@ -9,63 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_metrics: {
-        Row: {
-          created_at: string
-          id: string
-          metadata: Json | null
-          metric_type: string
-          metric_value: number
-          period_end: string
-          period_start: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          metric_type: string
-          metric_value: number
-          period_end: string
-          period_start: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          metadata?: Json | null
-          metric_type?: string
-          metric_value?: number
-          period_end?: string
-          period_start?: string
-        }
-        Relationships: []
-      }
-      admin_settings: {
-        Row: {
-          admin_user_id: string
-          created_at: string
-          id: string
-          settings_key: string
-          settings_value: Json
-          updated_at: string
-        }
-        Insert: {
-          admin_user_id: string
-          created_at?: string
-          id?: string
-          settings_key: string
-          settings_value: Json
-          updated_at?: string
-        }
-        Update: {
-          admin_user_id?: string
-          created_at?: string
-          id?: string
-          settings_key?: string
-          settings_value?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
       agents: {
         Row: {
           created_at: string | null

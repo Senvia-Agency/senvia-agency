@@ -19,7 +19,6 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
         <div className="flex justify-between items-center">
           <div>
             <div className="font-medium">Landing Page €4.99</div>
-            <div className="text-sm text-gray-400">Tabela: leads</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-blue-500">
@@ -34,7 +33,6 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
         <div className="flex justify-between items-center">
           <div>
             <div className="font-medium">Landing Page Premium</div>
-            <div className="text-sm text-gray-400">Tabela: landing_page_leads</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-purple-500">

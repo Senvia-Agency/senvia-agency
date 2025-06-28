@@ -32,43 +32,73 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
 
-    const { name, description, category, pricing_model, plans } = await req.json();
-    logStep("Request data received", { name, description, category, pricing_model, plansCount: plans?.length });
+    const { name, description, category, pricing_model, plans, images } = await req.json();
+    logStep("Request data received", { name, description, category, pricing_model, plansCount: plans?.length, imagesCount: images?.length });
 
     // Criar produto no Stripe
-    const stripeProduct = await stripe.products.create({
+    const stripeProductData: any = {
       name,
       description: description || undefined,
+      images: images || [],
       metadata: {
         category: category || 'assistant',
         pricing_model: pricing_model || 'subscription'
       }
-    });
+    };
+
+    const stripeProduct = await stripe.products.create(stripeProductData);
     logStep("Stripe product created", { id: stripeProduct.id, name: stripeProduct.name });
 
-    // Criar preços no Stripe se fornecidos
+    // Criar preços no Stripe se fornecidos (para assinaturas)
     const stripePrices = [];
-    if (plans && plans.length > 0) {
+    if (pricing_model === 'subscription' && plans && plans.length > 0) {
       for (const plan of plans) {
-        const priceData: any = {
-          product: stripeProduct.id,
-          currency: plan.currency || 'eur',
-          nickname: plan.name,
-          metadata: plan.metadata || {}
-        };
-
+        // Criar preço mensal se fornecido
         if (plan.price_monthly) {
-          priceData.unit_amount = Math.round(plan.price_monthly * 100);
-          priceData.recurring = { interval: 'month' };
-        } else if (plan.price_yearly) {
-          priceData.unit_amount = Math.round(plan.price_yearly * 100);
-          priceData.recurring = { interval: 'year' };
+          const monthlyPriceData: any = {
+            product: stripeProduct.id,
+            currency: plan.currency || 'eur',
+            nickname: `${plan.name} - Mensal`,
+            unit_amount: Math.round(plan.price_monthly * 100),
+            recurring: { interval: 'month' },
+            metadata: { plan_name: plan.name, billing_cycle: 'monthly' }
+          };
+
+          const monthlyPrice = await stripe.prices.create(monthlyPriceData);
+          stripePrices.push(monthlyPrice);
+          logStep("Monthly price created", { id: monthlyPrice.id, amount: monthlyPrice.unit_amount });
         }
 
-        const stripePrice = await stripe.prices.create(priceData);
-        stripePrices.push(stripePrice);
-        logStep("Stripe price created", { id: stripePrice.id, amount: stripePrice.unit_amount });
+        // Criar preço anual se fornecido
+        if (plan.price_yearly) {
+          const yearlyPriceData: any = {
+            product: stripeProduct.id,
+            currency: plan.currency || 'eur',
+            nickname: `${plan.name} - Anual`,
+            unit_amount: Math.round(plan.price_yearly * 100),
+            recurring: { interval: 'year' },
+            metadata: { plan_name: plan.name, billing_cycle: 'yearly' }
+          };
+
+          const yearlyPrice = await stripe.prices.create(yearlyPriceData);
+          stripePrices.push(yearlyPrice);
+          logStep("Yearly price created", { id: yearlyPrice.id, amount: yearlyPrice.unit_amount });
+        }
       }
+    } else if (pricing_model === 'payment') {
+      // Para pagamento único, criar um preço simples
+      // Por enquanto, usar um valor padrão - isso será melhorado
+      const oneTimePriceData: any = {
+        product: stripeProduct.id,
+        currency: 'eur',
+        nickname: `${name} - Pagamento Único`,
+        unit_amount: 999, // €9.99 como exemplo
+        metadata: { payment_type: 'one_time' }
+      };
+
+      const oneTimePrice = await stripe.prices.create(oneTimePriceData);
+      stripePrices.push(oneTimePrice);
+      logStep("One-time price created", { id: oneTimePrice.id, amount: oneTimePrice.unit_amount });
     }
 
     // Salvar produto no Supabase
@@ -108,41 +138,95 @@ serve(async (req) => {
 
     logStep("Product saved to Supabase", { productId: productRecord.id });
 
-    // Salvar planos no Supabase
-    for (let i = 0; i < stripePrices.length; i++) {
-      const stripePrice = stripePrices[i];
-      const plan = plans[i];
-      
+    // Salvar planos no Supabase (se for assinatura)
+    if (pricing_model === 'subscription' && plans && plans.length > 0) {
+      for (let i = 0; i < plans.length; i++) {
+        const plan = plans[i];
+        
+        // Encontrar preços mensais e anuais para este plano
+        const monthlyPrice = stripePrices.find(p => 
+          p.metadata?.plan_name === plan.name && p.metadata?.billing_cycle === 'monthly'
+        );
+        const yearlyPrice = stripePrices.find(p => 
+          p.metadata?.plan_name === plan.name && p.metadata?.billing_cycle === 'yearly'
+        );
+        
+        const planData = {
+          product_id: productRecord.id,
+          name: plan.name,
+          description: plan.description || `Plano ${plan.name}`,
+          price_monthly: plan.price_monthly || null,
+          price_yearly: plan.price_yearly || null,
+          currency: (plan.currency || 'eur').toUpperCase(),
+          status: 'active',
+          stripe_price_id_monthly: monthlyPrice?.id || null,
+          stripe_price_id_yearly: yearlyPrice?.id || null,
+          features: plan.features || {},
+          limits: plan.limits || {},
+          stripe_created: monthlyPrice?.created || yearlyPrice?.created || Math.floor(Date.now() / 1000),
+          stripe_updated: monthlyPrice?.created || yearlyPrice?.created || Math.floor(Date.now() / 1000),
+          stripe_active: true,
+          stripe_billing_scheme: monthlyPrice?.billing_scheme || yearlyPrice?.billing_scheme || 'per_unit',
+          stripe_currency_options: null,
+          stripe_custom_unit_amount: null,
+          stripe_lookup_key: null,
+          stripe_metadata: { plan_name: plan.name },
+          stripe_nickname: plan.name,
+          stripe_product_id: stripeProduct.id,
+          stripe_recurring: monthlyPrice?.recurring || yearlyPrice?.recurring || null,
+          stripe_tax_behavior: null,
+          stripe_tiers: null,
+          stripe_tiers_mode: null,
+          stripe_transform_quantity: null,
+          stripe_type: monthlyPrice?.type || yearlyPrice?.type || 'recurring',
+          stripe_unit_amount: monthlyPrice?.unit_amount || yearlyPrice?.unit_amount || null,
+          stripe_unit_amount_decimal: null,
+          updated_at: new Date().toISOString()
+        };
+
+        const { error: planError } = await supabaseClient
+          .from('product_plans')
+          .insert(planData);
+
+        if (planError) {
+          logStep("Error saving plan to Supabase", { error: planError });
+        } else {
+          logStep("Plan saved to Supabase", { planName: plan.name });
+        }
+      }
+    } else if (pricing_model === 'payment' && stripePrices.length > 0) {
+      // Para pagamento único, criar um "plano" simples
+      const oneTimePrice = stripePrices[0];
       const planData = {
         product_id: productRecord.id,
-        name: plan.name,
-        description: plan.description || `Plano ${plan.name}`,
-        price_monthly: plan.price_monthly || null,
-        price_yearly: plan.price_yearly || null,
-        currency: (plan.currency || 'eur').toUpperCase(),
-        status: stripePrice.active ? 'active' : 'inactive',
-        stripe_price_id_monthly: stripePrice.recurring?.interval === 'month' ? stripePrice.id : null,
-        stripe_price_id_yearly: stripePrice.recurring?.interval === 'year' ? stripePrice.id : null,
-        features: plan.features || {},
-        limits: plan.limits || {},
-        stripe_created: stripePrice.created,
-        stripe_updated: stripePrice.updated || stripePrice.created,
-        stripe_active: stripePrice.active,
-        stripe_billing_scheme: stripePrice.billing_scheme,
-        stripe_currency_options: stripePrice.currency_options || null,
-        stripe_custom_unit_amount: stripePrice.custom_unit_amount || null,
-        stripe_lookup_key: stripePrice.lookup_key || null,
-        stripe_metadata: stripePrice.metadata || {},
-        stripe_nickname: stripePrice.nickname || null,
-        stripe_product_id: stripePrice.product as string,
-        stripe_recurring: stripePrice.recurring || null,
-        stripe_tax_behavior: stripePrice.tax_behavior || null,
-        stripe_tiers: stripePrice.tiers || null,
-        stripe_tiers_mode: stripePrice.tiers_mode || null,
-        stripe_transform_quantity: stripePrice.transform_quantity || null,
-        stripe_type: stripePrice.type,
-        stripe_unit_amount: stripePrice.unit_amount || null,
-        stripe_unit_amount_decimal: stripePrice.unit_amount_decimal || null,
+        name: `${name} - Pagamento Único`,
+        description: `Compre ${name} com pagamento único`,
+        price_monthly: null,
+        price_yearly: null,
+        currency: oneTimePrice.currency.toUpperCase(),
+        status: 'active',
+        stripe_price_id_monthly: oneTimePrice.id,
+        stripe_price_id_yearly: null,
+        features: {},
+        limits: {},
+        stripe_created: oneTimePrice.created,
+        stripe_updated: oneTimePrice.created,
+        stripe_active: oneTimePrice.active,
+        stripe_billing_scheme: oneTimePrice.billing_scheme,
+        stripe_currency_options: null,
+        stripe_custom_unit_amount: null,
+        stripe_lookup_key: null,
+        stripe_metadata: oneTimePrice.metadata || {},
+        stripe_nickname: oneTimePrice.nickname,
+        stripe_product_id: stripeProduct.id,
+        stripe_recurring: null,
+        stripe_tax_behavior: null,
+        stripe_tiers: null,
+        stripe_tiers_mode: null,
+        stripe_transform_quantity: null,
+        stripe_type: oneTimePrice.type,
+        stripe_unit_amount: oneTimePrice.unit_amount,
+        stripe_unit_amount_decimal: null,
         updated_at: new Date().toISOString()
       };
 
@@ -151,9 +235,9 @@ serve(async (req) => {
         .insert(planData);
 
       if (planError) {
-        logStep("Error saving plan to Supabase", { error: planError });
+        logStep("Error saving one-time plan to Supabase", { error: planError });
       } else {
-        logStep("Plan saved to Supabase", { planName: plan.name });
+        logStep("One-time plan saved to Supabase");
       }
     }
 
@@ -163,7 +247,8 @@ serve(async (req) => {
       success: true,
       message: "Product created successfully",
       product: productRecord,
-      stripe_product_id: stripeProduct.id
+      stripe_product_id: stripeProduct.id,
+      pricing_model: pricing_model
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

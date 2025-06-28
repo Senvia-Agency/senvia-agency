@@ -9,56 +9,61 @@ export const useAdminLeads = (dateRange: number) => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      console.log('Buscando leads desde:', startDate.toISOString());
+      console.log('Buscando estatísticas de leads desde:', startDate.toISOString());
       
-      // Buscar leads da Landing Page €4.99 (tabela leads)
-      const { data: basicLeads, error: basicError } = await supabase
+      // Buscar leads unificados
+      const { data: unifiedLeads, error: unifiedError } = await supabase
+        .from('unified_leads')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
+      // Buscar leads legacy básicos para compatibilidade
+      const { data: legacyBasicLeads, error: basicError } = await supabase
         .from('leads')
         .select('id, payment_status')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar leads da Landing Page Premium (tabela landing_page_leads) 
-      // Verificar se tem campo de status de pagamento ou usar campo 'status'
-      const { data: premiumLeads, error: premiumError } = await supabase
+      // Buscar leads legacy premium para compatibilidade
+      const { data: legacyPremiumLeads, error: premiumError } = await supabase
         .from('landing_page_leads')
         .select('id, status')
         .gte('created_at', startDate.toISOString());
 
-      console.log('Leads encontrados:', {
-        basicLeads: basicLeads?.length,
-        premiumLeads: premiumLeads?.length
-      });
-
-      if (basicError || premiumError) {
-        console.error('Erro ao buscar leads:', basicError || premiumError);
-        throw basicError || premiumError;
+      if (unifiedError || basicError || premiumError) {
+        console.error('Erro ao buscar leads:', unifiedError || basicError || premiumError);
+        throw unifiedError || basicError || premiumError;
       }
 
-      // Contar leads básicos pagos (payment_status = 'paid')
-      const basicPaidCount = basicLeads?.filter(lead => lead.payment_status === 'paid').length || 0;
+      // Contar leads unificados
+      const unifiedBasicLeads = unifiedLeads?.filter(lead => lead.source_page === 'landing_page_basic') || [];
+      const unifiedPremiumLeads = unifiedLeads?.filter(lead => lead.source_page === 'landing_page_premium') || [];
       
-      // Contar leads premium pagos (status = 'paid' ou similar)
-      const premiumPaidCount = premiumLeads?.filter(lead => lead.status === 'paid').length || 0;
+      const unifiedBasicPaid = unifiedBasicLeads.filter(lead => lead.payment_status === 'paid').length;
+      const unifiedPremiumConverted = unifiedPremiumLeads.filter(lead => lead.converted === true).length;
 
-      const totalLeads = (basicLeads?.length || 0) + (premiumLeads?.length || 0);
-      const totalConfirmedConversions = basicPaidCount + premiumPaidCount;
+      // Contar leads legacy para compatibilidade
+      const legacyBasicPaid = legacyBasicLeads?.filter(lead => lead.payment_status === 'paid').length || 0;
+      const legacyPremiumPaid = legacyPremiumLeads?.filter(lead => lead.status === 'paid').length || 0;
+
+      const totalLeads = (unifiedLeads?.length || 0) + (legacyBasicLeads?.length || 0) + (legacyPremiumLeads?.length || 0);
+      const totalConversions = unifiedBasicPaid + unifiedPremiumConverted + legacyBasicPaid + legacyPremiumPaid;
       
-      console.log('Contagens finais calculadas:', {
-        basicPaidCount,
-        premiumPaidCount,
-        totalConfirmedConversions,
-        basicLeadsWithStatus: basicLeads?.map(l => ({ id: l.id, payment_status: l.payment_status })),
-        premiumLeadsWithStatus: premiumLeads?.map(l => ({ id: l.id, status: l.status }))
+      console.log('Estatísticas finais calculadas:', {
+        unifiedLeads: unifiedLeads?.length || 0,
+        legacyBasicLeads: legacyBasicLeads?.length || 0,
+        legacyPremiumLeads: legacyPremiumLeads?.length || 0,
+        totalLeads,
+        totalConversions
       });
       
       return {
         total_leads: totalLeads,
-        landing_page_basic_leads: basicLeads?.length || 0,
-        landing_page_basic_paid: basicPaidCount,
-        landing_page_premium_leads: premiumLeads?.length || 0,
-        landing_page_premium_paid: premiumPaidCount,
-        confirmed_conversions: totalConfirmedConversions,
-        conversion_rate: totalLeads > 0 ? (totalConfirmedConversions / totalLeads) * 100 : 0
+        landing_page_basic_leads: unifiedBasicLeads.length + (legacyBasicLeads?.length || 0),
+        landing_page_basic_paid: unifiedBasicPaid + legacyBasicPaid,
+        landing_page_premium_leads: unifiedPremiumLeads.length + (legacyPremiumLeads?.length || 0),
+        landing_page_premium_paid: unifiedPremiumConverted + legacyPremiumPaid,
+        total_conversions: totalConversions,
+        conversion_rate: totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0
       };
     },
     refetchInterval: 10000,

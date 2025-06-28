@@ -11,35 +11,35 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface LeadFiltersProps {
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-  statusFilter: string;
-  setStatusFilter: (value: string) => void;
-  sourceFilter: string;
-  setSourceFilter: (value: string) => void;
-  dateFrom: Date | undefined;
-  setDateFrom: (date: Date | undefined) => void;
-  dateTo: Date | undefined;
-  setDateTo: (date: Date | undefined) => void;
-  totalLeads: number;
+  filters: {
+    status: string;
+    source: string;
+    dateRange: string;
+    search: string;
+  };
+  onFiltersChange: (filters: {
+    status: string;
+    source: string;
+    dateRange: string;
+    search: string;
+  }) => void;
 }
 
-const LeadFilters = ({
-  searchTerm,
-  setSearchTerm,
-  statusFilter,
-  setStatusFilter,
-  sourceFilter,
-  setSourceFilter,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-  totalLeads
-}: LeadFiltersProps) => {
+const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
+
+  const updateFilters = (key: string, value: string) => {
+    onFiltersChange({
+      ...filters,
+      [key]: value
+    });
+  };
+
   const clearDateFilters = () => {
     setDateFrom(undefined);
     setDateTo(undefined);
+    updateFilters('dateRange', 'all');
   };
 
   return (
@@ -54,15 +54,15 @@ const LeadFilters = ({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar por nome, email ou telefone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={filters.search}
+                  onChange={(e) => updateFilters('search', e.target.value)}
                   className="pl-10 bg-gray-700 border-gray-600 text-white"
                 />
               </div>
             </div>
             
             {/* Filtro Status */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={filters.status} onValueChange={(value) => updateFilters('status', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -80,14 +80,14 @@ const LeadFilters = ({
           {/* Segunda linha: Fonte e Filtros de Data */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Filtro Fonte */}
-            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+            <Select value={filters.source} onValueChange={(value) => updateFilters('source', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder="Fonte" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
                 <SelectItem value="all">Todas as fontes</SelectItem>
-                <SelectItem value="basic">Landing Page €4.99</SelectItem>
-                <SelectItem value="premium">Landing Page Premium</SelectItem>
+                <SelectItem value="landing_page_basic">Landing Page €4.99</SelectItem>
+                <SelectItem value="landing_page_premium">Landing Page Premium</SelectItem>
               </SelectContent>
             </Select>
 

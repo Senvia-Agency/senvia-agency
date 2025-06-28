@@ -16,8 +16,7 @@ import {
   TrendingUp,
   UserCheck,
   Zap,
-  ExternalLink,
-  Sync
+  ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -167,7 +166,7 @@ const AdminProdutosAssinaturas = () => {
             {isLoading ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
-              <Sync className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2" />
             )}
             Sincronizar Stripe
           </Button>
@@ -434,7 +433,7 @@ const AdminProdutosAssinaturas = () => {
                 disabled={isLoading}
                 className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
               >
-                <Sync className="h-4 w-4 mr-2" />
+                <RefreshCw className="h-4 w-4 mr-2" />
                 Sincronizar com Stripe
               </Button>
             </div>

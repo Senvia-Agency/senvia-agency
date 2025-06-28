@@ -33,12 +33,14 @@ const AdminFinanceiro = () => {
     date: format(new Date(), 'yyyy-MM-dd')
   });
 
-  // Buscar receitas CORRIGIDA
+  // Buscar receitas CORRIGIDA - usando dados reais da tabela payments
   const { data: revenueData, refetch: refetchRevenue } = useQuery({
     queryKey: ['admin-revenue', selectedPeriod],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - selectedPeriod);
+      
+      console.log('AdminFinanceiro: Buscando receitas desde:', startDate.toISOString());
       
       // Buscar APENAS pagamentos confirmados (status = 'paid')
       const { data: paidPayments } = await supabase
@@ -47,6 +49,8 @@ const AdminFinanceiro = () => {
         .eq('status', 'paid')
         .gte('created_at', startDate.toISOString());
 
+      console.log('AdminFinanceiro: Pagamentos encontrados:', paidPayments);
+
       // Receitas do Senvia Assistant
       const { data: assistantSubs } = await supabase
         .from('senvia_assistant_subscriptions')
@@ -54,17 +58,30 @@ const AdminFinanceiro = () => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      // Calcular receitas reais baseadas nos amounts
-      const landingPageRevenue = (paidPayments || [])
-        .reduce((sum, p) => sum + (p.amount / 100), 0); // Converter de centavos para euros
+      console.log('AdminFinanceiro: Assinaturas encontradas:', assistantSubs);
+
+      // Calcular receita TOTAL real dos pagamentos
+      const totalPaymentsRevenue = (paidPayments || [])
+        .reduce((sum, p) => {
+          console.log('AdminFinanceiro: Processando pagamento', p.id, 'valor:', p.amount);
+          return sum + (p.amount / 100);
+        }, 0);
       
       const assistantRevenue = (assistantSubs || [])
         .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
       
+      const totalRevenue = totalPaymentsRevenue + assistantRevenue;
+      
+      console.log('AdminFinanceiro: Receita calculada:', {
+        totalPaymentsRevenue,
+        assistantRevenue,
+        totalRevenue
+      });
+      
       return {
         landing_pages: {
           count: paidPayments?.length || 0,
-          revenue: landingPageRevenue,
+          revenue: totalPaymentsRevenue,
           transactions: paidPayments || []
         },
         senvia_assistant: {
@@ -72,7 +89,7 @@ const AdminFinanceiro = () => {
           revenue: assistantRevenue,
           subscriptions: assistantSubs || []
         },
-        total_revenue: landingPageRevenue + assistantRevenue
+        total_revenue: totalRevenue
       };
     },
     refetchInterval: 60000,

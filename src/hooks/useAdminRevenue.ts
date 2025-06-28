@@ -38,25 +38,31 @@ export const useAdminRevenue = (dateRange: number) => {
         throw subsError;
       }
 
-      // Calcular receitas baseadas nos valores REAIS dos pagamentos
-      const landingPageRevenue = (paidPayments || [])
-        .reduce((sum, p) => sum + (p.amount / 100), 0); // Converter de centavos para euros
+      // Calcular receita total REAL dos pagamentos (convertendo de centavos para euros)
+      const totalPaymentsRevenue = (paidPayments || [])
+        .reduce((sum, p) => {
+          console.log('Processando pagamento:', p.id, 'Amount:', p.amount);
+          return sum + (p.amount / 100);
+        }, 0);
       
-      const assistantRevenue = (activeSubscriptions || [])
+      // Receita das assinaturas (baseada no preço mensal)
+      const totalSubscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
       
-      const totalRevenue = landingPageRevenue + assistantRevenue;
+      const totalRevenue = totalPaymentsRevenue + totalSubscriptionsRevenue;
       
-      console.log('Receitas calculadas:', {
-        landingPageRevenue,
-        assistantRevenue,
-        totalRevenue
+      console.log('Cálculo final das receitas:', {
+        totalPaymentsRevenue,
+        totalSubscriptionsRevenue,
+        totalRevenue,
+        totalPayments: paidPayments?.length || 0,
+        totalSubscriptions: activeSubscriptions?.length || 0
       });
       
       return {
         total_revenue: totalRevenue,
-        landing_page_revenue: landingPageRevenue,
-        assistant_revenue: assistantRevenue,
+        landing_page_revenue: totalPaymentsRevenue,
+        assistant_revenue: totalSubscriptionsRevenue,
         total_transactions: (paidPayments?.length || 0) + (activeSubscriptions?.length || 0),
         landing_page_sales: paidPayments?.length || 0,
         active_subscriptions: activeSubscriptions?.length || 0

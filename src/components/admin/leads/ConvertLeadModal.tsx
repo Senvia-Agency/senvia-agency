@@ -47,16 +47,22 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     if (!lead) return;
 
     try {
-      await convertMutation.mutateAsync(lead.id);
+      console.log('Enviando dados para conversão:', { leadId: lead.id, customerData: formData });
+      
+      await convertMutation.mutateAsync({
+        leadId: lead.id,
+        customerData: formData
+      });
       
       toast({
         title: "Lead convertido com sucesso!",
-        description: "O lead foi convertido para cliente e adicionado à base de dados."
+        description: `Cliente criado com valor de €${formData.conversion_value.toFixed(2)} registrado.`
       });
       
       onConvert();
       onClose();
     } catch (error) {
+      console.error('Erro detalhado na conversão:', error);
       toast({
         title: "Erro ao converter lead",
         description: "Não foi possível converter o lead para cliente.",
@@ -66,6 +72,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
   };
 
   const handleInputChange = (field: string, value: string | number) => {
+    console.log('Alterando campo:', field, 'para:', value);
     setFormData(prev => ({
       ...prev,
       [field]: value

@@ -18,25 +18,54 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
+    if (!product?.id) {
+      toast({
+        title: "Erro",
+        description: "ID do produto não encontrado.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsDeleting(true);
+    
     try {
+      console.log('Tentando deletar produto:', product.id);
+      
       const { data, error } = await supabase.functions.invoke('delete-stripe-product', {
         body: { product_id: product.id }
       });
 
-      if (error) throw error;
+      console.log('Resposta da função delete:', { data, error });
+
+      if (error) {
+        console.error('Erro na função delete:', error);
+        throw new Error(error.message || 'Erro na comunicação com o servidor');
+      }
+
+      if (data && !data.success) {
+        console.error('Função retornou erro:', data);
+        throw new Error(data.error || 'Erro desconhecido na exclusão');
+      }
 
       toast({
         title: "Produto excluído com sucesso!",
-        description: "O produto foi desativado no Stripe e removido do banco de dados."
+        description: data?.message || "O produto foi removido e desativado no Stripe."
       });
 
-      onUpdate();
+      // Aguardar um pouco antes de atualizar para garantir que a exclusão foi processada
+      setTimeout(() => {
+        onUpdate();
+      }, 1000);
+
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error('Erro completo ao deletar produto:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
       toast({
         title: "Erro ao excluir produto",
-        description: "Não foi possível excluir o produto. Tente novamente.",
+        description: `Não foi possível excluir o produto: ${errorMessage}`,
         variant: "destructive"
       });
     } finally {
@@ -52,6 +81,7 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
           size="sm"
           onClick={() => setIsEditModalOpen(true)}
           className="border-slate-600 text-slate-300 hover:bg-slate-600/50"
+          disabled={isDeleting}
         >
           <Edit className="h-4 w-4" />
         </Button>
@@ -64,7 +94,11 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
               disabled={isDeleting}
               className="border-red-600 text-red-400 hover:bg-red-600/20"
             >
-              <Trash2 className="h-4 w-4" />
+              {isDeleting ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="bg-slate-800 border-slate-600">
@@ -74,13 +108,21 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
                 Confirmar Exclusão
               </AlertDialogTitle>
               <AlertDialogDescription className="text-slate-400">
-                Tem certeza que deseja excluir o produto "{product.name}"? 
-                Esta ação irá desativar o produto no Stripe e removê-lo do banco de dados.
-                Esta ação não pode ser desfeita.
+                Tem certeza que deseja excluir o produto "{product?.name || 'Este produto'}"? 
+                <br /><br />
+                Esta ação irá:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Desativar o produto no Stripe (se existir)</li>
+                  <li>Remover o produto e seus planos do banco de dados</li>
+                  <li>Esta ação não pode ser desfeita</li>
+                </ul>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="border-slate-600 text-slate-300 hover:bg-slate-700">
+              <AlertDialogCancel 
+                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                disabled={isDeleting}
+              >
                 Cancelar
               </AlertDialogCancel>
               <AlertDialogAction

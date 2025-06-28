@@ -26,9 +26,15 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (e: React.MouseEvent) => {
+    e.preventDefault();
     await signOut();
     navigate("/");
+    setShowClientMenu(false);
+  };
+
+  const handleLinkClick = () => {
+    setIsOpen(false);
     setShowClientMenu(false);
   };
 
@@ -39,7 +45,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-senvia-500 glow">
+          <Link to="/" className="text-2xl font-bold text-senvia-500 glow" onClick={handleLinkClick}>
             SENVIA
           </Link>
 
@@ -79,7 +85,7 @@ const Navbar = () => {
                     <Link
                       to="/dashboard"
                       className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
-                      onClick={() => setShowClientMenu(false)}
+                      onClick={handleLinkClick}
                     >
                       Dashboard
                     </Link>
@@ -87,7 +93,7 @@ const Navbar = () => {
                       <Link
                         to="/crm"
                         className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
-                        onClick={() => setShowClientMenu(false)}
+                        onClick={handleLinkClick}
                       >
                         CRM
                       </Link>
@@ -103,7 +109,7 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <Link to="/auth">
+              <Link to="/auth" onClick={handleLinkClick}>
                 <Button className="bg-senvia-500 hover:bg-senvia-400 text-black">
                   Área do Cliente
                 </Button>
@@ -131,14 +137,14 @@ const Navbar = () => {
                 <div className="ml-4 mt-2 space-y-1">
                   <Link
                     to="/senvia-assistant"
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                     className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
                   >
                     Senvia Assistant
                   </Link>
                   <Link
                     to="/landing-pages"
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                     className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
                   >
                     Senvia Landing Page
@@ -154,7 +160,7 @@ const Navbar = () => {
                   <Link
                     to="/dashboard"
                     className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                   >
                     Dashboard
                   </Link>
@@ -162,16 +168,13 @@ const Navbar = () => {
                     <Link
                       to="/crm"
                       className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                      onClick={() => setIsOpen(false)}
+                      onClick={handleLinkClick}
                     >
                       CRM
                     </Link>
                   )}
                   <button
-                    onClick={() => {
-                      handleSignOut();
-                      setIsOpen(false);
-                    }}
+                    onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-foreground hover:text-senvia-500 transition-colors flex items-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />
@@ -183,7 +186,7 @@ const Navbar = () => {
                   <Link
                     to="/auth"
                     className="block px-3 py-2"
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                   >
                     <Button className="w-full bg-senvia-500 hover:bg-senvia-400 text-black">
                       Área do Cliente

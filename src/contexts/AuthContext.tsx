@@ -63,15 +63,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Initialize auth state
   useEffect(() => {
     let isMounted = true;
+    let subscription: any;
 
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth...');
         
-        // Set up auth state listener first
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+        // Get initial session
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        if (isMounted) {
+          console.log('Initial session:', initialSession?.user?.id);
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+          
+          if (initialSession?.user) {
+            setAdminLoading(true);
+            await checkAdminStatus(initialSession.user.id);
+          } else {
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }
+          
+          setLoading(false);
+        }
+
+        // Set up auth state listener
+        subscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
           console.log('Auth state change:', event, currentSession?.user?.id);
           
           if (!isMounted) return;
@@ -99,33 +121,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setAdminLoading(false);
           }
         });
-
-        // Then get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-        }
-        
-        if (isMounted) {
-          console.log('Initial session:', initialSession?.user?.id);
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          
-          if (initialSession?.user) {
-            setAdminLoading(true);
-            await checkAdminStatus(initialSession.user.id);
-          } else {
-            setIsAdmin(false);
-            setAdminLoading(false);
-          }
-          
-          setLoading(false);
-        }
-
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Erro na inicialização da autenticação:', error);
         if (isMounted) {
@@ -135,11 +130,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
 
-    const cleanup = initializeAuth();
+    initializeAuth();
 
     return () => {
       isMounted = false;
-      cleanup?.then(cleanupFn => cleanupFn?.());
+      if (subscription) {
+        subscription.data?.subscription?.unsubscribe();
+      }
     };
   }, []);
 

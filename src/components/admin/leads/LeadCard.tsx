@@ -1,8 +1,8 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Phone, Calendar as CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Eye, Edit, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -10,98 +10,93 @@ import { getStatusIcon, getStatusColor, getSourceLabel, getStatusLabel } from ".
 
 interface LeadCardProps {
   lead: any;
-  editingStatus: string | null;
-  onLeadClick: (lead: any) => void;
-  onStatusEdit: (leadId: string) => void;
-  onStatusUpdate: (leadId: string, status: string) => void;
+  onView: (lead: any) => void;
+  onEdit: (lead: any) => void;
+  onConvert: (lead: any) => void;
 }
 
-const LeadCard = ({ 
-  lead, 
-  editingStatus, 
-  onLeadClick, 
-  onStatusEdit, 
-  onStatusUpdate 
-}: LeadCardProps) => {
+const LeadCard = ({ lead, onView, onEdit, onConvert }: LeadCardProps) => {
   return (
-    <Card 
-      className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer hover:bg-gray-750"
-      onClick={() => onLeadClick(lead)}
-    >
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6 flex-1">
-            {/* Informações Principais */}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="font-semibold text-white text-lg">
-                  {lead.full_name || lead.company_name || 'Nome não informado'}
-                </h3>
-                <Badge 
-                  variant="outline" 
-                  className={cn("text-xs", lead.source_page === 'landing_page_basic' ? 'border-senvia-500 text-senvia-400' : 'border-purple-500 text-purple-400')}
-                >
-                  {getSourceLabel(lead.source_page)}
-                </Badge>
-              </div>
-              
-              <div className="flex items-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <span>{lead.email || 'N/A'}</span>
-                </div>
-                
-                {lead.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    <span>{lead.phone}</span>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  <span>{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
-                </div>
-              </div>
+    <Card className="bg-gray-700 border-gray-600 hover:bg-gray-600 transition-colors">
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <h3 className="font-semibold text-white">{lead.full_name}</h3>
+              <Badge 
+                variant="outline" 
+                className={cn("", lead.source_page === 'landing_page_basic' ? 'border-senvia-500 text-senvia-400' : 'border-purple-500 text-purple-400')}
+              >
+                {getSourceLabel(lead.source_page)}
+              </Badge>
             </div>
-
-            {/* Status Clicável */}
-            <div 
-              className="flex items-center gap-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStatusEdit(lead.id);
-              }}
-            >
-              {editingStatus === lead.id ? (
-                <Select 
-                  value={lead.lead_status} 
-                  onValueChange={(value) => onStatusUpdate(lead.id, value)}
-                >
-                  <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="new">Novo</SelectItem>
-                    <SelectItem value="contacted">Contatado</SelectItem>
-                    <SelectItem value="qualified">Qualificado</SelectItem>
-                    <SelectItem value="converted">Convertido</SelectItem>
-                    <SelectItem value="lost">Perdido</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Badge 
-                  className={cn(
-                    "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2 px-3 py-1 border",
-                    getStatusColor(lead.lead_status)
-                  )}
-                >
-                  {getStatusIcon(lead.lead_status)}
-                  {getStatusLabel(lead.lead_status)}
-                </Badge>
+            <div className="space-y-1 text-sm text-gray-300">
+              <div>
+                <span className="text-gray-400">Email:</span> {lead.email}
+              </div>
+              {lead.phone && (
+                <div>
+                  <span className="text-gray-400">Telefone:</span> {lead.phone}
+                </div>
               )}
+              {lead.company_name && (
+                <div>
+                  <span className="text-gray-400">Empresa:</span> {lead.company_name}
+                </div>
+              )}
+              <div>
+                <span className="text-gray-400">Data:</span> {format(new Date(lead.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+              </div>
             </div>
           </div>
+          <div className="flex flex-col items-end gap-2">
+            <Badge className={cn("flex items-center gap-1", getStatusColor(lead.lead_status))}>
+              {getStatusIcon(lead.lead_status)}
+              {getStatusLabel(lead.lead_status)}
+            </Badge>
+            {lead.converted && (
+              <Badge variant="default" className="bg-green-600">
+                Convertido
+              </Badge>
+            )}
+            {lead.payment_status === 'paid' && (
+              <Badge variant="default" className="bg-blue-600">
+                Pago
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onView(lead)}
+            className="border-gray-600 text-gray-300 hover:bg-gray-600"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            Ver
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(lead)}
+            className="border-gray-600 text-gray-300 hover:bg-gray-600"
+          >
+            <Edit className="h-4 w-4 mr-1" />
+            Editar
+          </Button>
+          {!lead.converted && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onConvert(lead)}
+              className="border-senvia-500 text-senvia-400 hover:bg-senvia-500 hover:text-black"
+            >
+              <UserCheck className="h-4 w-4 mr-1" />
+              Converter
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

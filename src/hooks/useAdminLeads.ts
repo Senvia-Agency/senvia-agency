@@ -26,22 +26,32 @@ export const useAdminLeads = (dateRange: number) => {
       const unifiedBasicLeads = unifiedLeads?.filter(lead => lead.source_page === 'landing_page_basic') || [];
       const unifiedPremiumLeads = unifiedLeads?.filter(lead => lead.source_page === 'landing_page_premium') || [];
       
-      const unifiedBasicPaid = unifiedBasicLeads.filter(lead => lead.payment_status === 'paid').length;
-      const unifiedPremiumConverted = unifiedPremiumLeads.filter(lead => lead.converted === true).length;
+      // Contar conversões: payment_status = 'paid' OU converted = true
+      const unifiedBasicConverted = unifiedBasicLeads.filter(lead => 
+        lead.payment_status === 'paid' || lead.converted === true
+      ).length;
+      
+      const unifiedPremiumConverted = unifiedPremiumLeads.filter(lead => 
+        lead.converted === true
+      ).length;
 
       const totalLeads = unifiedLeads?.length || 0;
-      const totalConversions = unifiedBasicPaid + unifiedPremiumConverted;
+      const totalConversions = unifiedBasicConverted + unifiedPremiumConverted;
       
-      console.log('Estatísticas finais calculadas:', {
-        unifiedLeads: unifiedLeads?.length || 0,
+      console.log('Estatísticas calculadas:', {
         totalLeads,
-        totalConversions
+        basicLeads: unifiedBasicLeads.length,
+        premiumLeads: unifiedPremiumLeads.length,
+        basicConverted: unifiedBasicConverted,
+        premiumConverted: unifiedPremiumConverted,
+        totalConversions,
+        conversionRate: totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0
       });
       
       return {
         total_leads: totalLeads,
         landing_page_basic_leads: unifiedBasicLeads.length,
-        landing_page_basic_paid: unifiedBasicPaid,
+        landing_page_basic_paid: unifiedBasicConverted,
         landing_page_premium_leads: unifiedPremiumLeads.length,
         landing_page_premium_paid: unifiedPremiumConverted,
         total_conversions: totalConversions,

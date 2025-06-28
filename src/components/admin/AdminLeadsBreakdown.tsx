@@ -32,7 +32,7 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
           </div>
           <div className="text-right">
             <div className="font-bold text-green-500">
-              {basicPaid} pagos
+              {basicPaid} convertidos
             </div>
             <div className="text-xs text-gray-400">
               {basicLeads > 0 ? ((basicPaid / basicLeads) * 100).toFixed(1) : '0.0'}%

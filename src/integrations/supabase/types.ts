@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          settings_key: string
+          settings_value: Json | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          settings_key: string
+          settings_value?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          settings_key?: string
+          settings_value?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agents: {
         Row: {
           created_at: string | null

@@ -57,7 +57,7 @@ const AdminSettings = () => {
         { count: subscriptionsCount },
         { count: productsCount }
       ] = await Promise.all([
-        supabase.from('landing_page_leads').select('*', { count: 'exact', head: true }),
+        supabase.from('unified_leads').select('*', { count: 'exact', head: true }),
         supabase.from('payments').select('*', { count: 'exact', head: true }),
         supabase.from('senvia_assistant_subscriptions').select('*', { count: 'exact', head: true }),
         supabase.from('products').select('*', { count: 'exact', head: true })

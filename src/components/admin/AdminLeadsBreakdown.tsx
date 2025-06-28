@@ -18,33 +18,57 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <div className="font-medium">Leads Pagos</div>
-            <div className="text-sm text-gray-400">Compraram landing page</div>
+            <div className="font-medium">Landing Page €4.99</div>
+            <div className="text-sm text-gray-400">Leads básicos</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-blue-500">
-              {leadsStats?.paid_leads || 0}
+              {leadsStats?.landing_page_basic_leads || 0}
+            </div>
+            <div className="text-xs text-gray-400">
+              {leadsStats?.landing_page_basic_paid || 0} pagos
             </div>
           </div>
         </div>
         
         <div className="flex justify-between items-center">
           <div>
-            <div className="font-medium">Leads Orgânicos</div>
-            <div className="text-sm text-gray-400">Cadastros gratuitos</div>
+            <div className="font-medium">Landing Page Premium</div>
+            <div className="text-sm text-gray-400">Leads premium</div>
+          </div>
+          <div className="text-right">
+            <div className="font-bold text-purple-500">
+              {leadsStats?.landing_page_premium_leads || 0}
+            </div>
+            <div className="text-xs text-gray-400">
+              {leadsStats?.landing_page_premium_paid || 0} pagos
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="font-medium">Leads Gratuitos</div>
+            <div className="text-sm text-gray-400">Cadastros sem pagamento</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-green-500">
-              {leadsStats?.organic_leads || 0}
+              {leadsStats?.free_leads || 0}
             </div>
           </div>
         </div>
 
         <div className="pt-2 border-t border-gray-700">
           <div className="flex justify-between items-center">
-            <div className="font-medium">Total de Conversões</div>
+            <div className="font-medium">Total de Leads</div>
+            <div className="font-bold text-senvia-500">
+              {leadsStats?.total_leads || 0}
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-1">
+            <div className="text-sm text-gray-400">Conversões Confirmadas</div>
             <div className="font-bold text-orange-500">
-              {leadsStats?.total_conversions || 0}
+              {leadsStats?.confirmed_conversions || 0}
             </div>
           </div>
         </div>

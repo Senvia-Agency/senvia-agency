@@ -2,12 +2,14 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
+import { getInitialFormData } from "./utils/convertLeadUtils";
+import BasicInfoFields from "./components/BasicInfoFields";
+import ProjectStatusField from "./components/ProjectStatusField";
+import CustomerTierValueFields from "./components/CustomerTierValueFields";
+import NotesField from "./components/NotesField";
+import OriginalLeadInfo from "./components/OriginalLeadInfo";
 
 interface ConvertLeadModalProps {
   lead: any;
@@ -35,29 +37,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
   // Preencher automaticamente os dados do lead quando o modal abrir
   useEffect(() => {
     if (lead && isOpen) {
-      // Calcular valor baseado na fonte do lead
-      const getValueBySource = (sourcePage: string) => {
-        switch (sourcePage) {
-          case 'landing_page_basic':
-            return 4.99;
-          case 'landing_page_premium':
-            return 49.99;
-          default:
-            return 0;
-        }
-      };
-
-      setFormData({
-        full_name: lead.full_name || '',
-        email: lead.email || '',
-        phone: lead.phone || '',
-        company_name: lead.company_name || '',
-        website: lead.website || '',
-        project_status: 'pending',
-        customer_tier: 'basic',
-        conversion_value: lead.conversion_value || getValueBySource(lead.source_page),
-        notes: lead.notes || ''
-      });
+      setFormData(getInitialFormData(lead));
     }
   }, [lead, isOpen]);
 
@@ -103,150 +83,32 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informações Básicas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Nome Completo</Label>
-              <Input
-                value={formData.full_name}
-                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-                required
-              />
-            </div>
+          <BasicInfoFields
+            formData={formData}
+            onInputChange={handleInputChange}
+          />
 
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Email</Label>
-              <Input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-                required
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Telefone</Label>
-              <Input
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Empresa</Label>
-              <Input
-                value={formData.company_name}
-                onChange={(e) => handleInputChange('company_name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Website</Label>
-              <Input
-                value={formData.website}
-                onChange={(e) => handleInputChange('website', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Status do Projeto</Label>
-              <Select 
-                value={formData.project_status} 
-                onValueChange={(value) => handleInputChange('project_status', value)}
-              >
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="in_progress">Em Progresso</SelectItem>
-                  <SelectItem value="completed">Concluído</SelectItem>
-                  <SelectItem value="on_hold">Em Pausa</SelectItem>
-                  <SelectItem value="cancelled">Cancelado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          {/* Status do Projeto */}
+          <ProjectStatusField
+            value={formData.project_status}
+            onChange={(value) => handleInputChange('project_status', value)}
+          />
 
           {/* Categoria e Valor */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Categoria do Cliente</Label>
-              <Select 
-                value={formData.customer_tier} 
-                onValueChange={(value) => handleInputChange('customer_tier', value)}
-              >
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="basic">Básico</SelectItem>
-                  <SelectItem value="premium">Premium</SelectItem>
-                  <SelectItem value="enterprise">Enterprise</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-gray-300">Valor Pago (€)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.conversion_value}
-                onChange={(e) => handleInputChange('conversion_value', parseFloat(e.target.value) || 0)}
-                className="bg-gray-700 border-gray-600 text-white mt-1"
-                placeholder="0.00"
-              />
-            </div>
-          </div>
+          <CustomerTierValueFields
+            customerTier={formData.customer_tier}
+            conversionValue={formData.conversion_value}
+            onInputChange={handleInputChange}
+          />
 
           {/* Notas */}
-          <div>
-            <Label className="text-sm font-medium text-gray-300">Notas</Label>
-            <Textarea
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white mt-1"
-              rows={3}
-              placeholder="Adicione notas sobre o cliente..."
-            />
-          </div>
+          <NotesField
+            value={formData.notes}
+            onChange={(value) => handleInputChange('notes', value)}
+          />
 
           {/* Informações do Lead Original */}
-          <div className="border-t border-gray-700 pt-4">
-            <h4 className="text-sm font-medium text-gray-300 mb-2">Informações do Lead Original</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-400">
-              {lead.objective && (
-                <div>
-                  <span className="font-medium">Objetivo:</span>
-                  <p className="mt-1">{lead.objective}</p>
-                </div>
-              )}
-              {lead.main_product_service && (
-                <div>
-                  <span className="font-medium">Produto/Serviço:</span>
-                  <p className="mt-1">{lead.main_product_service}</p>
-                </div>
-              )}
-              {lead.target_audience && (
-                <div>
-                  <span className="font-medium">Público-Alvo:</span>
-                  <p className="mt-1">{lead.target_audience}</p>
-                </div>
-              )}
-              <div>
-                <span className="font-medium">Origem:</span>
-                <p className="mt-1">
-                  {lead.source_page === 'landing_page_basic' ? 'Landing Page Básica (€4.99)' : 'Landing Page Premium (€49.99)'}
-                </p>
-              </div>
-            </div>
-          </div>
+          <OriginalLeadInfo lead={lead} />
 
           {/* Botões */}
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-700">

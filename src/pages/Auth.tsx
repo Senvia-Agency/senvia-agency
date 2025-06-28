@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +12,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft, User, Calendar } from "lucide-react
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, user, isAdmin, adminLoading } = useAuth();
+  const { signIn, signUp, user, isAdmin, adminLoading, loading } = useAuth();
   const { toast } = useToast();
   
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -28,7 +29,10 @@ const Auth = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (user && !adminLoading) {
+    console.log('Auth page - user:', user, 'isAdmin:', isAdmin, 'adminLoading:', adminLoading, 'loading:', loading);
+    
+    if (!loading && user && !adminLoading) {
+      console.log('Redirecting authenticated user...');
       // If user was trying to access admin area and is admin, redirect there
       if (from === '/admin' && isAdmin) {
         navigate("/admin");
@@ -46,7 +50,7 @@ const Auth = () => {
         navigate("/dashboard");
       }
     }
-  }, [user, isAdmin, adminLoading, navigate, from]);
+  }, [user, isAdmin, adminLoading, loading, navigate, from]);
 
   useEffect(() => {
     document.title = "Login | SENVIA";
@@ -63,10 +67,13 @@ const Auth = () => {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
+    console.log('Starting sign in process...');
+    
     const { error } = await signIn(email, password);
     
     if (error) {
+      console.error('Sign in failed:', error);
       let errorMessage = "Erro ao fazer login. Tente novamente.";
       
       if (error.message.includes("Invalid login credentials")) {
@@ -75,6 +82,8 @@ const Auth = () => {
         errorMessage = "Por favor, confirme seu email antes de fazer login.";
       } else if (error.message.includes("Too many requests")) {
         errorMessage = "Muitas tentativas. Tente novamente em alguns minutos.";
+      } else if (error.message.includes("Failed to fetch")) {
+        errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
       }
 
       toast({
@@ -82,8 +91,9 @@ const Auth = () => {
         description: errorMessage,
         variant: "destructive"
       });
-      setLoading(false);
+      setIsLoading(false);
     } else {
+      console.log('Sign in successful, waiting for redirect...');
       toast({
         title: "Login realizado!",
         description: "Bem-vindo de volta!"
@@ -232,9 +242,9 @@ const Auth = () => {
                     type="submit"
                     className="w-full bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                     style={{ color: '#000000' }}
-                    disabled={loading}
+                    disabled={isLoading}
                   >
-                    {loading ? "Entrando..." : "Entrar"}
+                    {isLoading ? "Entrando..." : "Entrar"}
                   </Button>
                 </form>
               </TabsContent>

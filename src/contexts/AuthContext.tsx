@@ -38,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Function to check admin status
   const checkAdminStatus = async (userId: string) => {
     try {
+      console.log('Checking admin status for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error('Erro ao verificar status de admin:', error);
         setIsAdmin(false);
       } else {
+        console.log('User role:', data?.role);
         setIsAdmin(data?.role === 'admin');
       }
     } catch (error) {
@@ -60,14 +62,53 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Initialize auth state
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
 
     const initializeAuth = async () => {
       try {
-        // Get initial session
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('Initializing auth...');
         
-        if (mounted) {
+        // Set up auth state listener first
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          console.log('Auth state change:', event, currentSession?.user?.id);
+          
+          if (!isMounted) return;
+          
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+          
+          if (currentSession?.user) {
+            setAdminLoading(true);
+            // Check admin status with a slight delay to avoid blocking
+            setTimeout(() => {
+              if (isMounted) {
+                checkAdminStatus(currentSession.user.id);
+              }
+            }, 100);
+          } else {
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }
+          
+          if (event === 'SIGNED_OUT') {
+            setUser(null);
+            setSession(null);
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }
+        });
+
+        // Then get initial session
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        if (isMounted) {
+          console.log('Initial session:', initialSession?.user?.id);
           setSession(initialSession);
           setUser(initialSession?.user ?? null);
           
@@ -81,52 +122,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           
           setLoading(false);
         }
+
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (error) {
         console.error('Erro na inicialização da autenticação:', error);
-        if (mounted) {
+        if (isMounted) {
           setLoading(false);
           setAdminLoading(false);
         }
       }
     };
 
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.id);
-      
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          setAdminLoading(true);
-          // Use setTimeout to avoid blocking the auth state change
-          setTimeout(() => {
-            checkAdminStatus(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-          setAdminLoading(false);
-        }
-      }
-    });
-
-    initializeAuth();
+    const cleanup = initializeAuth();
 
     return () => {
-      mounted = false;
-      subscription.unsubscribe();
+      isMounted = false;
+      cleanup?.then(cleanupFn => cleanupFn?.());
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('Attempting sign in for:', email);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      if (error) {
+        console.error('Sign in error:', error);
+      } else {
+        console.log('Sign in successful');
+      }
+      
       return { error };
     } catch (error) {
       console.error('Erro no signIn:', error);
@@ -158,6 +188,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      console.log('Signing out...');
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro no signOut:', error);

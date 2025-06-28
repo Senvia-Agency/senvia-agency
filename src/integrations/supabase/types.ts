@@ -9,6 +9,63 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          settings_key: string
+          settings_value: Json
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          settings_key: string
+          settings_value: Json
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          settings_key?: string
+          settings_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agents: {
         Row: {
           created_at: string | null
@@ -409,6 +466,45 @@ export type Database = {
           },
         ]
       }
+      lead_notes: {
+        Row: {
+          admin_user_id: string | null
+          completed: boolean | null
+          content: string
+          created_at: string
+          id: string
+          lead_id: string
+          lead_type: string
+          note_type: string
+          scheduled_for: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id?: string | null
+          completed?: boolean | null
+          content: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          lead_type: string
+          note_type?: string
+          scheduled_for?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string | null
+          completed?: boolean | null
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          lead_type?: string
+          note_type?: string
+          scheduled_for?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           call_to_action: string | null
@@ -424,6 +520,7 @@ export type Database = {
           email: string | null
           id: string
           landing_page_objective: string | null
+          lead_status: string | null
           logo_images: Json | null
           main_product_service: string | null
           payment_status: string | null
@@ -450,6 +547,7 @@ export type Database = {
           email?: string | null
           id?: string
           landing_page_objective?: string | null
+          lead_status?: string | null
           logo_images?: Json | null
           main_product_service?: string | null
           payment_status?: string | null
@@ -476,6 +574,7 @@ export type Database = {
           email?: string | null
           id?: string
           landing_page_objective?: string | null
+          lead_status?: string | null
           logo_images?: Json | null
           main_product_service?: string | null
           payment_status?: string | null
@@ -684,6 +783,7 @@ export type Database = {
       }
       products: {
         Row: {
+          active: boolean | null
           category: string
           created_at: string
           description: string | null
@@ -692,10 +792,13 @@ export type Database = {
           metadata: Json | null
           name: string
           pricing_model: string
+          service_type: string | null
           status: string
+          stripe_product_id: string | null
           updated_at: string
         }
         Insert: {
+          active?: boolean | null
           category: string
           created_at?: string
           description?: string | null
@@ -704,10 +807,13 @@ export type Database = {
           metadata?: Json | null
           name: string
           pricing_model?: string
+          service_type?: string | null
           status?: string
+          stripe_product_id?: string | null
           updated_at?: string
         }
         Update: {
+          active?: boolean | null
           category?: string
           created_at?: string
           description?: string | null
@@ -716,7 +822,9 @@ export type Database = {
           metadata?: Json | null
           name?: string
           pricing_model?: string
+          service_type?: string | null
           status?: string
+          stripe_product_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -754,6 +862,75 @@ export type Database = {
         }
         Relationships: []
       }
+      senvia_assistant_subscriptions: {
+        Row: {
+          billing_cycle: string
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          email: string
+          id: string
+          monthly_price: number | null
+          next_billing_date: string | null
+          plan_type: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_end_date: string | null
+          subscription_metadata: Json | null
+          subscription_start_date: string | null
+          trial_end_date: string | null
+          trial_start_date: string | null
+          updated_at: string
+          usage_data: Json | null
+          user_id: string
+        }
+        Insert: {
+          billing_cycle?: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          email: string
+          id?: string
+          monthly_price?: number | null
+          next_billing_date?: string | null
+          plan_type?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_metadata?: Json | null
+          subscription_start_date?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string
+          usage_data?: Json | null
+          user_id: string
+        }
+        Update: {
+          billing_cycle?: string
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          email?: string
+          id?: string
+          monthly_price?: number | null
+          next_billing_date?: string | null
+          plan_type?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_metadata?: Json | null
+          subscription_start_date?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
+          updated_at?: string
+          usage_data?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           active_agent: string
@@ -782,6 +959,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          stripe_event_id: string | null
+          subscription_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          stripe_event_id?: string | null
+          subscription_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          stripe_event_id?: string | null
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "senvia_assistant_subscriptions"
             referencedColumns: ["id"]
           },
         ]
@@ -815,8 +1027,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_revenue_metrics: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: {
+          total_revenue: number
+          landing_page_revenue: number
+          subscription_revenue: number
+          total_transactions: number
+          avg_transaction_value: number
+        }[]
+      }
+      get_leads_stats: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: {
+          total_leads: number
+          landing_page_leads: number
+          senvia_landing_leads: number
+          conversion_rate: number
+          pending_leads: number
+        }[]
+      }
+      get_trial_days_remaining: {
+        Args: { subscription_id: string }
+        Returns: number
+      }
       is_admin: {
         Args: { user_uuid?: string }
+        Returns: boolean
+      }
+      is_trial_expired: {
+        Args: { subscription_id: string }
         Returns: boolean
       }
     }

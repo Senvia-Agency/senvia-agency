@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,18 +20,36 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onSuccess }: ConvertLeadModal
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: lead?.full_name || '',
-    email: lead?.email || '',
-    phone: lead?.phone || '',
-    company_name: lead?.company_name || '',
-    website: lead?.website || '',
+    full_name: '',
+    email: '',
+    phone: '',
+    company_name: '',
+    website: '',
     customer_status: 'active',
-    customer_tier: lead?.source_page === 'landing_page_premium' ? 'premium' : 'basic',
-    acquisition_source: lead?.source_page || '',
-    total_spent: lead?.source_page === 'landing_page_basic' ? '4.99' : 
-                 lead?.source_page === 'landing_page_premium' ? '49.99' : '0',
-    notes: lead?.notes || ''
+    customer_tier: 'basic',
+    acquisition_source: '',
+    total_spent: '0',
+    notes: ''
   });
+
+  // Pré-preencher dados quando o lead mudar
+  useEffect(() => {
+    if (lead) {
+      setFormData({
+        full_name: lead.full_name || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        company_name: lead.company_name || '',
+        website: lead.website || '',
+        customer_status: 'active',
+        customer_tier: lead.source_page === 'landing_page_premium' ? 'premium' : 'basic',
+        acquisition_source: lead.source_page || '',
+        total_spent: lead.source_page === 'landing_page_basic' ? '4.99' : 
+                     lead.source_page === 'landing_page_premium' ? '49.99' : '0',
+        notes: lead.notes || ''
+      });
+    }
+  }, [lead]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));

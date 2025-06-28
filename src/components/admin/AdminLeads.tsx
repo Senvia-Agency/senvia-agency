@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,6 +77,8 @@ const AdminLeads = () => {
         full_name: lead.company_name || 'Nome não informado',
         phone: lead.company_whatsapp || '',
         country_code: '+351',
+        business_name: lead.company_name || undefined,
+        website: undefined, // A tabela leads não tem campo website
         objective: lead.landing_page_objective || 'Não especificado',
         status: lead.lead_status || 'new',
         priority: 1,

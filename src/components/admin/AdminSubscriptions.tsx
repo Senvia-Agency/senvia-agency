@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,11 +24,81 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+interface SenviaAssistantSubscription {
+  id: string;
+  user_id: string;
+  email: string;
+  plan_type: string;
+  status: string;
+  monthly_price?: number;
+  trial_start_date?: string;
+  trial_end_date?: string;
+  subscription_start_date?: string;
+  subscription_end_date?: string;
+  next_billing_date?: string;
+  cancelled_at?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  billing_cycle: string;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface CustomerSubscription {
+  id: string;
+  user_id: string;
+  product_id: string;
+  plan_id: string;
+  status: string;
+  start_date: string;
+  end_date?: string;
+  next_billing_date?: string;
+  cancelled_at?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  billing_cycle: string;
+  created_at: string;
+  updated_at: string;
+  products?: {
+    name: string;
+  };
+  product_plans?: {
+    name: string;
+    price_monthly?: number;
+  };
+}
+
+type UnifiedSubscription = {
+  id: string;
+  user_id: string;
+  email?: string;
+  product_name: string;
+  plan_name: string;
+  status: string;
+  subscription_type: 'senvia_assistant' | 'general';
+  billing_cycle: string;
+  currency?: string;
+  next_billing_date?: string;
+  cancelled_at?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
+  created_at: string;
+  updated_at: string;
+  trial_start_date?: string;
+  trial_end_date?: string;
+  monthly_price?: number;
+  product_plans?: {
+    name: string;
+    price_monthly?: number;
+  };
+};
+
 const AdminSubscriptions = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
+  const [selectedSubscription, setSelectedSubscription] = useState<UnifiedSubscription | null>(null);
 
   // Buscar assinaturas do Senvia Assistant
   const { data: subscriptions, refetch, isLoading } = useQuery({
@@ -64,16 +133,16 @@ const AdminSubscriptions = () => {
   });
 
   // Combinar todas as assinaturas
-  const allSubscriptions = [
+  const allSubscriptions: UnifiedSubscription[] = [
     ...(subscriptions?.map(sub => ({
       ...sub,
-      subscription_type: 'senvia_assistant',
+      subscription_type: 'senvia_assistant' as const,
       product_name: 'Senvia Assistant',
       plan_name: sub.plan_type
     })) || []),
     ...(customerSubscriptions?.map(sub => ({
       ...sub,
-      subscription_type: 'general',
+      subscription_type: 'general' as const,
       product_name: sub.products?.name || 'Produto Desconhecido',
       plan_name: sub.product_plans?.name || 'Plano Desconhecido'
     })) || [])
@@ -81,8 +150,9 @@ const AdminSubscriptions = () => {
 
   // Filtrar assinaturas
   const filteredSubscriptions = allSubscriptions.filter(subscription => {
+    const searchableEmail = subscription.subscription_type === 'senvia_assistant' ? subscription.email : '';
     const matchesSearch = 
-      subscription.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      searchableEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subscription.user_id?.includes(searchTerm) ||
       subscription.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -142,7 +212,7 @@ const AdminSubscriptions = () => {
     return <Icon className="h-4 w-4" />;
   };
 
-  const getDaysRemaining = (subscription: any) => {
+  const getDaysRemaining = (subscription: UnifiedSubscription) => {
     if (subscription.subscription_type === 'senvia_assistant' && subscription.trial_end_date) {
       const trialEnd = new Date(subscription.trial_end_date);
       const today = new Date();
@@ -151,6 +221,20 @@ const AdminSubscriptions = () => {
       return diffDays > 0 ? diffDays : 0;
     }
     return null;
+  };
+
+  const getSubscriptionPrice = (subscription: UnifiedSubscription) => {
+    if (subscription.subscription_type === 'senvia_assistant') {
+      return subscription.monthly_price || 20;
+    }
+    return subscription.product_plans?.price_monthly || 0;
+  };
+
+  const getSubscriptionEmail = (subscription: UnifiedSubscription) => {
+    if (subscription.subscription_type === 'senvia_assistant') {
+      return subscription.email || 'Email não disponível';
+    }
+    return subscription.user_id?.slice(0, 8) + '...';
   };
 
   if (isLoading) {
@@ -177,6 +261,7 @@ const AdminSubscriptions = () => {
       </div>
 
       {/* Stats Dashboard */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="pb-2">
@@ -289,12 +374,14 @@ const AdminSubscriptions = () => {
               <TableBody>
                 {filteredSubscriptions.map((subscription) => {
                   const daysRemaining = getDaysRemaining(subscription);
+                  const subscriptionPrice = getSubscriptionPrice(subscription);
+                  const subscriptionEmail = getSubscriptionEmail(subscription);
                   
                   return (
                     <TableRow key={`${subscription.subscription_type}-${subscription.id}`} className="border-gray-700">
                       <TableCell>
                         <div>
-                          <div className="font-medium text-white">{subscription.email}</div>
+                          <div className="font-medium text-white">{subscriptionEmail}</div>
                           <div className="text-xs text-gray-400 font-mono">
                             {subscription.user_id?.slice(0, 8)}...
                           </div>
@@ -328,10 +415,7 @@ const AdminSubscriptions = () => {
                       
                       <TableCell>
                         <div className="font-bold text-green-500">
-                          €{subscription.subscription_type === 'senvia_assistant' 
-                            ? (subscription.monthly_price || 20).toFixed(2)
-                            : (subscription.product_plans?.price_monthly || 0).toFixed(2)
-                          }
+                          €{subscriptionPrice.toFixed(2)}
                         </div>
                         <div className="text-xs text-gray-400">
                           /{subscription.billing_cycle || 'mês'}
@@ -370,7 +454,7 @@ const AdminSubscriptions = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
                                     <label className="text-sm font-medium text-gray-300">Cliente</label>
-                                    <p className="text-sm text-gray-400">{selectedSubscription.email}</p>
+                                    <p className="text-sm text-gray-400">{getSubscriptionEmail(selectedSubscription)}</p>
                                   </div>
                                   <div>
                                     <label className="text-sm font-medium text-gray-300">Produto</label>
@@ -396,10 +480,7 @@ const AdminSubscriptions = () => {
                                   <div>
                                     <label className="text-sm font-medium text-gray-300">Valor Mensal</label>
                                     <p className="text-sm text-gray-400">
-                                      €{selectedSubscription.subscription_type === 'senvia_assistant' 
-                                        ? (selectedSubscription.monthly_price || 20).toFixed(2)
-                                        : (selectedSubscription.product_plans?.price_monthly || 0).toFixed(2)
-                                      }
+                                      €{getSubscriptionPrice(selectedSubscription).toFixed(2)}
                                     </p>
                                   </div>
                                   <div>
@@ -507,6 +588,7 @@ const AdminSubscriptions = () => {
       </Card>
 
       {/* Summary Cards */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>

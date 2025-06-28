@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -131,7 +130,7 @@ const Auth = () => {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     const { error } = await signUp(email, password, {
       full_name: fullName,
       date_of_birth: dateOfBirth
@@ -166,7 +165,7 @@ const Auth = () => {
       setDateOfBirth("");
     }
     
-    setLoading(false);
+    setIsLoading(false);
   };
 
   return (
@@ -345,9 +344,9 @@ const Auth = () => {
                     type="submit"
                     className="w-full bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300"
                     style={{ color: '#000000' }}
-                    disabled={loading}
+                    disabled={isLoading}
                   >
-                    {loading ? "Criando conta..." : "Criar conta"}
+                    {isLoading ? "Criando conta..." : "Criar conta"}
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">

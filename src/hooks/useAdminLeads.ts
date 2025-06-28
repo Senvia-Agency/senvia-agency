@@ -14,44 +14,69 @@ export const useAdminLeads = (dateRange: number) => {
       // Buscar leads da Landing Page €4.99 (tabela leads)
       const { data: basicLeads, error: basicError } = await supabase
         .from('leads')
-        .select('*')
+        .select('id')
         .gte('created_at', startDate.toISOString());
 
       // Buscar leads da Landing Page Premium (tabela landing_page_leads)
       const { data: premiumLeads, error: premiumError } = await supabase
         .from('landing_page_leads')
-        .select('*')
+        .select('id')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar TODOS os pagamentos confirmados (status = 'paid')
-      const { data: confirmedPayments, error: paymentsError } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('status', 'paid')
-        .gte('created_at', startDate.toISOString());
-
-      console.log('Dados encontrados:', {
+      console.log('Leads encontrados:', {
         basicLeads: basicLeads?.length,
-        premiumLeads: premiumLeads?.length,
-        confirmedPayments: confirmedPayments?.length,
-        paymentsDetails: confirmedPayments?.map(p => ({ amount: p.amount, email: p.email }))
+        premiumLeads: premiumLeads?.length
       });
 
-      if (basicError || premiumError || paymentsError) {
-        console.error('Erro ao buscar leads:', basicError || premiumError || paymentsError);
-        throw basicError || premiumError || paymentsError;
+      if (basicError || premiumError) {
+        console.error('Erro ao buscar leads:', basicError || premiumError);
+        throw basicError || premiumError;
       }
 
-      // Contar pagamentos confirmados de €4.99 (499 centavos)
-      const basicPaidCount = confirmedPayments?.filter(p => p.amount === 499).length || 0;
-      
-      // Contar pagamentos confirmados premium (valores superiores a €4.99)
-      const premiumPaidCount = confirmedPayments?.filter(p => p.amount > 499).length || 0;
+      // Extrair IDs dos leads
+      const basicLeadIds = basicLeads?.map(lead => lead.id) || [];
+      const premiumLeadIds = premiumLeads?.map(lead => lead.id) || [];
+
+      // Buscar pagamentos confirmados relacionados aos leads básicos
+      let basicPaidCount = 0;
+      if (basicLeadIds.length > 0) {
+        const { data: basicPayments, error: basicPaymentsError } = await supabase
+          .from('payments')
+          .select('*')
+          .eq('status', 'paid')
+          .in('lead_id', basicLeadIds)
+          .gte('created_at', startDate.toISOString());
+
+        if (basicPaymentsError) {
+          console.error('Erro ao buscar pagamentos básicos:', basicPaymentsError);
+        } else {
+          basicPaidCount = basicPayments?.length || 0;
+          console.log('Pagamentos básicos encontrados:', basicPayments);
+        }
+      }
+
+      // Buscar pagamentos confirmados relacionados aos leads premium
+      let premiumPaidCount = 0;
+      if (premiumLeadIds.length > 0) {
+        const { data: premiumPayments, error: premiumPaymentsError } = await supabase
+          .from('payments')
+          .select('*')
+          .eq('status', 'paid')
+          .in('lead_id', premiumLeadIds)
+          .gte('created_at', startDate.toISOString());
+
+        if (premiumPaymentsError) {
+          console.error('Erro ao buscar pagamentos premium:', premiumPaymentsError);
+        } else {
+          premiumPaidCount = premiumPayments?.length || 0;
+          console.log('Pagamentos premium encontrados:', premiumPayments);
+        }
+      }
 
       const totalLeads = (basicLeads?.length || 0) + (premiumLeads?.length || 0);
-      const totalConfirmedConversions = confirmedPayments?.length || 0;
+      const totalConfirmedConversions = basicPaidCount + premiumPaidCount;
       
-      console.log('Contagens calculadas:', {
+      console.log('Contagens finais calculadas:', {
         basicPaidCount,
         premiumPaidCount,
         totalConfirmedConversions

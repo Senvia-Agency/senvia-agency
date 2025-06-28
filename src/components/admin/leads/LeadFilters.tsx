@@ -1,45 +1,22 @@
 
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Search, Calendar as CalendarIcon, X } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 interface LeadFiltersProps {
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-  statusFilter: string;
-  setStatusFilter: (value: string) => void;
-  sourceFilter: string;
-  setSourceFilter: (value: string) => void;
-  dateFrom: Date | undefined;
-  setDateFrom: (date: Date | undefined) => void;
-  dateTo: Date | undefined;
-  setDateTo: (date: Date | undefined) => void;
-  totalLeads: number;
+  filters: {
+    status: string;
+    source: string;
+    dateRange: string;
+    search: string;
+  };
+  onFiltersChange: (filters: any) => void;
 }
 
-const LeadFilters = ({
-  searchTerm,
-  setSearchTerm,
-  statusFilter,
-  setStatusFilter,
-  sourceFilter,
-  setSourceFilter,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-  totalLeads
-}: LeadFiltersProps) => {
-  const clearDateFilters = () => {
-    setDateFrom(undefined);
-    setDateTo(undefined);
+const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
+  const updateFilter = (key: string, value: string) => {
+    onFiltersChange({ ...filters, [key]: value });
   };
 
   return (
@@ -54,15 +31,15 @@ const LeadFilters = ({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Buscar por nome, email ou telefone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={filters.search}
+                  onChange={(e) => updateFilter('search', e.target.value)}
                   className="pl-10 bg-gray-700 border-gray-600 text-white"
                 />
               </div>
             </div>
             
             {/* Filtro Status */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -77,10 +54,10 @@ const LeadFilters = ({
             </Select>
           </div>
 
-          {/* Segunda linha: Fonte e Filtros de Data */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Segunda linha: Fonte e Período */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Filtro Fonte */}
-            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+            <Select value={filters.source} onValueChange={(value) => updateFilter('source', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder="Fonte" />
               </SelectTrigger>
@@ -91,67 +68,18 @@ const LeadFilters = ({
               </SelectContent>
             </Select>
 
-            {/* Data Início */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal bg-gray-700 border-gray-600 text-white hover:bg-gray-600",
-                    !dateFrom && "text-gray-400"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateFrom ? format(dateFrom, "dd/MM/yyyy") : "Data início"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateFrom}
-                  onSelect={setDateFrom}
-                  initialFocus
-                  className="bg-gray-800 text-white"
-                />
-              </PopoverContent>
-            </Popover>
-
-            {/* Data Fim */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal bg-gray-700 border-gray-600 text-white hover:bg-gray-600",
-                    !dateTo && "text-gray-400"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateTo ? format(dateTo, "dd/MM/yyyy") : "Data fim"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateTo}
-                  onSelect={setDateTo}
-                  initialFocus
-                  className="bg-gray-800 text-white"
-                />
-              </PopoverContent>
-            </Popover>
-            
-            {/* Limpar Filtros de Data */}
-            {(dateFrom || dateTo) && (
-              <Button
-                variant="ghost"
-                onClick={clearDateFilters}
-                className="w-full text-gray-400 hover:text-white hover:bg-gray-700 border border-gray-600"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Limpar Datas
-              </Button>
-            )}
+            {/* Filtro Período */}
+            <Select value={filters.dateRange} onValueChange={(value) => updateFilter('dateRange', value)}>
+              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                <SelectValue placeholder="Período" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectItem value="7">Últimos 7 dias</SelectItem>
+                <SelectItem value="30">Últimos 30 dias</SelectItem>
+                <SelectItem value="90">Últimos 90 dias</SelectItem>
+                <SelectItem value="365">Último ano</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </CardContent>

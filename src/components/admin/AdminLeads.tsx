@@ -8,15 +8,18 @@ import { useUnifiedLeads, useUpdateUnifiedLead } from "@/hooks/useUnifiedLeads";
 import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
+import ConvertLeadModal from "./leads/ConvertLeadModal";
 
 const AdminLeads = () => {
   const { toast } = useToast();
   const [selectedLead, setSelectedLead] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sourceFilter, setSourceFilter] = useState("all");
-  const [dateFrom, setDateFrom] = useState<Date>();
-  const [dateTo, setDateTo] = useState<Date>();
+  const [convertLead, setConvertLead] = useState<any>(null);
+  const [filters, setFilters] = useState({
+    status: "all",
+    source: "all",
+    dateRange: "30",
+    search: ""
+  });
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
 
   const { data: leads, refetch, isLoading } = useUnifiedLeads();
@@ -29,6 +32,14 @@ const AdminLeads = () => {
         leadId,
         updates: { lead_status: newStatus }
       });
+
+      // Se o status foi alterado para "converted", abrir modal de conversão
+      if (newStatus === 'converted') {
+        const lead = leads?.find(l => l.id === leadId);
+        if (lead) {
+          setConvertLead(lead);
+        }
+      }
 
       toast({
         title: "Status atualizado",
@@ -75,23 +86,22 @@ const AdminLeads = () => {
   // Filtrar leads
   const filteredLeads = leads?.filter(lead => {
     const matchesSearch = 
-      lead.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.phone?.includes(searchTerm) ||
-      lead.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      lead.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      lead.phone?.includes(filters.search) ||
+      lead.company_name?.toLowerCase().includes(filters.search.toLowerCase());
     
-    const matchesStatus = statusFilter === "all" || lead.lead_status === statusFilter;
-    const matchesSource = sourceFilter === "all" || 
-      (sourceFilter === "basic" && lead.source_page === "landing_page_basic") ||
-      (sourceFilter === "premium" && lead.source_page === "landing_page_premium");
+    const matchesStatus = filters.status === "all" || lead.lead_status === filters.status;
+    const matchesSource = filters.source === "all" || 
+      (filters.source === "basic" && lead.source_page === "landing_page_basic") ||
+      (filters.source === "premium" && lead.source_page === "landing_page_premium");
     
     // Filtro de data
-    let matchesDate = true;
-    if (dateFrom || dateTo) {
-      const leadDate = new Date(lead.created_at);
-      if (dateFrom && leadDate < dateFrom) matchesDate = false;
-      if (dateTo && leadDate > dateTo) matchesDate = false;
-    }
+    const daysAgo = parseInt(filters.dateRange);
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
+    const leadDate = new Date(lead.created_at);
+    const matchesDate = leadDate >= dateThreshold;
     
     return matchesSearch && matchesStatus && matchesSource && matchesDate;
   });
@@ -102,6 +112,11 @@ const AdminLeads = () => {
 
   const handleStatusEdit = (leadId: string) => {
     setEditingStatus(editingStatus === leadId ? null : leadId);
+  };
+
+  const handleConvertSuccess = () => {
+    refetch();
+    setConvertLead(null);
   };
 
   if (isLoading) {
@@ -132,17 +147,8 @@ const AdminLeads = () => {
 
       {/* Filtros */}
       <LeadFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        sourceFilter={sourceFilter}
-        setSourceFilter={setSourceFilter}
-        dateFrom={dateFrom}
-        setDateFrom={setDateFrom}
-        dateTo={dateTo}
-        setDateTo={setDateTo}
-        totalLeads={filteredLeads?.length || 0}
+        filters={filters}
+        onFiltersChange={setFilters}
       />
 
       {/* Lista de Leads */}
@@ -176,6 +182,14 @@ const AdminLeads = () => {
         isOpen={!!selectedLead}
         onClose={() => setSelectedLead(null)}
         onUpdate={updateLeadData}
+      />
+
+      {/* Modal de Conversão */}
+      <ConvertLeadModal
+        lead={convertLead}
+        isOpen={!!convertLead}
+        onClose={() => setConvertLead(null)}
+        onSuccess={handleConvertSuccess}
       />
     </div>
   );

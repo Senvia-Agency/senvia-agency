@@ -28,37 +28,45 @@ const AdminOverview = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      // Buscar pagamentos de landing pages (€4.99)
-      const { data: landingPagePayments, error: lpError } = await supabase
+      // Buscar APENAS pagamentos confirmados (status = 'paid')
+      const { data: paidPayments, error: paymentsError } = await supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
-        .eq('amount', 499)
         .gte('created_at', startDate.toISOString());
 
-      // Buscar assinaturas do Senvia Assistant
-      const { data: assistantSubs, error: asError } = await supabase
+      // Buscar assinaturas ATIVAS do Senvia Assistant
+      const { data: activeSubscriptions, error: subsError } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
-        .in('status', ['active', 'trial'])
+        .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      if (lpError || asError) throw lpError || asError;
+      if (paymentsError || subsError) {
+        console.error('Erro ao buscar dados:', paymentsError || subsError);
+        throw paymentsError || subsError;
+      }
 
-      const landingPageRevenue = (landingPagePayments?.length || 0) * 4.99;
-      const assistantRevenue = (assistantSubs?.filter(s => s.status === 'active').length || 0) * 20;
+      // Calcular receitas com base nos valores REAIS dos pagamentos
+      const landingPageRevenue = (paidPayments || [])
+        .filter(p => p.amount === 499) // €4.99 para landing pages
+        .reduce((sum, p) => sum + (p.amount / 100), 0);
+      
+      const assistantRevenue = (activeSubscriptions || [])
+        .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
+      
       const totalRevenue = landingPageRevenue + assistantRevenue;
       
       return {
         total_revenue: totalRevenue,
         landing_page_revenue: landingPageRevenue,
         assistant_revenue: assistantRevenue,
-        total_transactions: (landingPagePayments?.length || 0) + (assistantSubs?.length || 0),
-        landing_page_sales: landingPagePayments?.length || 0,
-        assistant_subscriptions: assistantSubs?.length || 0
+        total_transactions: (paidPayments?.length || 0) + (activeSubscriptions?.length || 0),
+        landing_page_sales: paidPayments?.filter(p => p.amount === 499).length || 0,
+        active_subscriptions: activeSubscriptions?.length || 0
       };
     },
-    refetchInterval: 30000, // Atualizar a cada 30 segundos
+    refetchInterval: 30000,
   });
 
   // Buscar estatísticas de leads CORRIGIDAS
@@ -68,44 +76,46 @@ const AdminOverview = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      // Buscar leads da landing page (€4.99)
-      const { data: landingPageLeads, error: lpError } = await supabase
+      // Buscar todos os leads (pagos e orgânicos)
+      const { data: paidLeads, error: paidError } = await supabase
         .from('leads')
         .select('*')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar leads gratuitos da senvia
-      const { data: senviaLeads, error: sError } = await supabase
+      const { data: organicLeads, error: organicError } = await supabase
         .from('landing_page_leads')
         .select('*')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar pagamentos para calcular conversão
-      const { data: payments, error: pError } = await supabase
+      // Buscar APENAS conversões reais (pagamentos confirmados)
+      const { data: realConversions, error: conversionsError } = await supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
         .gte('created_at', startDate.toISOString());
 
-      if (lpError || sError || pError) throw lpError || sError || pError;
+      if (paidError || organicError || conversionsError) {
+        console.error('Erro ao buscar leads:', paidError || organicError || conversionsError);
+        throw paidError || organicError || conversionsError;
+      }
 
-      const totalLeads = (landingPageLeads?.length || 0) + (senviaLeads?.length || 0);
-      const conversions = payments?.length || 0;
+      const totalLeads = (paidLeads?.length || 0) + (organicLeads?.length || 0);
+      const totalConversions = realConversions?.length || 0;
       
       return {
         total_leads: totalLeads,
-        landing_page_leads: landingPageLeads?.length || 0,
-        senvia_leads: senviaLeads?.length || 0,
-        conversion_rate: totalLeads > 0 ? (conversions / totalLeads) * 100 : 0,
-        total_conversions: conversions
+        paid_leads: paidLeads?.length || 0,
+        organic_leads: organicLeads?.length || 0,
+        conversion_rate: totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0,
+        total_conversions: totalConversions
       };
     },
     refetchInterval: 30000,
   });
 
-  // Buscar assinaturas ativas CORRIGIDO
+  // Buscar assinaturas ativas
   const { data: subscriptions, isLoading: subsLoading, refetch: refetchSubs } = useQuery({
-    queryKey: ['admin-subscriptions'],
+    queryKey: ['admin-active-subscriptions'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('senvia_assistant_subscriptions')
@@ -113,7 +123,10 @@ const AdminOverview = () => {
         .in('status', ['active', 'trial'])
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao buscar assinaturas:', error);
+        throw error;
+      }
       return data || [];
     },
     refetchInterval: 30000,
@@ -123,33 +136,45 @@ const AdminOverview = () => {
   const { data: recentActivity, isLoading: activityLoading, refetch: refetchActivity } = useQuery({
     queryKey: ['admin-recent-activity'],
     queryFn: async () => {
-      // Leads da senvia (gratuitos)
-      const { data: recentSenviaLeads, error: senviaError } = await supabase
+      // Leads orgânicos recentes
+      const { data: recentOrganicLeads, error: organicError } = await supabase
         .from('landing_page_leads')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(5);
       
-      // Leads pagos
+      // Leads pagos recentes
       const { data: recentPaidLeads, error: paidError } = await supabase
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(5);
       
-      // Pagamentos recentes
+      // Pagamentos CONFIRMADOS recentes
       const { data: recentPayments, error: paymentsError } = await supabase
         .from('payments')
         .select('*')
+        .eq('status', 'paid')
         .order('created_at', { ascending: false })
         .limit(5);
       
-      if (senviaError || paidError || paymentsError) throw senviaError || paidError || paymentsError;
+      if (organicError || paidError || paymentsError) {
+        console.error('Erro ao buscar atividade recente:', organicError || paidError || paymentsError);
+        throw organicError || paidError || paymentsError;
+      }
       
-      // Combinar leads
+      // Combinar leads com informação correta de status
       const allLeads = [
-        ...(recentSenviaLeads || []).map(lead => ({ ...lead, lead_type: 'senvia_free' })),
-        ...(recentPaidLeads || []).map(lead => ({ ...lead, lead_type: 'landing_page_paid' }))
+        ...(recentOrganicLeads || []).map(lead => ({ 
+          ...lead, 
+          lead_type: 'organic',
+          is_paid: false 
+        })),
+        ...(recentPaidLeads || []).map(lead => ({ 
+          ...lead, 
+          lead_type: 'paid',
+          is_paid: lead.payment_status === 'paid'
+        }))
       ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
       
       return {
@@ -274,7 +299,7 @@ const AdminOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-500">
-              {leadsStats?.conversion_rate ? `${Math.min(leadsStats.conversion_rate, 100).toFixed(1)}%` : '0%'}
+              {leadsStats?.conversion_rate?.toFixed(1) || '0.0'}%
             </div>
             <div className="text-xs text-gray-400">
               lead para venda
@@ -335,14 +360,14 @@ const AdminOverview = () => {
                   €{revenueMetrics?.assistant_revenue?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400">
-                  {subscriptions?.filter(s => s.status === 'active').length || 0} assinaturas
+                  {revenueMetrics?.active_subscriptions || 0} assinaturas
                 </div>
               </div>
             </div>
 
             <div className="pt-2 border-t border-gray-700">
               <div className="flex justify-between items-center">
-                <div className="font-medium">Total Mensal</div>
+                <div className="font-medium">Total</div>
                 <div className="font-bold text-senvia-500">
                   €{revenueMetrics?.total_revenue?.toFixed(2) || '0.00'}
                 </div>
@@ -366,7 +391,7 @@ const AdminOverview = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-blue-500">
-                  {leadsStats?.landing_page_leads || 0}
+                  {leadsStats?.paid_leads || 0}
                 </div>
               </div>
             </div>
@@ -378,7 +403,7 @@ const AdminOverview = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-green-500">
-                  {leadsStats?.senvia_leads || 0}
+                  {leadsStats?.organic_leads || 0}
                 </div>
               </div>
             </div>
@@ -407,9 +432,9 @@ const AdminOverview = () => {
                 <div key={`${lead.id}-${index}`} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium">
-                      {lead.lead_type === 'senvia_free' 
-                        ? (lead.full_name || 'Nome não informado')
-                        : (lead.business_name || lead.company_name || 'Nome não informado')
+                      {lead.lead_type === 'organic' 
+                        ? (lead.full_name || lead.business_name || 'Nome não informado')
+                        : (lead.company_name || 'Nome não informado')
                       }
                     </div>
                     <div className="text-sm text-gray-400">
@@ -418,10 +443,10 @@ const AdminOverview = () => {
                   </div>
                   <div className="text-right">
                     <Badge 
-                      variant={lead.lead_type === 'senvia_free' ? 'secondary' : 'default'}
+                      variant={lead.lead_type === 'organic' ? 'secondary' : 'default'}
                       className="text-xs"
                     >
-                      {lead.lead_type === 'senvia_free' ? 'Orgânico' : 'Pago'}
+                      {lead.lead_type === 'organic' ? 'Orgânico' : 'Pago'}
                     </Badge>
                     <div className="text-xs text-gray-400 mt-1">
                       {format(new Date(lead.created_at), 'dd/MM HH:mm', { locale: ptBR })}
@@ -454,10 +479,10 @@ const AdminOverview = () => {
                   </div>
                   <div className="text-right">
                     <Badge 
-                      variant={payment.status === 'paid' ? 'default' : payment.status === 'pending' ? 'secondary' : 'destructive'}
-                      className="text-xs"
+                      variant="default"
+                      className="text-xs bg-green-500/20 text-green-500"
                     >
-                      {payment.status}
+                      Pago
                     </Badge>
                     <div className="text-xs text-gray-400 mt-1">
                       {format(new Date(payment.created_at), 'dd/MM HH:mm', { locale: ptBR })}

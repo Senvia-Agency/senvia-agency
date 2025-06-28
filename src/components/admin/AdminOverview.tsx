@@ -407,10 +407,16 @@ const AdminOverview = () => {
                 <div key={`${lead.id}-${index}`} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium">
-                      {lead.full_name || lead.company_name || 'Nome não informado'}
+                      {lead.lead_type === 'senvia_free' 
+                        ? (lead.full_name || 'Nome não informado')
+                        : (lead.company_name || 'Nome não informado')
+                      }
                     </div>
                     <div className="text-sm text-gray-400">
-                      {lead.email || lead.company_email || 'Email não informado'}
+                      {lead.lead_type === 'senvia_free' 
+                        ? (lead.email || 'Email não informado')
+                        : (lead.company_email || 'Email não informado')
+                      }
                     </div>
                   </div>
                   <div className="text-right">

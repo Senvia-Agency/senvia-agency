@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +15,6 @@ import {
   Search, 
   Eye, 
   Edit, 
-  Star, 
   Calendar, 
   User, 
   Target, 
@@ -23,7 +23,9 @@ import {
   Phone, 
   Mail,
   Plus,
-  Filter
+  CreditCard,
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -40,7 +42,6 @@ interface Lead {
   website?: string;
   objective: string;
   status: string;
-  priority: number;
   assigned_to?: string;
   source: string;
   notes?: string;
@@ -50,6 +51,9 @@ interface Lead {
   conversion_date?: string;
   conversion_value?: number;
   lead_type: 'senvia_landing_page' | 'landing_page';
+  payment_status?: string;
+  stripe_session_id?: string;
+  stripe_customer_id?: string;
 }
 
 const AdminLeads = () => {
@@ -58,7 +62,6 @@ const AdminLeads = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Buscar leads da landing page tradicional
@@ -78,13 +81,15 @@ const AdminLeads = () => {
         phone: lead.company_whatsapp || '',
         country_code: '+351',
         business_name: lead.company_name || undefined,
-        website: undefined, // A tabela leads não tem campo website
+        website: undefined,
         objective: lead.landing_page_objective || 'Não especificado',
         status: lead.lead_status || 'new',
-        priority: 1,
-        source: 'landing_page',
+        source: 'Landing Page €4.99',
         converted: lead.payment_status === 'paid',
-        notes: ''
+        notes: '',
+        payment_status: lead.payment_status || 'pending',
+        stripe_session_id: lead.stripe_session_id,
+        stripe_customer_id: lead.stripe_customer_id
       })) || [];
     },
   });
@@ -101,7 +106,9 @@ const AdminLeads = () => {
       if (error) throw error;
       return data?.map(lead => ({
         ...lead,
-        lead_type: 'senvia_landing_page' as const
+        lead_type: 'senvia_landing_page' as const,
+        source: 'Senvia Orgânico',
+        payment_status: 'free'
       })) || [];
     },
   });
@@ -118,13 +125,12 @@ const AdminLeads = () => {
       lead.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.phone?.includes(searchTerm) ||
-      lead.business_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      (lead.business_name && lead.business_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
     const matchesSource = sourceFilter === "all" || lead.lead_type === sourceFilter;
-    const matchesPriority = priorityFilter === "all" || lead.priority?.toString() === priorityFilter;
 
-    return matchesSearch && matchesStatus && matchesSource && matchesPriority;
+    return matchesSearch && matchesStatus && matchesSource;
   });
 
   const updateLeadStatus = async (leadId: string, leadType: 'landing_page' | 'senvia_landing_page', newStatus: string) => {
@@ -158,6 +164,34 @@ const AdminLeads = () => {
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o status.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updatePaymentStatus = async (leadId: string, newPaymentStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ 
+          payment_status: newPaymentStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', leadId);
+
+      if (error) throw error;
+      
+      refetchLandingPageLeads();
+      
+      toast({
+        title: "Status de pagamento atualizado",
+        description: `Pagamento marcado como ${newPaymentStatus}.`
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar status de pagamento:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o status de pagamento.",
         variant: "destructive"
       });
     }
@@ -218,24 +252,15 @@ const AdminLeads = () => {
     return colorMap[status] || 'bg-gray-500';
   };
 
-  const getPriorityLabel = (priority: number) => {
-    const priorityMap: { [key: number]: string } = {
-      1: 'Baixa',
-      2: 'Média',
-      3: 'Alta',
-      4: 'Urgente'
-    };
-    return priorityMap[priority] || 'Baixa';
-  };
-
-  const getPriorityColor = (priority: number) => {
-    const colorMap: { [key: number]: string } = {
-      1: 'text-green-600',
-      2: 'text-yellow-600',
-      3: 'text-orange-600',
-      4: 'text-red-600'
-    };
-    return colorMap[priority] || 'text-green-600';
+  const getPaymentStatusIcon = (paymentStatus: string) => {
+    if (paymentStatus === 'paid') {
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
+    } else if (paymentStatus === 'pending') {
+      return <CreditCard className="h-4 w-4 text-yellow-500" />;
+    } else if (paymentStatus === 'free') {
+      return <Users className="h-4 w-4 text-blue-500" />;
+    }
+    return <XCircle className="h-4 w-4 text-red-500" />;
   };
 
   // Calcular estatísticas
@@ -259,7 +284,7 @@ const AdminLeads = () => {
       </div>
 
       {/* Stats Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-400">Total de Leads</CardTitle>
@@ -319,18 +344,6 @@ const AdminLeads = () => {
             </div>
           </CardContent>
         </Card>
-
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Taxa de Conversão</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
-              <span className="text-2xl font-bold">{stats.conversionRate.toFixed(1)}%</span>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Filters */}
@@ -369,21 +382,8 @@ const AdminLeads = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as Fontes</SelectItem>
-                <SelectItem value="landing_page">Landing Page (€4.99)</SelectItem>
-                <SelectItem value="senvia_landing_page">Senvia Landing Page</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-full md:w-40 bg-gray-700 border-gray-600">
-                <SelectValue placeholder="Prioridade" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as Prioridades</SelectItem>
-                <SelectItem value="1">Baixa</SelectItem>
-                <SelectItem value="2">Média</SelectItem>
-                <SelectItem value="3">Alta</SelectItem>
-                <SelectItem value="4">Urgente</SelectItem>
+                <SelectItem value="landing_page">Landing Page €4.99</SelectItem>
+                <SelectItem value="senvia_landing_page">Senvia Orgânico</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -402,14 +402,14 @@ const AdminLeads = () => {
                   <TableHead className="text-gray-300">Empresa</TableHead>
                   <TableHead className="text-gray-300">Fonte</TableHead>
                   <TableHead className="text-gray-300">Status</TableHead>
-                  <TableHead className="text-gray-300">Prioridade</TableHead>
+                  <TableHead className="text-gray-300">Pagamento</TableHead>
                   <TableHead className="text-gray-300">Data</TableHead>
                   <TableHead className="text-gray-300">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLeads.map((lead) => (
-                  <TableRow key={`${lead.lead_type}-${lead.id}`} className="border-gray-700">
+                  <TableRow key={`${lead.lead_type}-${lead.id}`} className="border-gray-700 hover:bg-gray-750 cursor-pointer">
                     <TableCell>
                       <div>
                         <div className="font-medium text-white">{lead.full_name}</div>
@@ -446,7 +446,7 @@ const AdminLeads = () => {
                         variant="outline" 
                         className={lead.lead_type === 'landing_page' ? 'border-green-500 text-green-500' : 'border-blue-500 text-blue-500'}
                       >
-                        {lead.lead_type === 'landing_page' ? 'Landing Page (€4.99)' : 'Senvia Landing Page'}
+                        {lead.source}
                       </Badge>
                     </TableCell>
                     
@@ -458,10 +458,10 @@ const AdminLeads = () => {
                     </TableCell>
                     
                     <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Star className={`h-4 w-4 ${getPriorityColor(lead.priority || 1)}`} />
-                        <span className={`text-sm ${getPriorityColor(lead.priority || 1)}`}>
-                          {getPriorityLabel(lead.priority || 1)}
+                      <div className="flex items-center gap-2">
+                        {getPaymentStatusIcon(lead.payment_status || 'pending')}
+                        <span className="text-sm text-gray-300 capitalize">
+                          {lead.payment_status || 'pending'}
                         </span>
                       </div>
                     </TableCell>
@@ -487,7 +487,7 @@ const AdminLeads = () => {
                             <Eye className="h-4 w-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
+                        <DialogContent className="max-w-3xl bg-gray-800 border-gray-700">
                           <DialogHeader>
                             <DialogTitle className="text-white">Detalhes do Lead</DialogTitle>
                           </DialogHeader>
@@ -525,14 +525,14 @@ const AdminLeads = () => {
                                 <div>
                                   <label className="text-sm font-medium text-gray-300">Fonte</label>
                                   <p className="text-sm text-gray-400">
-                                    {selectedLead.lead_type === 'landing_page' ? 'Landing Page (€4.99)' : 'Senvia Landing Page'}
+                                    {selectedLead.source}
                                   </p>
                                 </div>
                               </div>
 
-                              {/* Status */}
+                              {/* Status do Lead */}
                               <div>
-                                <label className="text-sm font-medium text-gray-300">Status</label>
+                                <label className="text-sm font-medium text-gray-300">Status do Lead</label>
                                 <Select 
                                   value={selectedLead.status} 
                                   onValueChange={(value) => updateLeadStatus(selectedLead.id, selectedLead.lead_type, value)}
@@ -551,6 +551,27 @@ const AdminLeads = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
+
+                              {/* Status do Pagamento (apenas para landing page leads) */}
+                              {selectedLead.lead_type === 'landing_page' && (
+                                <div>
+                                  <label className="text-sm font-medium text-gray-300">Status do Pagamento</label>
+                                  <Select 
+                                    value={selectedLead.payment_status || 'pending'} 
+                                    onValueChange={(value) => updatePaymentStatus(selectedLead.id, value)}
+                                  >
+                                    <SelectTrigger className="mt-1 bg-gray-700 border-gray-600">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="pending">Pendente</SelectItem>
+                                      <SelectItem value="paid">Pago</SelectItem>
+                                      <SelectItem value="failed">Falhado</SelectItem>
+                                      <SelectItem value="refunded">Reembolsado</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
 
                               {/* Adicionar nota */}
                               <div>

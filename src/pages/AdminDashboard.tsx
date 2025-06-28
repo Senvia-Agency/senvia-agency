@@ -6,10 +6,8 @@ import { useAdmin } from "@/hooks/useAdmin";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
-import AdminPayments from "@/components/admin/AdminPayments";
-import AdminProducts from "@/components/admin/AdminProducts";
-import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
-import AdminSettings from "@/components/admin/AdminSettings";
+import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
+import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 
 const AdminDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -48,14 +46,10 @@ const AdminDashboard = () => {
         return <AdminOverview />;
       case 'leads':
         return <AdminLeads />;
-      case 'payments':
-        return <AdminPayments />;
-      case 'products':
-        return <AdminProducts />;
-      case 'subscriptions':
-        return <AdminSubscriptions />;
-      case 'settings':
-        return <AdminSettings />;
+      case 'financeiro':
+        return <AdminFinanceiro />;
+      case 'produtos-assinaturas':
+        return <AdminProdutosAssinaturas />;
       default:
         return <AdminOverview />;
     }

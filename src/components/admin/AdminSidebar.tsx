@@ -1,19 +1,13 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
-  BarChart3, 
+  LayoutDashboard, 
   Users, 
   CreditCard, 
   Package, 
-  Settings, 
   LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  UserCheck
+  BarChart3
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -23,90 +17,66 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) => {
   const { signOut } = useAuth();
-  const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
 
   const menuItems = [
-    { id: 'overview', label: 'Visão Geral', icon: BarChart3 },
-    { id: 'leads', label: 'Gestão de Leads', icon: Users },
-    { id: 'payments', label: 'Pagamentos', icon: CreditCard },
-    { id: 'products', label: 'Produtos', icon: Package },
-    { id: 'subscriptions', label: 'Assinaturas', icon: UserCheck },
-    { id: 'settings', label: 'Configurações', icon: Settings },
+    {
+      id: 'overview',
+      label: 'Visão Geral',
+      icon: LayoutDashboard
+    },
+    {
+      id: 'leads',
+      label: 'Gestão de Leads',
+      icon: Users
+    },
+    {
+      id: 'financeiro',
+      label: 'Módulo Financeiro',
+      icon: BarChart3
+    },
+    {
+      id: 'produtos-assinaturas',
+      label: 'Produtos & Assinaturas',
+      icon: Package
+    }
   ];
 
   return (
-    <div className={`fixed left-0 top-0 h-full bg-gray-800 border-r border-gray-700 transition-all duration-300 z-50 ${
-      isCollapsed ? 'w-16' : 'w-64'
-    }`}>
+    <div className="fixed left-0 top-0 h-full w-64 bg-gray-900 border-r border-gray-700 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="text-xl font-bold text-senvia-500 glow">
-              SENVIA ADMIN
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-gray-400 hover:text-white"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-        </div>
+      <div className="p-6 border-b border-gray-700">
+        <div className="text-2xl font-bold text-senvia-500 glow">SENVIA</div>
+        <div className="text-sm text-gray-400">Admin Dashboard</div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4">
-        <div className="space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            
-            return (
-              <Button
-                key={item.id}
-                variant={isActive ? "default" : "ghost"}
-                className={`w-full justify-start gap-3 ${
-                  isActive 
-                    ? 'bg-senvia-500 text-black hover:bg-senvia-400' 
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
-                }`}
-                onClick={() => setActiveSection(item.id)}
-              >
-                <Icon className="h-5 w-5" />
-                {!isCollapsed && <span>{item.label}</span>}
-              </Button>
-            );
-          })}
-        </div>
+      {/* Menu */}
+      <nav className="flex-1 p-4 space-y-2">
+        {menuItems.map((item) => (
+          <Button
+            key={item.id}
+            variant={activeSection === item.id ? "default" : "ghost"}
+            onClick={() => setActiveSection(item.id)}
+            className={`w-full justify-start gap-3 ${
+              activeSection === item.id 
+                ? 'bg-senvia-500 text-black hover:bg-senvia-400' 
+                : 'text-gray-300 hover:text-white hover:bg-gray-800'
+            }`}
+          >
+            <item.icon className="h-5 w-5" />
+            {item.label}
+          </Button>
+        ))}
       </nav>
 
-      {/* Footer */}
+      {/* Logout */}
       <div className="p-4 border-t border-gray-700">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-gray-300 hover:text-white hover:bg-gray-700"
-          onClick={() => navigate('/dashboard')}
-        >
-          <Home className="h-5 w-5" />
-          {!isCollapsed && <span>Dashboard Cliente</span>}
-        </Button>
-        
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 mt-2"
-          onClick={handleSignOut}
+          onClick={signOut}
+          className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
         >
           <LogOut className="h-5 w-5" />
-          {!isCollapsed && <span>Sair</span>}
+          Sair
         </Button>
       </div>
     </div>

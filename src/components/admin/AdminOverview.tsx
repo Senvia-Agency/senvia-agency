@@ -9,13 +9,11 @@ import {
   TrendingUp, 
   Users, 
   CreditCard, 
-  Package, 
   Euro,
-  ArrowUpRight,
-  ArrowDownRight,
   Calendar,
   Target,
-  UserCheck
+  UserCheck,
+  Percent
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -23,50 +21,92 @@ import { ptBR } from "date-fns/locale";
 const AdminOverview = () => {
   const [dateRange, setDateRange] = useState(30);
 
-  // Buscar métricas de receita
+  // Buscar métricas de receita corrigidas
   const { data: revenueMetrics, isLoading: revenueLoading } = useQuery({
     queryKey: ['admin-revenue-metrics', dateRange],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      const { data, error } = await supabase
-        .rpc('calculate_revenue_metrics', {
-          start_date: startDate.toISOString(),
-          end_date: new Date().toISOString()
-        });
+      // Buscar pagamentos confirmados
+      const { data: payments, error: paymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('status', 'paid')
+        .gte('created_at', startDate.toISOString());
+
+      // Buscar assinaturas ativas (incluindo trial)
+      const { data: subscriptions, error: subsError } = await supabase
+        .from('senvia_assistant_subscriptions')
+        .select('*')
+        .in('status', ['active', 'trial'])
+        .gte('created_at', startDate.toISOString());
+
+      if (paymentsError || subsError) throw paymentsError || subsError;
+
+      const totalPayments = payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
+      const subscriptionRevenue = subscriptions?.reduce((sum, s) => sum + (s.monthly_price * 100), 0) || 0;
       
-      if (error) throw error;
-      return data[0];
+      return {
+        total_revenue: (totalPayments + subscriptionRevenue) / 100,
+        landing_page_revenue: payments?.filter(p => p.amount === 499).reduce((sum, p) => sum + p.amount, 0) / 100 || 0,
+        subscription_revenue: subscriptionRevenue / 100,
+        total_transactions: (payments?.length || 0) + (subscriptions?.length || 0),
+        avg_transaction_value: totalPayments > 0 ? totalPayments / (payments?.length || 1) / 100 : 0
+      };
     },
   });
 
-  // Buscar estatísticas de leads
+  // Buscar estatísticas de leads corrigidas
   const { data: leadsStats, isLoading: leadsLoading } = useQuery({
     queryKey: ['admin-leads-stats', dateRange],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      const { data, error } = await supabase
-        .rpc('get_leads_stats', {
-          start_date: startDate.toISOString(),
-          end_date: new Date().toISOString()
-        });
+      // Buscar leads da landing page (€4.99)
+      const { data: landingPageLeads, error: lpError } = await supabase
+        .from('leads')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
+      // Buscar leads da senvia landing page (gratuitos)
+      const { data: senviaLeads, error: sError } = await supabase
+        .from('landing_page_leads')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
+      // Buscar pagamentos para calcular conversão
+      const { data: payments, error: pError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('status', 'paid')
+        .gte('created_at', startDate.toISOString());
+
+      if (lpError || sError || pError) throw lpError || sError || pError;
+
+      const totalLeads = (landingPageLeads?.length || 0) + (senviaLeads?.length || 0);
+      const conversions = payments?.length || 0;
       
-      if (error) throw error;
-      return data[0];
+      return {
+        total_leads: totalLeads,
+        landing_page_leads: landingPageLeads?.length || 0,
+        senvia_landing_leads: senviaLeads?.length || 0,
+        conversion_rate: totalLeads > 0 ? (conversions / totalLeads) * 100 : 0,
+        pending_leads: (landingPageLeads?.filter(l => l.lead_status === 'new').length || 0) + 
+                      (senviaLeads?.filter(l => l.status === 'new').length || 0)
+      };
     },
   });
 
-  // Buscar assinaturas ativas
+  // Buscar assinaturas ativas (incluindo trial)
   const { data: subscriptions, isLoading: subsLoading } = useQuery({
     queryKey: ['admin-subscriptions'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
-        .eq('status', 'active');
+        .in('status', ['active', 'trial']);
       
       if (error) throw error;
       return data;
@@ -159,7 +199,7 @@ const AdminOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-500">
-              €{revenueMetrics?.total_revenue || '0.00'}
+              €{revenueMetrics?.total_revenue?.toFixed(2) || '0.00'}
             </div>
             <div className="text-xs text-gray-400">
               {revenueMetrics?.total_transactions || 0} transações
@@ -187,16 +227,16 @@ const AdminOverview = () => {
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-              <Target className="h-4 w-4 text-orange-500" />
-              Taxa de Conversão
+              <Percent className="h-4 w-4 text-orange-500" />
+              Conversão
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-500">
-              {leadsStats?.conversion_rate || '0.00'}%
+              {leadsStats?.conversion_rate ? `${leadsStats.conversion_rate.toFixed(1)}%` : '0%'}
             </div>
             <div className="text-xs text-gray-400">
-              últimos {dateRange} dias
+              taxa de conversão
             </div>
           </CardContent>
         </Card>
@@ -205,7 +245,7 @@ const AdminOverview = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
               <UserCheck className="h-4 w-4 text-purple-500" />
-              Assinaturas Ativas
+              Assinaturas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -213,7 +253,7 @@ const AdminOverview = () => {
               {subscriptions?.length || 0}
             </div>
             <div className="text-xs text-gray-400">
-              Senvia Assistant
+              ativas + trial
             </div>
           </CardContent>
         </Card>
@@ -236,7 +276,7 @@ const AdminOverview = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-green-500">
-                  €{revenueMetrics?.landing_page_revenue || '0.00'}
+                  €{revenueMetrics?.landing_page_revenue?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400">
                   {Math.round((revenueMetrics?.landing_page_revenue || 0) / 4.99)} vendas
@@ -251,10 +291,10 @@ const AdminOverview = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-purple-500">
-                  €{revenueMetrics?.subscription_revenue || '0.00'}
+                  €{revenueMetrics?.subscription_revenue?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400">
-                  {Math.round((revenueMetrics?.subscription_revenue || 0) / 20)} assinaturas
+                  {subscriptions?.length || 0} assinaturas
                 </div>
               </div>
             </div>
@@ -263,7 +303,7 @@ const AdminOverview = () => {
               <div className="flex justify-between items-center">
                 <div className="font-medium">Ticket Médio</div>
                 <div className="font-bold text-senvia-500">
-                  €{revenueMetrics?.avg_transaction_value || '0.00'}
+                  €{revenueMetrics?.avg_transaction_value?.toFixed(2) || '0.00'}
                 </div>
               </div>
             </div>
@@ -280,8 +320,8 @@ const AdminOverview = () => {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Landing Pages (€4.99)</div>
-                <div className="text-sm text-gray-400">Leads tradicionais</div>
+                <div className="font-medium">Landing Pages Pagos</div>
+                <div className="text-sm text-gray-400">Leads que pagaram €4.99</div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-blue-500">
@@ -292,8 +332,8 @@ const AdminOverview = () => {
             
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Senvia Landing Pages</div>
-                <div className="text-sm text-gray-400">Leads gratuitos</div>
+                <div className="font-medium">Leads Orgânicos</div>
+                <div className="text-sm text-gray-400">Leads gratuitos da Senvia</div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-green-500">
@@ -306,7 +346,7 @@ const AdminOverview = () => {
               <div className="flex justify-between items-center">
                 <div className="font-medium">Taxa de Conversão</div>
                 <div className="font-bold text-orange-500">
-                  {leadsStats?.conversion_rate || '0.00'}%
+                  {leadsStats?.conversion_rate?.toFixed(1) || '0.0'}%
                 </div>
               </div>
             </div>

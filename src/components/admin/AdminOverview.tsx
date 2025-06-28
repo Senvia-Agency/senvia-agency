@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminRevenue } from "@/hooks/useAdminRevenue";
 import { useAdminLeads } from "@/hooks/useAdminLeads";
@@ -12,11 +14,17 @@ import AdminRevenueBreakdown from "./AdminRevenueBreakdown";
 import AdminLeadsBreakdown from "./AdminLeadsBreakdown";
 import AdminRecentLeads from "./AdminRecentLeads";
 import AdminRecentPayments from "./AdminRecentPayments";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Clock, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 const AdminOverview = () => {
   const [dateRange, setDateRange] = useState(30);
+  const [customDateFrom, setCustomDateFrom] = useState<Date | undefined>();
+  const [customDateTo, setCustomDateTo] = useState<Date | undefined>();
   const [inspirationalMessage, setInspirationalMessage] = useState("");
+  const [currentTime, setCurrentTime] = useState(new Date());
   const { user } = useAuth();
 
   const { data: revenueMetrics, isLoading: revenueLoading, refetch: refetchRevenue } = useAdminRevenue(dateRange);
@@ -26,7 +34,7 @@ const AdminOverview = () => {
 
   const isLoading = revenueLoading || leadsLoading || subsLoading || activityLoading;
 
-  // Mensagens inspiradoras (simulando IA - em produção seria uma API)
+  // Mensagens inspiradoras
   const inspirationalMessages = [
     "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
     "Inovação distingue líderes de seguidores. Continue liderando!",
@@ -45,6 +53,20 @@ const AdminOverview = () => {
     const messageIndex = dayOfYear % inspirationalMessages.length;
     return inspirationalMessages[messageIndex];
   };
+
+  // Atualizar relógio com fuso horário de Lisboa
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      // Converter para fuso horário de Lisboa (GMT+1/GMT+2 dependendo do horário de verão)
+      const lisbonTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Lisbon"}));
+      setCurrentTime(lisbonTime);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     setInspirationalMessage(generateDailyMessage());
@@ -100,21 +122,32 @@ const AdminOverview = () => {
 
       {/* Seção com Imagem e Mensagem em duas colunas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Imagem com Saudação */}
+        {/* Imagem com Saudação, Data e Relógio */}
         <div className="relative rounded-lg overflow-hidden">
           <img 
-            src="/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" 
+            src="/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" 
             alt="SENVIA Dashboard" 
             className="w-full h-48 object-cover"
           />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-white mb-2">
                 Olá, {getUserName()}!
               </h2>
-              <p className="text-lg text-white/90">
+              <p className="text-lg text-white/90 mb-3">
                 Bem-vindo ao seu painel
               </p>
+              <div className="text-white/80 space-y-1">
+                <p className="text-sm">
+                  {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <p className="text-lg font-mono">
+                    {format(currentTime, "HH:mm:ss")} (Lisboa)
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -133,35 +166,108 @@ const AdminOverview = () => {
         </Card>
       </div>
 
-      {/* Filtros de Período - Mais discretos */}
-      <div className="flex justify-center mb-6">
-        <div className="inline-flex bg-gray-800/50 rounded-lg p-1 border border-gray-700">
-          <Button
-            variant={dateRange === 7 ? "default" : "ghost"}
-            onClick={() => setDateRange(7)}
-            className="text-sm px-4 py-2 h-8"
-            size="sm"
-          >
-            7 dias
-          </Button>
-          <Button
-            variant={dateRange === 30 ? "default" : "ghost"}
-            onClick={() => setDateRange(30)}
-            className="text-sm px-4 py-2 h-8"
-            size="sm"
-          >
-            30 dias
-          </Button>
-          <Button
-            variant={dateRange === 90 ? "default" : "ghost"}
-            onClick={() => setDateRange(90)}
-            className="text-sm px-4 py-2 h-8"
-            size="sm"
-          >
-            90 dias
-          </Button>
-        </div>
-      </div>
+      {/* Filtros de Período - Design Elegante */}
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">Período de análise:</span>
+              <div className="flex bg-gray-900/50 rounded-lg p-1">
+                <Button
+                  variant={dateRange === 7 ? "default" : "ghost"}
+                  onClick={() => setDateRange(7)}
+                  className="text-xs px-3 py-1 h-7"
+                  size="sm"
+                >
+                  7 dias
+                </Button>
+                <Button
+                  variant={dateRange === 30 ? "default" : "ghost"}
+                  onClick={() => setDateRange(30)}
+                  className="text-xs px-3 py-1 h-7"
+                  size="sm"
+                >
+                  30 dias
+                </Button>
+                <Button
+                  variant={dateRange === 90 ? "default" : "ghost"}
+                  onClick={() => setDateRange(90)}
+                  className="text-xs px-3 py-1 h-7"
+                  size="sm"
+                >
+                  90 dias
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">Período personalizado:</span>
+              <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[130px] justify-start text-left font-normal text-xs h-8 bg-gray-700 border-gray-600 hover:bg-gray-600",
+                        !customDateFrom && "text-gray-400"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-3 w-3" />
+                      {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "De"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={customDateFrom}
+                      onSelect={setCustomDateFrom}
+                      initialFocus
+                      className="bg-gray-800 text-white pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-[130px] justify-start text-left font-normal text-xs h-8 bg-gray-700 border-gray-600 hover:bg-gray-600",
+                        !customDateTo && "text-gray-400"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-3 w-3" />
+                      {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Até"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={customDateTo}
+                      onSelect={setCustomDateTo}
+                      initialFocus
+                      className="bg-gray-800 text-white pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {(customDateFrom || customDateTo) && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setCustomDateFrom(undefined);
+                      setCustomDateTo(undefined);
+                    }}
+                    className="text-xs h-8 px-2 text-gray-400 hover:text-white"
+                  >
+                    Limpar
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* KPI Cards */}
       <AdminKPICards 

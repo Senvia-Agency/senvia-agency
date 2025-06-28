@@ -368,6 +368,59 @@ export type Database = {
           },
         ]
       }
+      financial_movements: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          currency: string
+          customer_id: string | null
+          description: string
+          id: string
+          movement_date: string
+          movement_type: string
+          notes: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          description: string
+          id?: string
+          movement_date?: string
+          movement_type: string
+          notes?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          description?: string
+          id?: string
+          movement_date?: string
+          movement_type?: string
+          notes?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_movements_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follow_up: {
         Row: {
           created_at: string | null

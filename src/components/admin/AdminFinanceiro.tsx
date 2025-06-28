@@ -1,148 +1,50 @@
+
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { 
   TrendingUp, 
   TrendingDown, 
   Plus, 
-  Calendar,
   Euro,
   CreditCard,
   Receipt,
   Target,
-  BarChart3
+  ArrowUpDown
 } from "lucide-react";
-import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useRealFinancialData } from "@/hooks/useRealFinancialData";
+import { useFinancialMovements } from "@/hooks/useFinancialMovements";
+import AddMovementModal from "./AddMovementModal";
 
 const AdminFinanceiro = () => {
   const { toast } = useToast();
   const [selectedPeriod, setSelectedPeriod] = useState(30);
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-  const [newExpense, setNewExpense] = useState({
-    description: '',
-    amount: '',
-    category: '',
-    date: format(new Date(), 'yyyy-MM-dd')
-  });
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
 
-  // Buscar receitas CORRIGIDA - usando dados reais da tabela payments
-  const { data: revenueData, refetch: refetchRevenue } = useQuery({
-    queryKey: ['admin-revenue', selectedPeriod],
-    queryFn: async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - selectedPeriod);
-      
-      console.log('AdminFinanceiro: Buscando receitas desde:', startDate.toISOString());
-      
-      // Buscar APENAS pagamentos confirmados (status = 'paid')
-      const { data: paidPayments } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('status', 'paid')
-        .gte('created_at', startDate.toISOString());
+  const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
+  const { movements, addMovement, isAddingMovement } = useFinancialMovements(selectedPeriod);
 
-      console.log('AdminFinanceiro: Pagamentos encontrados:', paidPayments);
+  const totalRevenue = financialData?.total_revenue || 0;
+  const totalExpenses = financialData?.total_expenses || 0;
+  const netProfit = financialData?.net_profit || 0;
+  const profitMargin = financialData?.profit_margin || 0;
 
-      // Receitas do Senvia Assistant
-      const { data: assistantSubs } = await supabase
-        .from('senvia_assistant_subscriptions')
-        .select('*')
-        .eq('status', 'active')
-        .gte('created_at', startDate.toISOString());
-
-      console.log('AdminFinanceiro: Assinaturas encontradas:', assistantSubs);
-
-      // Calcular receita TOTAL real dos pagamentos
-      const totalPaymentsRevenue = (paidPayments || [])
-        .reduce((sum, p) => {
-          console.log('AdminFinanceiro: Processando pagamento', p.id, 'valor:', p.amount);
-          return sum + (p.amount / 100);
-        }, 0);
-      
-      const assistantRevenue = (assistantSubs || [])
-        .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
-      
-      const totalRevenue = totalPaymentsRevenue + assistantRevenue;
-      
-      console.log('AdminFinanceiro: Receita calculada:', {
-        totalPaymentsRevenue,
-        assistantRevenue,
-        totalRevenue
-      });
-      
-      return {
-        landing_pages: {
-          count: paidPayments?.length || 0,
-          revenue: totalPaymentsRevenue,
-          transactions: paidPayments || []
-        },
-        senvia_assistant: {
-          count: assistantSubs?.length || 0,
-          revenue: assistantRevenue,
-          subscriptions: assistantSubs || []
-        },
-        total_revenue: totalRevenue
-      };
-    },
-    refetchInterval: 60000,
-  });
-
-  // Buscar despesas simuladas (criar tabela expense no futuro)
-  const { data: expensesData, refetch: refetchExpenses } = useQuery({
-    queryKey: ['admin-expenses', selectedPeriod],
-    queryFn: async () => {
-      // Simular despesas até criar tabela de expenses
-      const mockExpenses = [
-        { id: 1, description: 'Hospedagem AWS', amount: 45.50, category: 'infraestrutura', date: new Date() },
-        { id: 2, description: 'Stripe Fees', amount: 12.30, category: 'taxas', date: new Date() },
-        { id: 3, description: 'Supabase Pro', amount: 25.00, category: 'saas', date: new Date() },
-        { id: 4, description: 'Marketing Ads', amount: 150.00, category: 'marketing', date: new Date() }
-      ];
-      
-      return {
-        expenses: mockExpenses,
-        total_expenses: mockExpenses.reduce((sum, exp) => sum + exp.amount, 0)
-      };
-    },
-  });
-
-  const addExpense = async () => {
-    try {
-      // Simular adição de despesa (implementar com tabela real no futuro)
-      toast({
-        title: "Despesa adicionada",
-        description: `Despesa de €${newExpense.amount} foi registrada.`
-      });
-      
-      setNewExpense({
-        description: '',
-        amount: '',
-        category: '',
-        date: format(new Date(), 'yyyy-MM-dd')
-      });
-      setIsExpenseModalOpen(false);
-      refetchExpenses();
-    } catch (error) {
-      toast({
-        title: "Erro ao adicionar despesa",
-        description: "Não foi possível registrar a despesa.",
-        variant: "destructive"
-      });
-    }
+  const handleAddMovement = (movement: any) => {
+    addMovement(movement);
   };
 
-  const totalRevenue = revenueData?.total_revenue || 0;
-  const totalExpenses = expensesData?.total_expenses || 0;
-  const netProfit = totalRevenue - totalExpenses;
-  const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+  if (isLoadingFinancial) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8 text-gray-400">
+          Carregando dados financeiros...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -265,10 +167,10 @@ const AdminFinanceiro = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-green-500">
-                  €{revenueData?.landing_pages.revenue?.toFixed(2) || '0.00'}
+                  €{financialData?.landing_pages.revenue?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400">
-                  {revenueData?.landing_pages.count || 0} vendas
+                  {financialData?.landing_pages.count || 0} vendas
                 </div>
               </div>
             </div>
@@ -280,10 +182,25 @@ const AdminFinanceiro = () => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-purple-500">
-                  €{revenueData?.senvia_assistant.revenue?.toFixed(2) || '0.00'}
+                  €{financialData?.senvia_assistant.revenue?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400">
-                  {revenueData?.senvia_assistant.count || 0} assinaturas
+                  {financialData?.senvia_assistant.count || 0} assinaturas
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="font-medium">Outros Movimentos</div>
+                <div className="text-sm text-gray-400">Receitas adicionais</div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-orange-500">
+                  €{financialData?.financial_movements.revenue?.toFixed(2) || '0.00'}
+                </div>
+                <div className="text-xs text-gray-400">
+                  movimentos manuais
                 </div>
               </div>
             </div>
@@ -294,88 +211,43 @@ const AdminFinanceiro = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-senvia-500" />
-                Despesas por Categoria
+                <ArrowUpDown className="h-5 w-5 text-senvia-500" />
+                Movimentos Financeiros
               </CardTitle>
-              <Dialog open={isExpenseModalOpen} onOpenChange={setIsExpenseModalOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="bg-senvia-500 hover:bg-senvia-400 text-black">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-gray-800 border-gray-700">
-                  <DialogHeader>
-                    <DialogTitle className="text-white">Nova Despesa</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Descrição</label>
-                      <Input
-                        value={newExpense.description}
-                        onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                        className="bg-gray-700 border-gray-600"
-                        placeholder="Ex: Hospedagem AWS"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Valor (€)</label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={newExpense.amount}
-                        onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
-                        className="bg-gray-700 border-gray-600"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Categoria</label>
-                      <Select value={newExpense.category} onValueChange={(value) => setNewExpense({...newExpense, category: value})}>
-                        <SelectTrigger className="bg-gray-700 border-gray-600">
-                          <SelectValue placeholder="Selecionar categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
-                          <SelectItem value="marketing">Marketing</SelectItem>
-                          <SelectItem value="saas">SaaS</SelectItem>
-                          <SelectItem value="taxas">Taxas</SelectItem>
-                          <SelectItem value="outros">Outros</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-300">Data</label>
-                      <Input
-                        type="date"
-                        value={newExpense.date}
-                        onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
-                        className="bg-gray-700 border-gray-600"
-                      />
-                    </div>
-                    <Button onClick={addExpense} className="w-full bg-senvia-500 hover:bg-senvia-400 text-black">
-                      Adicionar Despesa
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button 
+                size="sm" 
+                className="bg-senvia-500 hover:bg-senvia-400 text-black"
+                onClick={() => setIsMovementModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {expensesData?.expenses?.map((expense) => (
-              <div key={expense.id} className="flex justify-between items-center">
+            {movements.slice(0, 5).map((movement) => (
+              <div key={movement.id} className="flex justify-between items-center">
                 <div>
-                  <div className="font-medium text-sm">{expense.description}</div>
-                  <div className="text-xs text-gray-400 capitalize">{expense.category}</div>
+                  <div className="font-medium text-sm">{movement.description}</div>
+                  <div className="text-xs text-gray-400 capitalize">
+                    {movement.category.replace('_', ' ')} • {movement.movement_type}
+                  </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-red-500">€{expense.amount.toFixed(2)}</div>
+                  <div className={`font-bold ${movement.movement_type === 'receita' ? 'text-green-500' : 'text-red-500'}`}>
+                    {movement.movement_type === 'receita' ? '+' : '-'}€{Number(movement.amount).toFixed(2)}
+                  </div>
                   <div className="text-xs text-gray-400">
-                    {format(new Date(expense.date), 'dd/MM', { locale: ptBR })}
+                    {format(new Date(movement.movement_date), 'dd/MM', { locale: ptBR })}
                   </div>
                 </div>
               </div>
             ))}
+            {movements.length === 0 && (
+              <div className="text-center text-gray-400 py-4">
+                Nenhum movimento registrado
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -384,18 +256,20 @@ const AdminFinanceiro = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle>Receitas Recentes</CardTitle>
+            <CardTitle>Receitas Automáticas Recentes</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {revenueData?.landing_pages.transactions?.slice(0, 5).map((transaction) => (
+              {financialData?.landing_pages.transactions?.slice(0, 3).map((transaction: any) => (
                 <div key={transaction.id} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium text-sm">Landing Page</div>
                     <div className="text-xs text-gray-400">{transaction.email}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-green-500">€{(transaction.amount / 100).toFixed(2)}</div>
+                    <div className="font-bold text-green-500">
+                      €{transaction.amount ? (Number(transaction.amount) / (transaction.amount > 100 ? 100 : 1)).toFixed(2) : '0.00'}
+                    </div>
                     <div className="text-xs text-gray-400">
                       {format(new Date(transaction.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                     </div>
@@ -403,7 +277,7 @@ const AdminFinanceiro = () => {
                 </div>
               ))}
               
-              {revenueData?.senvia_assistant.subscriptions?.slice(0, 3).map((subscription) => (
+              {financialData?.senvia_assistant.subscriptions?.slice(0, 2).map((subscription: any) => (
                 <div key={subscription.id} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium text-sm">Senvia Assistant</div>
@@ -423,7 +297,7 @@ const AdminFinanceiro = () => {
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle>Balanço Mensal</CardTitle>
+            <CardTitle>Balanço Atual</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -447,10 +321,21 @@ const AdminFinanceiro = () => {
                 <span className="text-gray-400">Margem de Lucro:</span>
                 <span className="font-bold text-purple-500">{profitMargin.toFixed(1)}%</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Período de Análise:</span>
+                <span className="font-bold text-senvia-500">{selectedPeriod} dias</span>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <AddMovementModal
+        isOpen={isMovementModalOpen}
+        onClose={() => setIsMovementModalOpen(false)}
+        onSubmit={handleAddMovement}
+        isLoading={isAddingMovement}
+      />
     </div>
   );
 };

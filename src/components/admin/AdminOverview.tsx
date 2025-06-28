@@ -21,12 +21,14 @@ import { ptBR } from "date-fns/locale";
 const AdminOverview = () => {
   const [dateRange, setDateRange] = useState(30);
 
-  // Buscar métricas de receita CORRIGIDAS
+  // Buscar métricas de receita REAIS e CORRETAS
   const { data: revenueMetrics, isLoading: revenueLoading, refetch: refetchRevenue } = useQuery({
     queryKey: ['admin-revenue-metrics', dateRange],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
+      
+      console.log('Buscando métricas de receita desde:', startDate.toISOString());
       
       // Buscar APENAS pagamentos confirmados (status = 'paid')
       const { data: paidPayments, error: paymentsError } = await supabase
@@ -35,19 +37,27 @@ const AdminOverview = () => {
         .eq('status', 'paid')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar assinaturas ATIVAS do Senvia Assistant
+      console.log('Pagamentos confirmados encontrados:', paidPayments);
+
+      // Buscar assinaturas ATIVAS
       const { data: activeSubscriptions, error: subsError } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      if (paymentsError || subsError) {
-        console.error('Erro ao buscar dados:', paymentsError || subsError);
-        throw paymentsError || subsError;
+      console.log('Assinaturas ativas encontradas:', activeSubscriptions);
+
+      if (paymentsError) {
+        console.error('Erro ao buscar pagamentos:', paymentsError);
+        throw paymentsError;
+      }
+      if (subsError) {
+        console.error('Erro ao buscar assinaturas:', subsError);
+        throw subsError;
       }
 
-      // Calcular receitas com base nos valores REAIS dos pagamentos
+      // Calcular receitas baseadas nos valores REAIS dos pagamentos
       const landingPageRevenue = (paidPayments || [])
         .filter(p => p.amount === 499) // €4.99 para landing pages
         .reduce((sum, p) => sum + (p.amount / 100), 0);
@@ -56,6 +66,12 @@ const AdminOverview = () => {
         .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
       
       const totalRevenue = landingPageRevenue + assistantRevenue;
+      
+      console.log('Receitas calculadas:', {
+        landingPageRevenue,
+        assistantRevenue,
+        totalRevenue
+      });
       
       return {
         total_revenue: totalRevenue,
@@ -66,33 +82,42 @@ const AdminOverview = () => {
         active_subscriptions: activeSubscriptions?.length || 0
       };
     },
-    refetchInterval: 30000,
+    refetchInterval: 10000, // Atualizar a cada 10 segundos
   });
 
-  // Buscar estatísticas de leads CORRIGIDAS
+  // Buscar estatísticas de leads CORRETAS
   const { data: leadsStats, isLoading: leadsLoading, refetch: refetchLeads } = useQuery({
     queryKey: ['admin-leads-stats', dateRange],
     queryFn: async () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
-      // Buscar todos os leads (pagos e orgânicos)
+      console.log('Buscando leads desde:', startDate.toISOString());
+      
+      // Buscar leads pagos (da tabela leads)
       const { data: paidLeads, error: paidError } = await supabase
         .from('leads')
         .select('*')
         .gte('created_at', startDate.toISOString());
 
+      // Buscar leads orgânicos (da tabela landing_page_leads)
       const { data: organicLeads, error: organicError } = await supabase
         .from('landing_page_leads')
         .select('*')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar APENAS conversões reais (pagamentos confirmados)
+      // Buscar conversões REAIS (pagamentos confirmados)
       const { data: realConversions, error: conversionsError } = await supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
         .gte('created_at', startDate.toISOString());
+
+      console.log('Dados de leads encontrados:', {
+        paidLeads: paidLeads?.length,
+        organicLeads: organicLeads?.length,
+        realConversions: realConversions?.length
+      });
 
       if (paidError || organicError || conversionsError) {
         console.error('Erro ao buscar leads:', paidError || organicError || conversionsError);
@@ -110,18 +135,22 @@ const AdminOverview = () => {
         total_conversions: totalConversions
       };
     },
-    refetchInterval: 30000,
+    refetchInterval: 10000, // Atualizar a cada 10 segundos
   });
 
-  // Buscar assinaturas ativas
+  // Buscar assinaturas ativas TODAS
   const { data: subscriptions, isLoading: subsLoading, refetch: refetchSubs } = useQuery({
     queryKey: ['admin-active-subscriptions'],
     queryFn: async () => {
+      console.log('Buscando todas as assinaturas...');
+      
       const { data, error } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
         .in('status', ['active', 'trial'])
         .order('created_at', { ascending: false });
+      
+      console.log('Assinaturas encontradas:', data);
       
       if (error) {
         console.error('Erro ao buscar assinaturas:', error);
@@ -129,26 +158,28 @@ const AdminOverview = () => {
       }
       return data || [];
     },
-    refetchInterval: 30000,
+    refetchInterval: 10000, // Atualizar a cada 10 segundos
   });
 
-  // Buscar atividade recente CORRIGIDA
+  // Buscar atividade recente CORRETA
   const { data: recentActivity, isLoading: activityLoading, refetch: refetchActivity } = useQuery({
     queryKey: ['admin-recent-activity'],
     queryFn: async () => {
+      console.log('Buscando atividade recente...');
+      
       // Leads orgânicos recentes
       const { data: recentOrganicLeads, error: organicError } = await supabase
         .from('landing_page_leads')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
       
       // Leads pagos recentes
       const { data: recentPaidLeads, error: paidError } = await supabase
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
       
       // Pagamentos CONFIRMADOS recentes
       const { data: recentPayments, error: paymentsError } = await supabase
@@ -156,45 +187,63 @@ const AdminOverview = () => {
         .select('*')
         .eq('status', 'paid')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
+      
+      console.log('Atividade recente encontrada:', {
+        organicLeads: recentOrganicLeads?.length,
+        paidLeads: recentPaidLeads?.length,
+        payments: recentPayments?.length
+      });
       
       if (organicError || paidError || paymentsError) {
         console.error('Erro ao buscar atividade recente:', organicError || paidError || paymentsError);
         throw organicError || paidError || paymentsError;
       }
       
-      // Combinar leads com informação correta de status
+      // Combinar leads com informação CORRETA de pagamento
       const allLeads = [
         ...(recentOrganicLeads || []).map(lead => ({ 
           ...lead, 
           lead_type: 'organic',
-          is_paid: false 
+          name: lead.business_name || lead.full_name || 'Nome não informado',
+          email_contact: lead.email || 'Email não informado',
+          phone_contact: lead.phone || 'Telefone não informado',
+          is_paid: false
         })),
-        ...(recentPaidLeads || []).map(lead => ({ 
-          ...lead, 
-          lead_type: 'paid',
-          is_paid: lead.payment_status === 'paid'
-        }))
-      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
+        ...(recentPaidLeads || []).map(lead => {
+          // Verificar se este lead tem pagamento confirmado
+          const hasPayment = recentPayments?.some(p => p.email === lead.company_email && p.status === 'paid');
+          return { 
+            ...lead, 
+            lead_type: 'paid',
+            name: lead.company_name || 'Nome não informado',
+            email_contact: lead.company_email || 'Email não informado',
+            phone_contact: lead.company_whatsapp || 'Telefone não informado',
+            is_paid: hasPayment || false
+          };
+        })
+      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 10);
       
       return {
         leads: allLeads,
         payments: recentPayments || []
       };
     },
-    refetchInterval: 30000,
+    refetchInterval: 10000, // Atualizar a cada 10 segundos
   });
 
   const isLoading = revenueLoading || leadsLoading || subsLoading || activityLoading;
 
-  // Auto-refresh function
+  // Função de refresh manual
   const refreshAllData = () => {
+    console.log('Atualizando todos os dados...');
     refetchRevenue();
     refetchLeads();
     refetchSubs();
     refetchActivity();
   };
 
+  // Auto-refresh quando alterar período
   useEffect(() => {
     refreshAllData();
   }, [dateRange]);
@@ -432,22 +481,29 @@ const AdminOverview = () => {
                 <div key={`${lead.id}-${index}`} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-0">
                   <div>
                     <div className="font-medium">
-                      {lead.lead_type === 'organic' 
-                        ? (lead.full_name || lead.business_name || 'Nome não informado')
-                        : (lead.company_name || 'Nome não informado')
-                      }
+                      {lead.name}
                     </div>
                     <div className="text-sm text-gray-400">
-                      {lead.email || lead.company_email || 'Email não informado'}
+                      {lead.email_contact}
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge 
-                      variant={lead.lead_type === 'organic' ? 'secondary' : 'default'}
-                      className="text-xs"
-                    >
-                      {lead.lead_type === 'organic' ? 'Orgânico' : 'Pago'}
-                    </Badge>
+                    <div className="flex flex-col gap-1">
+                      <Badge 
+                        variant={lead.lead_type === 'organic' ? 'secondary' : 'default'}
+                        className="text-xs"
+                      >
+                        {lead.lead_type === 'organic' ? 'Orgânico' : 'Pago'}
+                      </Badge>
+                      {lead.lead_type === 'paid' && (
+                        <Badge 
+                          variant={lead.is_paid ? 'default' : 'destructive'}
+                          className={`text-xs ${lead.is_paid ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}
+                        >
+                          {lead.is_paid ? 'Pago ✓' : 'Não Pago'}
+                        </Badge>
+                      )}
+                    </div>
                     <div className="text-xs text-gray-400 mt-1">
                       {format(new Date(lead.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                     </div>
@@ -482,7 +538,7 @@ const AdminOverview = () => {
                       variant="default"
                       className="text-xs bg-green-500/20 text-green-500"
                     >
-                      Pago
+                      Pago ✓
                     </Badge>
                     <div className="text-xs text-gray-400 mt-1">
                       {format(new Date(payment.created_at), 'dd/MM HH:mm', { locale: ptBR })}

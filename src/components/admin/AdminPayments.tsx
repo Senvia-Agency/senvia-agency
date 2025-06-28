@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +19,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import SyncPaymentsButton from "./SyncPaymentsButton";
 
 const AdminPayments = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -118,6 +118,7 @@ const AdminPayments = () => {
           <p className="text-gray-400">Monitore todas as transações da SENVIA</p>
         </div>
         <div className="flex gap-2">
+          <SyncPaymentsButton />
           <Button variant="outline" className="border-gray-600 text-gray-300">
             <Download className="h-4 w-4 mr-2" />
             Exportar

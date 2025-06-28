@@ -8,6 +8,7 @@ import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
+import SyncPaymentsButton from "./SyncPaymentsButton";
 
 const STORAGE_KEY = 'admin-leads-filters';
 const DEFAULT_FILTERS = {
@@ -202,6 +203,7 @@ const AdminLeads = () => {
           <p className="text-gray-400">Gerencie todos os leads da SENVIA</p>
         </div>
         <div className="flex items-center gap-2">
+          <SyncPaymentsButton />
           <Badge variant="outline" className="text-senvia-500">{filteredLeads?.length || 0} leads</Badge>
         </div>
       </div>

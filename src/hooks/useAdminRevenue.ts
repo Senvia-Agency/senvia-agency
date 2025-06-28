@@ -11,14 +11,22 @@ export const useAdminRevenue = (dateRange: number) => {
       
       console.log('Buscando métricas de receita desde:', startDate.toISOString());
       
-      // Buscar APENAS pagamentos confirmados (status = 'paid')
+      // Buscar TODOS os pagamentos (independente do status primeiro para debug)
+      const { data: allPayments, error: allPaymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
+      console.log('TODOS os pagamentos encontrados:', allPayments);
+
+      // Buscar apenas pagamentos confirmados (status = 'paid')
       const { data: paidPayments, error: paymentsError } = await supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
         .gte('created_at', startDate.toISOString());
 
-      console.log('Pagamentos confirmados encontrados:', paidPayments);
+      console.log('Pagamentos PAGOS encontrados:', paidPayments);
 
       // Buscar assinaturas ATIVAS
       const { data: activeSubscriptions, error: subsError } = await supabase
@@ -29,41 +37,49 @@ export const useAdminRevenue = (dateRange: number) => {
 
       console.log('Assinaturas ativas encontradas:', activeSubscriptions);
 
-      if (paymentsError) {
-        console.error('Erro ao buscar pagamentos:', paymentsError);
-        throw paymentsError;
+      if (paymentsError || allPaymentsError) {
+        console.error('Erro ao buscar pagamentos:', paymentsError || allPaymentsError);
+        throw paymentsError || allPaymentsError;
       }
       if (subsError) {
         console.error('Erro ao buscar assinaturas:', subsError);
         throw subsError;
       }
 
-      // Calcular receita total REAL dos pagamentos (convertendo de centavos para euros)
+      // Calcular receita dos pagamentos PAGOS (convertendo de centavos para euros)
       const totalPaymentsRevenue = (paidPayments || [])
-        .reduce((sum, p) => {
-          console.log('Processando pagamento:', p.id, 'Amount:', p.amount, 'Convertido:', p.amount / 100);
-          return sum + (p.amount / 100);
+        .reduce((sum, payment) => {
+          const amountInEuros = payment.amount / 100; // Converter centavos para euros
+          console.log(`Pagamento ${payment.id}: ${payment.amount} centavos = €${amountInEuros}`);
+          return sum + amountInEuros;
         }, 0);
       
       // Receita das assinaturas (baseada no preço mensal)
       const totalSubscriptionsRevenue = (activeSubscriptions || [])
-        .reduce((sum, s) => sum + (s.monthly_price || 20), 0);
+        .reduce((sum, subscription) => {
+          const monthlyPrice = subscription.monthly_price || 20;
+          console.log(`Assinatura ${subscription.id}: €${monthlyPrice}`);
+          return sum + monthlyPrice;
+        }, 0);
       
       const totalRevenue = totalPaymentsRevenue + totalSubscriptionsRevenue;
+      const totalTransactions = (paidPayments?.length || 0) + (activeSubscriptions?.length || 0);
       
-      console.log('Cálculo FINAL das receitas:', {
+      console.log('Cálculo FINAL das receitas (CORRIGIDO):', {
         totalPaymentsRevenue,
         totalSubscriptionsRevenue,
         totalRevenue,
-        totalPayments: paidPayments?.length || 0,
-        totalSubscriptions: activeSubscriptions?.length || 0
+        totalTransactions,
+        paidPaymentsCount: paidPayments?.length || 0,
+        activeSubscriptionsCount: activeSubscriptions?.length || 0,
+        allPaymentsCount: allPayments?.length || 0
       });
       
       return {
         total_revenue: totalRevenue,
         landing_page_revenue: totalPaymentsRevenue,
         assistant_revenue: totalSubscriptionsRevenue,
-        total_transactions: (paidPayments?.length || 0) + (activeSubscriptions?.length || 0),
+        total_transactions: totalTransactions,
         landing_page_sales: paidPayments?.length || 0,
         active_subscriptions: activeSubscriptions?.length || 0
       };

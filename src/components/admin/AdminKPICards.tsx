@@ -23,13 +23,6 @@ const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICa
   const totalRevenue = revenueMetrics?.total_revenue || 0;
   const totalTransactions = revenueMetrics?.total_transactions || 0;
 
-  console.log('AdminKPICards - Valores calculados:', {
-    totalRevenue,
-    totalTransactions,
-    landingPageRevenue: revenueMetrics?.landing_page_revenue,
-    assistantRevenue: revenueMetrics?.assistant_revenue
-  });
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card className="bg-gray-800 border-gray-700">
@@ -45,13 +38,6 @@ const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICa
           </div>
           <div className="text-xs text-gray-400">
             {totalTransactions} transações
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            Debug: {JSON.stringify({
-              total: totalRevenue,
-              landing: revenueMetrics?.landing_page_revenue,
-              assistant: revenueMetrics?.assistant_revenue
-            })}
           </div>
         </CardContent>
       </Card>

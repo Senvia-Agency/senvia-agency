@@ -16,8 +16,7 @@ interface AddMovementModalProps {
 }
 
 const AddMovementModal = ({ isOpen, onClose, onSubmit, isLoading }: AddMovementModalProps) => {
-  const { data: customersData } = useCustomers();
-  const customers = customersData?.customers || [];
+  const { data: customers } = useCustomers();
 
   const [movement, setMovement] = useState({
     movement_type: 'despesa' as 'receita' | 'despesa',
@@ -133,7 +132,7 @@ const AddMovementModal = ({ isOpen, onClose, onSubmit, isLoading }: AddMovementM
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Sem cliente específico</SelectItem>
-                  {customers.map(customer => (
+                  {customers?.map(customer => (
                     <SelectItem key={customer.id} value={customer.id}>
                       {customer.full_name} ({customer.email})
                     </SelectItem>

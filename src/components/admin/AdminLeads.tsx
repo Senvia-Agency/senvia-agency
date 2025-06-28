@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -9,67 +9,82 @@ import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
 
+const STORAGE_KEY = 'admin-leads-filters';
+const DEFAULT_FILTERS = {
+  status: "all",
+  source: "all",
+  dateRange: "30",
+  search: ""
+};
+
 const AdminLeads = () => {
   const { toast } = useToast();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [convertLead, setConvertLead] = useState<any>(null);
-  
-  // Recuperar filtros do localStorage ou usar valores padrão
-  const [filters, setFilters] = useState(() => {
-    const savedFilters = localStorage.getItem('admin-leads-filters');
-    if (savedFilters) {
-      try {
-        return JSON.parse(savedFilters);
-      } catch (error) {
-        console.error('Erro ao recuperar filtros salvos:', error);
-      }
-    }
-    return {
-      status: "all",
-      source: "all",
-      dateRange: "30",
-      search: ""
-    };
-  });
-  
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
+
+  // Persistent filters with better handling
+  const [filters, setFilters] = useState(() => {
+    try {
+      const savedFilters = localStorage.getItem(STORAGE_KEY);
+      return savedFilters ? JSON.parse(savedFilters) : DEFAULT_FILTERS;
+    } catch (error) {
+      console.error('Erro ao recuperar filtros salvos:', error);
+      return DEFAULT_FILTERS;
+    }
+  });
 
   const { data: leads, refetch, isLoading } = useUnifiedLeads();
   const updateLeadMutation = useUpdateUnifiedLead();
 
-  // Salvar filtros no localStorage sempre que mudarem
-  useEffect(() => {
-    localStorage.setItem('admin-leads-filters', JSON.stringify(filters));
-  }, [filters]);
+  // Debounced filter saving to localStorage
+  const saveFiltersToStorage = useCallback((filtersToSave: any) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtersToSave));
+    } catch (error) {
+      console.error('Erro ao salvar filtros:', error);
+    }
+  }, []);
 
-  // Listener para detectar quando a aba volta ao foco
+  // Save filters whenever they change
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Quando a aba volta ao foco, recuperar filtros do localStorage
-        const savedFilters = localStorage.getItem('admin-leads-filters');
+    saveFiltersToStorage(filters);
+  }, [filters, saveFiltersToStorage]);
+
+  // Restore filters on component mount and when page becomes visible
+  useEffect(() => {
+    const restoreFilters = () => {
+      try {
+        const savedFilters = localStorage.getItem(STORAGE_KEY);
         if (savedFilters) {
-          try {
-            const parsedFilters = JSON.parse(savedFilters);
-            setFilters(parsedFilters);
-          } catch (error) {
-            console.error('Erro ao recuperar filtros ao voltar para a aba:', error);
-          }
+          const parsedFilters = JSON.parse(savedFilters);
+          setFilters(parsedFilters);
         }
+      } catch (error) {
+        console.error('Erro ao restaurar filtros:', error);
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        restoreFilters();
+      }
+    };
+
+    // Restore on focus/visibility change
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', restoreFilters);
     
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', restoreFilters);
     };
   }, []);
 
-  // Função para atualizar filtros
-  const handleFiltersChange = (newFilters: any) => {
+  // Optimized filter update function
+  const handleFiltersChange = useCallback((newFilters: any) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   // Atualizar status do lead
   const updateLeadStatus = async (leadId: string, newStatus: string) => {

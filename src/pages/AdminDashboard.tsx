@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -9,25 +9,39 @@ import AdminClientes from "@/components/admin/AdminClientes";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 
+const SECTION_STORAGE_KEY = 'admin-active-section';
+const DEFAULT_SECTION = 'overview';
+
 const AdminDashboard = () => {
   const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   
-  // Recuperar a seção ativa do localStorage ou usar 'overview' como padrão
+  // Optimized section state management
   const [activeSection, setActiveSection] = useState(() => {
-    const savedSection = localStorage.getItem('admin-active-section');
-    return savedSection || 'overview';
+    try {
+      return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
+    } catch (error) {
+      console.error('Erro ao recuperar seção ativa:', error);
+      return DEFAULT_SECTION;
+    }
   });
 
-  // Salvar a seção ativa no localStorage sempre que mudar
-  const handleSectionChange = (section: string) => {
+  // Memoized section change handler
+  const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
-    localStorage.setItem('admin-active-section', section);
-  };
+    try {
+      localStorage.setItem(SECTION_STORAGE_KEY, section);
+    } catch (error) {
+      console.error('Erro ao salvar seção ativa:', error);
+    }
+  }, []);
 
+  // Auth check with better error handling
   useEffect(() => {
-    if (!authLoading && !adminLoading && (!user || !isAdmin)) {
-      navigate('/auth');
+    if (!authLoading && !adminLoading) {
+      if (!user || !isAdmin) {
+        navigate('/auth', { replace: true });
+      }
     }
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
@@ -35,25 +49,44 @@ const AdminDashboard = () => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
 
-  // Adicionar um listener para detectar quando a aba volta ao foco
+  // Optimized visibility change handler
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        // Quando a aba volta ao foco, recuperar a seção ativa do localStorage
-        const savedSection = localStorage.getItem('admin-active-section');
-        if (savedSection && savedSection !== activeSection) {
-          setActiveSection(savedSection);
+        // Only restore section if it changed
+        try {
+          const savedSection = localStorage.getItem(SECTION_STORAGE_KEY);
+          if (savedSection && savedSection !== activeSection) {
+            setActiveSection(savedSection);
+          }
+        } catch (error) {
+          console.error('Erro ao restaurar seção ativa:', error);
         }
       }
     };
 
+    const handleFocus = () => {
+      // Restore section on window focus
+      try {
+        const savedSection = localStorage.getItem(SECTION_STORAGE_KEY);
+        if (savedSection && savedSection !== activeSection) {
+          setActiveSection(savedSection);
+        }
+      } catch (error) {
+        console.error('Erro ao restaurar seção no foco:', error);
+      }
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
     
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [activeSection]);
 
+  // Loading states
   if (authLoading || adminLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -69,7 +102,8 @@ const AdminDashboard = () => {
     return null;
   }
 
-  const renderActiveSection = () => {
+  // Memoized section renderer
+  const renderActiveSection = useCallback(() => {
     switch (activeSection) {
       case 'overview':
         return <AdminOverview />;
@@ -84,7 +118,7 @@ const AdminDashboard = () => {
       default:
         return <AdminOverview />;
     }
-  };
+  }, [activeSection]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

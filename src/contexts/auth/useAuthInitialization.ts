@@ -23,9 +23,6 @@ export const useAuthInitialization = ({
 }: UseAuthInitializationProps) => {
   // Initialize auth state
   useEffect(() => {
-    // Evitar reinicialização quando a aba volta ao foco
-    if (initializedRef.current) return;
-
     let isMounted = true;
     let subscription: any;
 
@@ -63,20 +60,23 @@ export const useAuthInitialization = ({
           
           if (!isMounted) return;
           
-          setSession(currentSession);
-          setUser(currentSession?.user ?? null);
-          
-          if (currentSession?.user && event !== 'TOKEN_REFRESHED') {
-            setAdminLoading(true);
-            // Use setTimeout to prevent blocking the auth state change
-            setTimeout(async () => {
-              if (isMounted) {
-                await checkAdminStatus(currentSession.user.id);
-              }
-            }, 100);
-          } else if (!currentSession?.user) {
-            setIsAdmin(false);
-            setAdminLoading(false);
+          // Only update state if it's not just a token refresh
+          if (event !== 'TOKEN_REFRESHED') {
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+            
+            if (currentSession?.user) {
+              setAdminLoading(true);
+              // Use setTimeout to prevent blocking the auth state change
+              setTimeout(async () => {
+                if (isMounted) {
+                  await checkAdminStatus(currentSession.user.id);
+                }
+              }, 100);
+            } else if (!currentSession?.user) {
+              setIsAdmin(false);
+              setAdminLoading(false);
+            }
           }
           
           if (event === 'SIGNED_OUT') {
@@ -85,6 +85,9 @@ export const useAuthInitialization = ({
             setIsAdmin(false);
             setAdminLoading(false);
             initializedRef.current = false;
+            // Clear all localStorage data on sign out
+            localStorage.removeItem('admin-active-section');
+            localStorage.removeItem('admin-leads-filters');
           }
         });
       } catch (error) {
@@ -97,7 +100,10 @@ export const useAuthInitialization = ({
       }
     };
 
-    initializeAuth();
+    // Only initialize if not already initialized
+    if (!initializedRef.current) {
+      initializeAuth();
+    }
 
     return () => {
       isMounted = false;
@@ -107,12 +113,12 @@ export const useAuthInitialization = ({
     };
   }, [checkAdminStatus, initializedRef, setSession, setUser, setIsAdmin, setAdminLoading, setLoading]);
 
-  // Listener para detectar mudanças de visibilidade da aba
+  // Optimized visibility change handler - only check session validity without full reinit
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && initializedRef.current) {
-        // Quando a aba volta ao foco, não reinicializar tudo, apenas verificar se ainda há sessão válida
-        console.log('Tab became visible, checking session validity...');
+        console.log('Tab became visible, maintaining current state...');
+        // Don't reinitialize, just maintain current state
       }
     };
 

@@ -19,7 +19,7 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
         <div className="flex justify-between items-center">
           <div>
             <div className="font-medium">Landing Page €4.99</div>
-            <div className="text-sm text-gray-400">Leads básicos</div>
+            <div className="text-sm text-gray-400">Tabela: leads</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-blue-500">
@@ -34,7 +34,7 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
         <div className="flex justify-between items-center">
           <div>
             <div className="font-medium">Landing Page Premium</div>
-            <div className="text-sm text-gray-400">Leads premium</div>
+            <div className="text-sm text-gray-400">Tabela: landing_page_leads</div>
           </div>
           <div className="text-right">
             <div className="font-bold text-purple-500">
@@ -42,18 +42,6 @@ const AdminLeadsBreakdown = ({ leadsStats }: AdminLeadsBreakdownProps) => {
             </div>
             <div className="text-xs text-gray-400">
               {leadsStats?.landing_page_premium_paid || 0} pagos
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="font-medium">Leads Gratuitos</div>
-            <div className="text-sm text-gray-400">Cadastros sem pagamento</div>
-          </div>
-          <div className="text-right">
-            <div className="font-bold text-green-500">
-              {leadsStats?.free_leads || 0}
             </div>
           </div>
         </div>

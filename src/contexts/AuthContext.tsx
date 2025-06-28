@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  isAdmin: boolean;
+  adminLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -30,6 +32,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [adminLoading, setAdminLoading] = useState<boolean>(true);
+
+  // Function to check admin status
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        console.error('Erro ao verificar status de admin:', error);
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(data?.role === 'admin');
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status de admin:', error);
+      setIsAdmin(false);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -38,6 +65,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check admin status when user changes
+        if (session?.user) {
+          setAdminLoading(true);
+          setTimeout(() => {
+            checkAdminStatus(session.user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+          setAdminLoading(false);
+        }
       }
     );
 
@@ -46,6 +84,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      if (session?.user) {
+        setAdminLoading(true);
+        checkAdminStatus(session.user.id);
+      } else {
+        setAdminLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -83,6 +128,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = {
     user,
     session,
+    isAdmin,
+    adminLoading,
     signIn,
     signUp,
     signOut,

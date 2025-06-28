@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,8 @@ import { Eye, EyeOff, Mail, Lock, ArrowLeft, User, Calendar } from "lucide-react
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, user } = useAuth();
+  const location = useLocation();
+  const { signIn, signUp, user, isAdmin, adminLoading } = useAuth();
   const { toast } = useToast();
   
   const [email, setEmail] = useState("");
@@ -23,12 +23,30 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Get the path the user was trying to access
+  const from = location.state?.from || null;
+
   // Redirect if already authenticated
   useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
+    if (user && !adminLoading) {
+      // If user was trying to access admin area and is admin, redirect there
+      if (from === '/admin' && isAdmin) {
+        navigate("/admin");
+      }
+      // If user was trying to access CRM area and is admin, redirect there
+      else if (from === '/crm' && isAdmin) {
+        navigate("/crm");
+      }
+      // If user is admin but wasn't trying to access a specific admin area, go to admin
+      else if (isAdmin && !from) {
+        navigate("/admin");
+      }
+      // If user is not admin or was trying to access regular area, go to dashboard
+      else {
+        navigate("/dashboard");
+      }
     }
-  }, [user, navigate]);
+  }, [user, isAdmin, adminLoading, navigate, from]);
 
   useEffect(() => {
     document.title = "Login | SENVIA";
@@ -64,15 +82,14 @@ const Auth = () => {
         description: errorMessage,
         variant: "destructive"
       });
+      setLoading(false);
     } else {
       toast({
         title: "Login realizado!",
         description: "Bem-vindo de volta!"
       });
-      navigate("/dashboard");
+      // Don't set loading to false here, let the useEffect handle navigation
     }
-    
-    setLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -155,7 +172,9 @@ const Auth = () => {
             Voltar ao início
           </Link>
           <div className="text-3xl font-bold text-senvia-500 glow mb-2">SENVIA</div>
-          <p className="text-muted-foreground">Acesso ao sistema de gestão</p>
+          <p className="text-muted-foreground">
+            {from ? "Faça login para continuar" : "Acesso ao sistema de gestão"}
+          </p>
         </div>
 
         <Card className="bg-card/50 backdrop-blur-sm border border-senvia-500/20">

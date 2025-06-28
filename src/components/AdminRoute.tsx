@@ -1,16 +1,15 @@
 
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
 
 interface AdminRouteProps {
   children: ReactNode;
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user, loading: authLoading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useAdmin();
+  const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
+  const location = useLocation();
 
   if (authLoading || adminLoading) {
     return (
@@ -24,7 +23,8 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    // Store the current path to redirect back after login
+    return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
   if (!isAdmin) {

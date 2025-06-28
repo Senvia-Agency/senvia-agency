@@ -58,7 +58,6 @@ const AdminOverview = () => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      // Converter para fuso horário de Lisboa (GMT+1/GMT+2 dependendo do horário de verão)
       const lisbonTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Lisbon"}));
       setCurrentTime(lisbonTime);
     };
@@ -72,7 +71,6 @@ const AdminOverview = () => {
     setInspirationalMessage(generateDailyMessage());
   }, []);
 
-  // Função de refresh manual
   const refreshAllData = () => {
     console.log('Atualizando todos os dados...');
     refetchRevenue();
@@ -81,12 +79,10 @@ const AdminOverview = () => {
     refetchActivity();
   };
 
-  // Auto-refresh quando alterar período
   useEffect(() => {
     refreshAllData();
   }, [dateRange]);
 
-  // Extrair nome do usuário
   const getUserName = () => {
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name.split(' ')[0];
@@ -101,9 +97,9 @@ const AdminOverview = () => {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Dashboard Administrativo</h1>
+          <h1 className="text-3xl font-bold text-slate-100">Dashboard Administrativo</h1>
         </div>
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-slate-400">
           Carregando métricas...
         </div>
       </div>
@@ -114,8 +110,8 @@ const AdminOverview = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Dashboard Administrativo</h1>
-        <p className="text-gray-400">
+        <h1 className="text-3xl font-bold mb-2 text-slate-100">Dashboard Administrativo</h1>
+        <p className="text-slate-400">
           Visão geral completa dos negócios da SENVIA
         </p>
       </div>
@@ -123,28 +119,28 @@ const AdminOverview = () => {
       {/* Seção com Imagem e Mensagem em duas colunas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Imagem com Saudação, Data e Relógio */}
-        <div className="relative rounded-lg overflow-hidden">
+        <div className="relative rounded-xl overflow-hidden shadow-xl">
           <img 
             src="/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" 
             alt="SENVIA Dashboard" 
             className="w-full h-48 object-cover"
           />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-white mb-2">
                 Olá, {getUserName()}!
               </h2>
-              <p className="text-lg text-white/90 mb-3">
+              <p className="text-lg text-slate-200 mb-3">
                 Bem-vindo ao seu painel
               </p>
-              <div className="text-white/80 space-y-1">
+              <div className="text-slate-300 space-y-1">
                 <p className="text-sm">
                   {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <Clock className="h-4 w-4" />
                   <p className="text-lg font-mono">
-                    {format(currentTime, "HH:mm:ss")} (Lisboa)
+                    {format(currentTime, "HH:mm:ss")}
                   </p>
                 </div>
               </div>
@@ -153,30 +149,35 @@ const AdminOverview = () => {
         </div>
 
         {/* Mensagem Inspiradora */}
-        <Card className="bg-gradient-to-r from-senvia-500/20 to-purple-500/20 border-senvia-500/30 h-48 flex items-center">
+        <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50 h-48 flex items-center shadow-xl">
           <CardContent className="p-6 w-full">
             <div className="flex items-start gap-4 h-full">
-              <Sparkles className="h-6 w-6 text-senvia-400 mt-1 flex-shrink-0" />
+              <Sparkles className="h-6 w-6 text-amber-400 mt-1 flex-shrink-0" />
               <div className="flex flex-col justify-center h-full">
-                <p className="text-lg font-medium text-senvia-400 mb-3">Mensagem do Dia</p>
-                <p className="text-base text-gray-300 leading-relaxed">{inspirationalMessage}</p>
+                <p className="text-lg font-medium text-amber-400 mb-3">Mensagem do Dia</p>
+                <p className="text-base text-slate-200 leading-relaxed">{inspirationalMessage}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filtros de Período - Design Elegante */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-4">
+      {/* Filtros de Período - Design Premium */}
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm shadow-lg">
+        <CardContent className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400">Período de análise:</span>
-              <div className="flex bg-gray-900/50 rounded-lg p-1">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-slate-300">Período:</span>
+              <div className="flex bg-slate-900/70 rounded-lg p-1 border border-slate-700/50">
                 <Button
                   variant={dateRange === 7 ? "default" : "ghost"}
                   onClick={() => setDateRange(7)}
-                  className="text-xs px-3 py-1 h-7"
+                  className={cn(
+                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    dateRange === 7 
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                  )}
                   size="sm"
                 >
                   7 dias
@@ -184,7 +185,12 @@ const AdminOverview = () => {
                 <Button
                   variant={dateRange === 30 ? "default" : "ghost"}
                   onClick={() => setDateRange(30)}
-                  className="text-xs px-3 py-1 h-7"
+                  className={cn(
+                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    dateRange === 30 
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                  )}
                   size="sm"
                 >
                   30 dias
@@ -192,7 +198,12 @@ const AdminOverview = () => {
                 <Button
                   variant={dateRange === 90 ? "default" : "ghost"}
                   onClick={() => setDateRange(90)}
-                  className="text-xs px-3 py-1 h-7"
+                  className={cn(
+                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    dateRange === 90 
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
+                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                  )}
                   size="sm"
                 >
                   90 dias
@@ -200,29 +211,30 @@ const AdminOverview = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400">Período personalizado:</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-slate-300">Personalizado:</span>
               <div className="flex items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[130px] justify-start text-left font-normal text-xs h-8 bg-gray-700 border-gray-600 hover:bg-gray-600",
-                        !customDateFrom && "text-gray-400"
+                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-600 hover:bg-slate-600/50 transition-all",
+                        !customDateFrom && "text-slate-400",
+                        customDateFrom && "text-slate-200"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-3 w-3" />
-                      {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "De"}
+                      {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "Data início"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                  <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
                     <Calendar
                       mode="single"
                       selected={customDateFrom}
                       onSelect={setCustomDateFrom}
                       initialFocus
-                      className="bg-gray-800 text-white pointer-events-auto"
+                      className="bg-slate-800 text-slate-200"
                     />
                   </PopoverContent>
                 </Popover>
@@ -232,21 +244,22 @@ const AdminOverview = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[130px] justify-start text-left font-normal text-xs h-8 bg-gray-700 border-gray-600 hover:bg-gray-600",
-                        !customDateTo && "text-gray-400"
+                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-600 hover:bg-slate-600/50 transition-all",
+                        !customDateTo && "text-slate-400",
+                        customDateTo && "text-slate-200"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-3 w-3" />
-                      {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Até"}
+                      {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Data fim"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+                  <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
                     <Calendar
                       mode="single"
                       selected={customDateTo}
                       onSelect={setCustomDateTo}
                       initialFocus
-                      className="bg-gray-800 text-white pointer-events-auto"
+                      className="bg-slate-800 text-slate-200"
                     />
                   </PopoverContent>
                 </Popover>
@@ -258,7 +271,7 @@ const AdminOverview = () => {
                       setCustomDateFrom(undefined);
                       setCustomDateTo(undefined);
                     }}
-                    className="text-xs h-8 px-2 text-gray-400 hover:text-white"
+                    className="text-xs h-9 px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-all"
                   >
                     Limpar
                   </Button>

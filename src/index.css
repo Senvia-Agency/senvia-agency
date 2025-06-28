@@ -75,6 +75,29 @@
   body {
     @apply bg-background text-foreground font-poppins scroll-smooth;
   }
+  
+  /* Admin specific styles for better contrast and elegance */
+  .admin-page {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+  
+  .admin-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    backdrop-filter: blur(10px);
+  }
+  
+  .admin-text-primary {
+    color: #f1f5f9;
+  }
+  
+  .admin-text-secondary {
+    color: #94a3b8;
+  }
+  
+  .admin-text-muted {
+    color: #64748b;
+  }
 }
 
 @layer utilities {
@@ -114,5 +137,20 @@
   
   .parallax {
     transition: transform 0.2s ease-out;
+  }
+  
+  /* Premium glass effect for admin components */
+  .glass-effect {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+  }
+  
+  .admin-gradient {
+    background: linear-gradient(135deg, 
+      rgba(15, 23, 42, 0.95) 0%, 
+      rgba(30, 41, 59, 0.95) 50%, 
+      rgba(51, 65, 85, 0.95) 100%
+    );
   }
 }

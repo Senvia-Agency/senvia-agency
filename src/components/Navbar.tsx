@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -50,17 +51,15 @@ const Navbar = () => {
                 <ChevronDown className="w-4 h-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-background border border-border">
-                <DropdownMenuItem 
-                  className="cursor-pointer hover:bg-muted"
-                  onClick={() => navigate("/senvia-assistant")}
-                >
-                  Senvia Assistant
+                <DropdownMenuItem asChild>
+                  <Link to="/senvia-assistant" className="cursor-pointer hover:bg-muted">
+                    Senvia Assistant
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className="cursor-pointer hover:bg-muted"
-                  onClick={() => navigate("/landing-pages")}
-                >
-                  Senvia Landing Page
+                <DropdownMenuItem asChild>
+                  <Link to="/landing-pages" className="cursor-pointer hover:bg-muted">
+                    Senvia Landing Page
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -130,24 +129,20 @@ const Navbar = () => {
               <div className="px-3 py-2">
                 <span className="text-foreground font-medium">Produtos</span>
                 <div className="ml-4 mt-2 space-y-1">
-                  <button
-                    onClick={() => {
-                      navigate("/senvia-assistant");
-                      setIsOpen(false);
-                    }}
+                  <Link
+                    to="/senvia-assistant"
+                    onClick={() => setIsOpen(false)}
                     className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
                   >
                     Senvia Assistant
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate("/landing-pages");
-                      setIsOpen(false);
-                    }}
+                  </Link>
+                  <Link
+                    to="/landing-pages"
+                    onClick={() => setIsOpen(false)}
                     className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
                   >
                     Senvia Landing Page
-                  </button>
+                  </Link>
                 </div>
               </div>
               

@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,9 +34,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
+  const [initialized, setInitialized] = useState(false);
 
-  // Function to check admin status
-  const checkAdminStatus = async (userId: string) => {
+  // Memoize the admin check function to prevent unnecessary calls
+  const checkAdminStatus = useCallback(async (userId: string) => {
     try {
       console.log('Checking admin status for user:', userId);
       const { data, error } = await supabase
@@ -58,10 +59,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setAdminLoading(false);
     }
-  };
+  }, []);
 
-  // Initialize auth state
+  // Initialize auth state only once
   useEffect(() => {
+    if (initialized) return;
+
     let isMounted = true;
     let subscription: any;
 
@@ -90,6 +93,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
           
           setLoading(false);
+          setInitialized(true);
         }
 
         // Set up auth state listener
@@ -101,15 +105,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setSession(currentSession);
           setUser(currentSession?.user ?? null);
           
-          if (currentSession?.user) {
+          if (currentSession?.user && event !== 'TOKEN_REFRESHED') {
             setAdminLoading(true);
-            // Check admin status with a slight delay to avoid blocking
+            // Use setTimeout to prevent blocking the auth state change
             setTimeout(() => {
               if (isMounted) {
                 checkAdminStatus(currentSession.user.id);
               }
             }, 100);
-          } else {
+          } else if (!currentSession?.user) {
             setIsAdmin(false);
             setAdminLoading(false);
           }
@@ -126,6 +130,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (isMounted) {
           setLoading(false);
           setAdminLoading(false);
+          setInitialized(true);
         }
       }
     };
@@ -138,9 +143,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         subscription.data?.subscription?.unsubscribe();
       }
     };
-  }, []);
+  }, [initialized, checkAdminStatus]);
 
-  const signIn = async (email: string, password: string) => {
+  // Memoize auth functions to prevent unnecessary re-renders
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       console.log('Attempting sign in for:', email);
       const { error } = await supabase.auth.signInWithPassword({
@@ -159,9 +165,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Erro no signIn:', error);
       return { error };
     }
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => {
+  const signUp = useCallback(async (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
@@ -181,18 +187,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Erro no signUp:', error);
       return { error };
     }
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       console.log('Signing out...');
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro no signOut:', error);
     }
-  };
+  }, []);
 
-  const value = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     user,
     session,
     isAdmin,
@@ -201,7 +208,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signOut,
     loading,
-  };
+  }), [user, session, isAdmin, adminLoading, signIn, signUp, signOut, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

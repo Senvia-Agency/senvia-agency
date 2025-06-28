@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,9 +96,52 @@ type UnifiedSubscription = {
 
 const AdminSubscriptions = () => {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  
+  // Recuperar filtros do localStorage ou usar valores padrão
+  const [searchTerm, setSearchTerm] = useState(() => {
+    const saved = localStorage.getItem('admin-subscriptions-search');
+    return saved || "";
+  });
+  
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const saved = localStorage.getItem('admin-subscriptions-status');
+    return saved || "all";
+  });
+  
   const [selectedSubscription, setSelectedSubscription] = useState<UnifiedSubscription | null>(null);
+
+  // Salvar filtros no localStorage sempre que mudarem
+  useEffect(() => {
+    localStorage.setItem('admin-subscriptions-search', searchTerm);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    localStorage.setItem('admin-subscriptions-status', statusFilter);
+  }, [statusFilter]);
+
+  // Listener para detectar quando a aba volta ao foco
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Quando a aba volta ao foco, recuperar filtros do localStorage
+        const savedSearch = localStorage.getItem('admin-subscriptions-search');
+        const savedStatus = localStorage.getItem('admin-subscriptions-status');
+        
+        if (savedSearch !== null && savedSearch !== searchTerm) {
+          setSearchTerm(savedSearch);
+        }
+        if (savedStatus !== null && savedStatus !== statusFilter) {
+          setStatusFilter(savedStatus);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [searchTerm, statusFilter]);
 
   // Buscar assinaturas do Senvia Assistant
   const { data: subscriptions, refetch, isLoading } = useQuery({

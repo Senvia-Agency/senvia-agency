@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -14,16 +13,63 @@ const AdminLeads = () => {
   const { toast } = useToast();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [convertLead, setConvertLead] = useState<any>(null);
-  const [filters, setFilters] = useState({
-    status: "all",
-    source: "all",
-    dateRange: "30",
-    search: ""
+  
+  // Recuperar filtros do localStorage ou usar valores padrão
+  const [filters, setFilters] = useState(() => {
+    const savedFilters = localStorage.getItem('admin-leads-filters');
+    if (savedFilters) {
+      try {
+        return JSON.parse(savedFilters);
+      } catch (error) {
+        console.error('Erro ao recuperar filtros salvos:', error);
+      }
+    }
+    return {
+      status: "all",
+      source: "all",
+      dateRange: "30",
+      search: ""
+    };
   });
+  
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
 
   const { data: leads, refetch, isLoading } = useUnifiedLeads();
   const updateLeadMutation = useUpdateUnifiedLead();
+
+  // Salvar filtros no localStorage sempre que mudarem
+  useEffect(() => {
+    localStorage.setItem('admin-leads-filters', JSON.stringify(filters));
+  }, [filters]);
+
+  // Listener para detectar quando a aba volta ao foco
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Quando a aba volta ao foco, recuperar filtros do localStorage
+        const savedFilters = localStorage.getItem('admin-leads-filters');
+        if (savedFilters) {
+          try {
+            const parsedFilters = JSON.parse(savedFilters);
+            setFilters(parsedFilters);
+          } catch (error) {
+            console.error('Erro ao recuperar filtros ao voltar para a aba:', error);
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Função para atualizar filtros
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   // Atualizar status do lead
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
@@ -148,7 +194,7 @@ const AdminLeads = () => {
       {/* Filtros */}
       <LeadFilters
         filters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={handleFiltersChange}
       />
 
       {/* Lista de Leads */}

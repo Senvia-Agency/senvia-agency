@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,39 @@ import EditClientModal from "./EditClientModal";
 
 const AdminClientes = () => {
   const { data: customers, isLoading } = useCustomers();
-  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Recuperar termo de busca do localStorage ou usar valor padrão
+  const [searchTerm, setSearchTerm] = useState(() => {
+    const saved = localStorage.getItem('admin-clientes-search');
+    return saved || "";
+  });
+  
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Salvar termo de busca no localStorage sempre que mudar
+  useEffect(() => {
+    localStorage.setItem('admin-clientes-search', searchTerm);
+  }, [searchTerm]);
+
+  // Listener para detectar quando a aba volta ao foco
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Quando a aba volta ao foco, recuperar termo de busca do localStorage
+        const savedSearch = localStorage.getItem('admin-clientes-search');
+        if (savedSearch !== null && savedSearch !== searchTerm) {
+          setSearchTerm(savedSearch);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [searchTerm]);
 
   const filteredClients = customers?.filter(client =>
     client.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||

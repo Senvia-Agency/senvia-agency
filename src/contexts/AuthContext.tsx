@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
-  const [initialized, setInitialized] = useState(false);
 
   // Function to check admin status
   const checkAdminStatus = async (userId: string) => {
@@ -59,133 +58,110 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Handle authentication state changes
-  const handleAuthStateChange = (event: string, session: Session | null) => {
-    console.log('Auth state change:', event, session?.user?.id);
-    
-    setSession(session);
-    setUser(session?.user ?? null);
-    
-    if (session?.user) {
-      setAdminLoading(true);
-      // Use setTimeout to avoid blocking the auth state change
-      setTimeout(() => {
-        checkAdminStatus(session.user.id);
-      }, 0);
-    } else {
-      setIsAdmin(false);
-      setAdminLoading(false);
-    }
-    
-    if (initialized) {
-      setLoading(false);
-    }
-  };
-
+  // Initialize auth state
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
     const initializeAuth = async () => {
       try {
-        // Set up auth state listener FIRST
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
-
         // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Erro ao obter sessão inicial:', error);
-        }
-
-        if (isMounted) {
-          if (initialSession) {
-            setSession(initialSession);
-            setUser(initialSession.user);
+        if (mounted) {
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+          
+          if (initialSession?.user) {
             setAdminLoading(true);
-            checkAdminStatus(initialSession.user.id);
+            await checkAdminStatus(initialSession.user.id);
           } else {
-            setSession(null);
-            setUser(null);
             setIsAdmin(false);
             setAdminLoading(false);
           }
           
-          setInitialized(true);
           setLoading(false);
         }
-
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Erro na inicialização da autenticação:', error);
-        if (isMounted) {
+        if (mounted) {
           setLoading(false);
           setAdminLoading(false);
-          setInitialized(true);
         }
       }
     };
 
-    const cleanup = initializeAuth();
-    
+    // Set up auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.id);
+      
+      if (mounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          setAdminLoading(true);
+          // Use setTimeout to avoid blocking the auth state change
+          setTimeout(() => {
+            checkAdminStatus(session.user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+          setAdminLoading(false);
+        }
+      }
+    });
+
+    initializeAuth();
+
     return () => {
-      isMounted = false;
-      cleanup.then(cleanupFn => cleanupFn && cleanupFn());
+      mounted = false;
+      subscription.unsubscribe();
     };
   }, []);
 
-  // Handle visibility change to refresh session when tab becomes active
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (!document.hidden && session) {
-        try {
-          // Refresh session when tab becomes visible
-          const { data: { session: refreshedSession }, error } = await supabase.auth.getSession();
-          if (!error && refreshedSession && refreshedSession.access_token !== session.access_token) {
-            setSession(refreshedSession);
-            setUser(refreshedSession.user);
-          }
-        } catch (error) {
-          console.error('Erro ao atualizar sessão:', error);
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [session]);
-
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error };
+    } catch (error) {
+      console.error('Erro no signIn:', error);
+      return { error };
+    }
   };
 
   const signUp = async (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: metadata ? {
-          full_name: metadata.full_name,
-          date_of_birth: metadata.date_of_birth
-        } : undefined
-      }
-    });
-    return { error };
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: metadata ? {
+            full_name: metadata.full_name,
+            date_of_birth: metadata.date_of_birth
+          } : undefined
+        }
+      });
+      return { error };
+    } catch (error) {
+      console.error('Erro no signUp:', error);
+      return { error };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erro no signOut:', error);
+    }
   };
 
   const value = {

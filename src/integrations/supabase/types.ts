@@ -308,6 +308,7 @@ export type Database = {
           notes: string | null
           original_lead_id: string | null
           phone: string | null
+          project_status: string | null
           stripe_customer_id: string | null
           tags: string[] | null
           total_spent: number | null
@@ -330,6 +331,7 @@ export type Database = {
           notes?: string | null
           original_lead_id?: string | null
           phone?: string | null
+          project_status?: string | null
           stripe_customer_id?: string | null
           tags?: string[] | null
           total_spent?: number | null
@@ -352,6 +354,7 @@ export type Database = {
           notes?: string | null
           original_lead_id?: string | null
           phone?: string | null
+          project_status?: string | null
           stripe_customer_id?: string | null
           tags?: string[] | null
           total_spent?: number | null

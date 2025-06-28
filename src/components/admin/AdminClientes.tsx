@@ -70,6 +70,28 @@ const AdminClientes = () => {
     }
   };
 
+  const getProjectStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-500';
+      case 'in_progress': return 'bg-blue-500';
+      case 'completed': return 'bg-green-500';
+      case 'on_hold': return 'bg-orange-500';
+      case 'cancelled': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getProjectStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'in_progress': return 'Em Progresso';
+      case 'completed': return 'Concluído';
+      case 'on_hold': return 'Em Pausa';
+      case 'cancelled': return 'Cancelado';
+      default: return 'Não definido';
+    }
+  };
+
   const handleEditClient = (client: any) => {
     setSelectedClient(client);
     setIsEditModalOpen(true);
@@ -161,6 +183,9 @@ const AdminClientes = () => {
                       </Badge>
                       <Badge className={`${getTierColor(client.customer_tier)} text-white`}>
                         {client.customer_tier}
+                      </Badge>
+                      <Badge className={`${getProjectStatusColor(client.project_status || 'pending')} text-white`}>
+                        {getProjectStatusLabel(client.project_status || 'pending')}
                       </Badge>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-300">

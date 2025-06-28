@@ -1,72 +1,56 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ConvertLeadModalProps {
   lead: any;
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onConvert: () => void;
 }
 
-const ConvertLeadModal = ({ lead, isOpen, onClose, onSuccess }: ConvertLeadModalProps) => {
+const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModalProps) => {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    phone: '',
-    company_name: '',
-    website: '',
-    customer_status: 'active',
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [customerData, setCustomerData] = useState({
+    full_name: lead?.full_name || '',
+    email: lead?.email || '',
+    phone: lead?.phone || '',
+    company_name: lead?.company_name || '',
+    website: lead?.website || '',
     customer_tier: 'basic',
-    acquisition_source: '',
-    total_spent: '0',
-    notes: ''
-  });
-
-  // Pré-preencher dados quando o lead mudar
-  useEffect(() => {
-    if (lead) {
-      setFormData({
-        full_name: lead.full_name || '',
-        email: lead.email || '',
-        phone: lead.phone || '',
-        company_name: lead.company_name || '',
-        website: lead.website || '',
-        customer_status: 'active',
-        customer_tier: lead.source_page === 'landing_page_premium' ? 'premium' : 'basic',
-        acquisition_source: lead.source_page || '',
-        total_spent: lead.source_page === 'landing_page_basic' ? '4.99' : 
-                     lead.source_page === 'landing_page_premium' ? '49.99' : '0',
-        notes: lead.notes || ''
-      });
+    project_status: 'pending',
+    notes: lead?.notes || '',
+    address: {
+      street: '',
+      city: '',
+      postal_code: '',
+      country: 'Portugal'
     }
-  }, [lead]);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  });
 
   const handleConvert = async () => {
     if (!lead) return;
 
-    setLoading(true);
+    setIsLoading(true);
     try {
-      console.log('Convertendo lead para cliente:', lead.id);
-      
-      // Verificar se já existe cliente com este email
+      // Primeiro, verificar se já existe cliente com este email
       const { data: existingCustomer } = await supabase
         .from('customers')
         .select('id')
-        .eq('email', formData.email)
+        .eq('email', lead.email)
         .single();
 
       if (existingCustomer) {
@@ -75,93 +59,91 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onSuccess }: ConvertLeadModal
           description: "Já existe um cliente com este email.",
           variant: "destructive"
         });
-        setLoading(false);
+        setIsLoading(false);
         return;
       }
 
-      // Criar cliente
-      const { data: customer, error: customerError } = await supabase
+      // Criar novo cliente
+      const { data: newCustomer, error: customerError } = await supabase
         .from('customers')
         .insert({
-          full_name: formData.full_name,
-          email: formData.email,
-          phone: formData.phone,
-          company_name: formData.company_name,
-          website: formData.website,
+          full_name: customerData.full_name,
+          email: customerData.email,
+          phone: customerData.phone,
+          company_name: customerData.company_name,
+          website: customerData.website,
+          customer_tier: customerData.customer_tier,
+          project_status: customerData.project_status,
+          notes: customerData.notes,
+          address: customerData.address,
           original_lead_id: lead.id,
-          acquisition_source: formData.acquisition_source,
-          customer_status: formData.customer_status,
-          customer_tier: formData.customer_tier,
-          stripe_customer_id: lead.stripe_customer_id,
-          total_spent: parseFloat(formData.total_spent) || 0,
-          last_payment_date: parseFloat(formData.total_spent) > 0 ? new Date().toISOString() : null,
+          acquisition_source: lead.source_page,
           acquisition_date: lead.created_at,
-          notes: formData.notes
+          total_spent: lead.payment_status === 'paid' ? 
+            (lead.source_page === 'landing_page_basic' ? 4.99 : 49.99) : 0,
+          last_payment_date: lead.payment_status === 'paid' ? new Date().toISOString() : null,
+          stripe_customer_id: lead.stripe_customer_id
         })
         .select()
         .single();
 
-      if (customerError) {
-        console.error('Erro ao criar cliente:', customerError);
-        throw customerError;
-      }
+      if (customerError) throw customerError;
 
-      // Criar transação se houver valor pago
-      if (parseFloat(formData.total_spent) > 0) {
-        const { error: transactionError } = await supabase
+      // Se o lead foi pago, criar transação
+      if (lead.payment_status === 'paid') {
+        await supabase
           .from('customer_transactions')
           .insert({
-            customer_id: customer.id,
+            customer_id: newCustomer.id,
             lead_id: lead.id,
             transaction_type: 'payment',
-            amount: parseFloat(formData.total_spent),
+            amount: lead.source_page === 'landing_page_basic' ? 4.99 : 49.99,
             currency: 'EUR',
             product_type: lead.source_page,
-            product_description: lead.source_page === 'landing_page_basic' ? 'Landing Page Básica' : 
-                                lead.source_page === 'landing_page_premium' ? 'Landing Page Premium' : 
-                                'Conversão Manual',
+            product_description: lead.source_page === 'landing_page_basic' ? 'Landing Page Básica' : 'Landing Page Premium',
             status: 'completed',
             stripe_payment_intent_id: lead.stripe_payment_id,
             stripe_session_id: lead.stripe_session_id
           });
-
-        if (transactionError) {
-          console.error('Erro ao criar transação:', transactionError);
-        }
       }
 
       // Atualizar lead como convertido
-      const { error: leadError } = await supabase
+      await supabase
         .from('unified_leads')
         .update({
           converted: true,
           conversion_date: new Date().toISOString(),
-          lead_status: 'converted',
-          conversion_value: parseFloat(formData.total_spent) || 0
+          lead_status: 'converted'
         })
         .eq('id', lead.id);
 
-      if (leadError) {
-        console.error('Erro ao atualizar lead:', leadError);
-        throw leadError;
-      }
-
       toast({
-        title: "Cliente criado com sucesso",
-        description: "O lead foi convertido para cliente e salvo no sistema."
+        title: "Lead convertido com sucesso!",
+        description: `${customerData.full_name} foi adicionado como cliente.`
       });
 
-      onSuccess();
+      onConvert();
       onClose();
-    } catch (error) {
-      console.error('Erro na conversão:', error);
+    } catch (error: any) {
+      console.error('Erro ao converter lead:', error);
       toast({
-        title: "Erro na conversão",
-        description: "Não foi possível converter o lead para cliente.",
+        title: "Erro ao converter lead",
+        description: error.message,
         variant: "destructive"
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const getProjectStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'in_progress': return 'Em Progresso';
+      case 'completed': return 'Concluído';
+      case 'on_hold': return 'Em Pausa';
+      case 'cancelled': return 'Cancelado';
+      default: return 'Pendente';
     }
   };
 
@@ -169,133 +151,194 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onSuccess }: ConvertLeadModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700 text-white max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">Converter Lead para Cliente</DialogTitle>
+          <DialogTitle className="text-white">Converter Lead para Cliente</DialogTitle>
         </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Informações do Lead */}
+          <div className="bg-gray-700 p-4 rounded-lg">
+            <h3 className="font-semibold text-white mb-3">Informações do Lead</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-gray-400">Email:</span>
+                <p className="text-white">{lead.email}</p>
+              </div>
+              <div>
+                <span className="text-gray-400">Data:</span>
+                <p className="text-white">{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</p>
+              </div>
+              <div>
+                <span className="text-gray-400">Origem:</span>
+                <Badge variant="outline" className="text-senvia-400 border-senvia-500">
+                  {lead.source_page === 'landing_page_basic' ? 'Landing Page Básica' : 'Landing Page Premium'}
+                </Badge>
+              </div>
+              <div>
+                <span className="text-gray-400">Status Pagamento:</span>
+                <Badge variant={lead.payment_status === 'paid' ? 'default' : 'secondary'}>
+                  {lead.payment_status === 'paid' ? 'Pago' : 'Pendente'}
+                </Badge>
+              </div>
+            </div>
+          </div>
 
-        <div className="space-y-4">
+          {/* Dados do Cliente */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-white">Dados do Cliente</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-300">Nome Completo *</Label>
+                <Input
+                  value={customerData.full_name}
+                  onChange={(e) => setCustomerData({...customerData, full_name: e.target.value})}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Email *</Label>
+                <Input
+                  type="email"
+                  value={customerData.email}
+                  onChange={(e) => setCustomerData({...customerData, email: e.target.value})}
+                  className="bg-gray-700 border-gray-600"
+                  disabled
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Telefone</Label>
+                <Input
+                  value={customerData.phone}
+                  onChange={(e) => setCustomerData({...customerData, phone: e.target.value})}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Empresa</Label>
+                <Input
+                  value={customerData.company_name}
+                  onChange={(e) => setCustomerData({...customerData, company_name: e.target.value})}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Website</Label>
+                <Input
+                  value={customerData.website}
+                  onChange={(e) => setCustomerData({...customerData, website: e.target.value})}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Status e Configurações */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="full_name">Nome Completo *</Label>
-              <Input
-                id="full_name"
-                value={formData.full_name}
-                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="phone">Telefone</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="company_name">Nome da Empresa</Label>
-              <Input
-                id="company_name"
-                value={formData.company_name}
-                onChange={(e) => handleInputChange('company_name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                value={formData.website}
-                onChange={(e) => handleInputChange('website', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="customer_status">Status do Cliente</Label>
-              <Select value={formData.customer_status} onValueChange={(value) => handleInputChange('customer_status', value)}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <Label className="text-gray-300">Nível do Cliente</Label>
+              <Select value={customerData.customer_tier} onValueChange={(value) => setCustomerData({...customerData, customer_tier: value})}>
+                <SelectTrigger className="bg-gray-700 border-gray-600">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="active">Ativo</SelectItem>
-                  <SelectItem value="inactive">Inativo</SelectItem>
-                  <SelectItem value="churned">Cancelado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="customer_tier">Nível do Cliente</Label>
-              <Select value={formData.customer_tier} onValueChange={(value) => handleInputChange('customer_tier', value)}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent>
                   <SelectItem value="basic">Básico</SelectItem>
                   <SelectItem value="premium">Premium</SelectItem>
                   <SelectItem value="enterprise">Enterprise</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
+            
             <div>
-              <Label htmlFor="total_spent">Valor Pago (€)</Label>
+              <Label className="text-gray-300">Status do Projeto</Label>
+              <Select value={customerData.project_status} onValueChange={(value) => setCustomerData({...customerData, project_status: value})}>
+                <SelectTrigger className="bg-gray-700 border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                      Pendente
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="in_progress">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                      Em Progresso
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="completed">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      Concluído
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="on_hold">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                      Em Pausa
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="cancelled">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                      Cancelado
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Endereço Básico */}
+          <div className="space-y-3">
+            <Label className="text-gray-300">Endereço (Opcional)</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
-                id="total_spent"
-                type="number"
-                step="0.01"
-                value={formData.total_spent}
-                onChange={(e) => handleInputChange('total_spent', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white"
+                placeholder="Cidade"
+                value={customerData.address.city}
+                onChange={(e) => setCustomerData({
+                  ...customerData, 
+                  address: {...customerData.address, city: e.target.value}
+                })}
+                className="bg-gray-700 border-gray-600"
+              />
+              <Input
+                placeholder="Código Postal"
+                value={customerData.address.postal_code}
+                onChange={(e) => setCustomerData({
+                  ...customerData, 
+                  address: {...customerData.address, postal_code: e.target.value}
+                })}
+                className="bg-gray-700 border-gray-600"
               />
             </div>
           </div>
 
+          {/* Notas */}
           <div>
-            <Label htmlFor="notes">Observações</Label>
+            <Label className="text-gray-300">Notas</Label>
             <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white"
+              value={customerData.notes}
+              onChange={(e) => setCustomerData({...customerData, notes: e.target.value})}
+              className="bg-gray-700 border-gray-600"
               rows={3}
+              placeholder="Informações adicionais sobre o cliente..."
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="border-gray-600 text-gray-300"
-            >
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+            <Button variant="outline" onClick={onClose} disabled={isLoading}>
               Cancelar
             </Button>
-            <Button
+            <Button 
               onClick={handleConvert}
-              disabled={loading || !formData.full_name || !formData.email}
-              className="bg-senvia-500 hover:bg-senvia-600"
+              className="bg-senvia-500 hover:bg-senvia-400 text-black"
+              disabled={isLoading || !customerData.full_name || !customerData.email}
             >
-              {loading ? 'Salvando...' : 'Salvar Cliente'}
+              {isLoading ? 'Convertendo...' : 'Converter para Cliente'}
             </Button>
           </div>
         </div>

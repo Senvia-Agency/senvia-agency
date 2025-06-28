@@ -29,6 +29,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
     website: '',
     customer_status: 'active',
     customer_tier: 'basic',
+    project_status: 'pending',
     notes: '',
     // Novos campos
     tax_id: '', // NIF
@@ -57,6 +58,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
         website: client.website || '',
         customer_status: client.customer_status || 'active',
         customer_tier: client.customer_tier || 'basic',
+        project_status: client.project_status || 'pending',
         notes: client.notes || '',
         tax_id: client.address?.tax_id || '',
         date_of_birth: client.address?.date_of_birth || '',
@@ -91,6 +93,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
           website: formData.website,
           customer_status: formData.customer_status,
           customer_tier: formData.customer_tier,
+          project_status: formData.project_status,
           notes: formData.notes,
           address: {
             ...formData.address,
@@ -122,6 +125,28 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getProjectStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'text-yellow-500';
+      case 'in_progress': return 'text-blue-500';
+      case 'completed': return 'text-green-500';
+      case 'on_hold': return 'text-orange-500';
+      case 'cancelled': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+  const getProjectStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'in_progress': return 'Em Progresso';
+      case 'completed': return 'Concluído';
+      case 'on_hold': return 'Em Pausa';
+      case 'cancelled': return 'Cancelado';
+      default: return 'Desconhecido';
     }
   };
 
@@ -286,11 +311,11 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
             </div>
           </div>
 
-          {/* Status do Cliente */}
+          {/* Status do Cliente e Projeto */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Status</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label className="text-gray-300">Status do Cliente</Label>
                 <Select value={formData.customer_status} onValueChange={(value) => setFormData({...formData, customer_status: value})}>
@@ -314,6 +339,46 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
                     <SelectItem value="basic">Básico</SelectItem>
                     <SelectItem value="premium">Premium</SelectItem>
                     <SelectItem value="enterprise">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-gray-300">Status do Projeto</Label>
+                <Select value={formData.project_status} onValueChange={(value) => setFormData({...formData, project_status: value})}>
+                  <SelectTrigger className="bg-gray-700 border-gray-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+                        Pendente
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="in_progress">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        Em Progresso
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="completed">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        Concluído
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="on_hold">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                        Em Pausa
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="cancelled">
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        Cancelado
+                      </span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

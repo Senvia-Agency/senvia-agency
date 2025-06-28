@@ -1,18 +1,9 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useCallback, useRef } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  isAdmin: boolean;
-  adminLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
-  loading: boolean;
-}
+import { createContext, useContext, useMemo, ReactNode } from 'react';
+import { AuthContextType } from './auth/types';
+import { useAuthState } from './auth/useAuthState';
+import { useAuthActions } from './auth/useAuthActions';
+import { useAuthInitialization } from './auth/useAuthInitialization';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,193 +20,32 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [adminLoading, setAdminLoading] = useState<boolean>(true);
-  const initializedRef = useRef(false);
+  const {
+    user,
+    setUser,
+    session,
+    setSession,
+    loading,
+    setLoading,
+    isAdmin,
+    setIsAdmin,
+    adminLoading,
+    setAdminLoading,
+    initializedRef,
+    checkAdminStatus
+  } = useAuthState();
 
-  // Memoize the admin check function to prevent unnecessary calls
-  const checkAdminStatus = useCallback(async (userId: string) => {
-    try {
-      console.log('Checking admin status for user:', userId);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', userId)
-        .single();
+  const { signIn, signUp, signOut } = useAuthActions();
 
-      if (error) {
-        console.error('Erro ao verificar status de admin:', error);
-        setIsAdmin(false);
-      } else {
-        console.log('User role:', data?.role);
-        setIsAdmin(data?.role === 'admin');
-      }
-    } catch (error) {
-      console.error('Erro ao verificar status de admin:', error);
-      setIsAdmin(false);
-    } finally {
-      setAdminLoading(false);
-    }
-  }, []);
-
-  // Initialize auth state
-  useEffect(() => {
-    // Evitar reinicialização quando a aba volta ao foco
-    if (initializedRef.current) return;
-
-    let isMounted = true;
-    let subscription: any;
-
-    const initializeAuth = async () => {
-      try {
-        console.log('Initializing auth...');
-        
-        // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-        }
-        
-        if (isMounted) {
-          console.log('Initial session:', initialSession?.user?.id);
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          
-          if (initialSession?.user) {
-            setAdminLoading(true);
-            await checkAdminStatus(initialSession.user.id);
-          } else {
-            setIsAdmin(false);
-            setAdminLoading(false);
-          }
-          
-          setLoading(false);
-          initializedRef.current = true;
-        }
-
-        // Set up auth state listener
-        subscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log('Auth state change:', event, currentSession?.user?.id);
-          
-          if (!isMounted) return;
-          
-          setSession(currentSession);
-          setUser(currentSession?.user ?? null);
-          
-          if (currentSession?.user && event !== 'TOKEN_REFRESHED') {
-            setAdminLoading(true);
-            // Use setTimeout to prevent blocking the auth state change
-            setTimeout(async () => {
-              if (isMounted) {
-                await checkAdminStatus(currentSession.user.id);
-              }
-            }, 100);
-          } else if (!currentSession?.user) {
-            setIsAdmin(false);
-            setAdminLoading(false);
-          }
-          
-          if (event === 'SIGNED_OUT') {
-            setUser(null);
-            setSession(null);
-            setIsAdmin(false);
-            setAdminLoading(false);
-            initializedRef.current = false;
-          }
-        });
-      } catch (error) {
-        console.error('Erro na inicialização da autenticação:', error);
-        if (isMounted) {
-          setLoading(false);
-          setAdminLoading(false);
-          initializedRef.current = true;
-        }
-      }
-    };
-
-    initializeAuth();
-
-    return () => {
-      isMounted = false;
-      if (subscription) {
-        subscription.data?.subscription?.unsubscribe();
-      }
-    };
-  }, [checkAdminStatus]);
-
-  // Listener para detectar mudanças de visibilidade da aba
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && initializedRef.current) {
-        // Quando a aba volta ao foco, não reinicializar tudo, apenas verificar se ainda há sessão válida
-        console.log('Tab became visible, checking session validity...');
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  // Memoize auth functions to prevent unnecessary re-renders
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      console.log('Attempting sign in for:', email);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) {
-        console.error('Sign in error:', error);
-      } else {
-        console.log('Sign in successful');
-      }
-      
-      return { error };
-    } catch (error) {
-      console.error('Erro no signIn:', error);
-      return { error };
-    }
-  }, []);
-
-  const signUp = useCallback(async (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: metadata ? {
-            full_name: metadata.full_name,
-            date_of_birth: metadata.date_of_birth
-          } : undefined
-        }
-      });
-      return { error };
-    } catch (error) {
-      console.error('Erro no signUp:', error);
-      return { error };
-    }
-  }, []);
-
-  const signOut = useCallback(async () => {
-    try {
-      console.log('Signing out...');
-      localStorage.removeItem('admin-active-section'); // Limpar seção ativa ao sair
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error('Erro no signOut:', error);
-    }
-  }, []);
+  useAuthInitialization({
+    initializedRef,
+    setSession,
+    setUser,
+    setIsAdmin,
+    setAdminLoading,
+    setLoading,
+    checkAdminStatus
+  });
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(() => ({

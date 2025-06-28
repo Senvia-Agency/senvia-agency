@@ -143,7 +143,8 @@ serve(async (req) => {
             conversion_value: session.amount_total ? (session.amount_total / 100) : 4.99,
             stripe_session_id: session.id,
             stripe_customer_id: session.customer,
-            stripe_payment_id: session.payment_intent
+            stripe_payment_id: session.payment_intent,
+            updated_at: new Date().toISOString()
           })
           .eq('id', targetLead.id);
 
@@ -259,7 +260,7 @@ serve(async (req) => {
         logStep("Customer já existe ou lead não encontrado");
       }
 
-      logStep("=== PROCESSAMENTO CONCLUÍDO ===");
+      logStep("=== PROCESSAMENTO CONCLUÍDO COM SUCESSO ===");
     } else {
       logStep("Evento ignorado", { type: event.type });
     }
@@ -267,7 +268,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({ 
       received: true, 
       event_type: event.type,
-      processed: event.type === 'checkout.session.completed'
+      processed: event.type === 'checkout.session.completed',
+      timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

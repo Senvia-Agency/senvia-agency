@@ -23,7 +23,7 @@ export const useAdminLeads = (dateRange: number) => {
         .select('*')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar pagamentos confirmados para verificar status real
+      // Buscar TODOS os pagamentos confirmados (status = 'paid')
       const { data: confirmedPayments, error: paymentsError } = await supabase
         .from('payments')
         .select('*')
@@ -33,7 +33,8 @@ export const useAdminLeads = (dateRange: number) => {
       console.log('Dados encontrados:', {
         basicLeads: basicLeads?.length,
         premiumLeads: premiumLeads?.length,
-        confirmedPayments: confirmedPayments?.length
+        confirmedPayments: confirmedPayments?.length,
+        paymentsDetails: confirmedPayments?.map(p => ({ amount: p.amount, email: p.email }))
       });
 
       if (basicError || premiumError || paymentsError) {
@@ -44,11 +45,17 @@ export const useAdminLeads = (dateRange: number) => {
       // Contar pagamentos confirmados de €4.99 (499 centavos)
       const basicPaidCount = confirmedPayments?.filter(p => p.amount === 499).length || 0;
       
-      // Contar pagamentos confirmados premium (valor maior que €4.99)
+      // Contar pagamentos confirmados premium (valores superiores a €4.99)
       const premiumPaidCount = confirmedPayments?.filter(p => p.amount > 499).length || 0;
 
       const totalLeads = (basicLeads?.length || 0) + (premiumLeads?.length || 0);
       const totalConfirmedConversions = confirmedPayments?.length || 0;
+      
+      console.log('Contagens calculadas:', {
+        basicPaidCount,
+        premiumPaidCount,
+        totalConfirmedConversions
+      });
       
       return {
         total_leads: totalLeads,

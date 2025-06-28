@@ -72,39 +72,78 @@ serve(async (req) => {
           category = 'ecommerce';
         }
 
-        // Upsert produto na tabela products
-        const { data: product, error: productError } = await supabaseClient
+        // Verificar se produto já existe
+        const { data: existingProduct } = await supabaseClient
           .from('products')
-          .upsert({
-            stripe_product_id: stripeProduct.id,
-            name: stripeProduct.name,
-            description: stripeProduct.description || null,
-            category: category,
-            status: stripeProduct.active ? 'active' : 'inactive',
-            active: stripeProduct.active,
-            pricing_model: 'subscription',
-            features: stripeProduct.metadata || {},
-            metadata: {
-              stripe_created: stripeProduct.created,
-              stripe_updated: stripeProduct.updated,
-              stripe_url: stripeProduct.url,
-              stripe_images: stripeProduct.images
-            }
-          }, { 
-            onConflict: 'stripe_product_id',
-            ignoreDuplicates: false 
-          })
-          .select()
+          .select('id')
+          .eq('stripe_product_id', stripeProduct.id)
           .single();
 
-        if (productError) {
-          logStep("Error upserting product", { error: productError });
-          syncResults.errors.push(`Product ${stripeProduct.name}: ${productError.message}`);
-          continue;
+        let productData;
+        if (existingProduct) {
+          // Atualizar produto existente
+          const { data: updatedProduct, error: updateError } = await supabaseClient
+            .from('products')
+            .update({
+              name: stripeProduct.name,
+              description: stripeProduct.description || null,
+              category: category,
+              status: stripeProduct.active ? 'active' : 'inactive',
+              active: stripeProduct.active,
+              pricing_model: 'subscription',
+              features: stripeProduct.metadata || {},
+              metadata: {
+                stripe_created: stripeProduct.created,
+                stripe_updated: stripeProduct.updated,
+                stripe_url: stripeProduct.url,
+                stripe_images: stripeProduct.images
+              },
+              updated_at: new Date().toISOString()
+            })
+            .eq('stripe_product_id', stripeProduct.id)
+            .select()
+            .single();
+
+          if (updateError) {
+            logStep("Error updating product", { error: updateError });
+            syncResults.errors.push(`Product ${stripeProduct.name}: ${updateError.message}`);
+            continue;
+          }
+          productData = updatedProduct;
+          logStep("Product updated", { productId: productData.id });
+        } else {
+          // Inserir novo produto
+          const { data: newProduct, error: insertError } = await supabaseClient
+            .from('products')
+            .insert({
+              stripe_product_id: stripeProduct.id,
+              name: stripeProduct.name,
+              description: stripeProduct.description || null,
+              category: category,
+              status: stripeProduct.active ? 'active' : 'inactive',
+              active: stripeProduct.active,
+              pricing_model: 'subscription',
+              features: stripeProduct.metadata || {},
+              metadata: {
+                stripe_created: stripeProduct.created,
+                stripe_updated: stripeProduct.updated,
+                stripe_url: stripeProduct.url,
+                stripe_images: stripeProduct.images
+              }
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            logStep("Error inserting product", { error: insertError });
+            syncResults.errors.push(`Product ${stripeProduct.name}: ${insertError.message}`);
+            continue;
+          }
+          productData = newProduct;
+          logStep("Product inserted", { productId: productData.id });
         }
 
         syncResults.products_synced++;
-        logStep("Product synced", { productId: product.id });
 
         // Buscar preços para este produto
         const productPrices = stripePrices.data.filter(
@@ -131,35 +170,71 @@ serve(async (req) => {
 
             const priceAmount = (stripePrice.unit_amount || 0) / 100;
 
-            const { error: planError } = await supabaseClient
+            // Verificar se plano já existe
+            const { data: existingPlan } = await supabaseClient
               .from('product_plans')
-              .upsert({
-                product_id: product.id,
-                name: planName,
-                description: stripePrice.nickname || `Plano ${planName}`,
-                price_monthly: interval === 'month' ? priceAmount : null,
-                price_yearly: interval === 'year' ? priceAmount : null,
-                currency: stripePrice.currency.toUpperCase(),
-                status: stripePrice.active ? 'active' : 'inactive',
-                stripe_price_id_monthly: interval === 'month' ? stripePrice.id : null,
-                stripe_price_id_yearly: interval === 'year' ? stripePrice.id : null,
-                features: {
-                  billing_scheme: stripePrice.billing_scheme,
-                  usage_type: stripePrice.usage_type,
-                  tiers_mode: stripePrice.tiers_mode
-                },
-                limits: stripePrice.metadata || {}
-              }, { 
-                onConflict: 'product_id,name',
-                ignoreDuplicates: false 
-              });
+              .select('id')
+              .eq('product_id', productData.id)
+              .eq('name', planName)
+              .single();
 
-            if (planError) {
-              logStep("Error upserting plan", { error: planError });
-              syncResults.errors.push(`Plan ${planName}: ${planError.message}`);
+            if (existingPlan) {
+              // Atualizar plano existente
+              const { error: updatePlanError } = await supabaseClient
+                .from('product_plans')
+                .update({
+                  description: stripePrice.nickname || `Plano ${planName}`,
+                  price_monthly: interval === 'month' ? priceAmount : null,
+                  price_yearly: interval === 'year' ? priceAmount : null,
+                  currency: stripePrice.currency.toUpperCase(),
+                  status: stripePrice.active ? 'active' : 'inactive',
+                  stripe_price_id_monthly: interval === 'month' ? stripePrice.id : null,
+                  stripe_price_id_yearly: interval === 'year' ? stripePrice.id : null,
+                  features: {
+                    billing_scheme: stripePrice.billing_scheme,
+                    usage_type: stripePrice.usage_type,
+                    tiers_mode: stripePrice.tiers_mode
+                  },
+                  limits: stripePrice.metadata || {},
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', existingPlan.id);
+
+              if (updatePlanError) {
+                logStep("Error updating plan", { error: updatePlanError });
+                syncResults.errors.push(`Plan ${planName}: ${updatePlanError.message}`);
+              } else {
+                logStep("Plan updated", { planName });
+              }
             } else {
-              syncResults.plans_synced++;
-              logStep("Plan synced", { planName });
+              // Inserir novo plano
+              const { error: insertPlanError } = await supabaseClient
+                .from('product_plans')
+                .insert({
+                  product_id: productData.id,
+                  name: planName,
+                  description: stripePrice.nickname || `Plano ${planName}`,
+                  price_monthly: interval === 'month' ? priceAmount : null,
+                  price_yearly: interval === 'year' ? priceAmount : null,
+                  currency: stripePrice.currency.toUpperCase(),
+                  status: stripePrice.active ? 'active' : 'inactive',
+                  stripe_price_id_monthly: interval === 'month' ? stripePrice.id : null,
+                  stripe_price_id_yearly: interval === 'year' ? stripePrice.id : null,
+                  features: {
+                    billing_scheme: stripePrice.billing_scheme,
+                    usage_type: stripePrice.usage_type,
+                    tiers_mode: stripePrice.tiers_mode
+                  },
+                  limits: stripePrice.metadata || {}
+                });
+
+              if (insertPlanError) {
+                logStep("Error inserting plan", { error: insertPlanError });
+                syncResults.errors.push(`Plan ${planName}: ${insertPlanError.message}`);
+              } else {
+                syncResults.plans_synced++;
+                logStep("Plan inserted", { planName });
+              }
             }
           } catch (planError) {
             logStep("Error processing plan", { error: planError });

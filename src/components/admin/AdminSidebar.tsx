@@ -7,7 +7,8 @@ import {
   CreditCard, 
   Package, 
   LogOut,
-  BarChart3
+  BarChart3,
+  UserCheck
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -28,6 +29,11 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       id: 'leads',
       label: 'Gestão de Leads',
       icon: Users
+    },
+    {
+      id: 'clientes',
+      label: 'Clientes',
+      icon: UserCheck
     },
     {
       id: 'financeiro',

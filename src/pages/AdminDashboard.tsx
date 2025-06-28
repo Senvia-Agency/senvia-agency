@@ -6,6 +6,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
+import AdminClientes from "@/components/admin/AdminClientes";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 
@@ -46,6 +47,8 @@ const AdminDashboard = () => {
         return <AdminOverview />;
       case 'leads':
         return <AdminLeads />;
+      case 'clientes':
+        return <AdminClientes />;
       case 'financeiro':
         return <AdminFinanceiro />;
       case 'produtos-assinaturas':

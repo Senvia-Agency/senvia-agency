@@ -43,18 +43,18 @@ const ProductStatsCards = ({ stats }: ProductStatsCardsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 w-full">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 w-full">
       {cards.map((card, index) => (
         <Card key={index} className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
-          <CardHeader className="pb-1 lg:pb-2 p-3 lg:p-4">
+          <CardHeader className="pb-2 p-3 lg:p-4">
             <CardTitle className="text-xs lg:text-sm font-medium text-slate-300 truncate">
               {card.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-3 lg:p-4 pt-0">
-            <div className="flex items-center gap-1 lg:gap-2 mb-1">
-              <card.icon className={`h-3 w-3 lg:h-4 lg:w-4 ${card.color} flex-shrink-0`} />
-              <span className="text-sm lg:text-2xl font-bold text-slate-100 truncate">
+            <div className="flex items-center gap-2 mb-1">
+              <card.icon className={`h-4 w-4 lg:h-5 lg:w-5 ${card.color} flex-shrink-0`} />
+              <span className="text-lg lg:text-2xl font-bold text-slate-100 truncate">
                 {card.value}
               </span>
             </div>

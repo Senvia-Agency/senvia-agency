@@ -43,23 +43,23 @@ const ProductStatsCards = ({ stats }: ProductStatsCardsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {cards.map((card, index) => (
-        <Card key={index} className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
-          <CardHeader className="pb-2 p-3 lg:p-4">
-            <CardTitle className="text-xs lg:text-sm font-medium text-slate-300 truncate">
+        <Card key={index} className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-slate-300">
               {card.title}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-3 lg:p-4 pt-0">
-            <div className="flex items-center gap-2 mb-1">
-              <card.icon className={`h-4 w-4 lg:h-5 lg:w-5 ${card.color} flex-shrink-0`} />
-              <span className="text-lg lg:text-2xl font-bold text-slate-100 truncate">
+          <CardContent className="pb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <card.icon className={`h-5 w-5 ${card.color}`} />
+              <span className="text-2xl font-bold text-slate-100">
                 {card.value}
               </span>
             </div>
             {card.subtitle && (
-              <div className="text-xs text-slate-400 truncate">
+              <div className="text-sm text-slate-400">
                 {card.subtitle}
               </div>
             )}

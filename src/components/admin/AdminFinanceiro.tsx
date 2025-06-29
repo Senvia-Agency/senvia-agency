@@ -28,7 +28,7 @@ const AdminFinanceiro = () => {
 
   if (isLoadingFinancial) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6 p-4 lg:p-6">
         <div className="text-center py-8 text-gray-400">
           Carregando dados financeiros...
         </div>
@@ -37,17 +37,19 @@ const AdminFinanceiro = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Módulo Financeiro</h1>
-          <p className="text-gray-400">Controle completo das finanças da SENVIA</p>
+    <div className="space-y-4 lg:space-y-6 p-4 lg:p-6 w-full max-w-full overflow-x-hidden">
+      {/* Header - Mobile Optimized */}
+      <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl lg:text-3xl font-bold mb-1 lg:mb-2 truncate">Módulo Financeiro</h1>
+          <p className="text-sm lg:text-base text-gray-400 truncate">Controle completo das finanças da SENVIA</p>
         </div>
-        <PeriodSelector
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
-        />
+        <div className="w-full lg:w-auto">
+          <PeriodSelector
+            selectedPeriod={selectedPeriod}
+            onPeriodChange={setSelectedPeriod}
+          />
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -60,7 +62,7 @@ const AdminFinanceiro = () => {
       />
 
       {/* Revenue Breakdown and Financial Movements */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
         <RevenueBreakdownCard financialData={financialData} />
         <FinancialMovementsCard
           movements={movements}
@@ -69,7 +71,7 @@ const AdminFinanceiro = () => {
       </div>
 
       {/* Recent Transactions and Balance Summary */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
         <RecentTransactionsCard financialData={financialData} />
         <BalanceSummaryCard
           totalRevenue={totalRevenue}

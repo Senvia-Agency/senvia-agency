@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -148,9 +149,9 @@ const AdminLeads = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6 p-4 lg:p-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Gestão de Leads</h1>
+          <h1 className="text-xl lg:text-3xl font-bold">Gestão de Leads</h1>
         </div>
         <div className="text-center py-8 text-gray-400">
           Carregando leads...
@@ -160,16 +161,21 @@ const AdminLeads = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Gestão de Leads</h1>
-          <p className="text-gray-400">Gerencie todos os leads da SENVIA</p>
+    <div className="space-y-4 lg:space-y-6 p-4 lg:p-6 w-full max-w-full overflow-x-hidden">
+      {/* Header - Mobile Optimized */}
+      <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl lg:text-3xl font-bold mb-1 lg:mb-2 truncate">Gestão de Leads</h1>
+          <p className="text-sm lg:text-base text-gray-400 truncate">Gerencie todos os leads da SENVIA</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between lg:justify-end gap-2 lg:gap-4">
           <SyncPaymentsButton />
-          <Badge variant="outline" className="text-senvia-500">{filteredLeads?.length || 0} leads</Badge>
+          <Badge 
+            variant="outline" 
+            className="text-senvia-500 border-senvia-500/50 bg-senvia-500/10 text-xs lg:text-sm px-2 py-1 flex-shrink-0"
+          >
+            {filteredLeads?.length || 0} leads
+          </Badge>
         </div>
       </div>
 
@@ -180,7 +186,7 @@ const AdminLeads = () => {
       />
 
       {/* Lista de Leads */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-3 lg:space-y-4">
         {filteredLeads?.map((lead) => (
           <LeadCard
             key={lead.id}
@@ -195,11 +201,11 @@ const AdminLeads = () => {
 
       {/* Empty State */}
       {(!filteredLeads || filteredLeads.length === 0) && (
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="text-center py-12">
-            <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">Nenhum lead encontrado</h3>
-            <p className="text-gray-400">Ajuste os filtros ou aguarde novos leads chegarem.</p>
+        <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
+          <CardContent className="text-center py-8 lg:py-12">
+            <Users className="h-8 w-8 lg:h-12 lg:w-12 text-slate-500 mx-auto mb-3 lg:mb-4" />
+            <h3 className="text-base lg:text-lg font-medium text-white mb-2">Nenhum lead encontrado</h3>
+            <p className="text-sm lg:text-base text-slate-400">Ajuste os filtros ou aguarde novos leads chegarem.</p>
           </CardContent>
         </Card>
       )}

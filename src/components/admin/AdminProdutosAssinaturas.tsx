@@ -1,171 +1,82 @@
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { RefreshCw, ExternalLink } from "lucide-react";
-import ProductStatsCards from "./produtos/ProductStatsCards";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Package, Users, TrendingUp } from "lucide-react";
 import ProductCatalog from "./produtos/ProductCatalog";
 import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
+import ProductStatsCards from "./produtos/ProductStatsCards";
 import PerformanceSummary from "./produtos/PerformanceSummary";
 
 const AdminProdutosAssinaturas = () => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Buscar produtos REAIS do Supabase (sincronizados do Stripe)
-  const { data: products, refetch: refetchProducts, isLoading: productsLoading } = useQuery({
-    queryKey: ['admin-products-real'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          product_plans (*)
-        `)
-        .eq('active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Buscar assinaturas ativas REAIS
-  const { data: activeSubscriptions, refetch: refetchSubscriptions } = useQuery({
-    queryKey: ['active-subscriptions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('senvia_assistant_subscriptions')
-        .select('*')
-        .in('status', ['active', 'trial'])
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-    refetchInterval: 30000,
-  });
-
-  // Buscar vendas de produtos únicos
-  const { data: oneTimeSales, refetch: refetchSales } = useQuery({
-    queryKey: ['one-time-sales'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('status', 'paid')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-    refetchInterval: 30000,
-  });
-
-  const syncWithStripe = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('sync-stripe-products');
-      
-      if (error) throw error;
-      
-      // Refetch dos dados após sincronização
-      await refetchProducts();
-      await refetchSubscriptions();
-      await refetchSales();
-      
-      toast({
-        title: "Sincronização concluída",
-        description: `Produtos sincronizados com sucesso! ${data?.results?.products_synced || 0} produtos e ${data?.results?.plans_synced || 0} planos sincronizados.`
-      });
-    } catch (error) {
-      console.error('Sync error:', error);
-      toast({
-        title: "Erro na sincronização",
-        description: "Não foi possível sincronizar com o Stripe. Verifique os logs.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const calculateStats = () => {
-    const totalProducts = products?.length || 0;
-    const totalSubscriptions = activeSubscriptions?.length || 0;
-    const totalSales = oneTimeSales?.length || 0;
-    
-    const subscriptionRevenue = activeSubscriptions?.filter(sub => sub.status === 'active')
-      .reduce((sum, sub) => sum + (sub.monthly_price || 20), 0) || 0;
-    
-    const salesRevenue = oneTimeSales?.reduce((sum, sale) => sum + (sale.amount / 100), 0) || 0;
-    
-    const totalRevenue = subscriptionRevenue + salesRevenue;
-
-    return {
-      totalProducts,
-      totalSubscriptions,
-      totalSales,
-      subscriptionRevenue,
-      salesRevenue,
-      totalRevenue,
-      trialSubscriptions: activeSubscriptions?.filter(s => s.status === 'trial').length || 0,
-      activeSubscriptions: activeSubscriptions?.filter(s => s.status === 'active').length || 0
-    };
-  };
-
-  const stats = calculateStats();
+  const [activeTab, setActiveTab] = useState("produtos");
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2 text-slate-100">Produtos & Assinaturas</h1>
-          <p className="text-slate-400">Gerencie produtos do Stripe e acompanhe assinaturas</p>
-        </div>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline"
-            onClick={() => window.open('https://dashboard.stripe.com/products', '_blank')}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Abrir Stripe
-          </Button>
-          <Button 
-            onClick={syncWithStripe}
-            disabled={isLoading}
-            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-medium"
-          >
-            {isLoading ? (
-              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
-            )}
-            Sincronizar Stripe
-          </Button>
+    <div className="space-y-4 lg:space-y-6 p-4 lg:p-6 w-full max-w-full overflow-x-hidden">
+      {/* Header - Mobile Optimized */}
+      <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl lg:text-3xl font-bold mb-1 lg:mb-2 truncate">Produtos & Assinaturas</h1>
+          <p className="text-sm lg:text-base text-gray-400 truncate">Gerencie produtos, planos e assinaturas</p>
         </div>
       </div>
 
-      {/* Stats Dashboard */}
-      <ProductStatsCards stats={stats} />
+      {/* Stats Cards */}
+      <ProductStatsCards />
 
-      {/* Produtos Sincronizados do Stripe */}
-      <ProductCatalog 
-        products={products}
-        productsLoading={productsLoading}
-        syncWithStripe={syncWithStripe}
-        isLoading={isLoading}
-      />
+      {/* Tabs - Mobile Optimized */}
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="border-b border-slate-600/50">
+            <TabsList className="w-full h-auto bg-transparent p-0 rounded-none">
+              <div className="grid w-full grid-cols-3 gap-0">
+                <TabsTrigger 
+                  value="produtos" 
+                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                >
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
+                    <Package className="h-4 w-4 lg:h-5 lg:w-5" />
+                    <span className="text-xs lg:text-sm font-medium">Produtos</span>
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="assinaturas" 
+                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                >
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
+                    <Users className="h-4 w-4 lg:h-5 lg:w-5" />
+                    <span className="text-xs lg:text-sm font-medium">Assinaturas</span>
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="performance" 
+                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                >
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
+                    <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
+                    <span className="text-xs lg:text-sm font-medium">Performance</span>
+                  </div>
+                </TabsTrigger>
+              </div>
+            </TabsList>
+          </div>
 
-      {/* Assinaturas Ativas */}
-      <ActiveSubscriptionsList activeSubscriptions={activeSubscriptions} />
+          <div className="p-0">
+            <TabsContent value="produtos" className="mt-0 p-4 lg:p-6">
+              <ProductCatalog />
+            </TabsContent>
 
-      {/* Performance Summary */}
-      <PerformanceSummary stats={stats} />
+            <TabsContent value="assinaturas" className="mt-0 p-4 lg:p-6">
+              <ActiveSubscriptionsList />
+            </TabsContent>
+
+            <TabsContent value="performance" className="mt-0 p-4 lg:p-6">
+              <PerformanceSummary />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </Card>
     </div>
   );
 };

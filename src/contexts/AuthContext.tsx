@@ -1,9 +1,18 @@
 
-import { createContext, useContext, useMemo, ReactNode } from 'react';
-import { AuthContextType } from './auth/types';
-import { useAuthState } from './auth/useAuthState';
-import { useAuthActions } from './auth/useAuthActions';
-import { useAuthInitialization } from './auth/useAuthInitialization';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  isAdmin: boolean;
+  adminLoading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  loading: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -20,36 +29,145 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const {
-    user,
-    setUser,
-    session,
-    setSession,
-    loading,
-    setLoading,
-    isAdmin,
-    setIsAdmin,
-    adminLoading,
-    setAdminLoading,
-    initializedRef,
-    checkAdminStatus
-  } = useAuthState();
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
 
-  const { signIn, signUp, signOut } = useAuthActions();
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
 
-  // Initialize auth - this will only run once due to empty dependencies
-  useAuthInitialization({
-    initializedRef,
-    setSession,
-    setUser,
-    setIsAdmin,
-    setAdminLoading,
-    setLoading,
-    checkAdminStatus
-  });
+      if (error) {
+        console.error('Erro verificando admin:', error);
+        setIsAdmin(false);
+      } else {
+        setIsAdmin(data?.role === 'admin');
+      }
+    } catch (error) {
+      console.error('Exceção verificando admin:', error);
+      setIsAdmin(false);
+    }
+  };
 
-  // Memoize context value to prevent unnecessary re-renders
-  const value = useMemo(() => ({
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signUp = async (email: string, password: string, metadata?: { full_name: string; date_of_birth: string }) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: metadata ? {
+            full_name: metadata.full_name,
+            date_of_birth: metadata.date_of_birth
+          } : undefined
+        }
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      localStorage.removeItem('admin-active-section');
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erro no signOut:', error);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        // Buscar sessão atual
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            setAdminLoading(true);
+            await checkAdminStatus(session.user.id);
+            setAdminLoading(false);
+          } else {
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }
+          
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Erro na inicialização:', error);
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setIsAdmin(false);
+          setAdminLoading(false);
+          setLoading(false);
+        }
+      }
+    };
+
+    // Configurar listener de mudanças de auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event);
+        
+        if (!mounted) return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (event === 'SIGNED_OUT') {
+          setIsAdmin(false);
+          setAdminLoading(false);
+          return;
+        }
+
+        if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          setAdminLoading(true);
+          await checkAdminStatus(session.user.id);
+          setAdminLoading(false);
+        } else if (!session?.user) {
+          setIsAdmin(false);
+          setAdminLoading(false);
+        }
+      }
+    );
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const value = {
     user,
     session,
     isAdmin,
@@ -58,7 +176,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signOut,
     loading,
-  }), [user, session, isAdmin, adminLoading, signIn, signUp, signOut, loading]);
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

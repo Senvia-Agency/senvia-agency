@@ -14,10 +14,9 @@ const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
 
 const AdminDashboard = () => {
-  const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
+  const { user, loading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   
-  // TODOS OS HOOKS DEVEM SER EXECUTADOS SEMPRE - SEM CONDIÇÕES
   const [activeSection, setActiveSection] = useState(() => {
     try {
       return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
@@ -27,17 +26,43 @@ const AdminDashboard = () => {
     }
   });
 
-  // Memoize SEMPRE - não condicionalmente
-  const isLoading = useMemo(() => {
-    return authLoading || adminLoading;
-  }, [authLoading, adminLoading]);
+  const handleSectionChange = useCallback((section: string) => {
+    setActiveSection(section);
+    try {
+      localStorage.setItem(SECTION_STORAGE_KEY, section);
+    } catch (error) {
+      console.error('Erro ao salvar seção ativa:', error);
+    }
+  }, []);
 
-  const shouldRedirect = useMemo(() => {
-    // Só redireciona se temos certeza que não há user/admin
-    return !authLoading && !adminLoading && (!user || !isAdmin);
-  }, [authLoading, adminLoading, user, isAdmin]);
+  useEffect(() => {
+    document.title = "Admin Dashboard | SENVIA";
+  }, []);
 
-  const renderActiveSection = useMemo(() => {
+  // Aguardar carregamento completo
+  if (loading || adminLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-senvia-500"></div>
+            <p className="text-gray-400">
+              {loading ? 'Verificando autenticação...' : 'Verificando permissões...'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirecionar se não autenticado ou não admin
+  if (!user || !isAdmin) {
+    navigate('/auth', { replace: true });
+    return null;
+  }
+
+  const renderActiveSection = () => {
     switch (activeSection) {
       case 'overview':
         return <AdminOverview />;
@@ -54,49 +79,7 @@ const AdminDashboard = () => {
       default:
         return <AdminOverview />;
     }
-  }, [activeSection]);
-
-  const handleSectionChange = useCallback((section: string) => {
-    setActiveSection(section);
-    try {
-      localStorage.setItem(SECTION_STORAGE_KEY, section);
-    } catch (error) {
-      console.error('Erro ao salvar seção ativa:', error);
-    }
-  }, []);
-
-  // Effects sempre executados
-  useEffect(() => {
-    document.title = "Admin Dashboard | SENVIA";
-  }, []);
-
-  useEffect(() => {
-    if (shouldRedirect) {
-      console.log('Redirecting to auth - User:', !!user, 'IsAdmin:', isAdmin);
-      navigate('/auth', { replace: true });
-    }
-  }, [shouldRedirect, navigate, user, isAdmin]);
-
-  // RENDER CONDICIONAL APENAS NO FINAL - DEPOIS DE TODOS OS HOOKS
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-senvia-500"></div>
-            <p className="text-gray-400">
-              {authLoading ? 'Verificando autenticação...' : 'Verificando permissões...'}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (shouldRedirect) {
-    return null;
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -107,7 +90,7 @@ const AdminDashboard = () => {
         />
         <main className="flex-1 p-6 lg:p-8 ml-64">
           <div className="max-w-7xl mx-auto">
-            {renderActiveSection}
+            {renderActiveSection()}
           </div>
         </main>
       </div>

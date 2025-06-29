@@ -8,32 +8,39 @@ interface AdminRouteProps {
 }
 
 const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
+  const { user, loading, isAdmin, adminLoading } = useAuth();
   const location = useLocation();
 
-  if (authLoading || adminLoading) {
+  // Mostrar loading enquanto autentica ou verifica admin
+  if (loading || adminLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-          <p className="text-muted-foreground">Verificando permissões...</p>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-senvia-500"></div>
+            <p className="text-gray-400">
+              {loading ? 'Verificando autenticação...' : 'Verificando permissões...'}
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Redirecionar para login se não autenticado
   if (!user) {
-    // Store the current path to redirect back after login
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
+  // Mostrar acesso negado se não for admin
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-          <p className="text-muted-foreground mb-4">
+          <h1 className="text-2xl font-bold mb-4 text-white">Acesso Negado</h1>
+          <p className="text-gray-400 mb-4">
             Você não tem permissão para acessar esta área. Apenas administradores podem acessar o CRM.
           </p>
           <button 

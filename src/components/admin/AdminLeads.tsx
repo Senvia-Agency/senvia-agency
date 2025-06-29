@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,7 @@ const AdminLeads = () => {
   const [convertLead, setConvertLead] = useState<any>(null);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
 
-  // Persistent filters with better handling
+  // Simplified filters without problematic listeners
   const [filters, setFilters] = useState(() => {
     try {
       const savedFilters = localStorage.getItem(STORAGE_KEY);
@@ -39,49 +38,14 @@ const AdminLeads = () => {
   const { data: leads, refetch, isLoading } = useUnifiedLeads();
   const updateLeadMutation = useUpdateUnifiedLead();
 
-  // Debounced filter saving to localStorage
-  const saveFiltersToStorage = useCallback((filtersToSave: any) => {
+  // Save filters whenever they change
+  useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtersToSave));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
     } catch (error) {
       console.error('Erro ao salvar filtros:', error);
     }
-  }, []);
-
-  // Save filters whenever they change
-  useEffect(() => {
-    saveFiltersToStorage(filters);
-  }, [filters, saveFiltersToStorage]);
-
-  // Restore filters on component mount and when page becomes visible
-  useEffect(() => {
-    const restoreFilters = () => {
-      try {
-        const savedFilters = localStorage.getItem(STORAGE_KEY);
-        if (savedFilters) {
-          const parsedFilters = JSON.parse(savedFilters);
-          setFilters(parsedFilters);
-        }
-      } catch (error) {
-        console.error('Erro ao restaurar filtros:', error);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        restoreFilters();
-      }
-    };
-
-    // Restore on focus/visibility change
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', restoreFilters);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', restoreFilters);
-    };
-  }, []);
+  }, [filters]);
 
   // Optimized filter update function
   const handleFiltersChange = useCallback((newFilters: any) => {

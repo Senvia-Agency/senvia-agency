@@ -113,19 +113,6 @@ export const useAuthInitialization = ({
     };
   }, [checkAdminStatus, initializedRef, setSession, setUser, setIsAdmin, setAdminLoading, setLoading]);
 
-  // Optimized visibility change handler - only check session validity without full reinit
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && initializedRef.current) {
-        console.log('Tab became visible, maintaining current state...');
-        // Don't reinitialize, just maintain current state
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [initializedRef]);
+  // REMOVIDO: Não precisamos mais dos listeners de visibilitychange e focus
+  // que estavam causando recarregamentos desnecessários
 };

@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   
-  // Optimized section state management
+  // Simplified section state management
   const [activeSection, setActiveSection] = useState(() => {
     try {
       return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
@@ -50,42 +50,7 @@ const AdminDashboard = () => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
 
-  // Optimized visibility change handler
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // Only restore section if it changed
-        try {
-          const savedSection = localStorage.getItem(SECTION_STORAGE_KEY);
-          if (savedSection && savedSection !== activeSection) {
-            setActiveSection(savedSection);
-          }
-        } catch (error) {
-          console.error('Erro ao restaurar seção ativa:', error);
-        }
-      }
-    };
-
-    const handleFocus = () => {
-      // Restore section on window focus
-      try {
-        const savedSection = localStorage.getItem(SECTION_STORAGE_KEY);
-        if (savedSection && savedSection !== activeSection) {
-          setActiveSection(savedSection);
-        }
-      } catch (error) {
-        console.error('Erro ao restaurar seção no foco:', error);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [activeSection]);
+  // REMOVIDO: Os listeners de visibilitychange e focus que causavam recarregamentos
 
   // Loading states
   if (authLoading || adminLoading) {

@@ -15,8 +15,8 @@ const ScrollToTopOnRouteChange = () => {
       return;
     }
 
-    // Only scroll if the route actually changed and it's not just a tab focus change
-    if (prevLocation.current !== location.pathname && document.hasFocus()) {
+    // Only scroll if the route actually changed
+    if (prevLocation.current !== location.pathname) {
       window.scrollTo(0, 0);
       prevLocation.current = location.pathname;
     }

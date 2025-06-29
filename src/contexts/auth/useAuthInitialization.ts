@@ -36,7 +36,7 @@ export const useAuthInitialization = ({
         console.log('Initializing auth...');
         setLoading(true);
         
-        // Get initial session with better error handling
+        // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -48,7 +48,7 @@ export const useAuthInitialization = ({
 
         if (!isMounted) return;
 
-        // Handle session state properly
+        // Handle initial session
         if (initialSession?.user) {
           console.log('Valid session found, setting up user state');
           setSession(initialSession);
@@ -65,18 +65,22 @@ export const useAuthInitialization = ({
 
         // Set up auth state listener
         subscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log('Auth state change:', event, 'User:', currentSession?.user?.id);
+          console.log('[Auth Event]', event, 'User:', currentSession?.user?.id);
           
           if (!isMounted) return;
           
-          // Handle different auth events properly
+          // Tratar SIGNED_IN e TOKEN_REFRESHED da mesma forma
           if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
             if (currentSession?.user) {
               setSession(currentSession);
               setUser(currentSession.user);
-              if (event === 'SIGNED_IN') {
-                setAdminLoading(true);
+              
+              // Sempre verificar admin status e desativar loading depois
+              setAdminLoading(true);
+              try {
                 await checkAdminStatus(currentSession.user.id);
+              } finally {
+                setAdminLoading(false);
               }
             }
           } else if (event === 'SIGNED_OUT') {
@@ -98,7 +102,6 @@ export const useAuthInitialization = ({
       } catch (error) {
         console.error('Error in auth initialization:', error);
         if (isMounted) {
-          // Ensure we clear state on error
           setSession(null);
           setUser(null);
           setIsAdmin(false);

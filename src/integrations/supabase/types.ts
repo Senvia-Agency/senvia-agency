@@ -63,6 +63,66 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_name: string
+          category: string
+          content: string
+          created_at: string
+          created_by: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          reading_time: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string
+          category?: string
+          content: string
+          created_at?: string
+          created_by: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contatos_agente: {
         Row: {
           agente: string | null
@@ -1079,6 +1139,10 @@ export type Database = {
       }
       convert_lead_to_customer: {
         Args: { lead_id: string }
+        Returns: string
+      }
+      generate_blog_slug: {
+        Args: { title: string }
         Returns: string
       }
       get_leads_stats: {

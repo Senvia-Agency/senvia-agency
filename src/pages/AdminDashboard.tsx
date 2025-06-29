@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
 import AdminClientes from "@/components/admin/AdminClientes";
+import AdminBlog from "@/components/admin/AdminBlog";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 
@@ -111,6 +112,8 @@ const AdminDashboard = () => {
         return <AdminLeads />;
       case 'clientes':
         return <AdminClientes />;
+      case 'blog':
+        return <AdminBlog />;
       case 'financeiro':
         return <AdminFinanceiro />;
       case 'produtos-assinaturas':

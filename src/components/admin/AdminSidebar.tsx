@@ -8,7 +8,8 @@ import {
   Package, 
   LogOut,
   BarChart3,
-  UserCheck
+  UserCheck,
+  FileText
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -34,6 +35,11 @@ const AdminSidebar = ({ activeSection, setActiveSection }: AdminSidebarProps) =>
       id: 'clientes',
       label: 'Clientes',
       icon: UserCheck
+    },
+    {
+      id: 'blog',
+      label: 'Gestão de Blog',
+      icon: FileText
     },
     {
       id: 'financeiro',

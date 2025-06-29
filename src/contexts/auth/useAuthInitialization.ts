@@ -22,18 +22,18 @@ export const useAuthInitialization = ({
   checkAdminStatus
 }: UseAuthInitializationProps) => {
   useEffect(() => {
-    // Prevent multiple initializations
+    // Prevent multiple initializations with a more robust check
     if (initializedRef.current) {
       console.log('Auth already initialized, skipping...');
       return;
     }
 
+    console.log('Starting auth initialization...');
     let isMounted = true;
     let subscription: any;
 
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth...');
         setLoading(true);
         
         // Get initial session
@@ -44,63 +44,79 @@ export const useAuthInitialization = ({
           throw error;
         }
         
-        console.log('Initial session found:', !!initialSession, 'User ID:', initialSession?.user?.id);
+        console.log('Session check complete. Has user:', !!initialSession?.user);
 
         if (!isMounted) return;
 
-        // Handle initial session
+        // Handle initial session - simplified logic
         if (initialSession?.user) {
-          console.log('Valid session found, setting up user state');
+          console.log('Setting up authenticated user');
           setSession(initialSession);
           setUser(initialSession.user);
+          
+          // Check admin status
           setAdminLoading(true);
-          await checkAdminStatus(initialSession.user.id);
+          try {
+            await checkAdminStatus(initialSession.user.id);
+          } catch (adminError) {
+            console.error('Error checking admin status:', adminError);
+            setIsAdmin(false);
+          } finally {
+            setAdminLoading(false);
+          }
         } else {
-          console.log('No valid session found, clearing state');
+          console.log('No session found, clearing state');
           setSession(null);
           setUser(null);
           setIsAdmin(false);
           setAdminLoading(false);
         }
 
-        // Set up auth state listener
+        // Set up auth state listener - ONLY ONCE
         subscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log('[Auth Event]', event, 'User:', currentSession?.user?.id);
+          console.log('[Auth Event]', event, currentSession?.user?.id ? 'User logged in' : 'No user');
           
           if (!isMounted) return;
           
-          // Tratar SIGNED_IN e TOKEN_REFRESHED da mesma forma
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            if (currentSession?.user) {
-              setSession(currentSession);
-              setUser(currentSession.user);
-              
-              // Sempre verificar admin status e desativar loading depois
-              setAdminLoading(true);
-              try {
-                await checkAdminStatus(currentSession.user.id);
-              } finally {
-                setAdminLoading(false);
+          switch (event) {
+            case 'SIGNED_IN':
+            case 'TOKEN_REFRESHED':
+              if (currentSession?.user) {
+                setSession(currentSession);
+                setUser(currentSession.user);
+                
+                setAdminLoading(true);
+                try {
+                  await checkAdminStatus(currentSession.user.id);
+                } catch (adminError) {
+                  console.error('Error checking admin status:', adminError);
+                  setIsAdmin(false);
+                } finally {
+                  setAdminLoading(false);
+                }
               }
-            }
-          } else if (event === 'SIGNED_OUT') {
-            console.log('User signed out, clearing state');
-            setSession(null);
-            setUser(null);
-            setIsAdmin(false);
-            setAdminLoading(false);
-            initializedRef.current = false;
-            // Clear localStorage on sign out
-            localStorage.removeItem('admin-active-section');
-            localStorage.removeItem('admin-leads-filters');
+              break;
+              
+            case 'SIGNED_OUT':
+              console.log('User signed out, clearing all state');
+              setSession(null);
+              setUser(null);
+              setIsAdmin(false);
+              setAdminLoading(false);
+              // Reset initialization flag on sign out
+              initializedRef.current = false;
+              localStorage.removeItem('admin-active-section');
+              localStorage.removeItem('admin-leads-filters');
+              break;
           }
         });
 
-        // Mark as initialized only after successful setup
+        // Mark as initialized ONLY after successful setup
         initializedRef.current = true;
+        console.log('Auth initialization completed successfully');
         
       } catch (error) {
-        console.error('Error in auth initialization:', error);
+        console.error('Auth initialization failed:', error);
         if (isMounted) {
           setSession(null);
           setUser(null);
@@ -119,9 +135,9 @@ export const useAuthInitialization = ({
     return () => {
       console.log('Cleaning up auth initialization');
       isMounted = false;
-      if (subscription) {
-        subscription.data?.subscription?.unsubscribe();
+      if (subscription?.data?.subscription?.unsubscribe) {
+        subscription.data.subscription.unsubscribe();
       }
     };
-  }, [setSession, setUser, setIsAdmin, setAdminLoading, setLoading, checkAdminStatus, initializedRef]);
+  }, []); // EMPTY DEPENDENCIES - run only once
 };

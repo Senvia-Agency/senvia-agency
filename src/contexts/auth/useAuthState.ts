@@ -11,8 +11,14 @@ export const useAuthState = () => {
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
   const initializedRef = useRef(false);
 
-  // Memoize the admin check function with stable dependencies to prevent unnecessary calls
+  // Create a completely stable admin check function
   const checkAdminStatus = useCallback(async (userId: string) => {
+    if (!userId) {
+      console.log('No userId provided for admin check');
+      setIsAdmin(false);
+      return;
+    }
+
     try {
       console.log('Checking admin status for user:', userId);
       const { data, error } = await supabase
@@ -22,52 +28,30 @@ export const useAuthState = () => {
         .single();
 
       if (error) {
-        console.error('Erro ao verificar status de admin:', error);
+        console.error('Error checking admin status:', error);
         setIsAdmin(false);
       } else {
-        console.log('User role:', data?.role);
-        setIsAdmin(data?.role === 'admin');
+        const isUserAdmin = data?.role === 'admin';
+        console.log('Admin check result:', isUserAdmin);
+        setIsAdmin(isUserAdmin);
       }
     } catch (error) {
-      console.error('Erro ao verificar status de admin:', error);
+      console.error('Exception in admin check:', error);
       setIsAdmin(false);
-    } finally {
-      setAdminLoading(false);
     }
-  }, []); // Empty dependencies to ensure stable reference
-
-  // Memoize setters to prevent useEffect re-execution
-  const stableSetUser = useCallback((user: User | null) => {
-    setUser(user);
-  }, []);
-
-  const stableSetSession = useCallback((session: Session | null) => {
-    setSession(session);
-  }, []);
-
-  const stableSetIsAdmin = useCallback((isAdmin: boolean) => {
-    setIsAdmin(isAdmin);
-  }, []);
-
-  const stableSetAdminLoading = useCallback((loading: boolean) => {
-    setAdminLoading(loading);
-  }, []);
-
-  const stableSetLoading = useCallback((loading: boolean) => {
-    setLoading(loading);
-  }, []);
+  }, []); // Completely stable - no dependencies
 
   return {
     user,
-    setUser: stableSetUser,
+    setUser,
     session,
-    setSession: stableSetSession,
+    setSession,
     loading,
-    setLoading: stableSetLoading,
+    setLoading,
     isAdmin,
-    setIsAdmin: stableSetIsAdmin,
+    setIsAdmin,
     adminLoading,
-    setAdminLoading: stableSetAdminLoading,
+    setAdminLoading,
     initializedRef,
     checkAdminStatus
   };

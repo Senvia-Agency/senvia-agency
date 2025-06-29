@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const { signIn, signUp, signOut } = useAuthActions();
 
+  // Initialize auth - this will only run once due to empty dependencies
   useAuthInitialization({
     initializedRef,
     setSession,
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAdminStatus
   });
 
-  // Memoize the context value to prevent unnecessary re-renders
+  // Memoize context value to prevent unnecessary re-renders
   const value = useMemo(() => ({
     user,
     session,

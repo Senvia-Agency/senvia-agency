@@ -21,7 +21,9 @@ export const useUnifiedLeads = () => {
       console.log('Leads unificados encontrados:', data?.length);
       return data || [];
     },
-    refetchInterval: 10000,
+    // REMOVIDO refetchInterval para evitar atualizações constantes
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // 30 segundos
   });
 };
 

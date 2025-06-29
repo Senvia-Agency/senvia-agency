@@ -37,7 +37,7 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // Auth check with better error handling
+  // Auth check - SIMPLIFICADO, só executa quando necessário
   useEffect(() => {
     if (!authLoading && !adminLoading) {
       if (!user || !isAdmin) {
@@ -46,11 +46,10 @@ const AdminDashboard = () => {
     }
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
+  // Set document title apenas uma vez
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
-
-  // REMOVIDO: Os listeners de visibilitychange e focus que causavam recarregamentos
 
   // Loading states
   if (authLoading || adminLoading) {

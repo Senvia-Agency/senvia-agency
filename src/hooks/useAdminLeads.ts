@@ -58,6 +58,8 @@ export const useAdminLeads = (dateRange: number) => {
         conversion_rate: totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0
       };
     },
-    refetchInterval: 10000,
+    // REMOVIDO refetchInterval para evitar atualizações constantes
+    refetchOnWindowFocus: false,
+    staleTime: 60000, // 1 minuto
   });
 };

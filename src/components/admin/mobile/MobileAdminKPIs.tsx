@@ -15,8 +15,8 @@ const MobileAdminKPIs = ({ revenueMetrics, leadsStats, subscriptions }: MobileAd
   const activeSubscriptions = subscriptions?.filter((sub: any) => sub.status === 'active')?.length || 0;
 
   return (
-    <div className="w-full max-w-full overflow-hidden">
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
+    <div className="w-full max-w-full overflow-hidden px-0">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 w-full">
         <div className="w-full min-w-0">
           <MobileKPICard
             title="Receita Total"
@@ -45,7 +45,7 @@ const MobileAdminKPIs = ({ revenueMetrics, leadsStats, subscriptions }: MobileAd
           />
         </div>
         
-        <div className="w-full min-w-0 xs:col-span-1 lg:col-span-1">
+        <div className="w-full min-w-0 xs:col-span-2 lg:col-span-1">
           <MobileKPICard
             title="Conversão"
             value={`${conversionRate.toFixed(1)}%`}
@@ -59,7 +59,7 @@ const MobileAdminKPIs = ({ revenueMetrics, leadsStats, subscriptions }: MobileAd
           />
         </div>
         
-        <div className="w-full min-w-0 xs:col-span-1 lg:col-span-1">
+        <div className="w-full min-w-0 xs:col-span-2 lg:col-span-1">
           <MobileKPICard
             title="Assinaturas"
             value={activeSubscriptions}

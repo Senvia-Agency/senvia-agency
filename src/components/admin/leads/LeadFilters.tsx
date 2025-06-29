@@ -20,30 +20,30 @@ const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
   };
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardContent className="p-6">
+    <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm w-full min-w-0">
+      <CardContent className="p-4 lg:p-6">
         <div className="space-y-4">
-          {/* Primeira linha: Busca e Status */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Busca */}
-            <div className="lg:col-span-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Buscar por nome, email ou telefone..."
-                  value={filters.search}
-                  onChange={(e) => updateFilter('search', e.target.value)}
-                  className="pl-10 bg-gray-700 border-gray-600 text-white"
-                />
-              </div>
+          {/* Search - Full Width */}
+          <div className="w-full">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 flex-shrink-0" />
+              <Input
+                placeholder="Buscar por nome, email ou telefone..."
+                value={filters.search}
+                onChange={(e) => updateFilter('search', e.target.value)}
+                className="pl-10 bg-slate-700/50 border-slate-600/50 text-white text-sm w-full min-w-0"
+              />
             </div>
-            
-            {/* Filtro Status */}
+          </div>
+          
+          {/* Filter Row - Stack on Mobile, Side by Side on Desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+            {/* Status Filter */}
             <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger className="bg-slate-700/50 border-slate-600/50 text-white text-sm w-full min-w-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-slate-800/95 border-slate-600/50 backdrop-blur-sm">
                 <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="new">Novo</SelectItem>
                 <SelectItem value="contacted">Contatado</SelectItem>
@@ -52,28 +52,25 @@ const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
                 <SelectItem value="lost">Perdido</SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {/* Segunda linha: Fonte e Período */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Filtro Fonte */}
+            {/* Source Filter */}
             <Select value={filters.source} onValueChange={(value) => updateFilter('source', value)}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger className="bg-slate-700/50 border-slate-600/50 text-white text-sm w-full min-w-0">
                 <SelectValue placeholder="Fonte" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-slate-800/95 border-slate-600/50 backdrop-blur-sm">
                 <SelectItem value="all">Todas as fontes</SelectItem>
                 <SelectItem value="basic">Landing Page €4.99</SelectItem>
                 <SelectItem value="premium">Landing Page Premium</SelectItem>
               </SelectContent>
             </Select>
 
-            {/* Filtro Período */}
+            {/* Date Range Filter */}
             <Select value={filters.dateRange} onValueChange={(value) => updateFilter('dateRange', value)}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger className="bg-slate-700/50 border-slate-600/50 text-white text-sm w-full min-w-0 sm:col-span-2 lg:col-span-1">
                 <SelectValue placeholder="Período" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-slate-800/95 border-slate-600/50 backdrop-blur-sm">
                 <SelectItem value="7">Últimos 7 dias</SelectItem>
                 <SelectItem value="30">Últimos 30 dias</SelectItem>
                 <SelectItem value="90">Últimos 90 dias</SelectItem>

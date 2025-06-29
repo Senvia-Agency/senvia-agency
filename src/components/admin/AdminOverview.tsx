@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -91,9 +92,9 @@ const AdminOverview = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 px-4 lg:px-0">
+      <div className="space-y-4 p-4 max-w-full overflow-hidden">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">Dashboard</h1>
+          <h1 className="text-xl lg:text-3xl font-bold text-white truncate">Dashboard</h1>
         </div>
         <div className="text-center py-8 text-slate-400">
           Carregando métricas...
@@ -103,7 +104,7 @@ const AdminOverview = () => {
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6 px-4 lg:px-0 max-w-full overflow-hidden">
+    <div className="space-y-4 lg:space-y-6 p-4 max-w-full overflow-hidden">
       {/* Mobile Header */}
       <div className="block lg:hidden">
         <h1 className="text-xl font-bold text-white truncate">Dashboard</h1>
@@ -116,31 +117,31 @@ const AdminOverview = () => {
         <p className="text-slate-400">Visão geral completa dos negócios da SENVIA</p>
       </div>
 
-      {/* Welcome Section - Mobile Optimized */}
+      {/* Welcome Section - Mobile First */}
       <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         {/* Welcome Card */}
         <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50 overflow-hidden">
-          <div className="relative h-28 sm:h-32 lg:h-48">
+          <div className="relative h-24 sm:h-28 lg:h-48">
             <img 
               src="/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" 
               alt="SENVIA Dashboard" 
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex items-center justify-center">
-              <div className="text-center px-4 w-full">
-                <h2 className="text-base sm:text-lg lg:text-2xl font-bold text-white mb-1 lg:mb-2 truncate">
+              <div className="text-center px-3 w-full">
+                <h2 className="text-sm sm:text-base lg:text-2xl font-bold text-white mb-1 lg:mb-2 truncate">
                   Olá, {getUserName()}!
                 </h2>
-                <p className="text-sm lg:text-lg text-slate-200 mb-2 lg:mb-3">
+                <p className="text-xs lg:text-lg text-slate-200 mb-1 lg:mb-3">
                   Bem-vindo ao painel
                 </p>
                 <div className="text-slate-300 space-y-1">
                   <p className="text-xs lg:text-sm">
                     {format(new Date(), "dd/MM/yyyy", { locale: ptBR })}
                   </p>
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center justify-center gap-1">
                     <Clock className="h-3 w-3 lg:h-4 lg:w-4 flex-shrink-0" />
-                    <p className="text-sm lg:text-lg font-mono">
+                    <p className="text-xs lg:text-lg font-mono">
                       {format(currentTime, "HH:mm:ss")}
                     </p>
                   </div>
@@ -152,12 +153,12 @@ const AdminOverview = () => {
 
         {/* Inspirational Message */}
         <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50">
-          <CardContent className="p-4 lg:p-6 h-28 sm:h-32 lg:h-48 flex items-center">
-            <div className="flex items-start gap-3 lg:gap-4 w-full">
-              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-amber-400 mt-1 flex-shrink-0" />
+          <CardContent className="p-3 lg:p-6 h-24 sm:h-28 lg:h-48 flex items-center">
+            <div className="flex items-start gap-2 lg:gap-4 w-full min-w-0">
+              <Sparkles className="h-4 w-4 lg:h-6 lg:w-6 text-amber-400 mt-1 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm lg:text-lg font-medium text-amber-400 mb-2 lg:mb-3">Mensagem do Dia</p>
-                <p className="text-xs sm:text-sm lg:text-base text-slate-200 leading-relaxed break-words">
+                <p className="text-xs lg:text-lg font-medium text-amber-400 mb-1 lg:mb-3">Mensagem do Dia</p>
+                <p className="text-xs lg:text-base text-slate-200 leading-relaxed break-words hyphens-auto">
                   {inspirationalMessage}
                 </p>
               </div>
@@ -166,19 +167,19 @@ const AdminOverview = () => {
         </Card>
       </div>
 
-      {/* Period Filters - Mobile First */}
+      {/* Period Filters - Fully Responsive */}
       <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
         <CardContent className="p-3 lg:p-5">
-          <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
-            {/* Period Buttons */}
-            <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-3">
-              <span className="text-xs lg:text-sm font-medium text-slate-300 block lg:inline">Período:</span>
-              <div className="flex bg-slate-900/70 rounded-lg p-1 border border-slate-700/50 w-full lg:w-auto">
+          <div className="space-y-3">
+            {/* Period Buttons - Stack on Mobile */}
+            <div className="space-y-2">
+              <span className="text-xs lg:text-sm font-medium text-slate-300 block">Período:</span>
+              <div className="grid grid-cols-3 gap-2 lg:flex lg:gap-3 lg:w-auto">
                 <Button
                   variant={dateRange === 7 ? "default" : "ghost"}
                   onClick={() => setDateRange(7)}
                   className={cn(
-                    "text-xs px-2 py-1.5 h-7 lg:h-8 rounded-md transition-all flex-1 lg:flex-none",
+                    "text-xs px-2 py-1.5 h-8 rounded-md transition-all w-full lg:w-auto",
                     dateRange === 7 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
                       : "text-slate-300 hover:text-white hover:bg-slate-700/50"
@@ -191,7 +192,7 @@ const AdminOverview = () => {
                   variant={dateRange === 30 ? "default" : "ghost"}
                   onClick={() => setDateRange(30)}
                   className={cn(
-                    "text-xs px-2 py-1.5 h-7 lg:h-8 rounded-md transition-all flex-1 lg:flex-none",
+                    "text-xs px-2 py-1.5 h-8 rounded-md transition-all w-full lg:w-auto",
                     dateRange === 30 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
                       : "text-slate-300 hover:text-white hover:bg-slate-700/50"
@@ -204,7 +205,7 @@ const AdminOverview = () => {
                   variant={dateRange === 90 ? "default" : "ghost"}
                   onClick={() => setDateRange(90)}
                   className={cn(
-                    "text-xs px-2 py-1.5 h-7 lg:h-8 rounded-md transition-all flex-1 lg:flex-none",
+                    "text-xs px-2 py-1.5 h-8 rounded-md transition-all w-full lg:w-auto",
                     dateRange === 90 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
                       : "text-slate-300 hover:text-white hover:bg-slate-700/50"
@@ -216,21 +217,21 @@ const AdminOverview = () => {
               </div>
             </div>
             
-            {/* Custom Date Range - Stacked on Mobile */}
-            <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-3">
-              <span className="text-xs lg:text-sm font-medium text-slate-300 block lg:inline">Personalizado:</span>
-              <div className="flex flex-col sm:flex-row gap-2 lg:gap-2">
+            {/* Custom Date Range - Stack Vertically on Mobile */}
+            <div className="space-y-2">
+              <span className="text-xs lg:text-sm font-medium text-slate-300 block">Personalizado:</span>
+              <div className="space-y-2 lg:flex lg:items-center lg:gap-2 lg:space-y-0">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full sm:w-24 lg:w-32 justify-start text-left font-normal text-xs h-7 lg:h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all truncate",
+                        "w-full lg:w-28 justify-start text-left font-normal text-xs h-8 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateFrom && "text-slate-400",
                         customDateFrom && "text-slate-200"
                       )}
                     >
-                      <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3 flex-shrink-0" />
+                      <CalendarIcon className="mr-1 h-3 w-3 flex-shrink-0" />
                       <span className="truncate">
                         {customDateFrom ? format(customDateFrom, "dd/MM/yy") : "Início"}
                       </span>
@@ -252,12 +253,12 @@ const AdminOverview = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full sm:w-24 lg:w-32 justify-start text-left font-normal text-xs h-7 lg:h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all truncate",
+                        "w-full lg:w-28 justify-start text-left font-normal text-xs h-8 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateTo && "text-slate-400",
                         customDateTo && "text-slate-200"
                       )}
                     >
-                      <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3 flex-shrink-0" />
+                      <CalendarIcon className="mr-1 h-3 w-3 flex-shrink-0" />
                       <span className="truncate">
                         {customDateTo ? format(customDateTo, "dd/MM/yy") : "Fim"}
                       </span>
@@ -281,7 +282,7 @@ const AdminOverview = () => {
                       setCustomDateFrom(undefined);
                       setCustomDateTo(undefined);
                     }}
-                    className="text-xs h-7 lg:h-9 px-2 lg:px-3 text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all w-full sm:w-auto"
+                    className="text-xs h-8 px-3 text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all w-full lg:w-auto"
                   >
                     Limpar
                   </Button>
@@ -292,7 +293,7 @@ const AdminOverview = () => {
         </CardContent>
       </Card>
 
-      {/* Mobile-Optimized KPI Cards */}
+      {/* KPI Cards - Fully Responsive */}
       <div className="w-full">
         <MobileAdminKPIs 
           revenueMetrics={revenueMetrics}
@@ -301,7 +302,7 @@ const AdminOverview = () => {
         />
       </div>
 
-      {/* Charts Section - Stacked on Mobile */}  
+      {/* Charts Section - Stack on Mobile */}  
       <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         <div className="w-full">
           <AdminRevenueBreakdown revenueMetrics={revenueMetrics} />
@@ -311,7 +312,7 @@ const AdminOverview = () => {
         </div>
       </div>
 
-      {/* Recent Activity - Stacked on Mobile */}
+      {/* Recent Activity - Stack on Mobile */}
       <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         <div className="w-full">
           <AdminRecentLeads recentActivity={recentActivity} />

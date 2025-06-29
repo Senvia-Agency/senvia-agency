@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +34,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
+  
+  // Use refs to track current state and prevent unnecessary updates
+  const currentUserRef = useRef<User | null>(null);
+  const currentSessionRef = useRef<Session | null>(null);
+  const isInitializedRef = useRef(false);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -74,6 +79,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.removeItem('admin-active-section');
       setIsAdmin(false);
       setAdminLoading(false);
+      currentUserRef.current = null;
+      currentSessionRef.current = null;
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro no signOut:', error);
@@ -106,6 +113,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // Helper function to check if session/user actually changed
+  const hasSessionChanged = (newSession: Session | null): boolean => {
+    const oldSession = currentSessionRef.current;
+    const newUser = newSession?.user;
+    const oldUser = currentUserRef.current;
+    
+    // If both are null, no change
+    if (!newSession && !oldSession) return false;
+    
+    // If one is null and other isn't, it's a change
+    if ((!newSession && oldSession) || (newSession && !oldSession)) return true;
+    
+    // If user IDs are different, it's a change
+    if (newUser?.id !== oldUser?.id) return true;
+    
+    // If access tokens are different, it's a significant change
+    if (newSession?.access_token !== oldSession?.access_token) {
+      // But ignore token refresh events (same user, new token)
+      if (newUser?.id === oldUser?.id) {
+        console.log('Token refreshed for same user, ignoring');
+        return false;
+      }
+      return true;
+    }
+    
+    return false;
+  };
+
   useEffect(() => {
     console.log('AuthProvider: Initializing...');
 
@@ -113,9 +148,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       console.log('Initial session:', !!session, error);
       
-      setSession(session);
-      setUser(session?.user ?? null);
+      if (hasSessionChanged(session)) {
+        currentSessionRef.current = session;
+        currentUserRef.current = session?.user ?? null;
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+      
       setLoading(false);
+      isInitializedRef.current = true;
       
       // Only check admin status if user exists
       if (session?.user) {
@@ -131,36 +172,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       async (event, session) => {
         console.log('Auth state change:', event, !!session);
         
-        // Filter out events that don't require component re-renders
+        // Ignore token refresh events completely
         if (event === 'TOKEN_REFRESHED') {
           console.log('Token refreshed, ignoring to prevent re-renders');
           return;
         }
 
-        // Only process significant auth state changes
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-          // Check if this is actually a state change by comparing session IDs
-          const currentSessionId = session?.access_token;
-          const previousSessionId = user?.aud; // Use a stable identifier
-          
-          // If it's the same session, ignore duplicate SIGNED_IN events
-          if (event === 'SIGNED_IN' && currentSessionId && previousSessionId && session?.user?.id === user?.id) {
-            console.log('Duplicate SIGNED_IN event ignored to prevent re-renders');
-            return;
-          }
-          
-          setSession(session);
-          setUser(session?.user ?? null);
+        // Only process significant auth state changes after initialization
+        if (!isInitializedRef.current && event !== 'INITIAL_SESSION') {
+          console.log('Not yet initialized, ignoring event:', event);
+          return;
+        }
 
-          if (event === 'SIGNED_OUT' || !session?.user) {
-            setIsAdmin(false);
-            setAdminLoading(false);
-          } else if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
-            // Only check admin status if it's truly a new session
-            if (!user || user.id !== session.user.id) {
-              checkAdminStatus(session.user.id);
-            }
-          }
+        // Check if this is actually a meaningful session change
+        if (!hasSessionChanged(session)) {
+          console.log('No meaningful session change detected, ignoring');
+          return;
+        }
+
+        console.log('Processing auth state change:', event);
+        
+        // Update refs first
+        currentSessionRef.current = session;
+        currentUserRef.current = session?.user ?? null;
+        
+        // Update state
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (event === 'SIGNED_OUT' || !session?.user) {
+          setIsAdmin(false);
+          setAdminLoading(false);
+        } else if (session?.user) {
+          checkAdminStatus(session.user.id);
         }
       }
     );

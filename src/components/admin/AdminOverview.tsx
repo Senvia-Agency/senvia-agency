@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -162,7 +161,7 @@ const AdminOverview = () => {
         </Card>
       </div>
 
-      {/* Filtros de Período - Design Premium */}
+      {/* Filtros de Período - Design Premium com cores corrigidas */}
       <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm shadow-lg">
         <CardContent className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -175,8 +174,8 @@ const AdminOverview = () => {
                   className={cn(
                     "text-xs px-4 py-2 h-8 rounded-md transition-all",
                     dateRange === 7 
-                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
+                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -188,8 +187,8 @@ const AdminOverview = () => {
                   className={cn(
                     "text-xs px-4 py-2 h-8 rounded-md transition-all",
                     dateRange === 30 
-                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
+                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -201,8 +200,8 @@ const AdminOverview = () => {
                   className={cn(
                     "text-xs px-4 py-2 h-8 rounded-md transition-all",
                     dateRange === 90 
-                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm" 
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
+                      ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
+                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -219,7 +218,7 @@ const AdminOverview = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-600 hover:bg-slate-600/50 transition-all",
+                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateFrom && "text-slate-400",
                         customDateFrom && "text-slate-200"
                       )}
@@ -244,7 +243,7 @@ const AdminOverview = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-600 hover:bg-slate-600/50 transition-all",
+                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateTo && "text-slate-400",
                         customDateTo && "text-slate-200"
                       )}
@@ -271,7 +270,7 @@ const AdminOverview = () => {
                       setCustomDateFrom(undefined);
                       setCustomDateTo(undefined);
                     }}
-                    className="text-xs h-9 px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-all"
+                    className="text-xs h-9 px-3 text-slate-400 hover:text-slate-100 hover:bg-slate-700/50 transition-all"
                   >
                     Limpar
                   </Button>

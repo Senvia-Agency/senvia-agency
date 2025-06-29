@@ -8,8 +8,7 @@ const CTASection = () => {
       <div className="container mx-auto text-center max-w-4xl">
         <Button 
           size="lg" 
-          className="text-sm md:text-base px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 w-full sm:w-auto h-auto min-h-[48px] md:min-h-[56px] max-w-md mx-auto"
-          style={{ color: '#000000' }}
+          className="text-sm md:text-base px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 w-full sm:w-auto h-auto min-h-[48px] md:min-h-[56px] max-w-md mx-auto text-slate-900 font-semibold shadow-lg hover:shadow-xl transition-all"
           onClick={() => document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' })}
         >
           <span className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center leading-tight">

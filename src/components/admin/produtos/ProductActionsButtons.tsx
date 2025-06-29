@@ -80,7 +80,7 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
           variant="outline"
           size="sm"
           onClick={() => setIsEditModalOpen(true)}
-          className="border-slate-600 text-slate-300 hover:bg-slate-600/50"
+          className="border-slate-500 text-slate-300 hover:bg-slate-600 hover:text-slate-100 hover:border-slate-400"
           disabled={isDeleting}
         >
           <Edit className="h-4 w-4" />
@@ -92,7 +92,7 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
               variant="outline"
               size="sm"
               disabled={isDeleting}
-              className="border-red-600 text-red-400 hover:bg-red-600/20"
+              className="border-red-500 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-400"
             >
               {isDeleting ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
@@ -120,7 +120,7 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel 
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="border-slate-500 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
                 disabled={isDeleting}
               >
                 Cancelar

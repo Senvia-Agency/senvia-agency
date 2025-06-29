@@ -16,12 +16,12 @@ const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovements
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <ArrowUpDown className="h-5 w-5 text-senvia-500" />
+            <ArrowUpDown className="h-5 w-5 text-senvia-400" />
             Movimentos Financeiros
           </CardTitle>
           <Button 
             size="sm" 
-            className="bg-senvia-500 hover:bg-senvia-400 text-black"
+            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-semibold shadow-md hover:shadow-lg transition-all"
             onClick={onAddMovement}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -39,7 +39,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovements
               </div>
             </div>
             <div className="text-right">
-              <div className={`font-bold ${movement.movement_type === 'receita' ? 'text-green-500' : 'text-red-500'}`}>
+              <div className={`font-bold ${movement.movement_type === 'receita' ? 'text-green-400' : 'text-red-400'}`}>
                 {movement.movement_type === 'receita' ? '+' : '-'}€{Number(movement.amount).toFixed(2)}
               </div>
               <div className="text-xs text-gray-400">

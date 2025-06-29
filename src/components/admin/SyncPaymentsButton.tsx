@@ -37,7 +37,7 @@ const SyncPaymentsButton = () => {
       onClick={handleSync}
       disabled={isManualSync || syncMutation.isPending}
       variant="outline"
-      className="border-senvia-500 text-senvia-500 hover:bg-senvia-500 hover:text-white"
+      className="border-senvia-500 text-senvia-400 hover:bg-senvia-500 hover:text-slate-900 hover:border-senvia-400"
     >
       {(isManualSync || syncMutation.isPending) ? (
         <Loader2 className="h-4 w-4 mr-2 animate-spin" />

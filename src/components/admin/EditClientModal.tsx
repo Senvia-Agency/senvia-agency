@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,9 +13,10 @@ interface EditClientModalProps {
   isOpen: boolean;
   onClose: () => void;
   client: any;
+  onUpdateSuccess: () => void;
 }
 
-const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
+const EditClientModal = ({ isOpen, onClose, client, onUpdateSuccess }: EditClientModalProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
@@ -116,7 +116,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
       });
 
       queryClient.invalidateQueries({ queryKey: ['customers'] });
-      onClose();
+      onUpdateSuccess();
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar cliente",

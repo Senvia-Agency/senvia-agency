@@ -35,7 +35,7 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
       <CardHeader className="pb-2 lg:pb-3">
         <CardTitle className="flex items-center gap-2 text-base lg:text-lg text-white">
           <Euro className="h-4 w-4 lg:h-5 lg:w-5 text-senvia-500 flex-shrink-0" />
-          <span className="truncate">Receita por Origem</span>
+          <span className="truncate">Breakdown de Receita</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3 lg:p-6 pt-0">

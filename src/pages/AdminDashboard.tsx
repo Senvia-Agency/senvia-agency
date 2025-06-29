@@ -1,7 +1,5 @@
 
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState, useCallback } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
@@ -14,9 +12,6 @@ const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
 
 const AdminDashboard = () => {
-  const { user, loading, isAdmin, adminLoading } = useAuth();
-  const navigate = useNavigate();
-  
   const [activeSection, setActiveSection] = useState(() => {
     try {
       return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
@@ -38,29 +33,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
-
-  // Aguardar carregamento completo
-  if (loading || adminLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-senvia-500"></div>
-            <p className="text-gray-400">
-              {loading ? 'Verificando autenticação...' : 'Verificando permissões...'}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirecionar se não autenticado ou não admin
-  if (!user || !isAdmin) {
-    navigate('/auth', { replace: true });
-    return null;
-  }
 
   const renderActiveSection = () => {
     switch (activeSection) {

@@ -33,27 +33,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminLoading, setAdminLoading] = useState(true);
-
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        console.error('Erro verificando admin:', error);
-        setIsAdmin(false);
-      } else {
-        setIsAdmin(data?.role === 'admin');
-      }
-    } catch (error) {
-      console.error('Exceção verificando admin:', error);
-      setIsAdmin(false);
-    }
-  };
+  const [adminLoading, setAdminLoading] = useState(false);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -91,28 +71,64 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async () => {
     try {
       localStorage.removeItem('admin-active-section');
+      setIsAdmin(false);
+      setAdminLoading(false);
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro no signOut:', error);
     }
   };
 
+  // Initialize auth state ONCE
   useEffect(() => {
     let mounted = true;
 
-    const initializeAuth = async () => {
+    const initAuth = async () => {
       try {
-        // Buscar sessão atual
-        const { data: { session } } = await supabase.auth.getSession();
+        // Get current session
+        const { data: { session }, error } = await supabase.auth.getSession();
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
+          // Check admin status ONLY if user exists
           if (session?.user) {
             setAdminLoading(true);
-            await checkAdminStatus(session.user.id);
-            setAdminLoading(false);
+            
+            // Simple admin check with timeout protection
+            const adminCheck = setTimeout(() => {
+              console.log('Admin check timeout, setting to false');
+              setIsAdmin(false);
+              setAdminLoading(false);
+            }, 5000); // 5 second timeout
+            
+            try {
+              const { data, error: adminError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+
+              clearTimeout(adminCheck);
+              
+              if (mounted) {
+                if (adminError) {
+                  console.error('Admin check error:', adminError);
+                  setIsAdmin(false);
+                } else {
+                  setIsAdmin(data?.role === 'admin');
+                }
+                setAdminLoading(false);
+              }
+            } catch (error) {
+              clearTimeout(adminCheck);
+              if (mounted) {
+                console.error('Admin check exception:', error);
+                setIsAdmin(false);
+                setAdminLoading(false);
+              }
+            }
           } else {
             setIsAdmin(false);
             setAdminLoading(false);
@@ -121,7 +137,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setLoading(false);
         }
       } catch (error) {
-        console.error('Erro na inicialização:', error);
+        console.error('Auth initialization error:', error);
         if (mounted) {
           setSession(null);
           setUser(null);
@@ -132,7 +148,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
 
-    // Configurar listener de mudanças de auth
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth event:', event);
@@ -142,16 +158,50 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(session);
         setUser(session?.user ?? null);
 
+        // Handle different auth events
         if (event === 'SIGNED_OUT') {
           setIsAdmin(false);
           setAdminLoading(false);
           return;
         }
 
-        if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        // Only check admin on sign in, not on every event
+        if (event === 'SIGNED_IN' && session?.user) {
           setAdminLoading(true);
-          await checkAdminStatus(session.user.id);
-          setAdminLoading(false);
+          
+          // Simple admin check with timeout
+          const adminCheck = setTimeout(() => {
+            console.log('Auth event admin check timeout');
+            setIsAdmin(false);
+            setAdminLoading(false);
+          }, 3000);
+          
+          try {
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('user_id', session.user.id)
+              .single();
+
+            clearTimeout(adminCheck);
+            
+            if (mounted) {
+              if (error) {
+                console.error('Auth event admin error:', error);
+                setIsAdmin(false);
+              } else {
+                setIsAdmin(data?.role === 'admin');
+              }
+              setAdminLoading(false);
+            }
+          } catch (error) {
+            clearTimeout(adminCheck);
+            if (mounted) {
+              console.error('Auth event admin exception:', error);
+              setIsAdmin(false);
+              setAdminLoading(false);
+            }
+          }
         } else if (!session?.user) {
           setIsAdmin(false);
           setAdminLoading(false);
@@ -159,13 +209,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     );
 
-    initializeAuth();
+    // Initialize
+    initAuth();
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Empty dependency array - run only once
 
   const value = {
     user,

@@ -25,90 +25,82 @@ const LeadCard = ({
 }: LeadCardProps) => {
   return (
     <Card 
-      className="bg-slate-800/80 border-slate-600/50 hover:border-slate-500/50 transition-all cursor-pointer hover:bg-slate-750/80 w-full min-w-0"
+      className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer hover:bg-gray-750"
       onClick={() => onLeadClick(lead)}
     >
-      <CardContent className="p-4 lg:p-6">
-        {/* Mobile-First Layout */}
-        <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
-          {/* Main Info Section */}
-          <div className="min-w-0 flex-1 space-y-2 lg:space-y-3">
-            {/* Name and Source Badge */}
-            <div className="flex items-start gap-2 lg:gap-3">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-white text-sm lg:text-lg truncate">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6 flex-1">
+            {/* Informações Principais */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="font-semibold text-white text-lg">
                   {lead.full_name || lead.company_name || 'Nome não informado'}
                 </h3>
-              </div>
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  "text-xs flex-shrink-0 px-2 py-0.5", 
-                  lead.source_page === 'landing_page_basic' 
-                    ? 'border-senvia-500/50 text-senvia-400 bg-senvia-500/10' 
-                    : 'border-purple-500/50 text-purple-400 bg-purple-500/10'
-                )}
-              >
-                {getSourceLabel(lead.source_page)}
-              </Badge>
-            </div>
-            
-            {/* Contact Info - Stack on Mobile */}
-            <div className="space-y-1 lg:space-y-0 lg:flex lg:items-center lg:gap-4 text-xs lg:text-sm text-slate-400">
-              <div className="flex items-center gap-2 min-w-0">
-                <Mail className="h-3 w-3 lg:h-4 lg:w-4 flex-shrink-0" />
-                <span className="truncate">{lead.email || 'N/A'}</span>
+                <Badge 
+                  variant="outline" 
+                  className={cn("text-xs", lead.source_page === 'landing_page_basic' ? 'border-senvia-500 text-senvia-400' : 'border-purple-500 text-purple-400')}
+                >
+                  {getSourceLabel(lead.source_page)}
+                </Badge>
               </div>
               
-              {lead.phone && (
-                <div className="flex items-center gap-2 min-w-0">
-                  <Phone className="h-3 w-3 lg:h-4 lg:w-4 flex-shrink-0" />
-                  <span className="truncate">{lead.phone}</span>
+              <div className="flex items-center gap-6 text-sm text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span>{lead.email || 'N/A'}</span>
                 </div>
-              )}
+                
+                {lead.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    <span>{lead.phone}</span>
+                  </div>
+                )}
 
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-3 w-3 lg:h-4 lg:w-4 flex-shrink-0" />
-                <span>{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4" />
+                  <span>{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Status Section - Right aligned on desktop, full width on mobile */}
-          <div 
-            className="flex justify-start lg:justify-end"
-            onClick={(e) => {
-              e.stopPropagation();
-              onStatusEdit(lead.id);
-            }}
-          >
-            {editingStatus === lead.id ? (
-              <Select 
-                value={lead.lead_status} 
-                onValueChange={(value) => onStatusUpdate(lead.id, value)}
-              >
-                <SelectTrigger className="w-full lg:w-32 bg-slate-700/50 border-slate-600/50 text-white text-xs lg:text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800/95 border-slate-600/50 backdrop-blur-sm">
-                  <SelectItem value="new">Novo</SelectItem>
-                  <SelectItem value="contacted">Contatado</SelectItem>
-                  <SelectItem value="qualified">Qualificado</SelectItem>
-                  <SelectItem value="converted">Convertido</SelectItem>
-                  <SelectItem value="lost">Perdido</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <Badge 
-                className={cn(
-                  "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1.5 px-3 py-1.5 border text-xs lg:text-sm whitespace-nowrap",
-                  getStatusColor(lead.lead_status)
-                )}
-              >
-                {getStatusIcon(lead.lead_status)}
-                <span className="truncate">{getStatusLabel(lead.lead_status)}</span>
-              </Badge>
-            )}
+            {/* Status Clicável */}
+            <div 
+              className="flex items-center gap-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStatusEdit(lead.id);
+              }}
+            >
+              {editingStatus === lead.id ? (
+                <Select 
+                  value={lead.lead_status} 
+                  onValueChange={(value) => onStatusUpdate(lead.id, value)}
+                >
+                  <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectItem value="new">Novo</SelectItem>
+                    <SelectItem value="contacted">Contatado</SelectItem>
+                    <SelectItem value="qualified">Qualificado</SelectItem>
+                    <SelectItem value="converted">Convertido</SelectItem>
+                    <SelectItem value="lost">Perdido</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Badge 
+                  className={cn(
+                    "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2 px-3 py-1 border",
+                    getStatusColor(lead.lead_status)
+                  )}
+                >
+                  {getStatusIcon(lead.lead_status)}
+                  {getStatusLabel(lead.lead_status)}
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

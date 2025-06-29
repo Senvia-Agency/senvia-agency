@@ -30,14 +30,14 @@ const MobileKPICard = ({
   };
 
   return (
-    <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
-            <Icon className="h-5 w-5" />
+    <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm w-full min-w-0">
+      <CardContent className="p-3 lg:p-4">
+        <div className="flex items-center justify-between mb-2 lg:mb-3">
+          <div className={`p-1.5 lg:p-2 rounded-lg ${colorClasses[color]} flex-shrink-0`}>
+            <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
           </div>
           {trend && (
-            <div className={`text-xs font-medium px-2 py-1 rounded-full ${
+            <div className={`text-xs font-medium px-1.5 lg:px-2 py-0.5 lg:py-1 rounded-full flex-shrink-0 ${
               trend.isPositive 
                 ? 'text-green-400 bg-green-500/20' 
                 : 'text-red-400 bg-red-500/20'
@@ -47,15 +47,15 @@ const MobileKPICard = ({
           )}
         </div>
         
-        <div className="space-y-1">
-          <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+        <div className="space-y-1 min-w-0">
+          <h3 className="text-xs font-medium text-slate-400 uppercase tracking-wider truncate">
             {title}
           </h3>
-          <p className="text-xl font-bold text-white">
+          <p className="text-lg lg:text-xl font-bold text-white truncate">
             {value}
           </p>
           {subtitle && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 truncate">
               {subtitle}
             </p>
           )}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
@@ -64,16 +65,16 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white overflow-x-hidden">
       <MobileAdminSidebar 
         activeSection={activeSection} 
         setActiveSection={handleSectionChange} 
       />
       
       {/* Main Content */}
-      <main className="lg:ml-64 pt-20 lg:pt-0">
-        <div className="p-4 lg:p-8">
-          <div className="max-w-7xl mx-auto">
+      <main className="lg:ml-64 pt-20 lg:pt-0 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-full">
+          <div className="max-w-7xl mx-auto w-full">
             {renderActiveSection()}
           </div>
         </div>

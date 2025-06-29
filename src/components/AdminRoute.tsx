@@ -11,9 +11,14 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
   const { user, loading, isAdmin, adminLoading } = useAuth();
   const location = useLocation();
 
-  console.log('AdminRoute state:', { user: !!user, loading, isAdmin, adminLoading });
+  console.log('AdminRoute render:', { 
+    hasUser: !!user, 
+    loading, 
+    isAdmin, 
+    adminLoading 
+  });
 
-  // Show loading only while actually loading
+  // Show loading while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -33,7 +38,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
-  // Show loading only while checking admin permissions
+  // Show loading while checking admin permissions
   if (adminLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">

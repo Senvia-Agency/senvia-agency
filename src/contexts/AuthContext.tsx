@@ -79,129 +79,72 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Initialize auth state ONCE
+  const checkAdminStatus = async (userId: string) => {
+    console.log('Checking admin status for user:', userId);
+    setAdminLoading(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        console.error('Admin check error:', error);
+        setIsAdmin(false);
+      } else {
+        console.log('Admin check result:', data?.role);
+        setIsAdmin(data?.role === 'admin');
+      }
+    } catch (error) {
+      console.error('Admin check exception:', error);
+      setIsAdmin(false);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
+  // Initialize auth ONCE and handle all auth changes
   useEffect(() => {
     let mounted = true;
+    
+    console.log('AuthProvider: Initializing...');
 
-    const initAuth = async () => {
-      try {
-        // Get current session
-        const { data: { session }, error } = await supabase.auth.getSession();
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('Initial session:', !!session, error);
+      
+      if (mounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
         
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          
-          // Check admin status ONLY if user exists
-          if (session?.user) {
-            setAdminLoading(true);
-            
-            // Simple admin check with timeout protection
-            const adminCheck = setTimeout(() => {
-              console.log('Admin check timeout, setting to false');
-              setIsAdmin(false);
-              setAdminLoading(false);
-            }, 5000); // 5 second timeout
-            
-            try {
-              const { data, error: adminError } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('user_id', session.user.id)
-                .single();
-
-              clearTimeout(adminCheck);
-              
-              if (mounted) {
-                if (adminError) {
-                  console.error('Admin check error:', adminError);
-                  setIsAdmin(false);
-                } else {
-                  setIsAdmin(data?.role === 'admin');
-                }
-                setAdminLoading(false);
-              }
-            } catch (error) {
-              clearTimeout(adminCheck);
-              if (mounted) {
-                console.error('Admin check exception:', error);
-                setIsAdmin(false);
-                setAdminLoading(false);
-              }
-            }
-          } else {
-            setIsAdmin(false);
-            setAdminLoading(false);
-          }
-          
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (mounted) {
-          setSession(null);
-          setUser(null);
+        if (session?.user) {
+          checkAdminStatus(session.user.id);
+        } else {
           setIsAdmin(false);
           setAdminLoading(false);
-          setLoading(false);
         }
+        
+        setLoading(false);
       }
-    };
+    });
 
-    // Set up auth state listener
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth event:', event);
+        console.log('Auth state change:', event, !!session);
         
         if (!mounted) return;
 
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Handle different auth events
         if (event === 'SIGNED_OUT') {
           setIsAdmin(false);
           setAdminLoading(false);
-          return;
-        }
-
-        // Only check admin on sign in, not on every event
-        if (event === 'SIGNED_IN' && session?.user) {
-          setAdminLoading(true);
-          
-          // Simple admin check with timeout
-          const adminCheck = setTimeout(() => {
-            console.log('Auth event admin check timeout');
-            setIsAdmin(false);
-            setAdminLoading(false);
-          }, 3000);
-          
-          try {
-            const { data, error } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('user_id', session.user.id)
-              .single();
-
-            clearTimeout(adminCheck);
-            
-            if (mounted) {
-              if (error) {
-                console.error('Auth event admin error:', error);
-                setIsAdmin(false);
-              } else {
-                setIsAdmin(data?.role === 'admin');
-              }
-              setAdminLoading(false);
-            }
-          } catch (error) {
-            clearTimeout(adminCheck);
-            if (mounted) {
-              console.error('Auth event admin exception:', error);
-              setIsAdmin(false);
-              setAdminLoading(false);
-            }
-          }
+        } else if (event === 'SIGNED_IN' && session?.user) {
+          await checkAdminStatus(session.user.id);
         } else if (!session?.user) {
           setIsAdmin(false);
           setAdminLoading(false);
@@ -209,14 +152,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     );
 
-    // Initialize
-    initAuth();
-
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array - run only once
+  }, []); // Run only once
 
   const value = {
     user,

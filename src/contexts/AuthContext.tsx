@@ -105,28 +105,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Initialize auth ONCE and handle all auth changes
   useEffect(() => {
-    let mounted = true;
-    
     console.log('AuthProvider: Initializing...');
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       console.log('Initial session:', !!session, error);
       
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          checkAdminStatus(session.user.id);
-        } else {
-          setIsAdmin(false);
-          setAdminLoading(false);
-        }
-        
-        setLoading(false);
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
+      // Only check admin status if user exists
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      } else {
+        setIsAdmin(false);
+        setAdminLoading(false);
       }
     });
 
@@ -135,28 +130,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       async (event, session) => {
         console.log('Auth state change:', event, !!session);
         
-        if (!mounted) return;
-
         setSession(session);
         setUser(session?.user ?? null);
 
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || !session?.user) {
           setIsAdmin(false);
           setAdminLoading(false);
         } else if (event === 'SIGNED_IN' && session?.user) {
-          await checkAdminStatus(session.user.id);
-        } else if (!session?.user) {
-          setIsAdmin(false);
-          setAdminLoading(false);
+          checkAdminStatus(session.user.id);
         }
       }
     );
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Run only once
+  }, []);
 
   const value = {
     user,

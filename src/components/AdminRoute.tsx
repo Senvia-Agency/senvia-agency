@@ -18,7 +18,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     adminLoading 
   });
 
-  // Show loading while checking authentication
+  // Show loading while checking initial authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -38,7 +38,7 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
-  // Show loading while checking admin permissions
+  // Show loading while checking admin permissions (only if user exists)
   if (adminLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">

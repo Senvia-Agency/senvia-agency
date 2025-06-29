@@ -11,16 +11,14 @@ export const useAuthState = () => {
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
   const initializedRef = useRef(false);
 
-  // Create a completely stable admin check function
+  // Função completamente estável para verificar admin
   const checkAdminStatus = useCallback(async (userId: string) => {
     if (!userId) {
-      console.log('No userId provided for admin check');
       setIsAdmin(false);
       return;
     }
 
     try {
-      console.log('Checking admin status for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
@@ -28,18 +26,18 @@ export const useAuthState = () => {
         .single();
 
       if (error) {
-        console.error('Error checking admin status:', error);
+        console.error('Erro verificando admin:', error);
         setIsAdmin(false);
       } else {
-        const isUserAdmin = data?.role === 'admin';
-        console.log('Admin check result:', isUserAdmin);
-        setIsAdmin(isUserAdmin);
+        const adminStatus = data?.role === 'admin';
+        console.log('Status admin:', adminStatus);
+        setIsAdmin(adminStatus);
       }
     } catch (error) {
-      console.error('Exception in admin check:', error);
+      console.error('Exceção verificando admin:', error);
       setIsAdmin(false);
     }
-  }, []); // Completely stable - no dependencies
+  }, []); // SEM DEPENDÊNCIAS - completamente estável
 
   return {
     user,

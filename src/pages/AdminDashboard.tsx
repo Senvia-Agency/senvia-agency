@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   
+  // TODOS OS HOOKS DEVEM SER EXECUTADOS SEMPRE - SEM CONDIÇÕES
   const [activeSection, setActiveSection] = useState(() => {
     try {
       return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
@@ -26,38 +27,16 @@ const AdminDashboard = () => {
     }
   });
 
-  const handleSectionChange = useCallback((section: string) => {
-    setActiveSection(section);
-    try {
-      localStorage.setItem(SECTION_STORAGE_KEY, section);
-    } catch (error) {
-      console.error('Erro ao salvar seção ativa:', error);
-    }
-  }, []);
-
-  // Memoize loading states to prevent unnecessary re-renders
+  // Memoize SEMPRE - não condicionalmente
   const isLoading = useMemo(() => {
     return authLoading || adminLoading;
   }, [authLoading, adminLoading]);
 
   const shouldRedirect = useMemo(() => {
+    // Só redireciona se temos certeza que não há user/admin
     return !authLoading && !adminLoading && (!user || !isAdmin);
   }, [authLoading, adminLoading, user, isAdmin]);
 
-  // Auth check - Only redirect when we're absolutely sure about the auth state
-  useEffect(() => {
-    if (shouldRedirect) {
-      console.log('Redirecting to auth - User:', !!user, 'IsAdmin:', isAdmin);
-      navigate('/auth', { replace: true });
-    }
-  }, [shouldRedirect, navigate]);
-
-  // Set document title only once
-  useEffect(() => {
-    document.title = "Admin Dashboard | SENVIA";
-  }, []);
-
-  // Memoize section renderer to prevent unnecessary re-renders
   const renderActiveSection = useMemo(() => {
     switch (activeSection) {
       case 'overview':
@@ -77,7 +56,28 @@ const AdminDashboard = () => {
     }
   }, [activeSection]);
 
-  // Loading states with better UX
+  const handleSectionChange = useCallback((section: string) => {
+    setActiveSection(section);
+    try {
+      localStorage.setItem(SECTION_STORAGE_KEY, section);
+    } catch (error) {
+      console.error('Erro ao salvar seção ativa:', error);
+    }
+  }, []);
+
+  // Effects sempre executados
+  useEffect(() => {
+    document.title = "Admin Dashboard | SENVIA";
+  }, []);
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      console.log('Redirecting to auth - User:', !!user, 'IsAdmin:', isAdmin);
+      navigate('/auth', { replace: true });
+    }
+  }, [shouldRedirect, navigate, user, isAdmin]);
+
+  // RENDER CONDICIONAL APENAS NO FINAL - DEPOIS DE TODOS OS HOOKS
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -94,7 +94,6 @@ const AdminDashboard = () => {
     );
   }
 
-  // Don't render anything while redirecting
   if (shouldRedirect) {
     return null;
   }

@@ -22,122 +22,93 @@ export const useAuthInitialization = ({
   checkAdminStatus
 }: UseAuthInitializationProps) => {
   useEffect(() => {
-    // Prevent multiple initializations with a more robust check
     if (initializedRef.current) {
-      console.log('Auth already initialized, skipping...');
+      console.log('Auth já inicializado, ignorando...');
       return;
     }
 
-    console.log('Starting auth initialization...');
-    let isMounted = true;
-    let subscription: any;
-
-    const initializeAuth = async () => {
+    console.log('=== INICIANDO AUTH INITIALIZATION ===');
+    let mounted = true;
+    
+    const initialize = async () => {
       try {
         setLoading(true);
         
-        // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        // Buscar sessão atual
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Error getting session:', error);
-          throw error;
-        }
+        if (!mounted) return;
         
-        console.log('Session check complete. Has user:', !!initialSession?.user);
-
-        if (!isMounted) return;
-
-        // Handle initial session - simplified logic
-        if (initialSession?.user) {
-          console.log('Setting up authenticated user');
-          setSession(initialSession);
-          setUser(initialSession.user);
-          
-          // Check admin status
+        if (session?.user) {
+          console.log('Sessão encontrada:', session.user.id);
+          setSession(session);
+          setUser(session.user);
           setAdminLoading(true);
-          try {
-            await checkAdminStatus(initialSession.user.id);
-          } catch (adminError) {
-            console.error('Error checking admin status:', adminError);
-            setIsAdmin(false);
-          } finally {
-            setAdminLoading(false);
-          }
+          await checkAdminStatus(session.user.id);
+          setAdminLoading(false);
         } else {
-          console.log('No session found, clearing state');
+          console.log('Sem sessão');
           setSession(null);
           setUser(null);
           setIsAdmin(false);
           setAdminLoading(false);
         }
-
-        // Set up auth state listener - ONLY ONCE
-        subscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log('[Auth Event]', event, currentSession?.user?.id ? 'User logged in' : 'No user');
-          
-          if (!isMounted) return;
-          
-          switch (event) {
-            case 'SIGNED_IN':
-            case 'TOKEN_REFRESHED':
-              if (currentSession?.user) {
-                setSession(currentSession);
-                setUser(currentSession.user);
-                
-                setAdminLoading(true);
-                try {
-                  await checkAdminStatus(currentSession.user.id);
-                } catch (adminError) {
-                  console.error('Error checking admin status:', adminError);
-                  setIsAdmin(false);
-                } finally {
-                  setAdminLoading(false);
-                }
-              }
-              break;
-              
-            case 'SIGNED_OUT':
-              console.log('User signed out, clearing all state');
-              setSession(null);
-              setUser(null);
-              setIsAdmin(false);
-              setAdminLoading(false);
-              // Reset initialization flag on sign out
-              initializedRef.current = false;
-              localStorage.removeItem('admin-active-section');
-              localStorage.removeItem('admin-leads-filters');
-              break;
-          }
-        });
-
-        // Mark as initialized ONLY after successful setup
+        
         initializedRef.current = true;
-        console.log('Auth initialization completed successfully');
         
       } catch (error) {
-        console.error('Auth initialization failed:', error);
-        if (isMounted) {
+        console.error('Erro na inicialização:', error);
+        if (mounted) {
           setSession(null);
           setUser(null);
           setIsAdmin(false);
           setAdminLoading(false);
         }
       } finally {
-        if (isMounted) {
+        if (mounted) {
           setLoading(false);
         }
       }
     };
 
-    initializeAuth();
+    // Configurar listener UMA VEZ
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event);
+        
+        if (!mounted) return;
+        
+        if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+          setIsAdmin(false);
+          setAdminLoading(false);
+          initializedRef.current = false;
+          return;
+        }
+        
+        if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          setSession(session);
+          setUser(session.user);
+          setAdminLoading(true);
+          try {
+            await checkAdminStatus(session.user.id);
+          } catch (error) {
+            console.error('Erro verificando admin:', error);
+            setIsAdmin(false);
+          }
+          setAdminLoading(false);
+        }
+      }
+    );
+
+    // Executar inicialização
+    initialize();
 
     return () => {
-      console.log('Cleaning up auth initialization');
-      isMounted = false;
-      if (subscription?.data?.subscription?.unsubscribe) {
-        subscription.data.subscription.unsubscribe();
-      }
+      console.log('Cleanup auth initialization');
+      mounted = false;
+      subscription.unsubscribe();
     };
-  }, []); // EMPTY DEPENDENCIES - run only once
+  }, []); // VAZIO - executa apenas uma vez
 };

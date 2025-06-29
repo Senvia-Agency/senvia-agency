@@ -30,72 +30,81 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
       'ecommerce': TrendingUp
     };
     const Icon = iconMap[category] || Package;
-    return <Icon className="h-5 w-5" />;
+    return <Icon className="h-4 w-4 lg:h-5 lg:w-5" />;
   };
 
   return (
     <>
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-slate-100">
-              <Package className="h-5 w-5 text-senvia-500" />
-              Catálogo de Produtos (Sincronizados do Stripe)
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm w-full overflow-hidden">
+        <CardHeader className="p-3 lg:p-6">
+          <div className="flex flex-col space-y-3 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
+            <CardTitle className="flex items-center gap-2 text-slate-100 text-sm lg:text-base">
+              <Package className="h-4 w-4 lg:h-5 lg:w-5 text-senvia-500 flex-shrink-0" />
+              <span className="truncate">Catálogo de Produtos</span>
             </CardTitle>
             <Button
               onClick={() => setIsCreateModalOpen(true)}
-              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
+              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 text-xs lg:text-sm h-8 lg:h-10 px-3 lg:px-4"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Produto
+              <Plus className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
+              <span className="hidden sm:inline">Criar Produto</span>
+              <span className="sm:hidden">Criar</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 lg:p-6 pt-0">
           {productsLoading ? (
-            <div className="text-center py-8 text-slate-400">
-              Carregando produtos...
+            <div className="text-center py-6 lg:py-8 text-slate-400">
+              <div className="animate-spin rounded-full h-6 w-6 lg:h-8 lg:w-8 border-b-2 border-senvia-500 mx-auto mb-2"></div>
+              <p className="text-xs lg:text-sm">Carregando produtos...</p>
             </div>
           ) : products && products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3 lg:space-y-4">
               {products.map((product) => (
-                <Card key={product.id} className="bg-slate-700/70 border-slate-600/50">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-senvia-500/20 rounded-lg">
+                <Card key={product.id} className="bg-slate-700/70 border-slate-600/50 overflow-hidden">
+                  <CardHeader className="p-3 lg:p-4 pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
+                        <div className="p-1.5 lg:p-2 bg-senvia-500/20 rounded-lg flex-shrink-0">
                           {getProductIcon(product.category)}
                         </div>
-                        <div>
-                          <CardTitle className="text-lg text-slate-100">{product.name}</CardTitle>
-                          <p className="text-sm text-slate-400 capitalize">{product.category.replace('_', ' ')}</p>
+                        <div className="min-w-0 flex-1">
+                          <CardTitle className="text-sm lg:text-lg text-slate-100 truncate">
+                            {product.name}
+                          </CardTitle>
+                          <p className="text-xs lg:text-sm text-slate-400 capitalize truncate">
+                            {product.category.replace('_', ' ')}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant={product.active ? "default" : "secondary"} className={product.active ? "bg-green-500/20 text-green-400 border-green-500/50" : ""}>
+                      <Badge 
+                        variant={product.active ? "default" : "secondary"} 
+                        className={`${product.active ? "bg-green-500/20 text-green-400 border-green-500/50" : ""} text-xs flex-shrink-0`}
+                      >
                         {product.active ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-slate-300 text-sm line-clamp-2">
+                  <CardContent className="p-3 lg:p-4 pt-0 space-y-3">
+                    <p className="text-slate-300 text-xs lg:text-sm line-clamp-2">
                       {product.description || 'Sem descrição disponível'}
                     </p>
 
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-slate-300">Planos Disponíveis:</h4>
+                      <h4 className="text-xs lg:text-sm font-medium text-slate-300">Planos:</h4>
                       <div className="space-y-1">
-                        {product.product_plans?.slice(0, 3).map((plan: any) => (
-                          <div key={plan.id} className="flex justify-between items-center text-sm">
-                            <span className="text-slate-400">{plan.name}</span>
-                            <span className="text-senvia-400 font-medium">
+                        {product.product_plans?.slice(0, 2).map((plan: any) => (
+                          <div key={plan.id} className="flex justify-between items-center text-xs lg:text-sm">
+                            <span className="text-slate-400 truncate flex-1 mr-2">{plan.name}</span>
+                            <span className="text-senvia-400 font-medium flex-shrink-0">
                               €{plan.price_monthly || plan.price_yearly || 0}
                               {plan.price_monthly ? '/mês' : plan.price_yearly ? '/ano' : ''}
                             </span>
                           </div>
                         ))}
-                        {product.product_plans?.length > 3 && (
+                        {product.product_plans?.length > 2 && (
                           <div className="text-xs text-slate-500">
-                            +{product.product_plans.length - 3} mais planos
+                            +{product.product_plans.length - 2} mais
                           </div>
                         )}
                       </div>
@@ -103,8 +112,8 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
 
                     {product.stripe_product_id && (
                       <div className="pt-2 border-t border-slate-600/50">
-                        <div className="text-xs text-slate-500">
-                          Stripe ID: {product.stripe_product_id}
+                        <div className="text-xs text-slate-500 truncate">
+                          Stripe: {product.stripe_product_id}
                         </div>
                       </div>
                     )}
@@ -115,45 +124,48 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50"
+                            className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50 text-xs lg:text-sm h-8 lg:h-9"
                             onClick={() => setSelectedItem(product)}
                           >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Ver Detalhes
+                            <Eye className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
+                            <span className="hidden sm:inline">Ver Detalhes</span>
+                            <span className="sm:hidden">Ver</span>
                           </Button>
                         </DialogTrigger>
                         <ProductDetailModal selectedItem={selectedItem} />
                       </Dialog>
                       
-                      <ProductActionsButtons 
-                        product={product} 
-                        onUpdate={syncWithStripe}
-                      />
+                      <div className="flex-shrink-0">
+                        <ProductActionsButtons 
+                          product={product} 
+                          onUpdate={syncWithStripe}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <Package className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-200 mb-2">Nenhum produto encontrado</h3>
-              <p className="text-slate-400 mb-4">Crie seu primeiro produto ou sincronize com o Stripe.</p>
-              <div className="flex gap-2 justify-center">
+            <div className="text-center py-6 lg:py-8">
+              <Package className="h-8 w-8 lg:h-12 lg:w-12 text-slate-600 mx-auto mb-3 lg:mb-4" />
+              <h3 className="text-sm lg:text-lg font-medium text-slate-200 mb-2">Nenhum produto encontrado</h3>
+              <p className="text-xs lg:text-sm text-slate-400 mb-3 lg:mb-4">Crie seu primeiro produto ou sincronize com o Stripe.</p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
+                  className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 text-xs lg:text-sm h-8 lg:h-10"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
                   Criar Produto
                 </Button>
                 <Button 
                   onClick={syncWithStripe}
                   disabled={isLoading}
                   variant="outline"
-                  className="border-slate-600 text-slate-300 hover:bg-slate-600/50"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-600/50 text-xs lg:text-sm h-8 lg:h-10"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
                   Sincronizar Stripe
                 </Button>
               </div>

@@ -13,61 +13,59 @@ interface ProductStatsCardsProps {
 }
 
 const ProductStatsCards = ({ stats }: ProductStatsCardsProps) => {
+  const cards = [
+    {
+      title: "Produtos Stripe",
+      value: stats.totalProducts,
+      icon: Package,
+      color: "text-blue-400"
+    },
+    {
+      title: "Assinaturas Ativas",
+      value: stats.activeSubscriptions,
+      subtitle: `${stats.trialSubscriptions} em trial`,
+      icon: UserCheck,
+      color: "text-purple-400"
+    },
+    {
+      title: "Vendas Únicas",
+      value: stats.totalSales,
+      subtitle: "produtos vendidos",
+      icon: CreditCard,
+      color: "text-green-400"
+    },
+    {
+      title: "Receita Total",
+      value: `€${stats.totalRevenue.toFixed(2)}`,
+      icon: TrendingUp,
+      color: "text-orange-400"
+    }
+  ];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Produtos Stripe</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-blue-400" />
-            <span className="text-2xl font-bold text-slate-100">{stats.totalProducts}</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Assinaturas Ativas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <UserCheck className="h-4 w-4 text-purple-400" />
-            <span className="text-2xl font-bold text-slate-100">{stats.activeSubscriptions}</span>
-          </div>
-          <div className="text-xs text-slate-400">
-            {stats.trialSubscriptions} em trial
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Vendas Únicas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-green-400" />
-            <span className="text-2xl font-bold text-slate-100">{stats.totalSales}</span>
-          </div>
-          <div className="text-xs text-slate-400">
-            produtos vendidos
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Receita Total</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-orange-400" />
-            <span className="text-2xl font-bold text-slate-100">€{stats.totalRevenue.toFixed(2)}</span>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 w-full">
+      {cards.map((card, index) => (
+        <Card key={index} className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
+          <CardHeader className="pb-1 lg:pb-2 p-3 lg:p-4">
+            <CardTitle className="text-xs lg:text-sm font-medium text-slate-300 truncate">
+              {card.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-3 lg:p-4 pt-0">
+            <div className="flex items-center gap-1 lg:gap-2 mb-1">
+              <card.icon className={`h-3 w-3 lg:h-4 lg:w-4 ${card.color} flex-shrink-0`} />
+              <span className="text-sm lg:text-2xl font-bold text-slate-100 truncate">
+                {card.value}
+              </span>
+            </div>
+            {card.subtitle && (
+              <div className="text-xs text-slate-400 truncate">
+                {card.subtitle}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

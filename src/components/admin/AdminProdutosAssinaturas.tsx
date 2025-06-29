@@ -33,71 +33,83 @@ const AdminProdutosAssinaturas = () => {
   };
 
   return (
-    <div className="space-y-4 lg:space-y-6 p-4 lg:p-6 w-full max-w-full overflow-x-hidden">
+    <div className="space-y-3 lg:space-y-6 p-3 lg:p-6 w-full max-w-full overflow-x-hidden">
       {/* Header - Mobile Optimized */}
-      <div className="space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+      <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl lg:text-3xl font-bold mb-1 lg:mb-2 truncate">Produtos & Assinaturas</h1>
-          <p className="text-sm lg:text-base text-gray-400 truncate">Gerencie produtos, planos e assinaturas</p>
+          <h1 className="text-lg lg:text-3xl font-bold mb-1 lg:mb-2 truncate text-slate-100">
+            Produtos & Assinaturas
+          </h1>
+          <p className="text-xs lg:text-base text-slate-400 truncate">
+            Gerencie produtos, planos e assinaturas
+          </p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <ProductStatsCards stats={mockStats} />
+      {/* Stats Cards - Mobile Optimized */}
+      <div className="w-full overflow-x-hidden">
+        <ProductStatsCards stats={mockStats} />
+      </div>
 
       {/* Tabs - Mobile Optimized */}
       <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="border-b border-slate-600/50">
-            <TabsList className="w-full h-auto bg-transparent p-0 rounded-none">
-              <div className="grid w-full grid-cols-3 gap-0">
+          <div className="border-b border-slate-600/50 overflow-x-auto">
+            <TabsList className="w-full min-w-fit h-auto bg-transparent p-0 rounded-none">
+              <div className="flex w-full min-w-fit">
                 <TabsTrigger 
                   value="produtos" 
-                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                  className="flex-1 min-w-0 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-2 py-2 lg:px-6 lg:py-4"
                 >
-                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
-                    <Package className="h-4 w-4 lg:h-5 lg:w-5" />
-                    <span className="text-xs lg:text-sm font-medium">Produtos</span>
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2 min-w-0">
+                    <Package className="h-3 w-3 lg:h-5 lg:w-5 flex-shrink-0" />
+                    <span className="text-xs lg:text-sm font-medium truncate">Produtos</span>
                   </div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="assinaturas" 
-                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                  className="flex-1 min-w-0 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-2 py-2 lg:px-6 lg:py-4"
                 >
-                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
-                    <Users className="h-4 w-4 lg:h-5 lg:w-5" />
-                    <span className="text-xs lg:text-sm font-medium">Assinaturas</span>
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2 min-w-0">
+                    <Users className="h-3 w-3 lg:h-5 lg:w-5 flex-shrink-0" />
+                    <span className="text-xs lg:text-sm font-medium truncate">Assinaturas</span>
                   </div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="performance" 
-                  className="flex-1 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-3 py-3 lg:px-6 lg:py-4"
+                  className="flex-1 min-w-0 data-[state=active]:bg-slate-700/50 data-[state=active]:text-white text-slate-400 border-b-2 border-transparent data-[state=active]:border-senvia-500 rounded-none px-2 py-2 lg:px-6 lg:py-4"
                 >
-                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2">
-                    <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5" />
-                    <span className="text-xs lg:text-sm font-medium">Performance</span>
+                  <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-2 min-w-0">
+                    <TrendingUp className="h-3 w-3 lg:h-5 lg:w-5 flex-shrink-0" />
+                    <span className="text-xs lg:text-sm font-medium truncate">Performance</span>
                   </div>
                 </TabsTrigger>
               </div>
             </TabsList>
           </div>
 
-          <div className="p-0">
-            <TabsContent value="produtos" className="mt-0 p-4 lg:p-6">
-              <ProductCatalog 
-                products={[]} 
-                productsLoading={false} 
-                syncWithStripe={() => {}} 
-                isLoading={false} 
-              />
+          <div className="p-0 w-full overflow-x-hidden">
+            <TabsContent value="produtos" className="mt-0 p-3 lg:p-6">
+              <div className="w-full overflow-x-hidden">
+                <ProductCatalog 
+                  products={[]} 
+                  productsLoading={false} 
+                  syncWithStripe={() => {}} 
+                  isLoading={false} 
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="assinaturas" className="mt-0 p-4 lg:p-6">
-              <ActiveSubscriptionsList activeSubscriptions={mockActiveSubscriptions} />
+            <TabsContent value="assinaturas" className="mt-0 p-3 lg:p-6">
+              <div className="w-full overflow-x-hidden">
+                <ActiveSubscriptionsList activeSubscriptions={mockActiveSubscriptions} />
+              </div>
             </TabsContent>
 
-            <TabsContent value="performance" className="mt-0 p-4 lg:p-6">
-              <PerformanceSummary stats={mockPerformanceStats} />
+            <TabsContent value="performance" className="mt-0 p-3 lg:p-6">
+              <div className="w-full overflow-x-hidden">
+                <PerformanceSummary stats={mockPerformanceStats} />
+              </div>
             </TabsContent>
           </div>
         </Tabs>

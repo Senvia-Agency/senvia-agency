@@ -99,9 +99,9 @@ const AdminClientes = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">Gestão de Clientes</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
         </div>
         <div className="text-center py-8">
           <p className="text-gray-400">Carregando clientes...</p>
@@ -111,117 +111,125 @@ const AdminClientes = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Gestão de Clientes</h1>
-        <div className="flex gap-3">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
+        <div className="w-full sm:w-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Pesquisar clientes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-800 border-gray-700 text-white w-64"
+              className="pl-10 bg-gray-800 border-gray-700 text-white w-full sm:w-64"
             />
           </div>
         </div>
       </div>
 
       {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-white">{customers?.length || 0}</div>
-            <p className="text-gray-400 text-sm">Total de Clientes</p>
+          <CardContent className="p-3 md:p-4">
+            <div className="text-lg md:text-2xl font-bold text-white">{customers?.length || 0}</div>
+            <p className="text-gray-400 text-xs md:text-sm">Total de Clientes</p>
           </CardContent>
         </Card>
         <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-400">
+          <CardContent className="p-3 md:p-4">
+            <div className="text-lg md:text-2xl font-bold text-green-400">
               {customers?.filter(c => c.customer_status === 'active').length || 0}
             </div>
-            <p className="text-gray-400 text-sm">Clientes Ativos</p>
+            <p className="text-gray-400 text-xs md:text-sm">Clientes Ativos</p>
           </CardContent>
         </Card>
         <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-senvia-500">
+          <CardContent className="p-3 md:p-4">
+            <div className="text-lg md:text-2xl font-bold text-senvia-500">
               €{customers?.reduce((sum, c) => sum + Number(c.total_spent || 0), 0).toFixed(2) || '0.00'}
             </div>
-            <p className="text-gray-400 text-sm">Receita Total</p>
+            <p className="text-gray-400 text-xs md:text-sm">Receita Total</p>
           </CardContent>
         </Card>
         <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-400">
+          <CardContent className="p-3 md:p-4">
+            <div className="text-lg md:text-2xl font-bold text-blue-400">
               €{customers?.length ? (customers.reduce((sum, c) => sum + Number(c.total_spent || 0), 0) / customers.length).toFixed(2) : '0.00'}
             </div>
-            <p className="text-gray-400 text-sm">Valor Médio por Cliente</p>
+            <p className="text-gray-400 text-xs md:text-sm">Valor Médio por Cliente</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Lista de Clientes */}
       <Card className="bg-gray-800 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white">Clientes ({filteredClients.length})</CardTitle>
+        <CardHeader className="p-3 md:p-6">
+          <CardTitle className="text-white text-lg md:text-xl">Clientes ({filteredClients.length})</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-3 md:p-6 pt-0">
+          <div className="space-y-3 md:space-y-4">
             {filteredClients.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-400">Nenhum cliente encontrado</p>
               </div>
             ) : (
               filteredClients.map((client) => (
-                <div key={client.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-white">{client.full_name}</h3>
-                      <Badge className={`${getStatusColor(client.customer_status)} text-white`}>
-                        {client.customer_status}
-                      </Badge>
-                      <Badge className={`${getTierColor(client.customer_tier)} text-white`}>
-                        {client.customer_tier}
-                      </Badge>
-                      <Badge className={`${getProjectStatusColor(client.project_status || 'pending')} text-white`}>
-                        {getProjectStatusLabel(client.project_status || 'pending')}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-300">
-                      <div>
-                        <span className="text-gray-400">Email:</span> {client.email}
-                      </div>
-                      {client.company_name && (
-                        <div>
-                          <span className="text-gray-400">Empresa:</span> {client.company_name}
+                <div key={client.id} className="p-3 md:p-4 bg-gray-700 rounded-lg">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="font-semibold text-white text-sm md:text-base truncate">{client.full_name}</h3>
+                        <div className="flex flex-wrap gap-1">
+                          <Badge className={`${getStatusColor(client.customer_status)} text-white text-xs`}>
+                            {client.customer_status}
+                          </Badge>
+                          <Badge className={`${getTierColor(client.customer_tier)} text-white text-xs`}>
+                            {client.customer_tier}
+                          </Badge>
+                          <Badge className={`${getProjectStatusColor(client.project_status || 'pending')} text-white text-xs`}>
+                            {getProjectStatusLabel(client.project_status || 'pending')}
+                          </Badge>
                         </div>
-                      )}
-                      <div>
-                        <span className="text-gray-400">Cliente desde:</span> {format(new Date(client.acquisition_date), 'dd/MM/yyyy', { locale: ptBR })}
                       </div>
-                      <div>
-                        <span className="text-gray-400">Total gasto:</span> €{Number(client.total_spent || 0).toFixed(2)}
-                      </div>
-                      {client.phone && (
-                        <div>
-                          <span className="text-gray-400">Telefone:</span> {client.phone}
+                      <div className="space-y-1 text-xs md:text-sm text-gray-300">
+                        <div className="break-all">
+                          <span className="text-gray-400">Email:</span> {client.email}
                         </div>
-                      )}
-                      <div>
-                        <span className="text-gray-400">Origem:</span> {client.acquisition_source}
+                        {client.company_name && (
+                          <div className="truncate">
+                            <span className="text-gray-400">Empresa:</span> {client.company_name}
+                          </div>
+                        )}
+                        <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
+                          <div>
+                            <span className="text-gray-400">Cliente desde:</span> {format(new Date(client.acquisition_date), 'dd/MM/yyyy', { locale: ptBR })}
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Total gasto:</span> €{Number(client.total_spent || 0).toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
+                          {client.phone && (
+                            <div className="truncate">
+                              <span className="text-gray-400">Telefone:</span> {client.phone}
+                            </div>
+                          )}
+                          <div className="truncate">
+                            <span className="text-gray-400">Origem:</span> {client.acquisition_source}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditClient(client)}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-600"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
+                    <div className="flex justify-end lg:justify-start">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditClient(client)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-600"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))

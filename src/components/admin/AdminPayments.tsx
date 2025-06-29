@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,9 +99,9 @@ const AdminPayments = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Gestão de Pagamentos</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Gestão de Pagamentos</h1>
         </div>
         <div className="text-center py-8 text-gray-400">
           Carregando pagamentos...
@@ -110,14 +111,14 @@ const AdminPayments = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Gestão de Pagamentos</h1>
-          <p className="text-gray-400">Monitore todas as transações da SENVIA</p>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Gestão de Pagamentos</h1>
+          <p className="text-gray-400 text-sm md:text-base">Monitore todas as transações da SENVIA</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <SyncPaymentsButton />
           <Button variant="outline" className="border-gray-600 text-gray-300">
             <Download className="h-4 w-4 mr-2" />
@@ -127,63 +128,63 @@ const AdminPayments = () => {
       </div>
 
       {/* Stats Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Total de Transações</CardTitle>
+          <CardHeader className="pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-400">Total de Transações</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-blue-500" />
-              <span className="text-2xl font-bold">{stats.total}</span>
+              <CreditCard className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
+              <span className="text-lg md:text-2xl font-bold">{stats.total}</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Receita Total</CardTitle>
+          <CardHeader className="pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-400">Receita Total</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <div className="flex items-center gap-2">
-              <Euro className="h-4 w-4 text-green-500" />
-              <span className="text-2xl font-bold">€{(stats.totalRevenue / 100).toFixed(2)}</span>
+              <Euro className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
+              <span className="text-lg md:text-2xl font-bold">€{(stats.totalRevenue / 100).toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Pagamentos Confirmados</CardTitle>
+          <CardHeader className="pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-400">Pagamentos Confirmados</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="text-2xl font-bold">{stats.paid}</span>
+              <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
+              <span className="text-lg md:text-2xl font-bold">{stats.paid}</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Pendentes</CardTitle>
+          <CardHeader className="pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-400">Pendentes</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-yellow-500" />
-              <span className="text-2xl font-bold">{stats.pending}</span>
+              <Calendar className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />
+              <span className="text-lg md:text-2xl font-bold">{stats.pending}</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Ticket Médio</CardTitle>
+          <CardHeader className="pb-2 p-3 md:p-6 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-400">Ticket Médio</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-6 pt-0">
             <div className="flex items-center gap-2">
-              <Euro className="h-4 w-4 text-purple-500" />
-              <span className="text-2xl font-bold">€{(stats.avgTransaction / 100).toFixed(2)}</span>
+              <Euro className="h-3 w-3 md:h-4 md:w-4 text-purple-500" />
+              <span className="text-lg md:text-2xl font-bold">€{(stats.avgTransaction / 100).toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
@@ -191,8 +192,8 @@ const AdminPayments = () => {
 
       {/* Filters */}
       <Card className="bg-gray-800 border-gray-700">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        <CardContent className="p-3 md:p-4">
+          <div className="space-y-3 md:space-y-0 md:flex md:gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
@@ -203,38 +204,79 @@ const AdminPayments = () => {
               />
             </div>
             
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-40 bg-gray-700 border-gray-600">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="paid">Pago</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="failed">Falhado</SelectItem>
-                <SelectItem value="refunded">Reembolsado</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-2 gap-3 md:flex md:gap-4">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="bg-gray-700 border-gray-600">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="paid">Pago</SelectItem>
+                  <SelectItem value="pending">Pendente</SelectItem>
+                  <SelectItem value="failed">Falhado</SelectItem>
+                  <SelectItem value="refunded">Reembolsado</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="w-full md:w-40 bg-gray-700 border-gray-600">
-                <SelectValue placeholder="Período" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todo o período</SelectItem>
-                <SelectItem value="7">Últimos 7 dias</SelectItem>
-                <SelectItem value="30">Últimos 30 dias</SelectItem>
-                <SelectItem value="90">Últimos 90 dias</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={dateRange} onValueChange={setDateRange}>
+                <SelectTrigger className="bg-gray-700 border-gray-600">
+                  <SelectValue placeholder="Período" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todo o período</SelectItem>
+                  <SelectItem value="7">Últimos 7 dias</SelectItem>
+                  <SelectItem value="30">Últimos 30 dias</SelectItem>
+                  <SelectItem value="90">Últimos 90 dias</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Payments Table */}
+      {/* Payments Table - Mobile optimized */}
       <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Mobile Card View */}
+          <div className="block md:hidden">
+            <div className="space-y-3 p-3">
+              {filteredPayments.map((payment) => (
+                <div key={payment.id} className="bg-gray-700 rounded-lg p-3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-white text-sm truncate">{payment.email}</div>
+                      <div className="text-xs text-gray-400 truncate">
+                        ID: {payment.id.slice(0, 8)}...
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 ml-2">
+                      <div className={`w-2 h-2 rounded-full ${getStatusColor(payment.status)}`}></div>
+                      <span className="text-xs text-gray-300">{getStatusLabel(payment.status)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <Badge variant="outline" className="border-blue-500 text-blue-500 text-xs">
+                        {getServiceLabel(payment.amount)}
+                      </Badge>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-green-500 text-sm">
+                        €{(payment.amount / 100).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {format(new Date(payment.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="border-gray-700">
@@ -329,22 +371,22 @@ const AdminPayments = () => {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-senvia-500" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <CreditCard className="h-4 w-4 md:h-5 md:w-5 text-senvia-500" />
               Breakdown por Serviço
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0">
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Landing Pages</div>
-                <div className="text-sm text-gray-400">€4.99 por lead</div>
+                <div className="font-medium text-sm md:text-base">Landing Pages</div>
+                <div className="text-xs md:text-sm text-gray-400">€4.99 por lead</div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-green-500">
+                <div className="font-bold text-green-500 text-sm md:text-base">
                   €{((payments?.filter(p => p.amount === 499 && p.status === 'paid').reduce((sum, p) => sum + p.amount, 0) || 0) / 100).toFixed(2)}
                 </div>
                 <div className="text-xs text-gray-400">
@@ -355,11 +397,11 @@ const AdminPayments = () => {
             
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">Senvia Assistant</div>
-                <div className="text-sm text-gray-400">€20.00 por mês</div>
+                <div className="font-medium text-sm md:text-base">Senvia Assistant</div>
+                <div className="text-xs md:text-sm text-gray-400">€20.00 por mês</div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-purple-500">
+                <div className="font-bold text-purple-500 text-sm md:text-base">
                   €{((payments?.filter(p => p.amount === 2000 && p.status === 'paid').reduce((sum, p) => sum + p.amount, 0) || 0) / 100).toFixed(2)}
                 </div>
                 <div className="text-xs text-gray-400">
@@ -371,30 +413,30 @@ const AdminPayments = () => {
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-senvia-500" />
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-senvia-500" />
               Performance
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0">
             <div className="flex justify-between items-center">
-              <div className="font-medium">Taxa de Sucesso</div>
-              <div className="font-bold text-green-500">
+              <div className="font-medium text-sm md:text-base">Taxa de Sucesso</div>
+              <div className="font-bold text-green-500 text-sm md:text-base">
                 {stats.total > 0 ? ((stats.paid / stats.total) * 100).toFixed(1) : 0}%
               </div>
             </div>
             
             <div className="flex justify-between items-center">
-              <div className="font-medium">Pagamentos Falhados</div>
-              <div className="font-bold text-red-500">
+              <div className="font-medium text-sm md:text-base">Pagamentos Falhados</div>
+              <div className="font-bold text-red-500 text-sm md:text-base">
                 {stats.failed}
               </div>
             </div>
             
             <div className="flex justify-between items-center">
-              <div className="font-medium">Valor Médio</div>
-              <div className="font-bold text-blue-500">
+              <div className="font-medium text-sm md:text-base">Valor Médio</div>
+              <div className="font-bold text-blue-500 text-sm md:text-base">
                 €{(stats.avgTransaction / 100).toFixed(2)}
               </div>
             </div>

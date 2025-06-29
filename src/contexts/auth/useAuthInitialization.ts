@@ -21,13 +21,7 @@ export const useAuthInitialization = ({
   setLoading,
   checkAdminStatus
 }: UseAuthInitializationProps) => {
-  // Initialize auth state - só executa uma vez
   useEffect(() => {
-    // Se já foi inicializado, não fazer nada
-    if (initializedRef.current) {
-      return;
-    }
-
     let isMounted = true;
     let subscription: any;
 
@@ -56,7 +50,6 @@ export const useAuthInitialization = ({
           }
           
           setLoading(false);
-          initializedRef.current = true; // Marcar como inicializado
         }
 
         // Set up auth state listener
@@ -64,11 +57,6 @@ export const useAuthInitialization = ({
           console.log('Auth state change:', event, currentSession?.user?.id);
           
           if (!isMounted) return;
-          
-          // Só processar eventos importantes, não TOKEN_REFRESHED
-          if (event === 'TOKEN_REFRESHED') {
-            return;
-          }
           
           setSession(currentSession);
           setUser(currentSession?.user ?? null);
@@ -79,7 +67,6 @@ export const useAuthInitialization = ({
           } else if (event === 'SIGNED_OUT') {
             setIsAdmin(false);
             setAdminLoading(false);
-            initializedRef.current = false;
             // Clear localStorage on sign out
             localStorage.removeItem('admin-active-section');
             localStorage.removeItem('admin-leads-filters');
@@ -90,7 +77,6 @@ export const useAuthInitialization = ({
         if (isMounted) {
           setLoading(false);
           setAdminLoading(false);
-          initializedRef.current = true;
         }
       }
     };
@@ -103,5 +89,5 @@ export const useAuthInitialization = ({
         subscription.data?.subscription?.unsubscribe();
       }
     };
-  }, []); // Dependências vazias - só executa uma vez
+  }, [setSession, setUser, setIsAdmin, setAdminLoading, setLoading, checkAdminStatus]);
 };

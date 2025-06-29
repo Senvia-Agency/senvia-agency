@@ -17,7 +17,6 @@ const AdminDashboard = () => {
   const { user, loading: authLoading, isAdmin, adminLoading } = useAuth();
   const navigate = useNavigate();
   
-  // Simplified section state management
   const [activeSection, setActiveSection] = useState(() => {
     try {
       return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
@@ -27,7 +26,6 @@ const AdminDashboard = () => {
     }
   });
 
-  // Memoized section change handler
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
     try {
@@ -37,7 +35,7 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // Auth check - SIMPLIFICADO, só executa quando necessário
+  // Auth check - Only redirect when we're sure about the auth state
   useEffect(() => {
     if (!authLoading && !adminLoading) {
       if (!user || !isAdmin) {
@@ -46,7 +44,7 @@ const AdminDashboard = () => {
     }
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
-  // Set document title apenas uma vez
+  // Set document title
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
@@ -67,8 +65,7 @@ const AdminDashboard = () => {
     return null;
   }
 
-  // Memoized section renderer
-  const renderActiveSection = useCallback(() => {
+  const renderActiveSection = () => {
     switch (activeSection) {
       case 'overview':
         return <AdminOverview />;
@@ -85,7 +82,7 @@ const AdminDashboard = () => {
       default:
         return <AdminOverview />;
     }
-  }, [activeSection]);
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">

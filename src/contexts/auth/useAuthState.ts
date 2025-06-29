@@ -9,7 +9,7 @@ export const useAuthState = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
-  const initializedRef = useRef(false);
+  const initializedRef = useRef(false); // This is not used anymore, but keeping for compatibility
 
   // Memoize the admin check function to prevent unnecessary calls
   const checkAdminStatus = useCallback(async (userId: string) => {

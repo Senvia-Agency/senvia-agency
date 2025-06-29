@@ -35,6 +35,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
 
+  // Add visibility change listener to track tab switching
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      console.log('AuthProvider: Visibility changed, document.hidden:', document.hidden);
+      console.log('AuthProvider: Current state - user:', !!user, 'isAdmin:', isAdmin, 'loading:', loading, 'adminLoading:', adminLoading);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, isAdmin, loading, adminLoading]);
+
   const signIn = async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -70,6 +84,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      console.log('AuthProvider: Signing out user');
       localStorage.removeItem('admin-active-section');
       setIsAdmin(false);
       setAdminLoading(false);
@@ -80,7 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const checkAdminStatus = async (userId: string) => {
-    console.log('Checking admin status for user:', userId);
+    console.log('AuthProvider: Checking admin status for user:', userId);
     setAdminLoading(true);
     
     try {

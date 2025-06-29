@@ -28,44 +28,49 @@ const LeadCard = ({
       className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer hover:bg-gray-750"
       onClick={() => onLeadClick(lead)}
     >
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6 flex-1">
-            {/* Informações Principais */}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="font-semibold text-white text-lg">
-                  {lead.full_name || lead.company_name || 'Nome não informado'}
-                </h3>
-                <Badge 
-                  variant="outline" 
-                  className={cn("text-xs", lead.source_page === 'landing_page_basic' ? 'border-senvia-500 text-senvia-400' : 'border-purple-500 text-purple-400')}
-                >
-                  {getSourceLabel(lead.source_page)}
-                </Badge>
+      <CardContent className="p-4 md:p-6">
+        <div className="space-y-3 md:space-y-0 md:flex md:items-center md:justify-between">
+          {/* Informações Principais - Stack no mobile */}
+          <div className="min-w-0 flex-1 space-y-2 md:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+              <h3 className="font-semibold text-white text-base md:text-lg min-w-0 truncate">
+                {lead.full_name || lead.company_name || 'Nome não informado'}
+              </h3>
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "text-xs w-fit flex-shrink-0", 
+                  lead.source_page === 'landing_page_basic' 
+                    ? 'border-senvia-500 text-senvia-400' 
+                    : 'border-purple-500 text-purple-400'
+                )}
+              >
+                {getSourceLabel(lead.source_page)}
+              </Badge>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:gap-6 text-xs md:text-sm text-gray-400">
+              <div className="flex items-center gap-2 min-w-0">
+                <Mail className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                <span className="truncate">{lead.email || 'N/A'}</span>
               </div>
               
-              <div className="flex items-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <span>{lead.email || 'N/A'}</span>
+              {lead.phone && (
+                <div className="flex items-center gap-2 min-w-0">
+                  <Phone className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="truncate">{lead.phone}</span>
                 </div>
-                
-                {lead.phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    <span>{lead.phone}</span>
-                  </div>
-                )}
+              )}
 
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  <span>{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
               </div>
             </div>
+          </div>
 
-            {/* Status Clicável */}
+          {/* Status Clicável - Melhor posicionamento no mobile */}
+          <div className="flex justify-end md:justify-start">
             <div 
               className="flex items-center gap-2"
               onClick={(e) => {
@@ -78,10 +83,10 @@ const LeadCard = ({
                   value={lead.lead_status} 
                   onValueChange={(value) => onStatusUpdate(lead.id, value)}
                 >
-                  <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
+                  <SelectTrigger className="w-28 sm:w-32 bg-gray-700 border-gray-600 text-white h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-gray-800 border-gray-700 z-50">
                     <SelectItem value="new">Novo</SelectItem>
                     <SelectItem value="contacted">Contatado</SelectItem>
                     <SelectItem value="qualified">Qualificado</SelectItem>
@@ -92,12 +97,12 @@ const LeadCard = ({
               ) : (
                 <Badge 
                   className={cn(
-                    "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2 px-3 py-1 border",
+                    "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 border text-xs",
                     getStatusColor(lead.lead_status)
                   )}
                 >
                   {getStatusIcon(lead.lead_status)}
-                  {getStatusLabel(lead.lead_status)}
+                  <span className="hidden sm:inline">{getStatusLabel(lead.lead_status)}</span>
                 </Badge>
               )}
             </div>

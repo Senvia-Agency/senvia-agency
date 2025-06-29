@@ -75,15 +75,15 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="flex gap-1 sm:gap-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setIsEditModalOpen(true)}
-          className="border-slate-500 text-slate-300 hover:bg-slate-600 hover:text-slate-100 hover:border-slate-400"
+          className="border-slate-500 text-slate-300 hover:bg-slate-600 hover:text-slate-100 hover:border-slate-400 px-2 sm:px-3"
           disabled={isDeleting}
         >
-          <Edit className="h-4 w-4" />
+          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
 
         <AlertDialog>
@@ -92,35 +92,35 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
               variant="outline"
               size="sm"
               disabled={isDeleting}
-              className="border-red-500 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-400"
+              className="border-red-500 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-400 px-2 sm:px-3"
             >
               {isDeleting ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+                <div className="h-3 w-3 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
               )}
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-slate-800 border-slate-600">
+          <AlertDialogContent className="bg-slate-800 border-slate-600 max-w-[95vw] sm:max-w-lg mx-auto">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-slate-100 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-400" />
+              <AlertDialogTitle className="text-slate-100 flex items-center gap-2 text-base sm:text-lg">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" />
                 Confirmar Exclusão
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-slate-400">
+              <AlertDialogDescription className="text-slate-400 text-sm">
                 Tem certeza que deseja excluir o produto "{product?.name || 'Este produto'}"? 
                 <br /><br />
                 Esta ação irá:
-                <ul className="list-disc list-inside mt-2 space-y-1">
+                <ul className="list-disc list-inside mt-2 space-y-1 text-xs sm:text-sm">
                   <li>Desativar o produto no Stripe (se existir)</li>
                   <li>Remover o produto e seus planos do banco de dados</li>
                   <li>Esta ação não pode ser desfeita</li>
                 </ul>
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
               <AlertDialogCancel 
-                className="border-slate-500 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+                className="border-slate-500 text-slate-300 hover:bg-slate-700 hover:text-slate-100 text-sm order-2 sm:order-1"
                 disabled={isDeleting}
               >
                 Cancelar
@@ -128,7 +128,7 @@ const ProductActionsButtons = ({ product, onUpdate }: ProductActionsButtonsProps
               <AlertDialogAction
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 hover:bg-red-700 text-white text-sm order-1 sm:order-2"
               >
                 {isDeleting ? 'Excluindo...' : 'Excluir Produto'}
               </AlertDialogAction>

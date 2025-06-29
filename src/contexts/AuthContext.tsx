@@ -126,25 +126,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     });
 
-    // Listen for auth changes
+    // Listen for auth changes with improved filtering
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, !!session);
         
-        // Only process if this is a real change, not just a token refresh
+        // Filter out events that don't require component re-renders
         if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed, keeping current state');
+          console.log('Token refreshed, ignoring to prevent re-renders');
           return;
         }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
 
-        if (event === 'SIGNED_OUT' || !session?.user) {
-          setIsAdmin(false);
-          setAdminLoading(false);
-        } else if (event === 'SIGNED_IN' && session?.user) {
-          checkAdminStatus(session.user.id);
+        // Only process significant auth state changes
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+          // Check if this is actually a state change by comparing session IDs
+          const currentSessionId = session?.access_token;
+          const previousSessionId = user?.aud; // Use a stable identifier
+          
+          // If it's the same session, ignore duplicate SIGNED_IN events
+          if (event === 'SIGNED_IN' && currentSessionId && previousSessionId && session?.user?.id === user?.id) {
+            console.log('Duplicate SIGNED_IN event ignored to prevent re-renders');
+            return;
+          }
+          
+          setSession(session);
+          setUser(session?.user ?? null);
+
+          if (event === 'SIGNED_OUT' || !session?.user) {
+            setIsAdmin(false);
+            setAdminLoading(false);
+          } else if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+            // Only check admin status if it's truly a new session
+            if (!user || user.id !== session.user.id) {
+              checkAdminStatus(session.user.id);
+            }
+          }
         }
       }
     );
@@ -152,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []); // Empty dependency array - only run once
+  }, []); // Empty dependency array to prevent re-initialization
 
   const value = {
     user,

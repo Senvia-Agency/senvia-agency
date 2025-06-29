@@ -9,9 +9,9 @@ export const useAuthState = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [adminLoading, setAdminLoading] = useState<boolean>(true);
-  const initializedRef = useRef(false); // This is not used anymore, but keeping for compatibility
+  const initializedRef = useRef(false);
 
-  // Memoize the admin check function to prevent unnecessary calls
+  // Memoize the admin check function with stable dependencies to prevent unnecessary calls
   const checkAdminStatus = useCallback(async (userId: string) => {
     try {
       console.log('Checking admin status for user:', userId);
@@ -34,19 +34,40 @@ export const useAuthState = () => {
     } finally {
       setAdminLoading(false);
     }
+  }, []); // Empty dependencies to ensure stable reference
+
+  // Memoize setters to prevent useEffect re-execution
+  const stableSetUser = useCallback((user: User | null) => {
+    setUser(user);
+  }, []);
+
+  const stableSetSession = useCallback((session: Session | null) => {
+    setSession(session);
+  }, []);
+
+  const stableSetIsAdmin = useCallback((isAdmin: boolean) => {
+    setIsAdmin(isAdmin);
+  }, []);
+
+  const stableSetAdminLoading = useCallback((loading: boolean) => {
+    setAdminLoading(loading);
+  }, []);
+
+  const stableSetLoading = useCallback((loading: boolean) => {
+    setLoading(loading);
   }, []);
 
   return {
     user,
-    setUser,
+    setUser: stableSetUser,
     session,
-    setSession,
+    setSession: stableSetSession,
     loading,
-    setLoading,
+    setLoading: stableSetLoading,
     isAdmin,
-    setIsAdmin,
+    setIsAdmin: stableSetIsAdmin,
     adminLoading,
-    setAdminLoading,
+    setAdminLoading: stableSetAdminLoading,
     initializedRef,
     checkAdminStatus
   };

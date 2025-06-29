@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -35,37 +35,30 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // Auth check - Only redirect when we're sure about the auth state
-  useEffect(() => {
-    if (!authLoading && !adminLoading) {
-      if (!user || !isAdmin) {
-        navigate('/auth', { replace: true });
-      }
-    }
-  }, [user, isAdmin, authLoading, adminLoading, navigate]);
+  // Memoize loading states to prevent unnecessary re-renders
+  const isLoading = useMemo(() => {
+    return authLoading || adminLoading;
+  }, [authLoading, adminLoading]);
 
-  // Set document title
+  const shouldRedirect = useMemo(() => {
+    return !authLoading && !adminLoading && (!user || !isAdmin);
+  }, [authLoading, adminLoading, user, isAdmin]);
+
+  // Auth check - Only redirect when we're absolutely sure about the auth state
+  useEffect(() => {
+    if (shouldRedirect) {
+      console.log('Redirecting to auth - User:', !!user, 'IsAdmin:', isAdmin);
+      navigate('/auth', { replace: true });
+    }
+  }, [shouldRedirect, navigate]);
+
+  // Set document title only once
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
   }, []);
 
-  // Loading states
-  if (authLoading || adminLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-          <p className="text-gray-400">Carregando dashboard administrativo...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !isAdmin) {
-    return null;
-  }
-
-  const renderActiveSection = () => {
+  // Memoize section renderer to prevent unnecessary re-renders
+  const renderActiveSection = useMemo(() => {
     switch (activeSection) {
       case 'overview':
         return <AdminOverview />;
@@ -82,7 +75,29 @@ const AdminDashboard = () => {
       default:
         return <AdminOverview />;
     }
-  };
+  }, [activeSection]);
+
+  // Loading states with better UX
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-senvia-500"></div>
+            <p className="text-gray-400">
+              {authLoading ? 'Verificando autenticação...' : 'Verificando permissões...'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything while redirecting
+  if (shouldRedirect) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -93,7 +108,7 @@ const AdminDashboard = () => {
         />
         <main className="flex-1 p-6 lg:p-8 ml-64">
           <div className="max-w-7xl mx-auto">
-            {renderActiveSection()}
+            {renderActiveSection}
           </div>
         </main>
       </div>

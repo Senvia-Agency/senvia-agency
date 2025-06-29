@@ -38,8 +38,9 @@ const AdminDashboard = () => {
     return () => {
       console.log('AdminDashboard: Component will unmount');
     };
-  }, []);
+  }, []); // Empty dependency array - only run once
 
+  // Log when activeSection changes
   useEffect(() => {
     console.log('AdminDashboard: Active section changed to:', activeSection);
   }, [activeSection]);
@@ -66,12 +67,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex">
         <AdminSidebar 
           activeSection={activeSection} 
           setActiveSection={handleSectionChange} 
         />
-        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:ml-64 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8 ml-64">
           <div className="max-w-7xl mx-auto">
             {renderActiveSection()}
           </div>

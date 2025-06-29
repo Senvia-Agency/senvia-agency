@@ -117,12 +117,12 @@ const CreateProductModal = ({ isOpen, onClose, onSuccess }: CreateProductModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-800 border-slate-600 mx-auto">
-        <DialogHeader className="px-3 sm:px-6">
-          <DialogTitle className="text-slate-100 text-lg sm:text-xl">Criar Novo Produto</DialogTitle>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-600">
+        <DialogHeader>
+          <DialogTitle className="text-slate-100">Criar Novo Produto</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 px-3 sm:px-6 pb-3 sm:pb-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <BasicProductInfo 
             formData={formData} 
             onFormDataChange={setFormData} 
@@ -147,19 +147,19 @@ const CreateProductModal = ({ isOpen, onClose, onSuccess }: CreateProductModalPr
             />
           )}
 
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sm:pt-6">
+          <div className="flex justify-end gap-3 pt-6">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700 order-2 sm:order-1"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
               Cancelar
             </Button>
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 order-1 sm:order-2"
+              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
             >
               {isLoading ? 'Criando...' : 'Criar Produto'}
             </Button>

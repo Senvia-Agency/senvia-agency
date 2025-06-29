@@ -72,13 +72,13 @@ const EditProductModal = ({ isOpen, onClose, onSuccess, product }: EditProductMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-slate-800 border-slate-600 mx-auto">
-        <DialogHeader className="px-3 sm:px-6">
-          <DialogTitle className="text-slate-100 text-lg sm:text-xl">Editar Produto</DialogTitle>
+      <DialogContent className="max-w-2xl bg-slate-800 border-slate-600">
+        <DialogHeader>
+          <DialogTitle className="text-slate-100">Editar Produto</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 px-3 sm:px-6 pb-3 sm:pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Nome do Produto</label>
               <Input
@@ -86,7 +86,7 @@ const EditProductModal = ({ isOpen, onClose, onSuccess, product }: EditProductMo
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Nome do produto"
                 required
-                className="bg-slate-700 border-slate-600 text-slate-100 text-sm"
+                className="bg-slate-700 border-slate-600 text-slate-100"
               />
             </div>
             
@@ -96,7 +96,7 @@ const EditProductModal = ({ isOpen, onClose, onSuccess, product }: EditProductMo
                 value={formData.category} 
                 onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-slate-100 text-sm">
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-slate-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-700 border-slate-600">
@@ -115,7 +115,7 @@ const EditProductModal = ({ isOpen, onClose, onSuccess, product }: EditProductMo
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Descrição detalhada do produto"
-              className="bg-slate-700 border-slate-600 text-slate-100 text-sm"
+              className="bg-slate-700 border-slate-600 text-slate-100"
               rows={4}
             />
           </div>
@@ -130,19 +130,19 @@ const EditProductModal = ({ isOpen, onClose, onSuccess, product }: EditProductMo
             </label>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sm:pt-6">
+          <div className="flex justify-end gap-3 pt-6">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
-              className="border-slate-600 text-slate-300 hover:bg-slate-700 order-2 sm:order-1"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
               Cancelar
             </Button>
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 order-1 sm:order-2"
+              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
             >
               {isLoading ? 'Salvando...' : 'Salvar Alterações'}
             </Button>

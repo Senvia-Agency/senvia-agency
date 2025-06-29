@@ -34,9 +34,37 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     notes: ''
   });
 
+  // Debug logs for modal state
+  useEffect(() => {
+    console.log('ConvertLeadModal: isOpen changed to:', isOpen);
+    if (isOpen && lead) {
+      console.log('ConvertLeadModal: Opening modal for lead:', lead.id);
+    } else if (!isOpen) {
+      console.log('ConvertLeadModal: Modal closed');
+    }
+  }, [isOpen, lead]);
+
+  // Debug logs for component lifecycle
+  useEffect(() => {
+    console.log('ConvertLeadModal: Component mounted/updated');
+    
+    // Track visibility changes
+    const handleVisibilityChange = () => {
+      console.log('ConvertLeadModal: Visibility changed, document.hidden:', document.hidden, 'isOpen:', isOpen);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      console.log('ConvertLeadModal: Component will unmount');
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isOpen]);
+
   // Preencher automaticamente os dados do lead quando o modal abrir
   useEffect(() => {
     if (lead && isOpen) {
+      console.log('ConvertLeadModal: Setting initial form data for lead:', lead.id);
       setFormData(getInitialFormData(lead));
     }
   }, [lead, isOpen]);
@@ -79,10 +107,20 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     }));
   };
 
+  const handleClose = () => {
+    console.log('ConvertLeadModal: handleClose called');
+    onClose();
+  };
+
   if (!lead) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      console.log('ConvertLeadModal: Dialog onOpenChange called with:', open);
+      if (!open) {
+        handleClose();
+      }
+    }}>
       <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-white">Converter Lead para Cliente</DialogTitle>
@@ -122,7 +160,7 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
             <Button 
               type="button" 
               variant="outline" 
-              onClick={onClose}
+              onClick={handleClose}
               disabled={convertMutation.isPending}
             >
               Cancelar

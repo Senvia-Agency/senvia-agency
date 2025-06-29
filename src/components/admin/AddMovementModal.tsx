@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCustomers } from "@/hooks/useCustomers";
 import { format } from "date-fns";
+import { useEffect } from "react";
 
 interface AddMovementModalProps {
   isOpen: boolean;
@@ -27,6 +28,28 @@ const AddMovementModal = ({ isOpen, onClose, onSubmit, isLoading }: AddMovementM
     customer_id: '',
     notes: ''
   });
+
+  // Debug logs for modal state
+  useEffect(() => {
+    console.log('AddMovementModal: isOpen changed to:', isOpen);
+  }, [isOpen]);
+
+  // Debug logs for component lifecycle
+  useEffect(() => {
+    console.log('AddMovementModal: Component mounted/updated');
+    
+    // Track visibility changes
+    const handleVisibilityChange = () => {
+      console.log('AddMovementModal: Visibility changed, document.hidden:', document.hidden, 'isOpen:', isOpen);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      console.log('AddMovementModal: Component will unmount');
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isOpen]);
 
   const handleSubmit = () => {
     if (!movement.amount || !movement.description || !movement.category) {
@@ -52,11 +75,21 @@ const AddMovementModal = ({ isOpen, onClose, onSubmit, isLoading }: AddMovementM
     onClose();
   };
 
+  const handleClose = () => {
+    console.log('AddMovementModal: handleClose called');
+    onClose();
+  };
+
   const receitaCategories = ['vendas_landing_pages', 'assinaturas', 'consultoria', 'outros_servicos'];
   const despesaCategories = ['infraestrutura', 'marketing', 'saas', 'taxas', 'operacional', 'outros'];
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      console.log('AddMovementModal: Dialog onOpenChange called with:', open);
+      if (!open) {
+        handleClose();
+      }
+    }}>
       <DialogContent className="bg-gray-800 border-gray-700 max-w-md">
         <DialogHeader>
           <DialogTitle className="text-white">Novo Movimento Financeiro</DialogTitle>

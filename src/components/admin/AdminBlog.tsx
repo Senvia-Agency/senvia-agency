@@ -16,7 +16,6 @@ const AdminBlog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
 
   const { data: posts, isLoading, refetch } = useBlogPosts();
 
@@ -27,20 +26,17 @@ const AdminBlog = () => {
 
   const handleCreatePost = () => {
     setSelectedPost(null);
-    setIsCreating(true);
     setIsEditorOpen(true);
   };
 
   const handleEditPost = (post: any) => {
     setSelectedPost(post);
-    setIsCreating(false);
     setIsEditorOpen(true);
   };
 
   const handleEditorClose = () => {
     setIsEditorOpen(false);
     setSelectedPost(null);
-    setIsCreating(false);
     refetch();
   };
 
@@ -122,12 +118,12 @@ const AdminBlog = () => {
                     <Badge 
                       variant="outline" 
                       className={`text-xs flex-shrink-0 px-2 py-0.5 ${
-                        post.published 
+                        post.status === 'published'
                           ? 'border-green-500/50 text-green-400 bg-green-500/10' 
                           : 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10'
                       }`}
                     >
-                      {post.published ? 'Publicado' : 'Rascunho'}
+                      {post.status === 'published' ? 'Publicado' : 'Rascunho'}
                     </Badge>
                   </div>
                   
@@ -210,7 +206,6 @@ const AdminBlog = () => {
         post={selectedPost}
         isOpen={isEditorOpen}
         onClose={handleEditorClose}
-        isCreating={isCreating}
       />
     </div>
   );

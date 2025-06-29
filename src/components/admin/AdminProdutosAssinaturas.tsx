@@ -12,6 +12,26 @@ import PerformanceSummary from "./produtos/PerformanceSummary";
 const AdminProdutosAssinaturas = () => {
   const [activeTab, setActiveTab] = useState("produtos");
 
+  // Mock data - in real app these would come from hooks
+  const mockStats = {
+    totalProducts: 5,
+    activeSubscriptions: 24,
+    trialSubscriptions: 8,
+    totalSales: 156,
+    totalRevenue: 4500.00
+  };
+
+  const mockActiveSubscriptions: any[] = [];
+
+  const mockPerformanceStats = {
+    subscriptionRevenue: 2400.00,
+    salesRevenue: 2100.00,
+    totalSubscriptions: 32,
+    totalSales: 156,
+    activeSubscriptions: 24,
+    trialSubscriptions: 8
+  };
+
   return (
     <div className="space-y-4 lg:space-y-6 p-4 lg:p-6 w-full max-w-full overflow-x-hidden">
       {/* Header - Mobile Optimized */}
@@ -23,7 +43,7 @@ const AdminProdutosAssinaturas = () => {
       </div>
 
       {/* Stats Cards */}
-      <ProductStatsCards />
+      <ProductStatsCards stats={mockStats} />
 
       {/* Tabs - Mobile Optimized */}
       <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm overflow-hidden">
@@ -64,15 +84,20 @@ const AdminProdutosAssinaturas = () => {
 
           <div className="p-0">
             <TabsContent value="produtos" className="mt-0 p-4 lg:p-6">
-              <ProductCatalog />
+              <ProductCatalog 
+                products={[]} 
+                productsLoading={false} 
+                syncWithStripe={() => {}} 
+                isLoading={false} 
+              />
             </TabsContent>
 
             <TabsContent value="assinaturas" className="mt-0 p-4 lg:p-6">
-              <ActiveSubscriptionsList />
+              <ActiveSubscriptionsList activeSubscriptions={mockActiveSubscriptions} />
             </TabsContent>
 
             <TabsContent value="performance" className="mt-0 p-4 lg:p-6">
-              <PerformanceSummary />
+              <PerformanceSummary stats={mockPerformanceStats} />
             </TabsContent>
           </div>
         </Tabs>

@@ -191,7 +191,7 @@ const AdminClientes = () => {
 
       {/* Modal de Edição */}
       <EditClientModal
-        customer={selectedCustomer}
+        client={selectedCustomer}
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);

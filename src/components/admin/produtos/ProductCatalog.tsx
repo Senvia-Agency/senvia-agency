@@ -30,72 +30,72 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
       'ecommerce': TrendingUp
     };
     const Icon = iconMap[category] || Package;
-    return <Icon className="h-5 w-5" />;
+    return <Icon className="h-4 w-4 sm:h-5 sm:w-5" />;
   };
 
   return (
     <>
       <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-slate-100">
-              <Package className="h-5 w-5 text-senvia-500" />
-              Catálogo de Produtos (Sincronizados do Stripe)
+        <CardHeader className="px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <CardTitle className="flex items-center gap-2 text-slate-100 text-base sm:text-lg">
+              <Package className="h-4 w-4 sm:h-5 sm:w-5 text-senvia-500 flex-shrink-0" />
+              <span className="line-clamp-2 sm:line-clamp-1">Catálogo de Produtos (Sincronizados do Stripe)</span>
             </CardTitle>
             <Button
               onClick={() => setIsCreateModalOpen(true)}
-              className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
+              className="w-full sm:w-auto bg-senvia-500 hover:bg-senvia-400 text-slate-900 text-sm sm:text-base"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Criar Produto
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           {productsLoading ? (
-            <div className="text-center py-8 text-slate-400">
+            <div className="text-center py-8 text-slate-400 text-sm sm:text-base">
               Carregando produtos...
             </div>
           ) : products && products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               {products.map((product) => (
                 <Card key={product.id} className="bg-slate-700/70 border-slate-600/50">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-senvia-500/20 rounded-lg">
+                  <CardHeader className="pb-3 px-4 sm:px-6">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="p-2 bg-senvia-500/20 rounded-lg flex-shrink-0">
                           {getProductIcon(product.category)}
                         </div>
-                        <div>
-                          <CardTitle className="text-lg text-slate-100">{product.name}</CardTitle>
-                          <p className="text-sm text-slate-400 capitalize">{product.category.replace('_', ' ')}</p>
+                        <div className="min-w-0 flex-1">
+                          <CardTitle className="text-sm sm:text-lg text-slate-100 line-clamp-2">{product.name}</CardTitle>
+                          <p className="text-xs sm:text-sm text-slate-400 capitalize truncate">{product.category.replace('_', ' ')}</p>
                         </div>
                       </div>
-                      <Badge variant={product.active ? "default" : "secondary"} className={product.active ? "bg-green-500/20 text-green-400 border-green-500/50" : ""}>
+                      <Badge variant={product.active ? "default" : "secondary"} className={`${product.active ? "bg-green-500/20 text-green-400 border-green-500/50" : ""} text-xs whitespace-nowrap`}>
                         {product.active ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-slate-300 text-sm line-clamp-2">
+                  <CardContent className="space-y-3 px-4 sm:px-6">
+                    <p className="text-slate-300 text-xs sm:text-sm line-clamp-3">
                       {product.description || 'Sem descrição disponível'}
                     </p>
 
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-slate-300">Planos Disponíveis:</h4>
+                      <h4 className="text-xs sm:text-sm font-medium text-slate-300">Planos Disponíveis:</h4>
                       <div className="space-y-1">
-                        {product.product_plans?.slice(0, 3).map((plan: any) => (
-                          <div key={plan.id} className="flex justify-between items-center text-sm">
-                            <span className="text-slate-400">{plan.name}</span>
-                            <span className="text-senvia-400 font-medium">
+                        {product.product_plans?.slice(0, 2).map((plan: any) => (
+                          <div key={plan.id} className="flex justify-between items-center text-xs sm:text-sm">
+                            <span className="text-slate-400 truncate flex-1 mr-2">{plan.name}</span>
+                            <span className="text-senvia-400 font-medium whitespace-nowrap">
                               €{plan.price_monthly || plan.price_yearly || 0}
                               {plan.price_monthly ? '/mês' : plan.price_yearly ? '/ano' : ''}
                             </span>
                           </div>
                         ))}
-                        {product.product_plans?.length > 3 && (
+                        {product.product_plans?.length > 2 && (
                           <div className="text-xs text-slate-500">
-                            +{product.product_plans.length - 3} mais planos
+                            +{product.product_plans.length - 2} mais planos
                           </div>
                         )}
                       </div>
@@ -103,32 +103,34 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
 
                     {product.stripe_product_id && (
                       <div className="pt-2 border-t border-slate-600/50">
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-slate-500 truncate">
                           Stripe ID: {product.stripe_product_id}
                         </div>
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50"
+                            className="w-full sm:flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50 text-xs sm:text-sm"
                             onClick={() => setSelectedItem(product)}
                           >
-                            <Eye className="h-4 w-4 mr-2" />
+                            <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                             Ver Detalhes
                           </Button>
                         </DialogTrigger>
                         <ProductDetailModal selectedItem={selectedItem} />
                       </Dialog>
                       
-                      <ProductActionsButtons 
-                        product={product} 
-                        onUpdate={syncWithStripe}
-                      />
+                      <div className="flex justify-center sm:justify-end">
+                        <ProductActionsButtons 
+                          product={product} 
+                          onUpdate={syncWithStripe}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -136,24 +138,24 @@ const ProductCatalog = ({ products, productsLoading, syncWithStripe, isLoading }
             </div>
           ) : (
             <div className="text-center py-8">
-              <Package className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-200 mb-2">Nenhum produto encontrado</h3>
-              <p className="text-slate-400 mb-4">Crie seu primeiro produto ou sincronize com o Stripe.</p>
-              <div className="flex gap-2 justify-center">
+              <Package className="h-8 w-8 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-slate-200 mb-2">Nenhum produto encontrado</h3>
+              <p className="text-slate-400 mb-4 text-sm sm:text-base">Crie seu primeiro produto ou sincronize com o Stripe.</p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-senvia-500 hover:bg-senvia-400 text-slate-900"
+                  className="w-full sm:w-auto bg-senvia-500 hover:bg-senvia-400 text-slate-900 text-sm sm:text-base"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Criar Produto
                 </Button>
                 <Button 
                   onClick={syncWithStripe}
                   disabled={isLoading}
                   variant="outline"
-                  className="border-slate-600 text-slate-300 hover:bg-slate-600/50"
+                  className="w-full sm:w-auto border-slate-600 text-slate-300 hover:bg-slate-600/50 text-sm sm:text-base"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Sincronizar Stripe
                 </Button>
               </div>

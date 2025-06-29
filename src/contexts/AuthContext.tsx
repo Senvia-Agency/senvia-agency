@@ -35,20 +35,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
 
-  // Add visibility change listener to track tab switching
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      console.log('AuthProvider: Visibility changed, document.hidden:', document.hidden);
-      console.log('AuthProvider: Current state - user:', !!user, 'isAdmin:', isAdmin, 'loading:', loading, 'adminLoading:', adminLoading);
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [user, isAdmin, loading, adminLoading]);
-
   const signIn = async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -145,6 +131,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       async (event, session) => {
         console.log('Auth state change:', event, !!session);
         
+        // Only process if this is a real change, not just a token refresh
+        if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed, keeping current state');
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -160,7 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Empty dependency array - only run once
 
   const value = {
     user,

@@ -33,32 +33,17 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     document.title = "Admin Dashboard | SENVIA";
-    
-    // Log when component mounts/unmounts
     console.log('AdminDashboard: Component mounted');
     
     return () => {
       console.log('AdminDashboard: Component will unmount');
     };
-  }, []);
+  }, []); // Empty dependency array - only run once
 
   // Log when activeSection changes
   useEffect(() => {
     console.log('AdminDashboard: Active section changed to:', activeSection);
   }, [activeSection]);
-
-  // Add visibility change listener to track tab switching
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      console.log('AdminDashboard: Visibility changed, document.hidden:', document.hidden);
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
 
   const renderActiveSection = () => {
     console.log('AdminDashboard: Rendering section:', activeSection);

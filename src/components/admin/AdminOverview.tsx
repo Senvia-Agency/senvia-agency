@@ -8,11 +8,11 @@ import { useAdminRevenue } from "@/hooks/useAdminRevenue";
 import { useAdminLeads } from "@/hooks/useAdminLeads";
 import { useAdminSubscriptions } from "@/hooks/useAdminSubscriptions";
 import { useAdminActivity } from "@/hooks/useAdminActivity";
-import AdminKPICards from "./AdminKPICards";
-import AdminRevenueBreakdown from "./AdminRevenueBreakdown";
+import AdminRevenueBreakdown from "./AdminRevenueBreakdown"; 
 import AdminLeadsBreakdown from "./AdminLeadsBreakdown";
 import AdminRecentLeads from "./AdminRecentLeads";
 import AdminRecentPayments from "./AdminRecentPayments";
+import MobileAdminKPIs from "./mobile/MobileAdminKPIs";
 import { Sparkles, Clock, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -33,7 +33,6 @@ const AdminOverview = () => {
 
   const isLoading = revenueLoading || leadsLoading || subsLoading || activityLoading;
 
-  // Mensagens inspiradoras
   const inspirationalMessages = [
     "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
     "Inovação distingue líderes de seguidores. Continue liderando!",
@@ -44,7 +43,6 @@ const AdminOverview = () => {
     "Sua dedicação hoje constrói o sucesso de amanhã."
   ];
 
-  // Função para gerar mensagem baseada no dia
   const generateDailyMessage = () => {
     const today = new Date();
     const startOfYear = new Date(today.getFullYear(), 0, 0);
@@ -53,7 +51,6 @@ const AdminOverview = () => {
     return inspirationalMessages[messageIndex];
   };
 
-  // Atualizar relógio com fuso horário de Lisboa
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -94,9 +91,9 @@ const AdminOverview = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-slate-100">Dashboard Administrativo</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-white">Dashboard</h1>
         </div>
         <div className="text-center py-8 text-slate-400">
           Carregando métricas...
@@ -106,76 +103,82 @@ const AdminOverview = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2 text-slate-100">Dashboard Administrativo</h1>
-        <p className="text-slate-400">
-          Visão geral completa dos negócios da SENVIA
-        </p>
+    <div className="space-y-4 lg:space-y-6">
+      {/* Mobile Header */}
+      <div className="block lg:hidden">
+        <h1 className="text-xl font-bold text-white">Dashboard</h1>
+        <p className="text-sm text-slate-400">Olá, {getUserName()}!</p>
       </div>
 
-      {/* Seção com Imagem e Mensagem em duas colunas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Imagem com Saudação, Data e Relógio */}
-        <div className="relative rounded-xl overflow-hidden shadow-xl">
-          <img 
-            src="/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" 
-            alt="SENVIA Dashboard" 
-            className="w-full h-48 object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex items-center justify-center">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Olá, {getUserName()}!
-              </h2>
-              <p className="text-lg text-slate-200 mb-3">
-                Bem-vindo ao seu painel
-              </p>
-              <div className="text-slate-300 space-y-1">
-                <p className="text-sm">
-                  {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+      {/* Desktop Header */}
+      <div className="hidden lg:block mb-6">
+        <h1 className="text-3xl font-bold mb-2 text-white">Dashboard Administrativo</h1>
+        <p className="text-slate-400">Visão geral completa dos negócios da SENVIA</p>
+      </div>
+
+      {/* Welcome Section - Redesigned for Mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+        {/* Welcome Card - Mobile Optimized */}
+        <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50 overflow-hidden">
+          <div className="relative h-32 lg:h-48">
+            <img 
+              src="/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" 
+              alt="SENVIA Dashboard" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex items-center justify-center">
+              <div className="text-center px-4">
+                <h2 className="text-lg lg:text-2xl font-bold text-white mb-1 lg:mb-2">
+                  Olá, {getUserName()}!
+                </h2>
+                <p className="text-sm lg:text-lg text-slate-200 mb-2 lg:mb-3">
+                  Bem-vindo ao painel
                 </p>
-                <div className="flex items-center justify-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <p className="text-lg font-mono">
-                    {format(currentTime, "HH:mm:ss")}
+                <div className="text-slate-300 space-y-1">
+                  <p className="text-xs lg:text-sm">
+                    {format(new Date(), "dd/MM/yyyy", { locale: ptBR })}
                   </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <Clock className="h-3 w-3 lg:h-4 lg:w-4" />
+                    <p className="text-sm lg:text-lg font-mono">
+                      {format(currentTime, "HH:mm:ss")}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Mensagem Inspiradora */}
-        <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50 h-48 flex items-center shadow-xl">
-          <CardContent className="p-6 w-full">
-            <div className="flex items-start gap-4 h-full">
-              <Sparkles className="h-6 w-6 text-amber-400 mt-1 flex-shrink-0" />
-              <div className="flex flex-col justify-center h-full">
-                <p className="text-lg font-medium text-amber-400 mb-3">Mensagem do Dia</p>
-                <p className="text-base text-slate-200 leading-relaxed">{inspirationalMessage}</p>
+        {/* Inspirational Message - Mobile Optimized */}
+        <Card className="bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600/50">
+          <CardContent className="p-4 lg:p-6 h-32 lg:h-48 flex items-center">
+            <div className="flex items-start gap-3 lg:gap-4">
+              <Sparkles className="h-5 w-5 lg:h-6 lg:w-6 text-amber-400 mt-1 flex-shrink-0" />
+              <div>
+                <p className="text-sm lg:text-lg font-medium text-amber-400 mb-2 lg:mb-3">Mensagem do Dia</p>
+                <p className="text-xs lg:text-base text-slate-200 leading-relaxed">{inspirationalMessage}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filtros de Período - Design Premium com cores corrigidas */}
-      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm shadow-lg">
-        <CardContent className="p-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-300">Período:</span>
+      {/* Period Filters - Mobile Optimized */}
+      <Card className="bg-slate-800/80 border-slate-600/50 backdrop-blur-sm">
+        <CardContent className="p-3 lg:p-5">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 lg:gap-3">
+              <span className="text-xs lg:text-sm font-medium text-slate-300">Período:</span>
               <div className="flex bg-slate-900/70 rounded-lg p-1 border border-slate-700/50">
                 <Button
                   variant={dateRange === 7 ? "default" : "ghost"}
                   onClick={() => setDateRange(7)}
                   className={cn(
-                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    "text-xs px-3 py-1.5 h-7 lg:h-8 rounded-md transition-all",
                     dateRange === 7 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
-                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -185,10 +188,10 @@ const AdminOverview = () => {
                   variant={dateRange === 30 ? "default" : "ghost"}
                   onClick={() => setDateRange(30)}
                   className={cn(
-                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    "text-xs px-3 py-1.5 h-7 lg:h-8 rounded-md transition-all",
                     dateRange === 30 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
-                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -198,10 +201,10 @@ const AdminOverview = () => {
                   variant={dateRange === 90 ? "default" : "ghost"}
                   onClick={() => setDateRange(90)}
                   className={cn(
-                    "text-xs px-4 py-2 h-8 rounded-md transition-all",
+                    "text-xs px-3 py-1.5 h-7 lg:h-8 rounded-md transition-all",
                     dateRange === 90 
                       ? "bg-senvia-500 text-slate-900 font-medium shadow-sm hover:bg-senvia-400" 
-                      : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/50"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50"
                   )}
                   size="sm"
                 >
@@ -210,21 +213,22 @@ const AdminOverview = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-300">Personalizado:</span>
+            {/* Custom Date Range - Hidden on small mobile, shown on larger screens */}
+            <div className="hidden sm:flex items-center gap-2 lg:gap-3">
+              <span className="text-xs lg:text-sm font-medium text-slate-300">Personalizado:</span>
               <div className="flex items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
+                        "w-[100px] lg:w-[140px] justify-start text-left font-normal text-xs h-7 lg:h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateFrom && "text-slate-400",
                         customDateFrom && "text-slate-200"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-3 w-3" />
-                      {customDateFrom ? format(customDateFrom, "dd/MM/yyyy") : "Data início"}
+                      <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3" />
+                      {customDateFrom ? format(customDateFrom, "dd/MM/yy") : "Início"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
@@ -243,13 +247,13 @@ const AdminOverview = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[140px] justify-start text-left font-normal text-xs h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
+                        "w-[100px] lg:w-[140px] justify-start text-left font-normal text-xs h-7 lg:h-9 bg-slate-700/50 border-slate-500 hover:bg-slate-600/50 transition-all",
                         !customDateTo && "text-slate-400",
                         customDateTo && "text-slate-200"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-3 w-3" />
-                      {customDateTo ? format(customDateTo, "dd/MM/yyyy") : "Data fim"}
+                      <CalendarIcon className="mr-1 lg:mr-2 h-3 w-3" />
+                      {customDateTo ? format(customDateTo, "dd/MM/yy") : "Fim"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
@@ -270,7 +274,7 @@ const AdminOverview = () => {
                       setCustomDateFrom(undefined);
                       setCustomDateTo(undefined);
                     }}
-                    className="text-xs h-9 px-3 text-slate-400 hover:text-slate-100 hover:bg-slate-700/50 transition-all"
+                    className="text-xs h-7 lg:h-9 px-2 lg:px-3 text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all"
                   >
                     Limpar
                   </Button>
@@ -281,21 +285,21 @@ const AdminOverview = () => {
         </CardContent>
       </Card>
 
-      {/* KPI Cards */}
-      <AdminKPICards 
+      {/* Mobile-Optimized KPI Cards */}
+      <MobileAdminKPIs 
         revenueMetrics={revenueMetrics}
         leadsStats={leadsStats}
         subscriptions={subscriptions}
       />
 
-      {/* Breakdown de Receita */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Section - Mobile Optimized */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         <AdminRevenueBreakdown revenueMetrics={revenueMetrics} />
         <AdminLeadsBreakdown leadsStats={leadsStats} />
       </div>
 
-      {/* Atividade Recente */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Recent Activity - Mobile Optimized */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         <AdminRecentLeads recentActivity={recentActivity} />
         <AdminRecentPayments recentActivity={recentActivity} />
       </div>

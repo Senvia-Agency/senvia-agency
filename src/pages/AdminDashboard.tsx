@@ -1,12 +1,11 @@
-
 import { useEffect, useState, useCallback } from "react";
-import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
 import AdminClientes from "@/components/admin/AdminClientes";
 import AdminBlog from "@/components/admin/AdminBlog";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
+import MobileAdminSidebar from "@/components/admin/MobileAdminSidebar";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
@@ -38,9 +37,8 @@ const AdminDashboard = () => {
     return () => {
       console.log('AdminDashboard: Component will unmount');
     };
-  }, []); // Empty dependency array - only run once
+  }, []);
 
-  // Log when activeSection changes
   useEffect(() => {
     console.log('AdminDashboard: Active section changed to:', activeSection);
   }, [activeSection]);
@@ -66,18 +64,20 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="flex">
-        <AdminSidebar 
-          activeSection={activeSection} 
-          setActiveSection={handleSectionChange} 
-        />
-        <main className="flex-1 p-6 lg:p-8 ml-64">
+    <div className="min-h-screen bg-slate-900 text-white">
+      <MobileAdminSidebar 
+        activeSection={activeSection} 
+        setActiveSection={handleSectionChange} 
+      />
+      
+      {/* Main Content */}
+      <main className="lg:ml-64 pt-20 lg:pt-0">
+        <div className="p-4 lg:p-8">
           <div className="max-w-7xl mx-auto">
             {renderActiveSection()}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

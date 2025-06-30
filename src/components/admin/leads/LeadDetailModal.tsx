@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,19 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
     }
   }, [selectedLead]);
 
+  // Função para obter o nome do usuário logado
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    // Se não tiver no metadata, tentar obter de outras fontes
+    if (user?.identities?.[0]?.identity_data?.full_name) {
+      return user.identities[0].identity_data.full_name;
+    }
+    // Como último recurso, usar o email
+    return user?.email || 'Usuário';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -48,7 +62,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
         activity_type: 'status_change',
         title: `Status alterado para ${getStatusLabel(editedLead.lead_status)}`,
         description: `Status alterado de "${getStatusLabel(selectedLead?.lead_status)}" para "${getStatusLabel(editedLead.lead_status)}"`,
-        contact_person: user?.user_metadata?.full_name || user?.email || 'Usuário',
+        contact_person: getUserDisplayName(),
         contact_method: 'sistema'
       });
     }

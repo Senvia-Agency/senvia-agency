@@ -29,6 +29,19 @@ const AdminLeads = () => {
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const createActivity = useCreateActivity();
 
+  // Função para obter o nome do usuário logado
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    // Se não tiver no metadata, tentar obter de outras fontes
+    if (user?.identities?.[0]?.identity_data?.full_name) {
+      return user.identities[0].identity_data.full_name;
+    }
+    // Como último recurso, usar o email
+    return user?.email || 'Usuário';
+  };
+
   // Simplified filters without problematic listeners
   const [filters, setFilters] = useState(() => {
     try {
@@ -76,7 +89,7 @@ const AdminLeads = () => {
           activity_type: 'status_change',
           title: `Status alterado para ${getStatusLabel(newStatus)}`,
           description: `Status alterado de "${getStatusLabel(oldStatus)}" para "${getStatusLabel(newStatus)}"`,
-          contact_person: user?.user_metadata?.full_name || user?.email || 'Usuário',
+          contact_person: getUserDisplayName(),
           contact_method: 'sistema'
         });
       }

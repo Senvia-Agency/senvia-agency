@@ -47,7 +47,7 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
     ) : '';
 
   return (
-    <div className="relative z-20">
+    <div className="space-y-2">
       <Label className="text-gray-300">
         {serviceType === 'custom_service' ? 'Serviço Personalizado' : 'Produto do Stripe'}
       </Label>
@@ -63,21 +63,26 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700" style={{ zIndex: 60 }}>
-          <Command>
-            <CommandInput placeholder="Buscar serviço..." className="text-white" />
-            <CommandList>
-              <CommandEmpty>Nenhum serviço encontrado.</CommandEmpty>
-              <CommandGroup>
+        <PopoverContent className="w-[400px] p-0 bg-gray-800 border-gray-700">
+          <Command className="bg-gray-800">
+            <CommandInput 
+              placeholder="Buscar serviço..." 
+              className="text-white bg-gray-800 border-gray-600" 
+            />
+            <CommandList className="bg-gray-800">
+              <CommandEmpty className="text-gray-400 py-6 text-center">
+                Nenhum serviço encontrado.
+              </CommandEmpty>
+              <CommandGroup className="bg-gray-800">
                 {services.map((service) => (
                   <CommandItem
                     key={service.id}
-                    value={service.name}
+                    value={`${service.name} ${service.description || ''}`}
                     onSelect={() => {
                       onServiceSelect(service.id);
                       setOpen(false);
                     }}
-                    className="text-white hover:bg-gray-700"
+                    className="text-white hover:bg-gray-700 cursor-pointer"
                   >
                     <Check
                       className={cn(
@@ -85,10 +90,15 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
                         serviceId === service.id ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    {serviceType === 'custom_service' 
-                      ? `${service.name} - €${service.base_price}`
-                      : service.name
-                    }
+                    <div className="flex flex-col">
+                      <span className="font-medium">{service.name}</span>
+                      {serviceType === 'custom_service' && (
+                        <span className="text-sm text-senvia-400">€{service.base_price}</span>
+                      )}
+                      {service.description && (
+                        <span className="text-xs text-gray-500">{service.description}</span>
+                      )}
+                    </div>
                   </CommandItem>
                 ))}
               </CommandGroup>

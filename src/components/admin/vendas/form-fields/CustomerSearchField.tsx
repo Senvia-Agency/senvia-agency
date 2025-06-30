@@ -50,7 +50,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
   const isFormValid = newCustomerData.full_name.trim() && newCustomerData.email.trim();
 
   return (
-    <div className="relative z-10">
+    <div className="space-y-2">
       <Label className="text-gray-300">Cliente (Opcional)</Label>
       <div className="flex gap-2">
         <Popover open={open} onOpenChange={setOpen}>
@@ -66,19 +66,24 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700" style={{ zIndex: 50 }}>
-            <Command>
-              <CommandInput placeholder="Buscar cliente..." className="text-white" />
-              <CommandList>
-                <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                <CommandGroup>
+          <PopoverContent className="w-[400px] p-0 bg-gray-800 border-gray-700">
+            <Command className="bg-gray-800">
+              <CommandInput 
+                placeholder="Buscar cliente..." 
+                className="text-white bg-gray-800 border-gray-600" 
+              />
+              <CommandList className="bg-gray-800">
+                <CommandEmpty className="text-gray-400 py-6 text-center">
+                  Nenhum cliente encontrado.
+                </CommandEmpty>
+                <CommandGroup className="bg-gray-800">
                   <CommandItem
                     value="none"
                     onSelect={() => {
                       onChange("none");
                       setOpen(false);
                     }}
-                    className="text-white hover:bg-gray-700"
+                    className="text-white hover:bg-gray-700 cursor-pointer"
                   >
                     <Check
                       className={cn(
@@ -91,12 +96,12 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
                   {customers?.map((customer) => (
                     <CommandItem
                       key={customer.id}
-                      value={`${customer.full_name} ${customer.email}`}
+                      value={`${customer.full_name} ${customer.email} ${customer.company_name || ''}`}
                       onSelect={() => {
                         onChange(customer.id);
                         setOpen(false);
                       }}
-                      className="text-white hover:bg-gray-700"
+                      className="text-white hover:bg-gray-700 cursor-pointer"
                     >
                       <Check
                         className={cn(
@@ -104,7 +109,13 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
                           value === customer.id ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {customer.full_name} - {customer.email}
+                      <div className="flex flex-col">
+                        <span className="font-medium">{customer.full_name}</span>
+                        <span className="text-sm text-gray-400">{customer.email}</span>
+                        {customer.company_name && (
+                          <span className="text-xs text-gray-500">{customer.company_name}</span>
+                        )}
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -124,7 +135,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-gray-800 border-gray-700" style={{ zIndex: 60 }}>
+          <DialogContent className="bg-gray-800 border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-white">Novo Cliente</DialogTitle>
             </DialogHeader>

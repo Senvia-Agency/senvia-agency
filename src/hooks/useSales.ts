@@ -44,6 +44,8 @@ export const useSales = (dateRange: number = 30) => {
   return useQuery({
     queryKey: ['sales', dateRange],
     queryFn: async () => {
+      console.log('Buscando vendas para os últimos', dateRange, 'dias');
+      
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - dateRange);
       
@@ -57,9 +59,19 @@ export const useSales = (dateRange: number = 30) => {
         .gte('created_at', startDate.toISOString())
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao buscar vendas:', error);
+        throw error;
+      }
+      
+      console.log('Vendas encontradas:', data?.length || 0);
       return data as Sale[];
     },
+    staleTime: 30000, // 30 segundos
+    gcTime: 5 * 60 * 1000, // 5 minutos
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchInterval: false,
   });
 };
 
@@ -69,13 +81,20 @@ export const useCreateSale = () => {
   
   return useMutation({
     mutationFn: async (newSale: Omit<Sale, 'id' | 'sale_number' | 'remaining_amount' | 'created_at' | 'updated_at'>) => {
+      console.log('Criando nova venda:', newSale);
+      
       const { data, error } = await supabase
         .from('sales')
         .insert([newSale])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao criar venda:', error);
+        throw error;
+      }
+      
+      console.log('Venda criada com sucesso:', data);
       return data;
     },
     onSuccess: () => {
@@ -87,6 +106,7 @@ export const useCreateSale = () => {
       });
     },
     onError: (error: any) => {
+      console.error('Erro na criação da venda:', error);
       toast({
         title: "Erro ao criar venda",
         description: error.message,
@@ -102,6 +122,8 @@ export const useUpdateSale = () => {
   
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Sale> }) => {
+      console.log('Atualizando venda:', id, updates);
+      
       const { data, error } = await supabase
         .from('sales')
         .update(updates)
@@ -109,7 +131,12 @@ export const useUpdateSale = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao atualizar venda:', error);
+        throw error;
+      }
+      
+      console.log('Venda atualizada com sucesso:', data);
       return data;
     },
     onSuccess: () => {
@@ -121,6 +148,7 @@ export const useUpdateSale = () => {
       });
     },
     onError: (error: any) => {
+      console.error('Erro na atualização da venda:', error);
       toast({
         title: "Erro ao atualizar venda",
         description: error.message,
@@ -150,6 +178,8 @@ export const useConvertLeadToSale = () => {
       totalValue?: number; 
       notes?: string; 
     }) => {
+      console.log('Convertendo lead em venda:', leadId);
+      
       const { data, error } = await supabase.rpc('convert_lead_to_sale', {
         p_lead_id: leadId,
         p_service_id: serviceId,
@@ -159,7 +189,12 @@ export const useConvertLeadToSale = () => {
         p_notes: notes
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao converter lead:', error);
+        throw error;
+      }
+      
+      console.log('Lead convertido com sucesso:', data);
       return data;
     },
     onSuccess: () => {
@@ -173,6 +208,7 @@ export const useConvertLeadToSale = () => {
       });
     },
     onError: (error: any) => {
+      console.error('Erro na conversão do lead:', error);
       toast({
         title: "Erro na conversão",
         description: error.message,

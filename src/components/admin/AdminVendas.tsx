@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import {
   Search,
   FileText,
   Eye,
-  Edit
+  Loader2
 } from "lucide-react";
 import { useSales } from "@/hooks/useSales";
 import { format } from "date-fns";
@@ -31,27 +31,37 @@ const AdminVendas = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<any>(null);
 
-  const { data: sales, isLoading } = useSales(selectedPeriod);
+  const { data: sales, isLoading, error } = useSales(selectedPeriod);
 
-  // Filtrar vendas
-  const filteredSales = sales?.filter(sale => {
-    const matchesSearch = 
-      sale.sale_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.customers?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.customers?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Memoizar filtros para evitar recálculos desnecessários
+  const filteredSales = useMemo(() => {
+    if (!sales) return [];
     
-    const matchesStatus = statusFilter === "all" || sale.sale_status === statusFilter;
-    const matchesPayment = paymentFilter === "all" || sale.payment_status === paymentFilter;
-    
-    return matchesSearch && matchesStatus && matchesPayment;
-  });
+    return sales.filter(sale => {
+      const matchesSearch = 
+        sale.sale_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.customers?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.customers?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === "all" || sale.sale_status === statusFilter;
+      const matchesPayment = paymentFilter === "all" || sale.payment_status === paymentFilter;
+      
+      return matchesSearch && matchesStatus && matchesPayment;
+    });
+  }, [sales, searchTerm, statusFilter, paymentFilter]);
 
-  // Calcular estatísticas
-  const totalSales = sales?.length || 0;
-  const totalRevenue = sales?.reduce((sum, sale) => sum + Number(sale.total_value), 0) || 0;
-  const totalPaid = sales?.reduce((sum, sale) => sum + Number(sale.paid_amount), 0) || 0;
-  const pendingSales = sales?.filter(sale => sale.sale_status === 'pending').length || 0;
+  // Memoizar estatísticas
+  const stats = useMemo(() => {
+    if (!sales) return { totalSales: 0, totalRevenue: 0, totalPaid: 0, pendingSales: 0 };
+    
+    return {
+      totalSales: sales.length,
+      totalRevenue: sales.reduce((sum, sale) => sum + Number(sale.total_value), 0),
+      totalPaid: sales.reduce((sum, sale) => sum + Number(sale.paid_amount), 0),
+      pendingSales: sales.filter(sale => sale.sale_status === 'pending').length
+    };
+  }, [sales]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -95,13 +105,27 @@ const AdminVendas = () => {
     }
   };
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
+        </div>
+        <div className="text-center py-8 text-red-400">
+          Erro ao carregar vendas: {error.message}
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-400 flex items-center justify-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
           Carregando vendas...
         </div>
       </div>
@@ -133,9 +157,9 @@ const AdminVendas = () => {
             <FileText className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalSales}</div>
+            <div className="text-2xl font-bold text-white">{stats.totalSales}</div>
             <p className="text-xs text-gray-400">
-              {pendingSales} pendentes
+              {stats.pendingSales} pendentes
             </p>
           </CardContent>
         </Card>
@@ -146,7 +170,7 @@ const AdminVendas = () => {
             <TrendingUp className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-senvia-500">€{totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-senvia-500">€{stats.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-gray-400">
               valor total de vendas
             </p>
@@ -159,7 +183,7 @@ const AdminVendas = () => {
             <DollarSign className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">€{totalPaid.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-green-500">€{stats.totalPaid.toFixed(2)}</div>
             <p className="text-xs text-gray-400">
               pagamentos recebidos
             </p>
@@ -172,7 +196,7 @@ const AdminVendas = () => {
             <Users className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-500">€{(totalRevenue - totalPaid).toFixed(2)}</div>
+            <div className="text-2xl font-bold text-yellow-500">€{(stats.totalRevenue - stats.totalPaid).toFixed(2)}</div>
             <p className="text-xs text-gray-400">
               a receber
             </p>
@@ -240,7 +264,7 @@ const AdminVendas = () => {
 
       {/* Lista de Vendas */}
       <div className="grid grid-cols-1 gap-4">
-        {filteredSales?.map((sale) => (
+        {filteredSales.map((sale) => (
           <Card key={sale.id} className="bg-gray-800 border-gray-700">
             <CardContent className="p-4">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -332,7 +356,7 @@ const AdminVendas = () => {
       </div>
 
       {/* Empty State */}
-      {(!filteredSales || filteredSales.length === 0) && (
+      {(!filteredSales || filteredSales.length === 0) && !isLoading && (
         <Card className="bg-gray-800 border-gray-700">
           <CardContent className="text-center py-12">
             <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />

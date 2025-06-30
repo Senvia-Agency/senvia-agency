@@ -1016,7 +1016,22 @@ export type Database = {
           total_value?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "unified_leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       senvia_assistant_subscriptions: {
         Row: {

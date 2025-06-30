@@ -44,16 +44,17 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
       <PopoverContent className="w-[400px] p-0 bg-gray-800 border-gray-700 z-[60]">
         <Command className="bg-gray-800">
           <CommandInput 
-            placeholder="Buscar cliente..." 
-            className="text-white bg-gray-800 border-gray-600" 
+            placeholder="Digite para buscar cliente..." 
+            className="text-white bg-gray-800 border-none h-9" 
           />
-          <CommandList className="bg-gray-800">
-            <CommandEmpty className="text-gray-400 py-6 text-center">
+          <CommandList className="bg-gray-800 max-h-[200px]">
+            <CommandEmpty className="text-gray-400 py-6 text-center text-sm">
               Nenhum cliente encontrado.
             </CommandEmpty>
             <CommandGroup className="bg-gray-800">
               <CommandItem
-                value="none"
+                key="none"
+                value="venda direta sem cliente"
                 onSelect={() => {
                   onChange("none");
                   setOpen(false);

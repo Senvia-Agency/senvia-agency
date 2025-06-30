@@ -38,89 +38,92 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 my-4">
-        <DialogHeader className="sticky top-0 bg-gray-800 z-10 pb-4 border-b border-gray-700">
+      <DialogContent className="max-w-3xl max-h-[85vh] bg-gray-800 border-gray-700 my-4 flex flex-col">
+        <DialogHeader className="flex-shrink-0 pb-4 border-b border-gray-700">
           <DialogTitle className="text-white">Nova Venda</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          <CustomerSearchField
-            value={formData.customer_id}
-            onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
-            onNewCustomerCreated={handleNewCustomerCreated}
-          />
+        <div className="flex-1 overflow-y-auto px-1">
+          <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+            <CustomerSearchField
+              value={formData.customer_id}
+              onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
+              onNewCustomerCreated={handleNewCustomerCreated}
+            />
 
-          {/* Mostrar cliente selecionado se for novo */}
-          {formData.customer_id.startsWith('temp_') && (
-            <div className="bg-gray-700 p-3 rounded border border-senvia-500">
-              <p className="text-sm text-senvia-400">
-                ✓ Novo cliente: {selectedCustomerName}
-              </p>
-              <p className="text-xs text-gray-400">
-                Este cliente será criado quando a venda for salva.
-              </p>
-            </div>
-          )}
+            {/* Mostrar cliente selecionado se for novo */}
+            {formData.customer_id.startsWith('temp_') && (
+              <div className="bg-gray-700 p-3 rounded border border-senvia-500">
+                <p className="text-sm text-senvia-400">
+                  ✓ Novo cliente: {selectedCustomerName}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Este cliente será criado quando a venda for salva.
+                </p>
+              </div>
+            )}
 
-          <ServiceTypeField
-            value={formData.service_type}
-            onChange={handleServiceTypeChange}
-          />
+            <ServiceTypeField
+              value={formData.service_type}
+              onChange={handleServiceTypeChange}
+            />
 
-          <ServiceSearchField
-            serviceType={formData.service_type}
-            serviceId={formData.service_id}
-            onServiceSelect={handleServiceSelect}
-          />
+            <ServiceSearchField
+              serviceType={formData.service_type}
+              serviceId={formData.service_id}
+              onServiceSelect={handleServiceSelect}
+            />
 
-          <BasicServiceFields
-            serviceName={formData.service_name}
-            serviceDescription={formData.service_description}
-            onServiceNameChange={(value) => setFormData(prev => ({ ...prev, service_name: value }))}
-            onServiceDescriptionChange={(value) => setFormData(prev => ({ ...prev, service_description: value }))}
-          />
+            <BasicServiceFields
+              serviceName={formData.service_name}
+              serviceDescription={formData.service_description}
+              onServiceNameChange={(value) => setFormData(prev => ({ ...prev, service_name: value }))}
+              onServiceDescriptionChange={(value) => setFormData(prev => ({ ...prev, service_description: value }))}
+            />
 
-          <ValueFields
-            totalValue={formData.total_value}
-            paidAmount={formData.paid_amount}
-            onTotalValueChange={(value) => setFormData(prev => ({ ...prev, total_value: value }))}
-            onPaidAmountChange={(value) => setFormData(prev => ({ ...prev, paid_amount: value }))}
-          />
+            <ValueFields
+              totalValue={formData.total_value}
+              paidAmount={formData.paid_amount}
+              onTotalValueChange={(value) => setFormData(prev => ({ ...prev, total_value: value }))}
+              onPaidAmountChange={(value) => setFormData(prev => ({ ...prev, paid_amount: value }))}
+            />
 
-          <StatusFields
-            saleStatus={formData.sale_status}
-            paymentStatus={formData.payment_status}
-            onSaleStatusChange={(value) => setFormData(prev => ({ ...prev, sale_status: value as any }))}
-            onPaymentStatusChange={(value) => setFormData(prev => ({ ...prev, payment_status: value as any }))}
-          />
+            <StatusFields
+              saleStatus={formData.sale_status}
+              paymentStatus={formData.payment_status}
+              onSaleStatusChange={(value) => setFormData(prev => ({ ...prev, sale_status: value as any }))}
+              onPaymentStatusChange={(value) => setFormData(prev => ({ ...prev, payment_status: value as any }))}
+            />
 
-          <AdditionalFields
-            paymentMethod={formData.payment_method}
-            expectedDeliveryDate={formData.expected_delivery_date}
-            notes={formData.notes}
-            onPaymentMethodChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
-            onExpectedDeliveryDateChange={(value) => setFormData(prev => ({ ...prev, expected_delivery_date: value }))}
-            onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
-          />
+            <AdditionalFields
+              paymentMethod={formData.payment_method}
+              expectedDeliveryDate={formData.expected_delivery_date}
+              notes={formData.notes}
+              onPaymentMethodChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
+              onExpectedDeliveryDateChange={(value) => setFormData(prev => ({ ...prev, expected_delivery_date: value }))}
+              onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
+            />
+          </form>
+        </div>
 
-          <div className="flex justify-end gap-2 pt-4 sticky bottom-0 bg-gray-800 border-t border-gray-700 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={createSaleMutation.isPending}
-              className="bg-senvia-500 hover:bg-senvia-400 text-black"
-            >
-              {createSaleMutation.isPending ? 'Criando...' : 'Criar Venda'}
-            </Button>
-          </div>
-        </form>
+        <div className="flex-shrink-0 flex justify-end gap-2 pt-4 border-t border-gray-700 mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={createSaleMutation.isPending}
+            onClick={handleSubmit}
+            className="bg-senvia-500 hover:bg-senvia-400 text-black"
+          >
+            {createSaleMutation.isPending ? 'Criando...' : 'Criar Venda'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

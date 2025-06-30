@@ -84,21 +84,16 @@ const AdminBlog = () => {
     <div className="space-y-4 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight break-words">
-            Gestão de<br className="sm:hidden" /> Blog
-          </h1>
-          <p className="text-gray-400 text-sm md:text-base mt-1 break-words">
-            Gerencie os artigos<br className="sm:hidden" /> do seu blog
-          </p>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Blog</h1>
+          <p className="text-gray-400 text-sm md:text-base mt-1">Gerencie os artigos do seu blog</p>
         </div>
         <Button 
           onClick={handleNewPost}
-          className="bg-senvia-500 hover:bg-senvia-600 w-full sm:w-auto flex-shrink-0 whitespace-nowrap"
+          className="bg-senvia-500 hover:bg-senvia-600 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">Novo Post</span>
-          <span className="sm:hidden">Novo</span>
+          Novo Post
         </Button>
       </div>
 

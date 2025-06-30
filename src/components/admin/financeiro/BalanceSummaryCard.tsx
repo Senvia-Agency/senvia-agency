@@ -2,16 +2,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface BalanceSummaryCardProps {
+  totalRevenue: number;
+  totalExpenses: number;
+  netProfit: number;
+  profitMargin: number;
   selectedPeriod: number;
 }
 
-const BalanceSummaryCard = ({ selectedPeriod }: BalanceSummaryCardProps) => {
-  // Mock data for now - in a real app, this would come from props or API
-  const totalRevenue = 15420.50;
-  const totalExpenses = 8750.25;
-  const netProfit = totalRevenue - totalExpenses;
-  const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
-
+const BalanceSummaryCard = ({
+  totalRevenue,
+  totalExpenses,
+  netProfit,
+  profitMargin,
+  selectedPeriod
+}: BalanceSummaryCardProps) => {
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>

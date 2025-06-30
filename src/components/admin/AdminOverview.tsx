@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +17,8 @@ import { Sparkles, Clock, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminOverview = () => {
   const [dateRange, setDateRange] = useState(30);
@@ -107,12 +108,14 @@ const AdminOverview = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-4 md:space-y-6 max-w-full overflow-hidden">
       {/* Header */}
       <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2 text-slate-100">Dashboard Administrativo</h1>
-        <p className="text-sm md:text-base text-slate-400">
-          Visão geral completa dos negócios da SENVIA
+        <h1 className="text-2xl md:text-3xl font-bold mb-2 text-white leading-tight break-words">
+          Visão Geral<br className="sm:hidden" /> do Sistema
+        </h1>
+        <p className="text-gray-400 text-sm md:text-base break-words">
+          Dashboard principal com<br className="sm:hidden" /> métricas importantes
         </p>
       </div>
 

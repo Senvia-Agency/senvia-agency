@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
-import SyncPaymentsButton from "./SyncPaymentsButton";
 
 const STORAGE_KEY = 'admin-leads-filters';
 const DEFAULT_FILTERS = {
@@ -150,7 +150,7 @@ const AdminLeads = () => {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Gestão de Leads</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Gestão de Leads</h1>
         </div>
         <div className="text-center py-8 text-gray-400">
           Carregando leads...
@@ -162,14 +162,19 @@ const AdminLeads = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Gestão de Leads</h1>
-          <p className="text-gray-400">Gerencie todos os leads da SENVIA</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl md:text-3xl font-bold leading-tight break-words">
+            Gestão de<br className="sm:hidden" /> Leads
+          </h1>
+          <p className="text-gray-400 text-sm md:text-base mt-1 break-words">
+            Gerencie todos os<br className="sm:hidden" /> leads da SENVIA
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <SyncPaymentsButton />
-          <Badge variant="outline" className="text-senvia-500">{filteredLeads?.length || 0} leads</Badge>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Badge variant="outline" className="text-senvia-500 whitespace-nowrap">
+            {filteredLeads?.length || 0} leads
+          </Badge>
         </div>
       </div>
 

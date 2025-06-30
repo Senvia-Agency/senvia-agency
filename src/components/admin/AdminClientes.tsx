@@ -101,7 +101,9 @@ const AdminClientes = () => {
     return (
       <div className="space-y-4 md:space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight break-words">
+            Gestão de<br className="sm:hidden" /> Clientes
+          </h1>
         </div>
         <div className="text-center py-8">
           <p className="text-gray-400">Carregando clientes...</p>
@@ -113,8 +115,12 @@ const AdminClientes = () => {
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
-        <div className="w-full sm:w-auto">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight break-words">
+            Gestão de<br className="sm:hidden" /> Clientes
+          </h1>
+        </div>
+        <div className="w-full sm:w-auto flex-shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input

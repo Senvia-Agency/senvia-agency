@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, Edit3 } from "lucide-react";
@@ -13,19 +13,52 @@ interface ProjectAssigneeFieldProps {
 
 export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: ProjectAssigneeFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { data: adminUsers } = useAdminUsers();
+  const { data: adminUsers, isLoading, error, isSuccess } = useAdminUsers();
+
+  useEffect(() => {
+    console.log('ProjectAssigneeField - Estado da query adminUsers:', {
+      isLoading,
+      isSuccess,
+      error: error?.message,
+      adminUsers,
+      totalUsers: adminUsers?.length || 0
+    });
+    
+    if (adminUsers && adminUsers.length > 0) {
+      console.log('ProjectAssigneeField - Usuários disponíveis para seleção:', 
+        adminUsers.map(u => ({ id: u.user_id, name: u.full_name, email: u.email }))
+      );
+    }
+  }, [adminUsers, isLoading, error, isSuccess]);
 
   const getAssignedUserName = (assignedTo: string) => {
     if (!assignedTo) return 'Não atribuído';
+    
+    console.log('Procurando usuário com ID:', assignedTo);
+    console.log('Lista de usuários disponíveis:', adminUsers?.map(u => ({ user_id: u.user_id, email: u.email, name: u.full_name })));
+    
     const user = adminUsers?.find(u => u.user_id === assignedTo || u.email === assignedTo);
+    console.log('Usuário encontrado:', user);
+    
     return user?.full_name || assignedTo;
   };
 
   const handleAssigneeChange = (newAssignee: string) => {
+    console.log('Alterando responsável para:', newAssignee);
     const finalAssignee = newAssignee === 'unassigned' ? '' : newAssignee;
     onAssigneeUpdate(saleId, finalAssignee);
     setIsEditing(false);
   };
+
+  if (error) {
+    console.error('Erro ao carregar usuários admin:', error);
+    return (
+      <div className="flex items-center gap-2">
+        <User className="h-3 w-3 text-red-400" />
+        <span className="text-xs text-red-400">Erro ao carregar usuários</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -38,7 +71,7 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
             onValueChange={handleAssigneeChange}
           >
             <SelectTrigger className="h-6 text-xs bg-gray-600 border-gray-500 flex-1">
-              <SelectValue placeholder="Selecionar responsável" />
+              <SelectValue placeholder={isLoading ? "Carregando..." : "Selecionar responsável"} />
             </SelectTrigger>
             <SelectContent className="bg-gray-700 border-gray-600">
               <SelectItem value="unassigned">Não atribuído</SelectItem>
@@ -61,13 +94,14 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
       ) : (
         <div className="flex items-center gap-1 flex-1">
           <span className="text-xs text-white flex-1">
-            {getAssignedUserName(assignedTo || '')}
+            {isLoading ? 'Carregando...' : getAssignedUserName(assignedTo || '')}
           </span>
           <Button
             size="sm"
             variant="ghost"
             className="h-6 w-6 p-0"
             onClick={() => setIsEditing(true)}
+            disabled={isLoading}
           >
             <Edit3 className="h-3 w-3" />
           </Button>

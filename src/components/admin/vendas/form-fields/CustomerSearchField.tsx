@@ -11,7 +11,10 @@ interface CustomerSearchFieldProps {
 }
 
 const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: CustomerSearchFieldProps) => {
-  const { data: customers } = useCustomers();
+  const { data: customers, isLoading, error } = useCustomers();
+
+  console.log('CustomerSearchField - customers:', customers);
+  console.log('CustomerSearchField - value:', value);
 
   return (
     <div className="space-y-2">
@@ -27,6 +30,14 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
           onCustomerCreated={onNewCustomerCreated || (() => {})}
         />
       </div>
+      
+      {isLoading && (
+        <p className="text-sm text-gray-400">Carregando clientes...</p>
+      )}
+      
+      {error && (
+        <p className="text-sm text-red-400">Erro ao carregar clientes</p>
+      )}
     </div>
   );
 };

@@ -45,9 +45,9 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
         <Command className="bg-gray-800">
           <CommandInput 
             placeholder="Digite para buscar cliente..." 
-            className="text-white bg-gray-800 border-none h-9" 
+            className="text-white bg-gray-800 border-none h-9"
           />
-          <CommandList className="bg-gray-800 max-h-[200px]">
+          <CommandList className="bg-gray-800 max-h-[200px] overflow-y-auto">
             <CommandEmpty className="text-gray-400 py-6 text-center text-sm">
               Nenhum cliente encontrado.
             </CommandEmpty>
@@ -59,7 +59,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
                   onChange("none");
                   setOpen(false);
                 }}
-                className="text-white hover:bg-gray-700 cursor-pointer"
+                className="text-white hover:bg-gray-700 cursor-pointer data-[selected=true]:bg-gray-700"
               >
                 <Check
                   className={cn(
@@ -77,7 +77,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
                     onChange(customer.id);
                     setOpen(false);
                   }}
-                  className="text-white hover:bg-gray-700 cursor-pointer"
+                  className="text-white hover:bg-gray-700 cursor-pointer data-[selected=true]:bg-gray-700"
                 >
                   <Check
                     className={cn(

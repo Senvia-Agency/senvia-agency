@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp } from "lucide-react";
@@ -11,9 +10,10 @@ interface ReceivablesEvolutionChartProps {
 }
 
 const ReceivablesEvolutionChart = ({ accounts }: ReceivablesEvolutionChartProps) => {
-  // Agrupar dados por mês para o gráfico de evolução
+  // Agrupar dados por mês para o gráfico de evolução (usando due_date quando disponível)
   const monthlyData = accounts.reduce((acc, account) => {
-    const month = format(new Date(account.sale_date), 'MMM/yyyy', { locale: ptBR });
+    const dateToUse = account.due_date || account.sale_date;
+    const month = format(new Date(dateToUse), 'MMM/yyyy', { locale: ptBR });
     
     if (!acc[month]) {
       acc[month] = {

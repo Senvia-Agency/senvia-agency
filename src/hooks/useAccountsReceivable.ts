@@ -1,6 +1,6 @@
-
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export interface AccountReceivable {
   id: string;
@@ -11,6 +11,7 @@ export interface AccountReceivable {
   paid_amount: number;
   remaining_amount: number;
   expected_delivery_date?: string;
+  due_date?: string; // Data de vencimento/cobrança
   sale_date: string;
   payment_status: string;
   sale_status: string;
@@ -47,10 +48,11 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
         const customerName = sale.customers?.full_name || sale.unified_leads?.full_name || 'Cliente Direto';
         const customerEmail = sale.customers?.email || sale.unified_leads?.email || '';
         
-        // Calcular dias em atraso baseado na data esperada de entrega
-        const expectedDate = sale.expected_delivery_date ? new Date(sale.expected_delivery_date) : new Date(sale.sale_date);
+        // Data de vencimento: usa expected_delivery_date ou sale_date como padrão
+        const dueDate = sale.expected_delivery_date || sale.sale_date;
+        const dueDateObj = new Date(dueDate);
         const today = new Date();
-        const timeDiff = today.getTime() - expectedDate.getTime();
+        const timeDiff = today.getTime() - dueDateObj.getTime();
         const daysOverdue = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
 
         return {
@@ -62,6 +64,7 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
           paid_amount: Number(sale.paid_amount),
           remaining_amount: Number(sale.remaining_amount || (sale.total_value - sale.paid_amount)),
           expected_delivery_date: sale.expected_delivery_date,
+          due_date: dueDate,
           sale_date: sale.sale_date,
           payment_status: sale.payment_status,
           sale_status: sale.sale_status,
@@ -74,6 +77,47 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
       return accountsReceivable;
     },
     refetchInterval: 30000,
+  });
+};
+
+export const useUpdateDueDate = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ saleId, newDueDate }: { saleId: string; newDueDate: string }) => {
+      console.log('Atualizando data de vencimento:', saleId, newDueDate);
+      
+      const { data, error } = await supabase
+        .from('sales')
+        .update({ expected_delivery_date: newDueDate })
+        .eq('id', saleId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erro ao atualizar data de vencimento:', error);
+        throw error;
+      }
+      
+      console.log('Data de vencimento atualizada:', data);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
+      toast({
+        title: "Data atualizada",
+        description: "Data de vencimento atualizada com sucesso."
+      });
+    },
+    onError: (error: any) => {
+      console.error('Erro na atualização da data:', error);
+      toast({
+        title: "Erro ao atualizar",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   });
 };
 

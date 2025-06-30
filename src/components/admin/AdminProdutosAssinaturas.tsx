@@ -1,10 +1,7 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCw } from "lucide-react";
 import ProductStatsCards from "./produtos/ProductStatsCards";
 import ProductCatalog from "./produtos/ProductCatalog";
 import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
@@ -125,20 +122,6 @@ const AdminProdutosAssinaturas = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-slate-100 whitespace-nowrap">Produtos & Assinaturas</h1>
           <p className="text-slate-400 text-sm sm:text-base">Gerencie produtos do Stripe e acompanhe assinaturas</p>
-        </div>
-        <div className="flex gap-2">
-          <Button 
-            onClick={syncWithStripe}
-            disabled={isLoading}
-            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-medium text-sm sm:text-base whitespace-nowrap"
-          >
-            {isLoading ? (
-              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
-            )}
-            Sincronizar Stripe
-          </Button>
         </div>
       </div>
 

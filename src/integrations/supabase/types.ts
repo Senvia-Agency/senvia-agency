@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activity_history: {
+        Row: {
+          activity_type: string
+          contact_method: string | null
+          contact_person: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          activity_type: string
+          contact_method?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          activity_type?: string
+          contact_method?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_settings: {
         Row: {
           admin_user_id: string
@@ -475,6 +520,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entity_contacts: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          contact_email: string | null
+          contact_person: string
+          contact_phone: string | null
+          contact_role: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          is_primary: boolean | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          contact_email?: string | null
+          contact_person: string
+          contact_phone?: string | null
+          contact_role?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          contact_email?: string | null
+          contact_person?: string
+          contact_phone?: string | null
+          contact_role?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       financial_movements: {
         Row: {

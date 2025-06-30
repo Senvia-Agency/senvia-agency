@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ActivityHistorySection from "./shared/ActivityHistorySection";
 import { useCreateActivity } from "@/hooks/useActivityHistory";
+import CustomerProjectsSection from "./clients/CustomerProjectsSection";
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -116,8 +116,9 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
         </DialogHeader>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-700">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-700">
             <TabsTrigger value="details" className="data-[state=active]:bg-senvia-500">Detalhes</TabsTrigger>
+            <TabsTrigger value="projects" className="data-[state=active]:bg-senvia-500">Projetos</TabsTrigger>
             <TabsTrigger value="activity" className="data-[state=active]:bg-senvia-500">Histórico</TabsTrigger>
           </TabsList>
 
@@ -262,6 +263,10 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
                 </Button>
               </div>
             </form>
+          </TabsContent>
+
+          <TabsContent value="projects" className="mt-6">
+            <CustomerProjectsSection customerId={client.id} />
           </TabsContent>
 
           <TabsContent value="activity" className="mt-6">

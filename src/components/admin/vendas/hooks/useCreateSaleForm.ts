@@ -47,6 +47,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
   // Mutation para criar novo cliente
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: any) => {
+      console.log('Creating customer in database:', customerData);
       const { data, error } = await supabase
         .from('customers')
         .insert([{
@@ -58,7 +59,11 @@ export const useCreateSaleForm = (onClose: () => void) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating customer:', error);
+        throw error;
+      }
+      console.log('Customer created successfully:', data);
       return data;
     },
     onSuccess: () => {
@@ -85,7 +90,12 @@ export const useCreateSaleForm = (onClose: () => void) => {
   };
 
   const handleNewCustomerCreated = (newCustomer: any) => {
-    setTempCustomers(prev => [...prev, newCustomer]);
+    console.log('useCreateSaleForm - Adding new temporary customer:', newCustomer);
+    setTempCustomers(prev => {
+      const updated = [...prev, newCustomer];
+      console.log('useCreateSaleForm - Updated tempCustomers:', updated);
+      return updated;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,8 +106,10 @@ export const useCreateSaleForm = (onClose: () => void) => {
 
       // Se é um cliente temporário, criar no banco primeiro
       if (finalCustomerId.startsWith('temp_')) {
+        console.log('Processing temporary customer:', finalCustomerId);
         const tempCustomer = tempCustomers.find(c => c.id === finalCustomerId);
         if (tempCustomer) {
+          console.log('Found temporary customer, creating in database:', tempCustomer);
           const createdCustomer = await createCustomerMutation.mutateAsync(tempCustomer);
           finalCustomerId = createdCustomer.id;
           
@@ -108,6 +120,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
         }
       }
       
+      console.log('Creating sale with final customer ID:', finalCustomerId);
       await createSaleMutation.mutateAsync({
         customer_id: finalCustomerId === 'none' ? undefined : finalCustomerId || undefined,
         service_type: formData.service_type,
@@ -144,11 +157,13 @@ export const useCreateSaleForm = (onClose: () => void) => {
   };
 
   const handleServiceSelect = (serviceId: string) => {
+    console.log('Service selected:', serviceId);
     setFormData(prev => ({ ...prev, service_id: serviceId }));
     
     if (formData.service_type === 'custom_service') {
       const service = customServices?.find(s => s.id === serviceId);
       if (service) {
+        console.log('Found custom service:', service);
         setFormData(prev => ({
           ...prev,
           service_name: service.name,
@@ -159,6 +174,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
     } else if (formData.service_type === 'stripe_product') {
       const product = stripeProducts?.find(p => p.id === serviceId);
       if (product) {
+        console.log('Found stripe product:', product);
         setFormData(prev => ({
           ...prev,
           service_name: product.name,

@@ -1,13 +1,12 @@
 
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { useCustomServices } from "@/hooks/useCustomServices";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ServiceSearchFieldProps {
@@ -18,6 +17,10 @@ interface ServiceSearchFieldProps {
 
 const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: ServiceSearchFieldProps) => {
   const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
   const { data: customServices } = useCustomServices();
   
   const { data: stripeProducts } = useQuery({
@@ -46,52 +49,118 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
       : selectedService.name
     ) : '';
 
+  // Filter services based on search term
+  const filteredServices = services.filter(service => 
+    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Focus input when dropdown opens
+  useEffect(() => {
+    if (open && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [open]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setSearchTerm("");
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
+  const handleSelect = (selectedServiceId: string) => {
+    console.log('Selecting service:', selectedServiceId);
+    onServiceSelect(selectedServiceId);
+    setOpen(false);
+    setSearchTerm("");
+  };
+
+  const handleToggle = () => {
+    setOpen(!open);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="space-y-2">
       <Label className="text-gray-300">
         {serviceType === 'custom_service' ? 'Serviço Personalizado' : 'Produto do Stripe'}
       </Label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full justify-between bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-          >
-            {selectedServiceName || "Buscar serviço..."}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0 bg-gray-800 border-gray-700">
-          <Command className="bg-gray-800">
-            <CommandInput 
-              placeholder="Buscar serviço..." 
-              className="text-white bg-gray-800 border-gray-600" 
-            />
-            <CommandList className="bg-gray-800">
-              <CommandEmpty className="text-gray-400 py-6 text-center">
-                Nenhum serviço encontrado.
-              </CommandEmpty>
-              <CommandGroup className="bg-gray-800">
-                {services.map((service) => (
-                  <CommandItem
+      
+      <div className="relative w-full" ref={dropdownRef}>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+          onClick={handleToggle}
+        >
+          {selectedServiceName || "Buscar serviço..."}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+
+        {open && (
+          <div className="absolute top-full left-0 right-0 z-[9999] mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg">
+            {/* Search Input */}
+            <div className="p-3 border-b border-gray-700">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Digite para buscar serviço..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-senvia-500 focus:border-senvia-500"
+                  autoFocus
+                />
+              </div>
+            </div>
+            
+            {/* Services List */}
+            <div className="max-h-[200px] overflow-y-auto">
+              {filteredServices.length === 0 && searchTerm ? (
+                <div className="px-3 py-4 text-gray-400 text-center text-sm">
+                  Nenhum serviço encontrado para "{searchTerm}".
+                </div>
+              ) : (
+                filteredServices.map((service) => (
+                  <div
                     key={service.id}
-                    value={`${service.name} ${service.description || ''}`}
-                    onSelect={() => {
-                      onServiceSelect(service.id);
-                      setOpen(false);
+                    className={cn(
+                      "flex items-start px-3 py-3 cursor-pointer hover:bg-gray-700 text-white transition-colors border-b border-gray-700 last:border-b-0",
+                      serviceId === service.id && "bg-gray-700"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(service.id);
                     }}
-                    className="text-white hover:bg-gray-700 cursor-pointer"
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
+                        "mr-3 h-4 w-4 text-senvia-500 mt-0.5 flex-shrink-0",
                         serviceId === service.id ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    <div className="flex flex-col">
-                      <span className="font-medium">{service.name}</span>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="font-medium text-white">{service.name}</span>
                       {serviceType === 'custom_service' && (
                         <span className="text-sm text-senvia-400">€{service.base_price}</span>
                       )}
@@ -99,13 +168,19 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
                         <span className="text-xs text-gray-500">{service.description}</span>
                       )}
                     </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+                  </div>
+                ))
+              )}
+              
+              {services.length === 0 && (
+                <div className="px-3 py-4 text-gray-400 text-center text-sm">
+                  Nenhum {serviceType === 'custom_service' ? 'serviço personalizado' : 'produto'} disponível.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

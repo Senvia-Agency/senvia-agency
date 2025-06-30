@@ -1,19 +1,14 @@
+
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Euro, Package, Clock, Edit3, User, Users } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useUpdateSale } from "@/hooks/useSales";
+import { ProjectCard } from "./components/ProjectCard";
+import { AdminUsersDebugInfo } from "./components/AdminUsersDebugInfo";
 
 type SaleStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-type PaymentStatus = 'pending' | 'partial' | 'paid' | 'overdue';
 
 interface Sale {
   id: string;
@@ -23,7 +18,7 @@ interface Sale {
   total_value: number;
   paid_amount: number;
   sale_status: SaleStatus;
-  payment_status: PaymentStatus;
+  payment_status: 'pending' | 'partial' | 'paid' | 'overdue';
   sale_date: string;
   expected_delivery_date?: string;
   delivered_at?: string;
@@ -38,8 +33,6 @@ interface CustomerProjectsSectionProps {
 const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingStatus, setEditingStatus] = useState<string | null>(null);
-  const [editingAssignee, setEditingAssignee] = useState<string | null>(null);
   const { toast } = useToast();
   const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError } = useAdminUsers();
   const updateSale = useUpdateSale();
@@ -92,8 +85,6 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
       setSales(prev => prev.map(sale => 
         sale.id === saleId ? { ...sale, sale_status: newStatus } : sale
       ));
-
-      setEditingStatus(null);
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }
@@ -111,8 +102,6 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
       setSales(prev => prev.map(sale => 
         sale.id === saleId ? { ...sale, assigned_to: newAssignee } : sale
       ));
-
-      setEditingAssignee(null);
       
       toast({
         title: "Responsável atualizado",
@@ -126,67 +115,6 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
         variant: "destructive"
       });
     }
-  };
-
-  const getStatusColor = (status: SaleStatus) => {
-    const colorMap: { [key in SaleStatus]: string } = {
-      'pending': 'bg-yellow-500',
-      'confirmed': 'bg-blue-500',
-      'in_progress': 'bg-orange-500',
-      'completed': 'bg-green-500',
-      'cancelled': 'bg-red-500'
-    };
-    return colorMap[status];
-  };
-
-  const getStatusLabel = (status: SaleStatus) => {
-    const statusMap: { [key in SaleStatus]: string } = {
-      'pending': 'Pendente',
-      'confirmed': 'Confirmado',
-      'in_progress': 'Em Progresso',
-      'completed': 'Concluído',
-      'cancelled': 'Cancelado'
-    };
-    return statusMap[status];
-  };
-
-  const getPaymentStatusColor = (status: PaymentStatus) => {
-    const colorMap: { [key in PaymentStatus]: string } = {
-      'pending': 'bg-yellow-500',
-      'partial': 'bg-orange-500',
-      'paid': 'bg-green-500',
-      'overdue': 'bg-red-500'
-    };
-    return colorMap[status];
-  };
-
-  const getPaymentStatusLabel = (status: PaymentStatus) => {
-    const statusMap: { [key in PaymentStatus]: string } = {
-      'pending': 'Pendente',
-      'partial': 'Parcial', 
-      'paid': 'Pago',
-      'overdue': 'Em Atraso'
-    };
-    return statusMap[status];
-  };
-
-  const calculateProgress = (sale: Sale) => {
-    if (sale.sale_status === 'completed') return 100;
-    if (sale.sale_status === 'cancelled') return 0;
-    if (sale.sale_status === 'in_progress') return 50;
-    if (sale.sale_status === 'confirmed') return 25;
-    return 10; // pending
-  };
-
-  const calculatePaymentProgress = (sale: Sale) => {
-    if (sale.total_value === 0) return 0;
-    return Math.round((sale.paid_amount / sale.total_value) * 100);
-  };
-
-  const getAssignedUserName = (assignedTo: string) => {
-    if (!assignedTo) return 'Não atribuído';
-    const user = adminUsers?.find(u => u.user_id === assignedTo || u.email === assignedTo);
-    return user?.full_name || assignedTo;
   };
 
   if (loading) {
@@ -209,200 +137,19 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   return (
     <div className="space-y-3">
-      {/* Debug info */}
-      {adminUsersLoading && (
-        <div className="text-xs text-yellow-400 mb-2">
-          Carregando usuários admin...
-        </div>
-      )}
-      {adminUsersError && (
-        <div className="text-xs text-red-400 mb-2">
-          Erro ao carregar usuários admin: {adminUsersError.message}
-        </div>
-      )}
-      {adminUsers && (
-        <div className="text-xs text-green-400 mb-2">
-          {adminUsers.length} usuários admin encontrados
-        </div>
-      )}
+      <AdminUsersDebugInfo 
+        adminUsers={adminUsers}
+        adminUsersLoading={adminUsersLoading}
+        adminUsersError={adminUsersError}
+      />
 
       {sales.map((sale) => (
-        <Card key={sale.id} className="bg-gray-700 border-gray-600">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <div className="flex-1 min-w-0">
-                <CardTitle className="text-white text-base truncate">{sale.service_name}</CardTitle>
-                <p className="text-xs text-gray-400 mt-1">#{sale.sale_number}</p>
-              </div>
-              <div className="flex gap-1 ml-2">
-                <div className="flex items-center gap-1">
-                  {editingStatus === sale.id ? (
-                    <div className="flex items-center gap-1">
-                      <Select
-                        value={sale.sale_status}
-                        onValueChange={(value: SaleStatus) => updateSaleStatus(sale.id, value)}
-                      >
-                        <SelectTrigger className="w-28 h-6 text-xs bg-gray-600 border-gray-500">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="pending">Pendente</SelectItem>
-                          <SelectItem value="confirmed">Confirmado</SelectItem>
-                          <SelectItem value="in_progress">Em Progresso</SelectItem>
-                          <SelectItem value="completed">Concluído</SelectItem>
-                          <SelectItem value="cancelled">Cancelado</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                        onClick={() => setEditingStatus(null)}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <Badge className={`${getStatusColor(sale.sale_status)} text-white text-xs px-2 py-1`}>
-                        {getStatusLabel(sale.sale_status)}
-                      </Badge>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 ml-1"
-                        onClick={() => setEditingStatus(sale.id)}
-                      >
-                        <Edit3 className="h-3 w-3" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-3 pt-0">
-            {/* Responsável do Projeto */}
-            <div className="flex items-center gap-2">
-              <User className="h-3 w-3 text-gray-400" />
-              <span className="text-xs text-gray-400">Responsável:</span>
-              {editingAssignee === sale.id ? (
-                <div className="flex items-center gap-1 flex-1">
-                  <Select
-                    value={sale.assigned_to || 'unassigned'}
-                    onValueChange={(value) => updateSaleAssignee(sale.id, value === 'unassigned' ? '' : value)}
-                  >
-                    <SelectTrigger className="h-6 text-xs bg-gray-600 border-gray-500 flex-1">
-                      <SelectValue placeholder="Selecionar responsável" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="unassigned">Não atribuído</SelectItem>
-                      {adminUsers?.map((user) => {
-                        console.log('Renderizando usuário admin:', user);
-                        return (
-                          <SelectItem key={user.user_id} value={user.user_id}>
-                            {user.full_name} ({user.email})
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 w-6 p-0"
-                    onClick={() => setEditingAssignee(null)}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 flex-1">
-                  <span className="text-xs text-white flex-1">
-                    {getAssignedUserName(sale.assigned_to || '')}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 w-6 p-0"
-                    onClick={() => setEditingAssignee(sale.id)}
-                  >
-                    <Edit3 className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Progresso compacto */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-300">Projeto</span>
-                  <span className="text-xs text-gray-300">{calculateProgress(sale)}%</span>
-                </div>
-                <Progress value={calculateProgress(sale)} className="h-1.5" />
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-gray-300">Pagamento</span>
-                  <span className="text-xs text-gray-300">{calculatePaymentProgress(sale)}%</span>
-                </div>
-                <Progress value={calculatePaymentProgress(sale)} className="h-1.5" />
-              </div>
-            </div>
-
-            {/* Informações compactas */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="flex items-center gap-1">
-                <Euro className="h-3 w-3 text-gray-400" />
-                <div>
-                  <span className="text-gray-400">Total: </span>
-                  <span className="text-white font-medium">€{Number(sale.total_value).toFixed(2)}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <Euro className="h-3 w-3 text-green-400" />
-                <div>
-                  <span className="text-gray-400">Pago: </span>
-                  <span className="text-green-400 font-medium">€{Number(sale.paid_amount).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Datas compactas */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3 text-blue-400" />
-                <div>
-                  <span className="text-gray-400">Início: </span>
-                  <span className="text-white">
-                    {format(new Date(sale.sale_date), 'dd/MM/yy', { locale: ptBR })}
-                  </span>
-                </div>
-              </div>
-              
-              {sale.expected_delivery_date && (
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-orange-400" />
-                  <div>
-                    <span className="text-gray-400">Entrega: </span>
-                    <span className="text-white">
-                      {format(new Date(sale.expected_delivery_date), 'dd/MM/yy', { locale: ptBR })}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Status de pagamento */}
-            <div className="flex justify-end">
-              <Badge className={`${getPaymentStatusColor(sale.payment_status)} text-white text-xs px-2 py-1`}>
-                {getPaymentStatusLabel(sale.payment_status)}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <ProjectCard
+          key={sale.id}
+          sale={sale}
+          onStatusUpdate={updateSaleStatus}
+          onAssigneeUpdate={updateSaleAssignee}
+        />
       ))}
     </div>
   );

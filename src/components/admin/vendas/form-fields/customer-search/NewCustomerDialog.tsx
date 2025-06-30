@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewCustomerData {
   full_name: string;
@@ -25,16 +26,32 @@ const NewCustomerDialog = ({ onCustomerCreated }: NewCustomerDialogProps) => {
     phone: '',
     company_name: ''
   });
+  const { toast } = useToast();
 
   const handleCreateCustomer = () => {
+    console.log('Creating new customer with data:', customerData);
+    
     const newCustomer = {
       id: `temp_${Date.now()}`,
       ...customerData
     };
     
+    console.log('New customer object:', newCustomer);
+
+    // Chamar callback para adicionar cliente temporário
     onCustomerCreated(newCustomer);
+    
+    // Mostrar toast de sucesso
+    toast({
+      title: "Cliente temporário criado",
+      description: `Cliente ${customerData.full_name} foi adicionado temporariamente. Será salvo quando a venda for criada.`,
+    });
+
+    // Limpar formulário e fechar modal
     setCustomerData({ full_name: '', email: '', phone: '', company_name: '' });
     setShowDialog(false);
+    
+    console.log('Customer creation completed');
   };
 
   const isFormValid = customerData.full_name.trim() && customerData.email.trim();

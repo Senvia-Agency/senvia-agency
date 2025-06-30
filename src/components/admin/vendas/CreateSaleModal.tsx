@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
@@ -27,13 +26,14 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
     createSaleMutation
   } = useCreateSaleForm(onClose);
 
-  // Combinar clientes reais com temporários para exibição
-  const allCustomers = tempCustomers;
+  console.log('CreateSaleModal - tempCustomers:', tempCustomers);
+  console.log('CreateSaleModal - formData.customer_id:', formData.customer_id);
 
-  // Encontrar o cliente selecionado (temporário)
+  // Encontrar o cliente selecionado (incluindo temporários)
+  const allCustomers = tempCustomers;
   const selectedCustomer = allCustomers.find(c => c.id === formData.customer_id);
   const selectedCustomerName = selectedCustomer ? 
-    `${selectedCustomer.full_name} - ${selectedCustomer.email} (Novo)` : 
+    `${selectedCustomer.full_name} - ${selectedCustomer.email}${selectedCustomer.id.startsWith('temp_') ? ' (Novo)' : ''}` : 
     '';
 
   return (
@@ -49,6 +49,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
               value={formData.customer_id}
               onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
               onNewCustomerCreated={handleNewCustomerCreated}
+              tempCustomers={tempCustomers}
             />
 
             {/* Mostrar cliente selecionado se for novo */}

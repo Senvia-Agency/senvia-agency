@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,7 +64,7 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
   };
 
   // Expose handleSave to parent component
-  React.useEffect(() => {
+  useEffect(() => {
     // Store the save function in a way the parent can access it
     (window as any).saveClientDetails = handleSave;
     

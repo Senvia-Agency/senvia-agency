@@ -1,15 +1,16 @@
-
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Euro, Package, Clock, Edit3, Check, X } from "lucide-react";
+import { Calendar, Euro, Package, Clock, Edit3, User, Users } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { useUpdateSale } from "@/hooks/useSales";
 
 interface Sale {
   id: string;
@@ -24,6 +25,7 @@ interface Sale {
   expected_delivery_date?: string;
   delivered_at?: string;
   created_at: string;
+  assigned_to?: string;
 }
 
 interface CustomerProjectsSectionProps {
@@ -34,7 +36,10 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
+  const [editingAssignee, setEditingAssignee] = useState<string | null>(null);
   const { toast } = useToast();
+  const { data: adminUsers } = useAdminUsers();
+  const updateSale = useUpdateSale();
 
   useEffect(() => {
     const fetchCustomerSales = async () => {
@@ -65,30 +70,35 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   const updateSaleStatus = async (saleId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('sales')
-        .update({ sale_status: newStatus })
-        .eq('id', saleId);
-
-      if (error) throw error;
+      await updateSale.mutateAsync({
+        id: saleId,
+        updates: { sale_status: newStatus }
+      });
 
       setSales(prev => prev.map(sale => 
         sale.id === saleId ? { ...sale, sale_status: newStatus } : sale
       ));
 
-      toast({
-        title: "Status atualizado",
-        description: "O status do projeto foi atualizado com sucesso."
-      });
-
       setEditingStatus(null);
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
-      toast({
-        title: "Erro ao atualizar",
-        description: "Não foi possível atualizar o status do projeto.",
-        variant: "destructive"
+    }
+  };
+
+  const updateSaleAssignee = async (saleId: string, newAssignee: string) => {
+    try {
+      await updateSale.mutateAsync({
+        id: saleId,
+        updates: { assigned_to: newAssignee }
       });
+
+      setSales(prev => prev.map(sale => 
+        sale.id === saleId ? { ...sale, assigned_to: newAssignee } : sale
+      ));
+
+      setEditingAssignee(null);
+    } catch (error) {
+      console.error('Erro ao atualizar responsável:', error);
     }
   };
 
@@ -147,6 +157,12 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
     return Math.round((sale.paid_amount / sale.total_value) * 100);
   };
 
+  const getAssignedUserName = (assignedTo: string) => {
+    if (!assignedTo) return 'Não atribuído';
+    const user = adminUsers?.find(u => u.user_id === assignedTo || u.email === assignedTo);
+    return user?.full_name || assignedTo;
+  };
+
   if (loading) {
     return (
       <div className="text-center py-4">
@@ -200,7 +216,7 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
                         className="h-6 w-6 p-0"
                         onClick={() => setEditingStatus(null)}
                       >
-                        <X className="h-3 w-3" />
+                        ×
                       </Button>
                     </div>
                   ) : (
@@ -224,6 +240,54 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
           </CardHeader>
           
           <CardContent className="space-y-3 pt-0">
+            {/* Responsável do Projeto */}
+            <div className="flex items-center gap-2">
+              <User className="h-3 w-3 text-gray-400" />
+              <span className="text-xs text-gray-400">Responsável:</span>
+              {editingAssignee === sale.id ? (
+                <div className="flex items-center gap-1 flex-1">
+                  <Select
+                    value={sale.assigned_to || ''}
+                    onValueChange={(value) => updateSaleAssignee(sale.id, value)}
+                  >
+                    <SelectTrigger className="h-6 text-xs bg-gray-600 border-gray-500 flex-1">
+                      <SelectValue placeholder="Selecionar responsável" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="">Não atribuído</SelectItem>
+                      {adminUsers?.map((user) => (
+                        <SelectItem key={user.user_id} value={user.user_id}>
+                          {user.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={() => setEditingAssignee(null)}
+                  >
+                    ×
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 flex-1">
+                  <span className="text-xs text-white flex-1">
+                    {getAssignedUserName(sale.assigned_to || '')}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0"
+                    onClick={() => setEditingAssignee(sale.id)}
+                  >
+                    <Edit3 className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
+
             {/* Progresso compacto */}
             <div className="grid grid-cols-2 gap-3">
               <div>

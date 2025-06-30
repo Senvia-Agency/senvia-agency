@@ -38,12 +38,12 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700 my-4">
+        <DialogHeader className="sticky top-0 bg-gray-800 z-10 pb-4 border-b border-gray-700">
           <DialogTitle className="text-white">Nova Venda</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <CustomerSearchField
             value={formData.customer_id}
             onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
@@ -103,7 +103,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
             onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
           />
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex justify-end gap-2 pt-4 sticky bottom-0 bg-gray-800 border-t border-gray-700 mt-6">
             <Button
               type="button"
               variant="outline"

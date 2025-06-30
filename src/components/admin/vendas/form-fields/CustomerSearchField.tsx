@@ -50,7 +50,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
   const isFormValid = newCustomerData.full_name.trim() && newCustomerData.email.trim();
 
   return (
-    <div>
+    <div className="relative z-10">
       <Label className="text-gray-300">Cliente (Opcional)</Label>
       <div className="flex gap-2">
         <Popover open={open} onOpenChange={setOpen}>
@@ -66,7 +66,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700">
+          <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700" style={{ zIndex: 50 }}>
             <Command>
               <CommandInput placeholder="Buscar cliente..." className="text-white" />
               <CommandList>
@@ -78,6 +78,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
                       onChange("none");
                       setOpen(false);
                     }}
+                    className="text-white hover:bg-gray-700"
                   >
                     <Check
                       className={cn(
@@ -95,6 +96,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
                         onChange(customer.id);
                         setOpen(false);
                       }}
+                      className="text-white hover:bg-gray-700"
                     >
                       <Check
                         className={cn(
@@ -122,7 +124,7 @@ const CustomerSearchField = ({ value, onChange, onNewCustomerCreated }: Customer
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-gray-800 border-gray-700">
+          <DialogContent className="bg-gray-800 border-gray-700" style={{ zIndex: 60 }}>
             <DialogHeader>
               <DialogTitle className="text-white">Novo Cliente</DialogTitle>
             </DialogHeader>

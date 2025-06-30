@@ -47,7 +47,7 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
     ) : '';
 
   return (
-    <div>
+    <div className="relative z-20">
       <Label className="text-gray-300">
         {serviceType === 'custom_service' ? 'Serviço Personalizado' : 'Produto do Stripe'}
       </Label>
@@ -63,7 +63,7 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700">
+        <PopoverContent className="w-full p-0 bg-gray-800 border-gray-700" style={{ zIndex: 60 }}>
           <Command>
             <CommandInput placeholder="Buscar serviço..." className="text-white" />
             <CommandList>
@@ -77,6 +77,7 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
                       onServiceSelect(service.id);
                       setOpen(false);
                     }}
+                    className="text-white hover:bg-gray-700"
                   >
                     <Check
                       className={cn(

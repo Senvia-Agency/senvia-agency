@@ -11,6 +11,7 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
 
   const landingPageRevenue = revenueMetrics?.landing_page_revenue || 0;
   const assistantRevenue = revenueMetrics?.assistant_revenue || 0;
+  const salesRevenue = revenueMetrics?.sales_revenue || 0;
   const totalRevenue = revenueMetrics?.total_revenue || 0;
 
   return (
@@ -48,6 +49,21 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
             </div>
             <div className="text-xs text-gray-400">
               {revenueMetrics?.active_subscriptions || 0} assinaturas
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm sm:text-base">Módulo de Vendas</div>
+            <div className="text-xs sm:text-sm text-gray-400">Valores recebidos</div>
+          </div>
+          <div className="text-left sm:text-right">
+            <div className="font-bold text-blue-500 text-sm sm:text-base">
+              €{salesRevenue.toFixed(2)}
+            </div>
+            <div className="text-xs text-gray-400">
+              {revenueMetrics?.sales_count || 0} vendas
             </div>
           </div>
         </div>

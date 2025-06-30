@@ -32,20 +32,27 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
+      // Buscar vendas do módulo de vendas
+      const { data: salesData, error: salesError } = await supabase
+        .from('sales')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
       // Buscar movimentos financeiros
       const { data: financialMovements, error: movementsError } = await supabase
         .from('financial_movements')
         .select('*')
         .gte('movement_date', startDate.toISOString().split('T')[0]);
 
-      if (transactionsError || paymentsError || subsError || movementsError) {
+      if (transactionsError || paymentsError || subsError || movementsError || salesError) {
         console.error('Erro ao buscar dados financeiros:', {
           transactionsError,
           paymentsError,
           subsError,
-          movementsError
+          movementsError,
+          salesError
         });
-        throw transactionsError || paymentsError || subsError || movementsError;
+        throw transactionsError || paymentsError || subsError || movementsError || salesError;
       }
 
       // Calcular receitas das transações (já em euros)
@@ -59,6 +66,10 @@ export const useRealFinancialData = (dateRange: number = 30) => {
       // Receitas das assinaturas
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
+
+      // Receitas das vendas do módulo
+      const salesRevenue = (salesData || [])
+        .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
       
       // Receitas dos movimentos financeiros
       const movementsRevenue = (financialMovements || [])
@@ -70,7 +81,7 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         .filter(m => m.movement_type === 'despesa')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
-      const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + movementsRevenue;
+      const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + salesRevenue + movementsRevenue;
       const totalExpenses = movementsExpenses;
       const netProfit = totalRevenue - totalExpenses;
       const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
@@ -79,6 +90,7 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         customerTransactionsRevenue,
         legacyPaymentsRevenue,
         subscriptionsRevenue,
+        salesRevenue,
         movementsRevenue,
         totalRevenue,
         totalExpenses,
@@ -96,6 +108,13 @@ export const useRealFinancialData = (dateRange: number = 30) => {
           count: activeSubscriptions?.length || 0,
           revenue: subscriptionsRevenue,
           subscriptions: activeSubscriptions || []
+        },
+        sales_module: {
+          count: salesData?.length || 0,
+          revenue: salesRevenue,
+          total_value: (salesData || []).reduce((sum, sale) => sum + Number(sale.total_value || 0), 0),
+          pending_amount: (salesData || []).reduce((sum, sale) => sum + Number(sale.total_value || 0) - Number(sale.paid_amount || 0), 0),
+          sales: salesData || []
         },
         financial_movements: {
           revenue: movementsRevenue,

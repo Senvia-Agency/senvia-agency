@@ -32,15 +32,22 @@ export const useAdminRevenue = (dateRange: number) => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      if (transactionsError || paymentsError || subsError) {
-        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError);
-        throw transactionsError || paymentsError || subsError;
+      // Buscar vendas do módulo de vendas
+      const { data: salesData, error: salesError } = await supabase
+        .from('sales')
+        .select('*')
+        .gte('created_at', startDate.toISOString());
+
+      if (transactionsError || paymentsError || subsError || salesError) {
+        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError || salesError);
+        throw transactionsError || paymentsError || subsError || salesError;
       }
 
       console.log('Dados encontrados:', {
         customerTransactions: customerTransactions?.length,
         legacyPayments: legacyPayments?.length,
-        activeSubscriptions: activeSubscriptions?.length
+        activeSubscriptions: activeSubscriptions?.length,
+        salesData: salesData?.length
       });
 
       // Calcular receita das transações de clientes (já em euros)
@@ -54,16 +61,21 @@ export const useAdminRevenue = (dateRange: number) => {
       // Receita das assinaturas do Senvia Assistant
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
+
+      // Receita das vendas do módulo
+      const salesRevenue = (salesData || [])
+        .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
       
       const totalLandingPageRevenue = customerTransactionsRevenue + legacyPaymentsRevenue;
-      const totalRevenue = totalLandingPageRevenue + subscriptionsRevenue;
-      const totalTransactions = (customerTransactions?.length || 0) + (legacyPayments?.length || 0) + (activeSubscriptions?.length || 0);
+      const totalRevenue = totalLandingPageRevenue + subscriptionsRevenue + salesRevenue;
+      const totalTransactions = (customerTransactions?.length || 0) + (legacyPayments?.length || 0) + (activeSubscriptions?.length || 0) + (salesData?.length || 0);
       
       console.log('Cálculo final das receitas:', {
         customerTransactionsRevenue,
         legacyPaymentsRevenue,
         totalLandingPageRevenue,
         subscriptionsRevenue,
+        salesRevenue,
         totalRevenue,
         totalTransactions
       });
@@ -72,9 +84,11 @@ export const useAdminRevenue = (dateRange: number) => {
         total_revenue: totalRevenue,
         landing_page_revenue: totalLandingPageRevenue,
         assistant_revenue: subscriptionsRevenue,
+        sales_revenue: salesRevenue,
         total_transactions: totalTransactions,
         landing_page_sales: (customerTransactions?.length || 0) + (legacyPayments?.length || 0),
-        active_subscriptions: activeSubscriptions?.length || 0
+        active_subscriptions: activeSubscriptions?.length || 0,
+        sales_count: salesData?.length || 0
       };
     },
     refetchInterval: 10000,

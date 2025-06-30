@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { useCreateSale } from "@/hooks/useSales";
 import { useCustomServices } from "@/hooks/useCustomServices";
-import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,13 +22,9 @@ export const useCreateSaleForm = (onClose: () => void) => {
     expected_delivery_date: ''
   });
 
-  const [tempCustomers, setTempCustomers] = useState<any[]>([]);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
   const createSaleMutation = useCreateSale();
   const { data: customServices } = useCustomServices();
-  const convertLeadToCustomerMutation = useConvertLeadToCustomer();
   
   const { data: stripeProducts } = useQuery({
     queryKey: ['stripe-products-for-sale'],
@@ -42,33 +37,6 @@ export const useCreateSaleForm = (onClose: () => void) => {
       if (error) throw error;
       return data;
     },
-  });
-
-  // Mutation para criar novo cliente
-  const createCustomerMutation = useMutation({
-    mutationFn: async (customerData: any) => {
-      console.log('Creating customer in database:', customerData);
-      const { data, error } = await supabase
-        .from('customers')
-        .insert([{
-          full_name: customerData.full_name,
-          email: customerData.email,
-          phone: customerData.phone,
-          company_name: customerData.company_name
-        }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating customer:', error);
-        throw error;
-      }
-      console.log('Customer created successfully:', data);
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-    }
   });
 
   const resetForm = () => {
@@ -86,43 +54,16 @@ export const useCreateSaleForm = (onClose: () => void) => {
       notes: '',
       expected_delivery_date: ''
     });
-    setTempCustomers([]);
-  };
-
-  const handleNewCustomerCreated = (newCustomer: any) => {
-    console.log('useCreateSaleForm - Adding new temporary customer:', newCustomer);
-    setTempCustomers(prev => {
-      const updated = [...prev, newCustomer];
-      console.log('useCreateSaleForm - Updated tempCustomers:', updated);
-      return updated;
-    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      let finalCustomerId = formData.customer_id;
-
-      // Se é um cliente temporário, criar no banco primeiro
-      if (finalCustomerId.startsWith('temp_')) {
-        console.log('Processing temporary customer:', finalCustomerId);
-        const tempCustomer = tempCustomers.find(c => c.id === finalCustomerId);
-        if (tempCustomer) {
-          console.log('Found temporary customer, creating in database:', tempCustomer);
-          const createdCustomer = await createCustomerMutation.mutateAsync(tempCustomer);
-          finalCustomerId = createdCustomer.id;
-          
-          toast({
-            title: "Cliente criado",
-            description: `Cliente ${tempCustomer.full_name} foi criado com sucesso.`
-          });
-        }
-      }
+      console.log('Creating sale with data:', formData);
       
-      console.log('Creating sale with final customer ID:', finalCustomerId);
       await createSaleMutation.mutateAsync({
-        customer_id: finalCustomerId === 'none' ? undefined : finalCustomerId || undefined,
+        customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
         service_type: formData.service_type,
         service_id: formData.service_id || undefined,
         service_name: formData.service_name,
@@ -138,10 +79,20 @@ export const useCreateSaleForm = (onClose: () => void) => {
         commission_rate: 0
       });
       
+      toast({
+        title: "Venda criada",
+        description: "A venda foi criada com sucesso."
+      });
+      
       onClose();
       resetForm();
     } catch (error) {
       console.error('Erro ao criar venda:', error);
+      toast({
+        title: "Erro ao criar venda",
+        description: "Não foi possível criar a venda. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -190,8 +141,6 @@ export const useCreateSaleForm = (onClose: () => void) => {
     handleSubmit,
     handleServiceTypeChange,
     handleServiceSelect,
-    handleNewCustomerCreated,
-    tempCustomers,
     createSaleMutation
   };
 };

@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
@@ -21,20 +22,8 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
     handleSubmit,
     handleServiceTypeChange,
     handleServiceSelect,
-    handleNewCustomerCreated,
-    tempCustomers,
     createSaleMutation
   } = useCreateSaleForm(onClose);
-
-  console.log('CreateSaleModal - tempCustomers:', tempCustomers);
-  console.log('CreateSaleModal - formData.customer_id:', formData.customer_id);
-
-  // Encontrar o cliente selecionado (incluindo temporários)
-  const allCustomers = tempCustomers;
-  const selectedCustomer = allCustomers.find(c => c.id === formData.customer_id);
-  const selectedCustomerName = selectedCustomer ? 
-    `${selectedCustomer.full_name} - ${selectedCustomer.email}${selectedCustomer.id.startsWith('temp_') ? ' (Novo)' : ''}` : 
-    '';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -48,21 +37,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
             <CustomerSearchField
               value={formData.customer_id}
               onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
-              onNewCustomerCreated={handleNewCustomerCreated}
-              tempCustomers={tempCustomers}
             />
-
-            {/* Mostrar cliente selecionado se for novo */}
-            {formData.customer_id.startsWith('temp_') && (
-              <div className="bg-gray-700 p-3 rounded border border-senvia-500">
-                <p className="text-sm text-senvia-400">
-                  ✓ Novo cliente: {selectedCustomerName}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Este cliente será criado quando a venda for salva.
-                </p>
-              </div>
-            )}
 
             <ServiceTypeField
               value={formData.service_type}

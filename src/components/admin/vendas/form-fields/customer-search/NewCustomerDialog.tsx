@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NewCustomerData {
   full_name: string;
@@ -27,31 +29,60 @@ const NewCustomerDialog = ({ onCustomerCreated }: NewCustomerDialogProps) => {
     company_name: ''
   });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Mutation para criar cliente diretamente no banco
+  const createCustomerMutation = useMutation({
+    mutationFn: async (customerData: NewCustomerData) => {
+      console.log('Creating customer directly in database:', customerData);
+      const { data, error } = await supabase
+        .from('customers')
+        .insert([{
+          full_name: customerData.full_name,
+          email: customerData.email,
+          phone: customerData.phone,
+          company_name: customerData.company_name
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating customer:', error);
+        throw error;
+      }
+      console.log('Customer created successfully:', data);
+      return data;
+    },
+    onSuccess: (newCustomer) => {
+      // Invalidar cache dos clientes
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      
+      // Chamar callback com o cliente criado
+      onCustomerCreated(newCustomer);
+      
+      // Mostrar toast de sucesso
+      toast({
+        title: "Cliente criado com sucesso",
+        description: `Cliente ${newCustomer.full_name} foi criado e está disponível para seleção.`,
+      });
+
+      // Limpar formulário e fechar modal
+      setCustomerData({ full_name: '', email: '', phone: '', company_name: '' });
+      setShowDialog(false);
+    },
+    onError: (error) => {
+      console.error('Error creating customer:', error);
+      toast({
+        title: "Erro ao criar cliente",
+        description: "Não foi possível criar o cliente. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  });
 
   const handleCreateCustomer = () => {
     console.log('Creating new customer with data:', customerData);
-    
-    const newCustomer = {
-      id: `temp_${Date.now()}`,
-      ...customerData
-    };
-    
-    console.log('New customer object:', newCustomer);
-
-    // Chamar callback para adicionar cliente temporário
-    onCustomerCreated(newCustomer);
-    
-    // Mostrar toast de sucesso
-    toast({
-      title: "Cliente temporário criado",
-      description: `Cliente ${customerData.full_name} foi adicionado temporariamente. Será salvo quando a venda for criada.`,
-    });
-
-    // Limpar formulário e fechar modal
-    setCustomerData({ full_name: '', email: '', phone: '', company_name: '' });
-    setShowDialog(false);
-    
-    console.log('Customer creation completed');
+    createCustomerMutation.mutate(customerData);
   };
 
   const isFormValid = customerData.full_name.trim() && customerData.email.trim();
@@ -127,10 +158,10 @@ const NewCustomerDialog = ({ onCustomerCreated }: NewCustomerDialogProps) => {
             <Button
               type="button"
               onClick={handleCreateCustomer}
-              disabled={!isFormValid}
+              disabled={!isFormValid || createCustomerMutation.isPending}
               className="bg-senvia-500 hover:bg-senvia-400 text-black"
             >
-              Criar Cliente
+              {createCustomerMutation.isPending ? 'Criando...' : 'Criar Cliente'}
             </Button>
           </div>
         </div>

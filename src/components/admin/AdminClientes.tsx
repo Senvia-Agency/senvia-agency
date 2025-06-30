@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useCustomers } from "@/hooks/useCustomers";
-import { Edit, Search, Eye, Plus } from "lucide-react";
+import { Edit, Search, Eye, Plus, Target, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import EditClientModal from "./EditClientModal";
@@ -219,6 +219,32 @@ const AdminClientes = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* Objetivo e Produto/Serviço */}
+                      {(client.objective || client.main_product_service) && (
+                        <div className="mt-3 p-3 bg-gray-600/50 rounded-lg border border-gray-500">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
+                            {client.objective && (
+                              <div className="flex items-start gap-2">
+                                <Target className="h-4 w-4 text-senvia-500 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <span className="font-medium text-gray-200">Objetivo:</span>
+                                  <p className="mt-1 text-gray-300">{client.objective}</p>
+                                </div>
+                              </div>
+                            )}
+                            {client.main_product_service && (
+                              <div className="flex items-start gap-2">
+                                <Package className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <span className="font-medium text-gray-200">Produto/Serviço:</span>
+                                  <p className="mt-1 text-gray-300">{client.main_product_service}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex justify-end lg:justify-start">
                       <Button

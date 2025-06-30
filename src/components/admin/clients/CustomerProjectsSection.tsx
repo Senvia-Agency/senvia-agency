@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useUpdateSale } from "@/hooks/useSales";
 import { ProjectCard } from "./components/ProjectCard";
-import { AdminUsersDebugInfo } from "./components/AdminUsersDebugInfo";
 
 type SaleStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -34,7 +32,7 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError, refetch: refetchAdminUsers } = useAdminUsers();
+  const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError } = useAdminUsers();
   const updateSale = useUpdateSale();
 
   // Debug dos usuários admin
@@ -137,13 +135,6 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   return (
     <div className="space-y-3">
-      <AdminUsersDebugInfo 
-        adminUsers={adminUsers}
-        adminUsersLoading={adminUsersLoading}
-        adminUsersError={adminUsersError}
-        onRefresh={refetchAdminUsers}
-      />
-
       {sales.map((sale) => (
         <ProjectCard
           key={sale.id}

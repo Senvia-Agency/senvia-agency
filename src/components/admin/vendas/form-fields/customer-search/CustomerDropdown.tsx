@@ -27,6 +27,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
   console.log('CustomerDropdown - customers count:', customers?.length);
   console.log('CustomerDropdown - current value:', value);
   console.log('CustomerDropdown - open state:', open);
+  console.log('CustomerDropdown - search term:', searchTerm);
 
   const selectedCustomer = customers?.find(c => c.id === value);
   const selectedCustomerName = selectedCustomer ? 
@@ -34,11 +35,18 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
     '';
 
   // Filter customers based on search term
-  const filteredCustomers = customers?.filter(customer => 
-    customer.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (customer.company_name && customer.company_name.toLowerCase().includes(searchTerm.toLowerCase()))
-  ) || [];
+  const filteredCustomers = customers?.filter(customer => {
+    if (!searchTerm.trim()) return true; // Show all if no search term
+    
+    const searchLower = searchTerm.toLowerCase().trim();
+    const nameMatch = customer.full_name.toLowerCase().includes(searchLower);
+    const emailMatch = customer.email.toLowerCase().includes(searchLower);
+    const companyMatch = customer.company_name && customer.company_name.toLowerCase().includes(searchLower);
+    
+    return nameMatch || emailMatch || companyMatch;
+  }) || [];
+
+  console.log('CustomerDropdown - filtered customers count:', filteredCustomers.length);
 
   // Focus input when dropdown opens
   useEffect(() => {
@@ -121,7 +129,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
           
           {/* Options List */}
           <div className="max-h-[200px] overflow-y-auto">
-            {/* Direct Sale Option */}
+            {/* Direct Sale Option - sempre visível */}
             <div
               className={cn(
                 "flex items-center px-3 py-2 cursor-pointer hover:bg-gray-700 text-white transition-colors",
@@ -143,7 +151,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
             </div>
             
             {/* Customer List */}
-            {filteredCustomers.length === 0 && searchTerm ? (
+            {filteredCustomers.length === 0 && searchTerm.trim() ? (
               <div className="px-3 py-4 text-gray-400 text-center text-sm">
                 Nenhum cliente encontrado para "{searchTerm}".
               </div>

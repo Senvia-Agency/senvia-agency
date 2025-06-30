@@ -2,11 +2,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard } from "lucide-react";
 
-interface RevenueBreakdownCardProps {
-  financialData: any;
-}
+const RevenueBreakdownCard = () => {
+  // Mock data for now - in a real app, this would come from props or API
+  const financialData = {
+    landing_pages: {
+      revenue: 8420.50,
+      count: 45
+    },
+    senvia_assistant: {
+      revenue: 4200.00,
+      count: 21
+    },
+    financial_movements: {
+      revenue: 2800.00
+    }
+  };
 
-const RevenueBreakdownCard = ({ financialData }: RevenueBreakdownCardProps) => {
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>

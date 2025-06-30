@@ -3,11 +3,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface RecentTransactionsCardProps {
-  financialData: any;
-}
+const RecentTransactionsCard = () => {
+  // Mock data for now - in a real app, this would come from props or API
+  const financialData = {
+    landing_pages: {
+      transactions: [
+        {
+          id: 1,
+          email: "cliente1@exemplo.com",
+          amount: 45000, // in cents
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          email: "cliente2@exemplo.com", 
+          amount: 89900, // in cents
+          created_at: new Date(Date.now() - 86400000).toISOString()
+        }
+      ]
+    },
+    senvia_assistant: {
+      subscriptions: [
+        {
+          id: 1,
+          email: "assinante1@exemplo.com",
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          email: "assinante2@exemplo.com",
+          created_at: new Date(Date.now() - 3600000).toISOString()
+        }
+      ]
+    }
+  };
 
-const RecentTransactionsCard = ({ financialData }: RecentTransactionsCardProps) => {
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>

@@ -5,12 +5,32 @@ import { Plus, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface FinancialMovementsCardProps {
-  movements: any[];
-  onAddMovement: () => void;
-}
+const FinancialMovementsCard = () => {
+  // Mock data for now - in a real app, this would come from props or API
+  const movements = [
+    {
+      id: 1,
+      description: "Pagamento de serviços",
+      category: "marketing_digital",
+      movement_type: "receita",
+      amount: 1250.00,
+      movement_date: new Date().toISOString()
+    },
+    {
+      id: 2,
+      description: "Compra de software",
+      category: "despesas_operacionais",
+      movement_type: "despesa",
+      amount: 299.99,
+      movement_date: new Date(Date.now() - 86400000).toISOString()
+    }
+  ];
 
-const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovementsCardProps) => {
+  const handleAddMovement = () => {
+    // This would open a modal or navigate to add movement page
+    console.log('Add movement clicked');
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -22,7 +42,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovements
           <Button 
             size="sm" 
             className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-semibold shadow-md hover:shadow-lg transition-all"
-            onClick={onAddMovement}
+            onClick={handleAddMovement}
           >
             <Plus className="h-4 w-4 mr-2" />
             Adicionar

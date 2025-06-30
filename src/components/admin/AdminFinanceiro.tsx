@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
 import RevenueBreakdownCard from "./financeiro/RevenueBreakdownCard";
@@ -7,7 +8,7 @@ import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
 import PeriodSelector from "./financeiro/PeriodSelector";
 
 const AdminFinanceiro = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('30');
+  const [selectedPeriod, setSelectedPeriod] = useState(30);
 
   return (
     <div className="space-y-4 md:space-y-6 max-w-full overflow-hidden">
@@ -33,16 +34,16 @@ const AdminFinanceiro = () => {
       <FinancialKPICards selectedPeriod={selectedPeriod} />
 
       {/* Revenue Breakdown Card */}
-      <RevenueBreakdownCard selectedPeriod={selectedPeriod} />
+      <RevenueBreakdownCard />
 
       {/* Balance Summary Card */}
       <BalanceSummaryCard selectedPeriod={selectedPeriod} />
 
       {/* Recent Transactions Card */}
-      <RecentTransactionsCard selectedPeriod={selectedPeriod} />
+      <RecentTransactionsCard />
 
       {/* Financial Movements Card */}
-      <FinancialMovementsCard selectedPeriod={selectedPeriod} />
+      <FinancialMovementsCard />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,8 +20,15 @@ interface LeadDetailModalProps {
 }
 
 const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetailModalProps) => {
-  const [editedLead, setEditedLead] = useState(selectedLead || {});
+  const [editedLead, setEditedLead] = useState({});
   const createActivity = useCreateActivity();
+
+  // Atualizar editedLead sempre que selectedLead mudar
+  useEffect(() => {
+    if (selectedLead) {
+      setEditedLead(selectedLead);
+    }
+  }, [selectedLead]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

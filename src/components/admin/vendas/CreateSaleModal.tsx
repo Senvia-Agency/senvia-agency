@@ -2,14 +2,13 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
-import CustomerSelectField from "./form-fields/CustomerSelectField";
+import CustomerSearchField from "./form-fields/CustomerSearchField";
 import ServiceTypeField from "./form-fields/ServiceTypeField";
-import ServiceSelectionField from "./form-fields/ServiceSelectionField";
+import ServiceSearchField from "./form-fields/ServiceSearchField";
 import BasicServiceFields from "./form-fields/BasicServiceFields";
 import ValueFields from "./form-fields/ValueFields";
 import StatusFields from "./form-fields/StatusFields";
 import AdditionalFields from "./form-fields/AdditionalFields";
-import { useCustomers } from "@/hooks/useCustomers";
 
 interface CreateSaleModalProps {
   isOpen: boolean;
@@ -28,18 +27,13 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
     createSaleMutation
   } = useCreateSaleForm(onClose);
 
-  const { data: customers } = useCustomers();
-
   // Combinar clientes reais com temporários para exibição
-  const allCustomers = [
-    ...(customers || []),
-    ...tempCustomers
-  ];
+  const allCustomers = tempCustomers;
 
-  // Encontrar o cliente selecionado (real ou temporário)
+  // Encontrar o cliente selecionado (temporário)
   const selectedCustomer = allCustomers.find(c => c.id === formData.customer_id);
   const selectedCustomerName = selectedCustomer ? 
-    `${selectedCustomer.full_name} - ${selectedCustomer.email}${selectedCustomer.id.startsWith('temp_') ? ' (Novo)' : ''}` : 
+    `${selectedCustomer.full_name} - ${selectedCustomer.email} (Novo)` : 
     '';
 
   return (
@@ -50,7 +44,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <CustomerSelectField
+          <CustomerSearchField
             value={formData.customer_id}
             onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
             onNewCustomerCreated={handleNewCustomerCreated}
@@ -73,7 +67,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
             onChange={handleServiceTypeChange}
           />
 
-          <ServiceSelectionField
+          <ServiceSearchField
             serviceType={formData.service_type}
             serviceId={formData.service_id}
             onServiceSelect={handleServiceSelect}

@@ -76,7 +76,7 @@ const AdminLeads = () => {
           activity_type: 'status_change',
           title: `Status alterado para ${getStatusLabel(newStatus)}`,
           description: `Status alterado de "${getStatusLabel(oldStatus)}" para "${getStatusLabel(newStatus)}"`,
-          contact_person: user?.email || 'Admin',
+          contact_person: user?.user_metadata?.full_name || user?.email || 'Usuário',
           contact_method: 'sistema'
         });
       }

@@ -1,12 +1,20 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Phone, Calendar as CalendarIcon } from "lucide-react";
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Building, 
+  Globe, 
+  Calendar, 
+  Edit, 
+  CreditCard,
+  Euro
+} from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { getStatusIcon, getStatusColor, getSourceLabel, getStatusLabel } from "../../../utils/leadUtils";
 
 interface LeadCardProps {
   lead: any;
@@ -14,6 +22,7 @@ interface LeadCardProps {
   onLeadClick: (lead: any) => void;
   onStatusEdit: (leadId: string) => void;
   onStatusUpdate: (leadId: string, status: string) => void;
+  onPaymentManage?: (lead: any) => void;
 }
 
 const LeadCard = ({ 
@@ -21,95 +30,180 @@ const LeadCard = ({
   editingStatus, 
   onLeadClick, 
   onStatusEdit, 
-  onStatusUpdate 
+  onStatusUpdate,
+  onPaymentManage
 }: LeadCardProps) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'new': return 'bg-blue-500';
+      case 'contacted': return 'bg-yellow-500';
+      case 'qualified': return 'bg-purple-500';
+      case 'converted': return 'bg-green-500';
+      case 'lost': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'new': return 'Novo';
+      case 'contacted': return 'Contactado';
+      case 'qualified': return 'Qualificado';
+      case 'converted': return 'Convertido';
+      case 'lost': return 'Perdido';
+      default: return status;
+    }
+  };
+
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-500';
+      case 'partial': return 'bg-orange-500';
+      case 'paid': return 'bg-green-500';
+      case 'overdue': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getPaymentStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'Pendente';
+      case 'partial': return 'Parcial';
+      case 'paid': return 'Pago';
+      case 'overdue': return 'Em Atraso';
+      default: return status;
+    }
+  };
+
+  const remainingAmount = (lead.total_value || 0) - (lead.paid_amount || 0);
+
   return (
-    <Card 
-      className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer hover:bg-gray-750"
-      onClick={() => onLeadClick(lead)}
-    >
-      <CardContent className="p-4 md:p-6">
-        <div className="space-y-3 md:space-y-0 md:flex md:items-center md:justify-between">
-          {/* Informações Principais - Stack no mobile */}
-          <div className="min-w-0 flex-1 space-y-2 md:space-y-0">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-              <h3 className="font-semibold text-white text-base md:text-lg min-w-0 truncate">
-                {lead.full_name || lead.company_name || 'Nome não informado'}
-              </h3>
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  "text-xs w-fit flex-shrink-0", 
-                  lead.source_page === 'landing_page_basic' 
-                    ? 'border-senvia-500 text-senvia-400' 
-                    : 'border-purple-500 text-purple-400'
-                )}
-              >
-                {getSourceLabel(lead.source_page)}
-              </Badge>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:gap-6 text-xs md:text-sm text-gray-400">
-              <div className="flex items-center gap-2 min-w-0">
-                <Mail className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                <span className="truncate">{lead.email || 'N/A'}</span>
-              </div>
-              
-              {lead.phone && (
-                <div className="flex items-center gap-2 min-w-0">
-                  <Phone className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                  <span className="truncate">{lead.phone}</span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                <span className="whitespace-nowrap">{format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Status Clicável - Melhor posicionamento no mobile */}
-          <div className="flex justify-end md:justify-start">
-            <div 
-              className="flex items-center gap-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStatusEdit(lead.id);
-              }}
+    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:bg-gray-750 transition-colors">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        {/* Lead Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <h3 
+              className="font-semibold text-white text-sm md:text-base cursor-pointer hover:text-senvia-500 transition-colors"
+              onClick={() => onLeadClick(lead)}
             >
-              {editingStatus === lead.id ? (
-                <Select 
-                  value={lead.lead_status} 
-                  onValueChange={(value) => onStatusUpdate(lead.id, value)}
-                >
-                  <SelectTrigger className="w-28 sm:w-32 bg-gray-700 border-gray-600 text-white h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700 z-50">
-                    <SelectItem value="new">Novo</SelectItem>
-                    <SelectItem value="contacted">Contatado</SelectItem>
-                    <SelectItem value="qualified">Qualificado</SelectItem>
-                    <SelectItem value="converted">Convertido</SelectItem>
-                    <SelectItem value="lost">Perdido</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Badge 
-                  className={cn(
-                    "cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 border text-xs",
-                    getStatusColor(lead.lead_status)
-                  )}
-                >
-                  {getStatusIcon(lead.lead_status)}
-                  <span className="hidden sm:inline">{getStatusLabel(lead.lead_status)}</span>
+              {lead.full_name || lead.email}
+            </h3>
+            
+            <div className="flex flex-wrap gap-1">
+              <Badge className={`${getStatusColor(lead.lead_status)} text-white text-xs`}>
+                {getStatusLabel(lead.lead_status)}
+              </Badge>
+              
+              {lead.payment_status && (
+                <Badge className={`${getPaymentStatusColor(lead.payment_status)} text-white text-xs`}>
+                  {getPaymentStatusLabel(lead.payment_status)}
                 </Badge>
               )}
+              
+              <Badge variant="outline" className="border-blue-500 text-blue-500 text-xs">
+                {lead.source_page === 'landing_page_basic' ? 'LP Básica' : 'LP Premium'}
+              </Badge>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs md:text-sm text-gray-300">
+            <div className="flex items-center gap-2">
+              <Mail className="h-3 w-3 text-gray-500" />
+              <span className="truncate">{lead.email}</span>
+            </div>
+            
+            {lead.phone && (
+              <div className="flex items-center gap-2">
+                <Phone className="h-3 w-3 text-gray-500" />
+                <span>{lead.phone}</span>
+              </div>
+            )}
+            
+            {lead.company_name && (
+              <div className="flex items-center gap-2">
+                <Building className="h-3 w-3 text-gray-500" />
+                <span className="truncate">{lead.company_name}</span>
+              </div>
+            )}
+            
+            {lead.website && (
+              <div className="flex items-center gap-2">
+                <Globe className="h-3 w-3 text-gray-500" />
+                <span className="truncate">{lead.website}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Payment Info */}
+          {(lead.total_value > 0 || lead.paid_amount > 0) && (
+            <div className="mt-3 p-2 bg-gray-700 rounded-lg">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-400">Pagamento:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-500">€{(lead.paid_amount || 0).toFixed(2)}</span>
+                  <span className="text-gray-400">/</span>
+                  <span className="text-white">€{(lead.total_value || 0).toFixed(2)}</span>
+                  {remainingAmount > 0 && (
+                    <span className="text-yellow-500 ml-2">
+                      (Faltam €{remainingAmount.toFixed(2)})
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+            <Calendar className="h-3 w-3" />
+            <span>Criado em {format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          {/* Payment Management Button */}
+          {onPaymentManage && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPaymentManage(lead)}
+              className="border-senvia-500 text-senvia-500 hover:bg-senvia-500 hover:text-black"
+            >
+              <Euro className="h-4 w-4" />
+            </Button>
+          )}
+
+          {/* Status Management */}
+          {editingStatus === lead.id ? (
+            <Select
+              value={lead.lead_status}
+              onValueChange={(value) => onStatusUpdate(lead.id, value)}
+            >
+              <SelectTrigger className="w-32 bg-gray-700 border-gray-600 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new">Novo</SelectItem>
+                <SelectItem value="contacted">Contactado</SelectItem>
+                <SelectItem value="qualified">Qualificado</SelectItem>
+                <SelectItem value="converted">Convertido</SelectItem>
+                <SelectItem value="lost">Perdido</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onStatusEdit(lead.id)}
+              className="border-gray-600 text-gray-300 hover:bg-gray-600"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

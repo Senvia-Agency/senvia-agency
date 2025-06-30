@@ -12,6 +12,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useUpdateSale } from "@/hooks/useSales";
 
+type SaleStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+type PaymentStatus = 'pending' | 'partial' | 'paid' | 'overdue';
+
 interface Sale {
   id: string;
   sale_number: string;
@@ -19,8 +22,8 @@ interface Sale {
   service_description?: string;
   total_value: number;
   paid_amount: number;
-  sale_status: string;
-  payment_status: string;
+  sale_status: SaleStatus;
+  payment_status: PaymentStatus;
   sale_date: string;
   expected_delivery_date?: string;
   delivered_at?: string;
@@ -68,7 +71,7 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
     }
   }, [customerId]);
 
-  const updateSaleStatus = async (saleId: string, newStatus: string) => {
+  const updateSaleStatus = async (saleId: string, newStatus: SaleStatus) => {
     try {
       await updateSale.mutateAsync({
         id: saleId,
@@ -102,46 +105,46 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colorMap: { [key: string]: string } = {
+  const getStatusColor = (status: SaleStatus) => {
+    const colorMap: { [key in SaleStatus]: string } = {
       'pending': 'bg-yellow-500',
       'confirmed': 'bg-blue-500',
       'in_progress': 'bg-orange-500',
       'completed': 'bg-green-500',
       'cancelled': 'bg-red-500'
     };
-    return colorMap[status] || 'bg-gray-500';
+    return colorMap[status];
   };
 
-  const getStatusLabel = (status: string) => {
-    const statusMap: { [key: string]: string } = {
+  const getStatusLabel = (status: SaleStatus) => {
+    const statusMap: { [key in SaleStatus]: string } = {
       'pending': 'Pendente',
       'confirmed': 'Confirmado',
       'in_progress': 'Em Progresso',
       'completed': 'Concluído',
       'cancelled': 'Cancelado'
     };
-    return statusMap[status] || status;
+    return statusMap[status];
   };
 
-  const getPaymentStatusColor = (status: string) => {
-    const colorMap: { [key: string]: string } = {
+  const getPaymentStatusColor = (status: PaymentStatus) => {
+    const colorMap: { [key in PaymentStatus]: string } = {
       'pending': 'bg-yellow-500',
       'partial': 'bg-orange-500',
       'paid': 'bg-green-500',
       'overdue': 'bg-red-500'
     };
-    return colorMap[status] || 'bg-gray-500';
+    return colorMap[status];
   };
 
-  const getPaymentStatusLabel = (status: string) => {
-    const statusMap: { [key: string]: string } = {
+  const getPaymentStatusLabel = (status: PaymentStatus) => {
+    const statusMap: { [key in PaymentStatus]: string } = {
       'pending': 'Pendente',
       'partial': 'Parcial', 
       'paid': 'Pago',
       'overdue': 'Em Atraso'
     };
-    return statusMap[status] || status;
+    return statusMap[status];
   };
 
   const calculateProgress = (sale: Sale) => {
@@ -197,7 +200,7 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
                     <div className="flex items-center gap-1">
                       <Select
                         value={sale.sale_status}
-                        onValueChange={(value) => updateSaleStatus(sale.id, value)}
+                        onValueChange={(value: SaleStatus) => updateSaleStatus(sale.id, value)}
                       >
                         <SelectTrigger className="w-28 h-6 text-xs bg-gray-600 border-gray-500">
                           <SelectValue />

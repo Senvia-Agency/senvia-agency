@@ -1,14 +1,8 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useActivityHistory, useCreateActivity, ActivityHistory } from "@/hooks/useActivityHistory";
-import { History, Plus, Phone, Mail, MessageSquare, Calendar, Edit, TrendingUp } from "lucide-react";
+import { useActivityHistory } from "@/hooks/useActivityHistory";
+import { History, Phone, Mail, MessageSquare, Calendar, Edit, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -19,15 +13,6 @@ interface ActivityHistorySectionProps {
 
 const ActivityHistorySection = ({ entityType, entityId }: ActivityHistorySectionProps) => {
   const { data: activities, isLoading } = useActivityHistory(entityType, entityId);
-  const createActivity = useCreateActivity();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newActivity, setNewActivity] = useState({
-    activity_type: 'contact' as const,
-    title: '',
-    description: '',
-    contact_person: '',
-    contact_method: ''
-  });
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -55,25 +40,6 @@ const ActivityHistorySection = ({ entityType, entityId }: ActivityHistorySection
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    await createActivity.mutateAsync({
-      entity_type: entityType,
-      entity_id: entityId,
-      ...newActivity
-    });
-
-    setNewActivity({
-      activity_type: 'contact',
-      title: '',
-      description: '',
-      contact_person: '',
-      contact_method: ''
-    });
-    setIsAddModalOpen(false);
-  };
-
   if (isLoading) {
     return (
       <Card className="bg-gray-800 border-gray-700">
@@ -87,106 +53,11 @@ const ActivityHistorySection = ({ entityType, entityId }: ActivityHistorySection
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="pb-3">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <History className="h-5 w-5" />
-            Histórico de Atividades
-          </CardTitle>
-          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-senvia-500 hover:bg-senvia-600">
-                <Plus className="h-4 w-4 mr-1" />
-                Adicionar
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-800 border-gray-600 text-white">
-              <DialogHeader>
-                <DialogTitle>Nova Atividade</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Tipo de Atividade</label>
-                  <Select 
-                    value={newActivity.activity_type} 
-                    onValueChange={(value: any) => setNewActivity(prev => ({ ...prev, activity_type: value }))}
-                  >
-                    <SelectTrigger className="bg-gray-700 border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="contact">Contato</SelectItem>
-                      <SelectItem value="email_sent">Email Enviado</SelectItem>
-                      <SelectItem value="call_made">Ligação Feita</SelectItem>
-                      <SelectItem value="meeting_scheduled">Reunião Agendada</SelectItem>
-                      <SelectItem value="note_added">Nota Adicionada</SelectItem>
-                      <SelectItem value="status_change">Mudança de Status</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Título</label>
-                  <Input
-                    value={newActivity.title}
-                    onChange={(e) => setNewActivity(prev => ({ ...prev, title: e.target.value }))}
-                    className="bg-gray-700 border-gray-600"
-                    placeholder="Ex: Ligação de follow-up"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Pessoa de Contato</label>
-                  <Input
-                    value={newActivity.contact_person}
-                    onChange={(e) => setNewActivity(prev => ({ ...prev, contact_person: e.target.value }))}
-                    className="bg-gray-700 border-gray-600"
-                    placeholder="Seu nome ou responsável"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Método de Contato</label>
-                  <Input
-                    value={newActivity.contact_method}
-                    onChange={(e) => setNewActivity(prev => ({ ...prev, contact_method: e.target.value }))}
-                    className="bg-gray-700 border-gray-600"
-                    placeholder="Ex: telefone, email, whatsapp"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Descrição</label>
-                  <Textarea
-                    value={newActivity.description}
-                    onChange={(e) => setNewActivity(prev => ({ ...prev, description: e.target.value }))}
-                    className="bg-gray-700 border-gray-600"
-                    placeholder="Detalhes da atividade..."
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsAddModalOpen(false)}
-                    className="border-gray-600"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createActivity.isPending}
-                    className="bg-senvia-500 hover:bg-senvia-600"
-                  >
-                    {createActivity.isPending ? 'Salvando...' : 'Salvar'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <History className="h-5 w-5" />
+          Histórico de Atividades
+          <span className="text-sm text-gray-400 font-normal">(Somente leitura)</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3 max-h-96 overflow-y-auto">

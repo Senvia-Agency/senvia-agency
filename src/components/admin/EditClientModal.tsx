@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { useUpdateCustomer } from "@/hooks/useCustomers";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ActivityHistorySection from "./shared/ActivityHistorySection";
-import EntityContactsSection from "./shared/EntityContactsSection";
+import { useCreateActivity } from "@/hooks/useActivityHistory";
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
   });
 
   const updateCustomer = useUpdateCustomer();
+  const createActivity = useCreateActivity();
 
   useEffect(() => {
     if (client) {
@@ -51,10 +53,53 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
     if (!client) return;
 
     try {
+      // Verificar mudanças para histórico
+      const statusChanged = formData.customer_status !== client.customer_status;
+      const tierChanged = formData.customer_tier !== client.customer_tier;
+      const projectStatusChanged = formData.project_status !== client.project_status;
+
       await updateCustomer.mutateAsync({
         customerId: client.id,
         updates: formData
       });
+
+      // Gravar histórico automaticamente para mudanças importantes
+      if (statusChanged) {
+        await createActivity.mutateAsync({
+          entity_type: 'customer',
+          entity_id: client.id,
+          activity_type: 'status_change',
+          title: `Status do cliente alterado para ${formData.customer_status}`,
+          description: `Status alterado de "${client.customer_status}" para "${formData.customer_status}"`,
+          contact_person: 'Admin', // TODO: Usar nome do usuário logado
+          contact_method: 'sistema'
+        });
+      }
+
+      if (tierChanged) {
+        await createActivity.mutateAsync({
+          entity_type: 'customer',
+          entity_id: client.id,
+          activity_type: 'status_change',
+          title: `Nível do cliente alterado para ${formData.customer_tier}`,
+          description: `Nível alterado de "${client.customer_tier}" para "${formData.customer_tier}"`,
+          contact_person: 'Admin', // TODO: Usar nome do usuário logado
+          contact_method: 'sistema'
+        });
+      }
+
+      if (projectStatusChanged) {
+        await createActivity.mutateAsync({
+          entity_type: 'customer',
+          entity_id: client.id,
+          activity_type: 'status_change',
+          title: `Status do projeto alterado para ${formData.project_status}`,
+          description: `Status do projeto alterado de "${client.project_status}" para "${formData.project_status}"`,
+          contact_person: 'Admin', // TODO: Usar nome do usuário logado
+          contact_method: 'sistema'
+        });
+      }
+
       onClose();
     } catch (error) {
       console.error('Erro ao atualizar cliente:', error);
@@ -65,19 +110,18 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-600 text-white">
+      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-gray-800 border-gray-600 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl">Editar Cliente - {client.full_name}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details">Detalhes</TabsTrigger>
-            <TabsTrigger value="activity">Histórico</TabsTrigger>
-            <TabsTrigger value="contacts">Responsáveis</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-gray-700">
+            <TabsTrigger value="details" className="data-[state=active]:bg-senvia-500">Detalhes</TabsTrigger>
+            <TabsTrigger value="activity" className="data-[state=active]:bg-senvia-500">Histórico</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="details" className="space-y-6">
+          <TabsContent value="details" className="space-y-6 mt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Informações básicas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -220,15 +264,8 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
             </form>
           </TabsContent>
 
-          <TabsContent value="activity">
+          <TabsContent value="activity" className="mt-6">
             <ActivityHistorySection 
-              entityType="customer" 
-              entityId={client.id} 
-            />
-          </TabsContent>
-
-          <TabsContent value="contacts">
-            <EntityContactsSection 
               entityType="customer" 
               entityId={client.id} 
             />

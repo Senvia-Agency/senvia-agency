@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Users } from "lucide-react";
 import { useUnifiedLeads, useUpdateUnifiedLead } from "@/hooks/useUnifiedLeads";
+import { useCreateActivity } from "@/hooks/useActivityHistory";
 import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
@@ -25,6 +26,7 @@ const AdminLeads = () => {
   const [convertLead, setConvertLead] = useState<any>(null);
   const [paymentLead, setPaymentLead] = useState<any>(null);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
+  const createActivity = useCreateActivity();
 
   // Simplified filters without problematic listeners
   const [filters, setFilters] = useState(() => {
@@ -57,14 +59,29 @@ const AdminLeads = () => {
   // Atualizar status do lead
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
+      const lead = leads?.find(l => l.id === leadId);
+      const oldStatus = lead?.lead_status;
+
       await updateLeadMutation.mutateAsync({
         leadId,
         updates: { lead_status: newStatus }
       });
 
+      // Gravar no histórico automaticamente
+      if (oldStatus !== newStatus) {
+        await createActivity.mutateAsync({
+          entity_type: 'lead',
+          entity_id: leadId,
+          activity_type: 'status_change',
+          title: `Status alterado para ${getStatusLabel(newStatus)}`,
+          description: `Status alterado de "${getStatusLabel(oldStatus)}" para "${getStatusLabel(newStatus)}"`,
+          contact_person: 'Admin', // TODO: Usar nome do usuário logado
+          contact_method: 'sistema'
+        });
+      }
+
       // Se o status foi alterado para "converted", abrir modal de conversão
       if (newStatus === 'converted') {
-        const lead = leads?.find(l => l.id === leadId);
         if (lead) {
           setConvertLead(lead);
         }
@@ -84,6 +101,19 @@ const AdminLeads = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'new': 'Novo',
+      'contacted': 'Contactado',
+      'qualified': 'Qualificado',
+      'proposal': 'Proposta Enviada',
+      'negotiation': 'Negociação',
+      'converted': 'Convertido',
+      'lost': 'Perdido'
+    };
+    return statusMap[status] || status;
   };
 
   // Atualizar dados do lead
@@ -161,6 +191,7 @@ const AdminLeads = () => {
   });
 
   const handleLeadClick = (lead: any) => {
+    console.log('Lead clicked:', lead);
     setSelectedLead(lead);
   };
 

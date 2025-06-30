@@ -24,13 +24,28 @@ export const useAdminUsers = () => {
       console.log('📊 Todos os profiles na tabela:', allProfiles);
       console.log('📊 Quantidade total de profiles:', allProfiles?.length || 0);
       
+      if (allError) {
+        console.error('❌ Erro ao buscar todos os profiles:', allError);
+        throw allError;
+      }
+      
       if (allProfiles && allProfiles.length > 0) {
         console.log('📊 Roles encontrados:', allProfiles.map(p => ({ email: p.email, role: p.role })));
         const adminCount = allProfiles.filter(p => p.role === 'admin').length;
         console.log('👑 Quantidade de admins encontrados:', adminCount);
+        
+        // Log detalhado de cada usuário admin
+        const adminUsers = allProfiles.filter(p => p.role === 'admin');
+        console.log('👥 Usuários admin encontrados:', adminUsers.map(u => ({
+          id: u.id,
+          user_id: u.user_id,
+          email: u.email,
+          full_name: u.full_name,
+          role: u.role
+        })));
       }
       
-      // Agora buscar apenas os admins
+      // Buscar apenas os admins
       const { data, error } = await supabase
         .from('profiles')
         .select('id, user_id, email, full_name, role')
@@ -68,5 +83,7 @@ export const useAdminUsers = () => {
     gcTime: 10 * 60 * 1000, // 10 minutos
     retry: 3,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: true, // Forçar refetch quando voltar para a janela
+    refetchOnMount: true, // Sempre refetch quando o componente for montado
   });
 };

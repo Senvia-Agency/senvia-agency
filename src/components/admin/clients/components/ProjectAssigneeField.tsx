@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Edit3 } from "lucide-react";
+import { User, Edit3, RefreshCw } from "lucide-react";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 
 interface ProjectAssigneeFieldProps {
@@ -13,7 +13,7 @@ interface ProjectAssigneeFieldProps {
 
 export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: ProjectAssigneeFieldProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { data: adminUsers, isLoading, error, isSuccess } = useAdminUsers();
+  const { data: adminUsers, isLoading, error, isSuccess, refetch } = useAdminUsers();
 
   useEffect(() => {
     console.log('🎭 ProjectAssigneeField - Estado da query adminUsers:', {
@@ -68,12 +68,25 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
     setIsEditing(false);
   };
 
+  const handleRefresh = () => {
+    console.log('🔄 Forçando refresh dos usuários admin...');
+    refetch();
+  };
+
   if (error) {
     console.error('❌ Erro ao carregar usuários admin:', error);
     return (
       <div className="flex items-center gap-2">
         <User className="h-3 w-3 text-red-400" />
-        <span className="text-xs text-red-400">Erro ao carregar usuários: {error.message}</span>
+        <span className="text-xs text-red-400">Erro ao carregar usuários</span>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 w-6 p-0"
+          onClick={handleRefresh}
+        >
+          <RefreshCw className="h-3 w-3" />
+        </Button>
       </div>
     );
   }
@@ -114,6 +127,15 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
           <span className="text-xs text-white flex-1">
             {isLoading ? 'Carregando...' : getAssignedUserName(assignedTo || '')}
           </span>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0"
+            onClick={handleRefresh}
+            title="Atualizar lista de usuários"
+          >
+            <RefreshCw className="h-3 w-3" />
+          </Button>
           <Button
             size="sm"
             variant="ghost"

@@ -34,17 +34,17 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError } = useAdminUsers();
+  const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError, refetch: refetchAdminUsers } = useAdminUsers();
   const updateSale = useUpdateSale();
 
   // Debug dos usuários admin
   useEffect(() => {
     if (adminUsers) {
-      console.log('AdminUsers carregados:', adminUsers);
-      console.log('Número de admin users:', adminUsers.length);
+      console.log('CustomerProjectsSection - AdminUsers carregados:', adminUsers);
+      console.log('CustomerProjectsSection - Número de admin users:', adminUsers.length);
     }
     if (adminUsersError) {
-      console.error('Erro ao carregar admin users:', adminUsersError);
+      console.error('CustomerProjectsSection - Erro ao carregar admin users:', adminUsersError);
     }
   }, [adminUsers, adminUsersError]);
 
@@ -141,6 +141,7 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
         adminUsers={adminUsers}
         adminUsersLoading={adminUsersLoading}
         adminUsersError={adminUsersError}
+        onRefresh={refetchAdminUsers}
       />
 
       {sales.map((sale) => (

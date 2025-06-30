@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { RefreshCw, ExternalLink } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import ProductStatsCards from "./produtos/ProductStatsCards";
 import ProductCatalog from "./produtos/ProductCatalog";
 import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
@@ -123,22 +123,14 @@ const AdminProdutosAssinaturas = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-slate-100">Produtos & Assinaturas</h1>
-          <p className="text-slate-400">Gerencie produtos do Stripe e acompanhe assinaturas</p>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-slate-100 whitespace-nowrap">Produtos & Assinaturas</h1>
+          <p className="text-slate-400 text-sm sm:text-base">Gerencie produtos do Stripe e acompanhe assinaturas</p>
         </div>
         <div className="flex gap-2">
           <Button 
-            variant="outline"
-            onClick={() => window.open('https://dashboard.stripe.com/products', '_blank')}
-            className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Abrir Stripe
-          </Button>
-          <Button 
             onClick={syncWithStripe}
             disabled={isLoading}
-            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-medium"
+            className="bg-senvia-500 hover:bg-senvia-400 text-slate-900 font-medium text-sm sm:text-base whitespace-nowrap"
           >
             {isLoading ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />

@@ -29,6 +29,9 @@ const AdminFinanceiro = () => {
   if (isLoadingFinancial) {
     return (
       <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo Financeiro</h1>
+        </div>
         <div className="text-center py-8 text-gray-400">
           Carregando dados financeiros...
         </div>
@@ -41,8 +44,8 @@ const AdminFinanceiro = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Módulo Financeiro</h1>
-          <p className="text-gray-400">Controle completo das finanças da SENVIA</p>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Módulo Financeiro</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Controle completo das finanças da SENVIA</p>
         </div>
         <PeriodSelector
           selectedPeriod={selectedPeriod}

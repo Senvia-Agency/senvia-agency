@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
-import SyncPaymentsButton from "./SyncPaymentsButton";
 
 const STORAGE_KEY = 'admin-leads-filters';
 const DEFAULT_FILTERS = {
@@ -150,7 +150,7 @@ const AdminLeads = () => {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Gestão de Leads</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Gestão de Leads</h1>
         </div>
         <div className="text-center py-8 text-gray-400">
           Carregando leads...
@@ -164,12 +164,11 @@ const AdminLeads = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Gestão de Leads</h1>
-          <p className="text-gray-400">Gerencie todos os leads da SENVIA</p>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Gestão de Leads</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Gerencie todos os leads da SENVIA</p>
         </div>
         <div className="flex items-center gap-2">
-          <SyncPaymentsButton />
-          <Badge variant="outline" className="text-senvia-500">{filteredLeads?.length || 0} leads</Badge>
+          <Badge variant="outline" className="text-senvia-500 text-xs sm:text-sm whitespace-nowrap">{filteredLeads?.length || 0} leads</Badge>
         </div>
       </div>
 

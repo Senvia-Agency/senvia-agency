@@ -2,12 +2,16 @@
 import { useState } from "react";
 import { useRealFinancialData } from "@/hooks/useRealFinancialData";
 import { useFinancialMovements } from "@/hooks/useFinancialMovements";
+import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
+import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
 import RevenueBreakdownCard from "./financeiro/RevenueBreakdownCard";
 import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
 import RecentTransactionsCard from "./financeiro/RecentTransactionsCard";
 import BalanceSummaryCard from "./financeiro/BalanceSummaryCard";
+import AccountsReceivableList from "./financeiro/AccountsReceivableList";
+import ReceivablesEvolutionChart from "./financeiro/ReceivablesEvolutionChart";
 import PeriodSelector from "./financeiro/PeriodSelector";
 
 const AdminFinanceiro = () => {
@@ -16,6 +20,8 @@ const AdminFinanceiro = () => {
 
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
   const { movements, addMovement, isAddingMovement } = useFinancialMovements(selectedPeriod);
+  const { data: accountsReceivable, isLoading: isLoadingAccounts } = useAccountsReceivable(selectedPeriod);
+  const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
 
   const totalRevenue = financialData?.total_revenue || 0;
   const totalExpenses = financialData?.total_expenses || 0;
@@ -26,7 +32,12 @@ const AdminFinanceiro = () => {
     addMovement(movement);
   };
 
-  if (isLoadingFinancial) {
+  const handleMarkAsPaid = (accountId: string) => {
+    // Aqui você pode implementar a lógica para marcar como pago
+    console.log('Marcando como pago:', accountId);
+  };
+
+  if (isLoadingFinancial || isLoadingAccounts) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -55,13 +66,28 @@ const AdminFinanceiro = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards Financeiros */}
       <FinancialKPICards
         totalRevenue={totalRevenue}
         totalExpenses={totalExpenses}
         netProfit={netProfit}
         profitMargin={profitMargin}
         selectedPeriod={selectedPeriod}
+      />
+
+      {/* KPI Cards Contas a Receber */}
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
+        <AccountsReceivableKPICards stats={accountsStats} />
+      </div>
+
+      {/* Gráficos de Evolução */}
+      <ReceivablesEvolutionChart accounts={accountsReceivable || []} />
+
+      {/* Lista de Contas a Receber */}
+      <AccountsReceivableList 
+        accounts={accountsReceivable || []} 
+        onMarkAsPaid={handleMarkAsPaid}
       />
 
       {/* Revenue Breakdown and Financial Movements */}

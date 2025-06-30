@@ -41,8 +41,19 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const [editingAssignee, setEditingAssignee] = useState<string | null>(null);
   const { toast } = useToast();
-  const { data: adminUsers } = useAdminUsers();
+  const { data: adminUsers, isLoading: adminUsersLoading, error: adminUsersError } = useAdminUsers();
   const updateSale = useUpdateSale();
+
+  // Debug dos usuários admin
+  useEffect(() => {
+    if (adminUsers) {
+      console.log('AdminUsers carregados:', adminUsers);
+      console.log('Número de admin users:', adminUsers.length);
+    }
+    if (adminUsersError) {
+      console.error('Erro ao carregar admin users:', adminUsersError);
+    }
+  }, [adminUsers, adminUsersError]);
 
   useEffect(() => {
     const fetchCustomerSales = async () => {
@@ -90,6 +101,8 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   const updateSaleAssignee = async (saleId: string, newAssignee: string) => {
     try {
+      console.log('Atualizando responsável:', { saleId, newAssignee });
+      
       await updateSale.mutateAsync({
         id: saleId,
         updates: { assigned_to: newAssignee }
@@ -100,8 +113,18 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
       ));
 
       setEditingAssignee(null);
+      
+      toast({
+        title: "Responsável atualizado",
+        description: "O responsável pelo projeto foi atualizado com sucesso."
+      });
     } catch (error) {
       console.error('Erro ao atualizar responsável:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o responsável.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -186,6 +209,23 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   return (
     <div className="space-y-3">
+      {/* Debug info */}
+      {adminUsersLoading && (
+        <div className="text-xs text-yellow-400 mb-2">
+          Carregando usuários admin...
+        </div>
+      )}
+      {adminUsersError && (
+        <div className="text-xs text-red-400 mb-2">
+          Erro ao carregar usuários admin: {adminUsersError.message}
+        </div>
+      )}
+      {adminUsers && (
+        <div className="text-xs text-green-400 mb-2">
+          {adminUsers.length} usuários admin encontrados
+        </div>
+      )}
+
       {sales.map((sale) => (
         <Card key={sale.id} className="bg-gray-700 border-gray-600">
           <CardHeader className="pb-2">
@@ -258,11 +298,14 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
                     </SelectTrigger>
                     <SelectContent className="bg-gray-700 border-gray-600">
                       <SelectItem value="unassigned">Não atribuído</SelectItem>
-                      {adminUsers?.map((user) => (
-                        <SelectItem key={user.user_id} value={user.user_id}>
-                          {user.full_name}
-                        </SelectItem>
-                      ))}
+                      {adminUsers?.map((user) => {
+                        console.log('Renderizando usuário admin:', user);
+                        return (
+                          <SelectItem key={user.user_id} value={user.user_id}>
+                            {user.full_name} ({user.email})
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   <Button

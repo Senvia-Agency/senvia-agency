@@ -18,7 +18,7 @@ export const useAdminUsers = () => {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, email, full_name, role')
+        .select('id, user_id, email, full_name, role')
         .eq('role', 'admin')
         .order('full_name', { ascending: true });
 
@@ -27,8 +27,16 @@ export const useAdminUsers = () => {
         throw error;
       }
       
-      console.log('Usuários admin encontrados:', data?.length || 0);
-      return data as AdminUser[];
+      console.log('Usuários admin encontrados:', data);
+      console.log('Total de usuários admin:', data?.length || 0);
+      
+      return data?.map(user => ({
+        id: user.id,
+        user_id: user.user_id,
+        email: user.email || '',
+        full_name: user.full_name || user.email || 'Usuário sem nome',
+        role: user.role
+      })) as AdminUser[];
     },
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos

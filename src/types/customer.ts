@@ -12,6 +12,8 @@ export interface Customer {
   total_spent: number;
   acquisition_date: string;
   acquisition_source?: string;
+  objective?: string;
+  main_product_service?: string;
   created_at: string;
   updated_at: string;
   original_lead?: any;

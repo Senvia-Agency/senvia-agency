@@ -135,33 +135,21 @@ const LeadCard = ({
                 <span className="truncate">{lead.website}</span>
               </div>
             )}
-          </div>
 
-          {/* Objetivo e Produto/Serviço */}
-          {(lead.objective || lead.main_product_service) && (
-            <div className="mt-3 p-3 bg-gray-700/50 rounded-lg border border-gray-600">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
-                {lead.objective && (
-                  <div className="flex items-start gap-2">
-                    <Target className="h-4 w-4 text-senvia-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <span className="font-medium text-gray-200">Objetivo:</span>
-                      <p className="mt-1 text-gray-300">{lead.objective}</p>
-                    </div>
-                  </div>
-                )}
-                {lead.main_product_service && (
-                  <div className="flex items-start gap-2">
-                    <Package className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <span className="font-medium text-gray-200">Produto/Serviço:</span>
-                      <p className="mt-1 text-gray-300">{lead.main_product_service}</p>
-                    </div>
-                  </div>
-                )}
+            {lead.objective && (
+              <div className="flex items-center gap-2">
+                <Target className="h-3 w-3 text-gray-500" />
+                <span className="truncate">{lead.objective}</span>
               </div>
-            </div>
-          )}
+            )}
+            
+            {lead.main_product_service && (
+              <div className="flex items-center gap-2">
+                <Package className="h-3 w-3 text-gray-500" />
+                <span className="truncate">{lead.main_product_service}</span>
+              </div>
+            )}
+          </div>
 
           {/* Payment Info */}
           {(lead.total_value > 0 || lead.paid_amount > 0) && (

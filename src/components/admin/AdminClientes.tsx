@@ -218,33 +218,17 @@ const AdminClientes = () => {
                             <span className="text-gray-400">Origem:</span> {client.acquisition_source}
                           </div>
                         </div>
-                      </div>
-
-                      {/* Objetivo e Produto/Serviço */}
-                      {(client.objective || client.main_product_service) && (
-                        <div className="mt-3 p-3 bg-gray-600/50 rounded-lg border border-gray-500">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-300">
-                            {client.objective && (
-                              <div className="flex items-start gap-2">
-                                <Target className="h-4 w-4 text-senvia-500 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <span className="font-medium text-gray-200">Objetivo:</span>
-                                  <p className="mt-1 text-gray-300">{client.objective}</p>
-                                </div>
-                              </div>
-                            )}
-                            {client.main_product_service && (
-                              <div className="flex items-start gap-2">
-                                <Package className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <span className="font-medium text-gray-200">Produto/Serviço:</span>
-                                  <p className="mt-1 text-gray-300">{client.main_product_service}</p>
-                                </div>
-                              </div>
-                            )}
+                        {client.objective && (
+                          <div className="truncate">
+                            <span className="text-gray-400">Objetivo:</span> {client.objective}
                           </div>
-                        </div>
-                      )}
+                        )}
+                        {client.main_product_service && (
+                          <div className="truncate">
+                            <span className="text-gray-400">Produto/Serviço:</span> {client.main_product_service}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex justify-end lg:justify-start">
                       <Button

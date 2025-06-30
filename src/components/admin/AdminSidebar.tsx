@@ -81,39 +81,37 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
     <>
       {/* Mobile Menu */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64">
-          <div className="flex items-center justify-between py-2">
-            <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+        <SheetContent side="left" className="w-64 bg-gray-800 border-gray-700">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-senvia-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">S</span>
+              </div>
+              <span className="font-bold text-lg text-white">SENVIA</span>
+            </div>
           </div>
-          <Separator />
-          <div className="grid gap-4 py-4">
+          <Separator className="bg-gray-700" />
+          <div className="grid gap-2 py-4">
             {menuItems.map((item) => (
               <Button
                 key={item.id}
                 variant="ghost"
-                className={`w-full justify-start ${activeSection === item.id ? 'font-semibold' : ''}`}
+                className={`w-full justify-start text-white hover:bg-gray-700 ${
+                  activeSection === item.id ? 'bg-senvia-500 hover:bg-senvia-600 font-semibold' : ''
+                }`}
                 onClick={() => handleNavigation(item.id)}
               >
-                <item.icon className="mr-2 h-4 w-4" />
+                <item.icon className="mr-3 h-4 w-4" />
                 <span>{item.label}</span>
               </Button>
             ))}
           </div>
-          <Separator />
+          <Separator className="bg-gray-700" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="justify-start w-full mt-2">
-                <Avatar className="mr-2 h-6 w-6">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <Button variant="ghost" className="justify-start w-full mt-4 text-white hover:bg-gray-700">
+                <Avatar className="mr-3 h-6 w-6">
+                  <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
                   <AvatarFallback>SC</AvatarFallback>
                 </Avatar>
                 <span>Minha Conta</span>
@@ -135,47 +133,54 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
       </Sheet>
 
       {/* Desktop Menu */}
-      <div className="hidden md:flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 h-screen py-4">
-        <div className="flex items-center justify-between px-4">
-          <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+      <div className="hidden lg:flex flex-col w-64 bg-gray-800 border-r border-gray-700 h-screen">
+        <div className="flex items-center gap-2 p-6 border-b border-gray-700">
+          <div className="w-8 h-8 bg-senvia-500 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">S</span>
+          </div>
+          <span className="font-bold text-lg text-white">SENVIA</span>
         </div>
-        <Separator className="my-4" />
-        <div className="flex-grow flex flex-col gap-4 px-4">
+        
+        <div className="flex-1 flex flex-col gap-2 p-4">
           {menuItems.map((item) => (
             <Button
               key={item.id}
               variant="ghost"
-              className={`w-full justify-start ${activeSection === item.id ? 'font-semibold' : ''}`}
+              className={`w-full justify-start text-white hover:bg-gray-700 ${
+                activeSection === item.id ? 'bg-senvia-500 hover:bg-senvia-600 font-semibold' : ''
+              }`}
               onClick={() => handleNavigation(item.id)}
             >
-              <item.icon className="mr-2 h-4 w-4" />
+              <item.icon className="mr-3 h-4 w-4" />
               <span>{item.label}</span>
             </Button>
           ))}
         </div>
-        <Separator />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="justify-start w-full mt-2">
-              <Avatar className="mr-2 h-6 w-6">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>SC</AvatarFallback>
-              </Avatar>
-              <span>Minha Conta</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Perfil</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Sair</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        
+        <div className="border-t border-gray-700 p-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="justify-start w-full text-white hover:bg-gray-700">
+                <Avatar className="mr-3 h-6 w-6">
+                  <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
+                  <AvatarFallback>SC</AvatarFallback>
+                </Avatar>
+                <span>Minha Conta</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Perfil</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </>
   );

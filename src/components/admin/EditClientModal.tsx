@@ -17,6 +17,13 @@ interface EditClientModalProps {
 const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
   if (!client) return null;
 
+  const handleSave = () => {
+    // Call the save function from ClientDetailsForm
+    if ((window as any).saveClientDetails) {
+      (window as any).saveClientDetails();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl h-[90vh] bg-gray-800 border-gray-600 text-white p-0 flex flex-col">
@@ -82,10 +89,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
               </Button>
               <Button
                 className="bg-senvia-500 hover:bg-senvia-600 text-white"
-                onClick={() => {
-                  // This will be handled by the form inside ClientDetailsForm
-                  console.log('Save button clicked - form submission handled by ClientDetailsForm');
-                }}
+                onClick={handleSave}
               >
                 Salvar Alterações
               </Button>

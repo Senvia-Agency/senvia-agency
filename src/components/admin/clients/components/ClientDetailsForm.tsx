@@ -1,11 +1,12 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUpdateCustomer } from "@/hooks/useCustomers";
-import { useCreateActivity } from "@/hooks/useActivityHistory";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ClientDetailsFormProps {
   client: any;
@@ -13,217 +14,164 @@ interface ClientDetailsFormProps {
 }
 
 export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) => {
+  const { toast } = useToast();
+  const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    phone: '',
-    company_name: '',
-    customer_status: 'active',
-    customer_tier: 'basic',
-    project_status: 'pending',
-    notes: ''
+    full_name: client.full_name || '',
+    email: client.email || '',
+    phone: client.phone || '',
+    company_name: client.company_name || '',
+    website: client.website || '',
+    customer_status: client.customer_status || 'active',
+    customer_tier: client.customer_tier || 'bronze',
+    project_status: client.project_status || 'planning'
   });
 
-  const updateCustomer = useUpdateCustomer();
-  const createActivity = useCreateActivity();
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
-  useEffect(() => {
-    if (client) {
-      setFormData({
-        full_name: client.full_name || '',
-        email: client.email || '',
-        phone: client.phone || '',
-        company_name: client.company_name || '',
-        customer_status: client.customer_status || 'active',
-        customer_tier: client.customer_tier || 'basic',
-        project_status: client.project_status || 'pending',
-        notes: client.notes || ''
-      });
-    }
-  }, [client]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!client) return;
-
+  const handleSave = async () => {
+    setIsUpdating(true);
+    
     try {
-      // Verificar mudanças para histórico
-      const statusChanged = formData.customer_status !== client.customer_status;
-      const tierChanged = formData.customer_tier !== client.customer_tier;
-      const projectStatusChanged = formData.project_status !== client.project_status;
+      const { error } = await supabase
+        .from('customers')
+        .update(formData)
+        .eq('id', client.id);
 
-      await updateCustomer.mutateAsync({
-        customerId: client.id,
-        updates: formData
+      if (error) throw error;
+
+      toast({
+        title: "Cliente atualizado",
+        description: "As informações do cliente foram atualizadas com sucesso."
       });
-
-      // Gravar histórico automaticamente para mudanças importantes
-      if (statusChanged) {
-        await createActivity.mutateAsync({
-          entity_type: 'customer',
-          entity_id: client.id,
-          activity_type: 'status_change',
-          title: `Status do cliente alterado para ${formData.customer_status}`,
-          description: `Status alterado de "${client.customer_status}" para "${formData.customer_status}"`,
-          contact_person: 'Admin',
-          contact_method: 'sistema'
-        });
-      }
-
-      if (tierChanged) {
-        await createActivity.mutateAsync({
-          entity_type: 'customer',
-          entity_id: client.id,
-          activity_type: 'status_change',
-          title: `Nível do cliente alterado para ${formData.customer_tier}`,
-          description: `Nível alterado de "${client.customer_tier}" para "${formData.customer_tier}"`,
-          contact_person: 'Admin',
-          contact_method: 'sistema'
-        });
-      }
-
-      if (projectStatusChanged) {
-        await createActivity.mutateAsync({
-          entity_type: 'customer',
-          entity_id: client.id,
-          activity_type: 'status_change',
-          title: `Status do projeto alterado para ${formData.project_status}`,
-          description: `Status do projeto alterado de "${client.project_status}" para "${formData.project_status}"`,
-          contact_person: 'Admin',
-          contact_method: 'sistema'
-        });
-      }
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao atualizar cliente:', error);
+      toast({
+        title: "Erro ao atualizar",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
+  // Expose handleSave to parent component
+  React.useEffect(() => {
+    // Store the save function in a way the parent can access it
+    (window as any).saveClientDetails = handleSave;
+    
+    return () => {
+      delete (window as any).saveClientDetails;
+    };
+  }, [handleSave]);
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Informações básicas */}
+    <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium text-gray-300">Nome Completo</label>
+        <div className="space-y-2">
+          <Label htmlFor="full_name">Nome Completo</Label>
           <Input
+            id="full_name"
             value={formData.full_name}
-            onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-            className="bg-gray-700 border-gray-600"
-            required
+            onChange={(e) => handleInputChange('full_name', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium text-gray-300">Email</label>
+
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
           <Input
+            id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-            className="bg-gray-700 border-gray-600"
-            required
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
           />
         </div>
-        <div>
-          <label className="text-sm font-medium text-gray-300">Telefone</label>
-          <Input
-            value={formData.phone}
-            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-            className="bg-gray-700 border-gray-600"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-300">Empresa</label>
-          <Input
-            value={formData.company_name}
-            onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-            className="bg-gray-700 border-gray-600"
-          />
-        </div>
-      </div>
 
-      {/* Status e Tier */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="text-sm font-medium text-gray-300">Status do Cliente</label>
-          <Select 
-            value={formData.customer_status} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, customer_status: value }))}
-          >
-            <SelectTrigger className="bg-gray-700 border-gray-600">
+        <div className="space-y-2">
+          <Label htmlFor="phone">Telefone</Label>
+          <Input
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="company_name">Empresa</Label>
+          <Input
+            id="company_name"
+            value={formData.company_name}
+            onChange={(e) => handleInputChange('company_name', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            value={formData.website}
+            onChange={(e) => handleInputChange('website', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="customer_status">Status do Cliente</Label>
+          <Select value={formData.customer_status} onValueChange={(value) => handleInputChange('customer_status', value)}>
+            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-700 border-gray-600">
               <SelectItem value="active">Ativo</SelectItem>
               <SelectItem value="inactive">Inativo</SelectItem>
-              <SelectItem value="churned">Perdido</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-300">Nível do Cliente</label>
-          <Select 
-            value={formData.customer_tier} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, customer_tier: value }))}
-          >
-            <SelectTrigger className="bg-gray-700 border-gray-600">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-700 border-gray-600">
-              <SelectItem value="basic">Básico</SelectItem>
-              <SelectItem value="premium">Premium</SelectItem>
-              <SelectItem value="enterprise">Enterprise</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-300">Status do Projeto</label>
-          <Select 
-            value={formData.project_status} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, project_status: value }))}
-          >
-            <SelectTrigger className="bg-gray-700 border-gray-600">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-700 border-gray-600">
               <SelectItem value="pending">Pendente</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="customer_tier">Nível do Cliente</Label>
+          <Select value={formData.customer_tier} onValueChange={(value) => handleInputChange('customer_tier', value)}>
+            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-700 border-gray-600">
+              <SelectItem value="bronze">Bronze</SelectItem>
+              <SelectItem value="silver">Prata</SelectItem>
+              <SelectItem value="gold">Ouro</SelectItem>
+              <SelectItem value="platinum">Platina</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="project_status">Status do Projeto</Label>
+          <Select value={formData.project_status} onValueChange={(value) => handleInputChange('project_status', value)}>
+            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-700 border-gray-600">
+              <SelectItem value="planning">Planejamento</SelectItem>
               <SelectItem value="in_progress">Em Progresso</SelectItem>
+              <SelectItem value="review">Em Revisão</SelectItem>
               <SelectItem value="completed">Concluído</SelectItem>
-              <SelectItem value="on_hold">Em Pausa</SelectItem>
-              <SelectItem value="cancelled">Cancelado</SelectItem>
+              <SelectItem value="on_hold">Em Espera</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-
-      {/* Notas */}
-      <div>
-        <label className="text-sm font-medium text-gray-300">Notas</label>
-        <Textarea
-          value={formData.notes}
-          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-          className="bg-gray-700 border-gray-600"
-          rows={4}
-          placeholder="Adicione observações sobre este cliente..."
-        />
-      </div>
-
-      <div className="flex justify-end gap-2 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}
-          className="border-gray-600"
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="submit"
-          disabled={updateCustomer.isPending}
-          className="bg-senvia-500 hover:bg-senvia-600"
-        >
-          {updateCustomer.isPending ? 'Salvando...' : 'Salvar Alterações'}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };

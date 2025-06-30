@@ -16,46 +16,64 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
   const { data: adminUsers, isLoading, error, isSuccess } = useAdminUsers();
 
   useEffect(() => {
-    console.log('ProjectAssigneeField - Estado da query adminUsers:', {
+    console.log('🎭 ProjectAssigneeField - Estado da query adminUsers:', {
       isLoading,
       isSuccess,
       error: error?.message,
       adminUsers,
-      totalUsers: adminUsers?.length || 0
+      totalUsers: adminUsers?.length || 0,
+      saleId,
+      assignedTo
     });
     
     if (adminUsers && adminUsers.length > 0) {
-      console.log('ProjectAssigneeField - Usuários disponíveis para seleção:', 
-        adminUsers.map(u => ({ id: u.user_id, name: u.full_name, email: u.email }))
+      console.log('👥 ProjectAssigneeField - Usuários disponíveis para seleção:', 
+        adminUsers.map(u => ({ 
+          id: u.user_id, 
+          name: u.full_name, 
+          email: u.email,
+          role: u.role 
+        }))
       );
+    } else if (adminUsers && adminUsers.length === 0) {
+      console.warn('⚠️ ProjectAssigneeField - Array de adminUsers está vazio');
     }
-  }, [adminUsers, isLoading, error, isSuccess]);
+
+    if (error) {
+      console.error('❌ ProjectAssigneeField - Erro ao carregar adminUsers:', error);
+    }
+  }, [adminUsers, isLoading, error, isSuccess, saleId, assignedTo]);
 
   const getAssignedUserName = (assignedTo: string) => {
     if (!assignedTo) return 'Não atribuído';
     
-    console.log('Procurando usuário com ID:', assignedTo);
-    console.log('Lista de usuários disponíveis:', adminUsers?.map(u => ({ user_id: u.user_id, email: u.email, name: u.full_name })));
+    console.log('🔍 Procurando usuário com ID:', assignedTo);
+    console.log('📊 Lista de usuários disponíveis:', adminUsers?.map(u => ({ 
+      user_id: u.user_id, 
+      email: u.email, 
+      name: u.full_name,
+      role: u.role 
+    })));
     
     const user = adminUsers?.find(u => u.user_id === assignedTo || u.email === assignedTo);
-    console.log('Usuário encontrado:', user);
+    console.log('✅ Usuário encontrado:', user);
     
     return user?.full_name || assignedTo;
   };
 
   const handleAssigneeChange = (newAssignee: string) => {
-    console.log('Alterando responsável para:', newAssignee);
+    console.log('🔄 Alterando responsável para:', newAssignee);
     const finalAssignee = newAssignee === 'unassigned' ? '' : newAssignee;
     onAssigneeUpdate(saleId, finalAssignee);
     setIsEditing(false);
   };
 
   if (error) {
-    console.error('Erro ao carregar usuários admin:', error);
+    console.error('❌ Erro ao carregar usuários admin:', error);
     return (
       <div className="flex items-center gap-2">
         <User className="h-3 w-3 text-red-400" />
-        <span className="text-xs text-red-400">Erro ao carregar usuários</span>
+        <span className="text-xs text-red-400">Erro ao carregar usuários: {error.message}</span>
       </div>
     );
   }
@@ -77,7 +95,7 @@ export const ProjectAssigneeField = ({ saleId, assignedTo, onAssigneeUpdate }: P
               <SelectItem value="unassigned">Não atribuído</SelectItem>
               {adminUsers?.map((user) => (
                 <SelectItem key={user.user_id} value={user.user_id}>
-                  {user.full_name} ({user.email})
+                  {user.full_name} ({user.email}) - {user.role}
                 </SelectItem>
               ))}
             </SelectContent>

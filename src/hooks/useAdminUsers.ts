@@ -14,8 +14,23 @@ export const useAdminUsers = () => {
   return useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      console.log('Buscando todos os usuários admin...');
+      console.log('🔍 Iniciando busca por usuários admin...');
       
+      // Primeira verificação: ver todos os profiles
+      const { data: allProfiles, error: allError } = await supabase
+        .from('profiles')
+        .select('id, user_id, email, full_name, role');
+        
+      console.log('📊 Todos os profiles na tabela:', allProfiles);
+      console.log('📊 Quantidade total de profiles:', allProfiles?.length || 0);
+      
+      if (allProfiles && allProfiles.length > 0) {
+        console.log('📊 Roles encontrados:', allProfiles.map(p => ({ email: p.email, role: p.role })));
+        const adminCount = allProfiles.filter(p => p.role === 'admin').length;
+        console.log('👑 Quantidade de admins encontrados:', adminCount);
+      }
+      
+      // Agora buscar apenas os admins
       const { data, error } = await supabase
         .from('profiles')
         .select('id, user_id, email, full_name, role')
@@ -23,15 +38,16 @@ export const useAdminUsers = () => {
         .order('full_name', { ascending: true });
 
       if (error) {
-        console.error('Erro ao buscar usuários admin:', error);
+        console.error('❌ Erro ao buscar usuários admin:', error);
         throw error;
       }
       
-      console.log('Dados brutos retornados da query:', data);
-      console.log('Total de registros encontrados:', data?.length || 0);
+      console.log('✅ Dados admin retornados da query:', data);
+      console.log('✅ Total de admins encontrados:', data?.length || 0);
       
       if (!data || data.length === 0) {
-        console.warn('Nenhum usuário admin encontrado na tabela profiles');
+        console.warn('⚠️ Nenhum usuário admin encontrado na tabela profiles');
+        console.warn('⚠️ Verifique se existem usuários com role="admin" na tabela');
         return [];
       }
       
@@ -43,8 +59,8 @@ export const useAdminUsers = () => {
         role: user.role
       })) as AdminUser[];
       
-      console.log('Usuários admin processados:', adminUsers);
-      console.log('Lista de nomes:', adminUsers.map(u => u.full_name));
+      console.log('🎯 Usuários admin processados:', adminUsers);
+      console.log('📋 Lista de nomes dos admins:', adminUsers.map(u => `${u.full_name} (${u.email})`));
       
       return adminUsers;
     },

@@ -20,7 +20,7 @@ interface LeadDetailModalProps {
 }
 
 const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetailModalProps) => {
-  const [editedLead, setEditedLead] = useState({});
+  const [editedLead, setEditedLead] = useState<any>(selectedLead || {});
   const createActivity = useCreateActivity();
 
   // Atualizar editedLead sempre que selectedLead mudar
@@ -39,7 +39,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
     await onUpdate(editedLead);
     
     // Se status mudou, gravar no histórico automaticamente
-    if (statusChanged) {
+    if (statusChanged && selectedLead) {
       await createActivity.mutateAsync({
         entity_type: 'lead',
         entity_id: selectedLead.id,
@@ -102,7 +102,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                 <div>
                   <label className="text-sm font-medium text-gray-300">Nome Completo</label>
                   <Input
-                    value={editedLead.full_name || ''}
+                    value={editedLead?.full_name || ''}
                     onChange={(e) => setEditedLead(prev => ({ ...prev, full_name: e.target.value }))}
                     className="bg-gray-700 border-gray-600"
                   />
@@ -111,7 +111,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                   <label className="text-sm font-medium text-gray-300">Email</label>
                   <Input
                     type="email"
-                    value={editedLead.email || ''}
+                    value={editedLead?.email || ''}
                     onChange={(e) => setEditedLead(prev => ({ ...prev, email: e.target.value }))}
                     className="bg-gray-700 border-gray-600"
                   />
@@ -119,7 +119,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                 <div>
                   <label className="text-sm font-medium text-gray-300">Telefone</label>
                   <Input
-                    value={editedLead.phone || ''}
+                    value={editedLead?.phone || ''}
                     onChange={(e) => setEditedLead(prev => ({ ...prev, phone: e.target.value }))}
                     className="bg-gray-700 border-gray-600"
                   />
@@ -127,7 +127,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                 <div>
                   <label className="text-sm font-medium text-gray-300">Empresa</label>
                   <Input
-                    value={editedLead.company_name || ''}
+                    value={editedLead?.company_name || ''}
                     onChange={(e) => setEditedLead(prev => ({ ...prev, company_name: e.target.value }))}
                     className="bg-gray-700 border-gray-600"
                   />
@@ -139,7 +139,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                 <div>
                   <label className="text-sm font-medium text-gray-300">Status</label>
                   <Select 
-                    value={editedLead.lead_status || 'new'} 
+                    value={editedLead?.lead_status || 'new'} 
                     onValueChange={(value) => setEditedLead(prev => ({ ...prev, lead_status: value }))}
                   >
                     <SelectTrigger className="bg-gray-700 border-gray-600">
@@ -169,7 +169,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
               <div>
                 <label className="text-sm font-medium text-gray-300">Notas</label>
                 <Textarea
-                  value={editedLead.notes || ''}
+                  value={editedLead?.notes || ''}
                   onChange={(e) => setEditedLead(prev => ({ ...prev, notes: e.target.value }))}
                   className="bg-gray-700 border-gray-600"
                   rows={4}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +10,7 @@ import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
 import PaymentStatusModal from "./leads/PaymentStatusModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY = 'admin-leads-filters';
 const DEFAULT_FILTERS = {
@@ -22,6 +22,7 @@ const DEFAULT_FILTERS = {
 
 const AdminLeads = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [convertLead, setConvertLead] = useState<any>(null);
   const [paymentLead, setPaymentLead] = useState<any>(null);
@@ -75,7 +76,7 @@ const AdminLeads = () => {
           activity_type: 'status_change',
           title: `Status alterado para ${getStatusLabel(newStatus)}`,
           description: `Status alterado de "${getStatusLabel(oldStatus)}" para "${getStatusLabel(newStatus)}"`,
-          contact_person: 'Admin', // TODO: Usar nome do usuário logado
+          contact_person: user?.email || 'Admin',
           contact_method: 'sistema'
         });
       }

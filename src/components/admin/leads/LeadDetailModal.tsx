@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ActivityHistorySection from "../shared/ActivityHistorySection";
 import { useCreateActivity } from "@/hooks/useActivityHistory";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LeadDetailModalProps {
   selectedLead: any;
@@ -22,6 +22,7 @@ interface LeadDetailModalProps {
 const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetailModalProps) => {
   const [editedLead, setEditedLead] = useState<any>(selectedLead || {});
   const createActivity = useCreateActivity();
+  const { user } = useAuth();
 
   // Atualizar editedLead sempre que selectedLead mudar
   useEffect(() => {
@@ -34,7 +35,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
     e.preventDefault();
     
     // Verificar se o status mudou
-    const statusChanged = editedLead.lead_status !== selectedLead?.lead_status;
+    const statusChanged = editedLead?.lead_status !== selectedLead?.lead_status;
     
     await onUpdate(editedLead);
     
@@ -46,7 +47,7 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
         activity_type: 'status_change',
         title: `Status alterado para ${getStatusLabel(editedLead.lead_status)}`,
         description: `Status alterado de "${getStatusLabel(selectedLead?.lead_status)}" para "${getStatusLabel(editedLead.lead_status)}"`,
-        contact_person: 'Admin', // TODO: Usar nome do usuário logado
+        contact_person: user?.email || 'Admin',
         contact_method: 'sistema'
       });
     }
@@ -84,18 +85,18 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-gray-800 border-gray-600 text-white">
-        <DialogHeader>
+      <DialogContent className="max-w-5xl h-[90vh] overflow-hidden bg-gray-800 border-gray-600 text-white flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl">Detalhes do Lead - {selectedLead.full_name}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-700">
+        <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-700 flex-shrink-0">
             <TabsTrigger value="details" className="data-[state=active]:bg-senvia-500">Detalhes</TabsTrigger>
             <TabsTrigger value="activity" className="data-[state=active]:bg-senvia-500">Histórico</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="details" className="space-y-6 mt-6">
+          <TabsContent value="details" className="flex-1 overflow-y-auto mt-6 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Informações básicas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,16 +213,44 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
             </form>
           </TabsContent>
 
-          <TabsContent value="activity" className="mt-6">
-            <ActivityHistorySection 
-              entityType="lead" 
-              entityId={selectedLead.id} 
-            />
+          <TabsContent value="activity" className="flex-1 overflow-hidden mt-6">
+            <div className="h-full">
+              <ActivityHistorySection 
+                entityType="lead" 
+                entityId={selectedLead.id} 
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
   );
+};
+
+const getStatusColor = (status: string) => {
+  const colorMap: { [key: string]: string } = {
+    'new': 'bg-blue-500',
+    'contacted': 'bg-yellow-500',
+    'qualified': 'bg-green-500',
+    'proposal': 'bg-purple-500',
+    'negotiation': 'bg-orange-500',
+    'converted': 'bg-emerald-500',
+    'lost': 'bg-red-500'
+  };
+  return colorMap[status] || 'bg-gray-500';
+};
+
+const getStatusLabel = (status: string) => {
+  const statusMap: { [key: string]: string } = {
+    'new': 'Novo',
+    'contacted': 'Contactado',
+    'qualified': 'Qualificado',
+    'proposal': 'Proposta Enviada',
+    'negotiation': 'Negociação',
+    'converted': 'Convertido',
+    'lost': 'Perdido'
+  };
+  return statusMap[status] || status;
 };
 
 export default LeadDetailModal;

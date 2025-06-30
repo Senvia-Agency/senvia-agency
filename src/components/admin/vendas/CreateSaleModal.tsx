@@ -9,6 +9,7 @@ import BasicServiceFields from "./form-fields/BasicServiceFields";
 import ValueFields from "./form-fields/ValueFields";
 import StatusFields from "./form-fields/StatusFields";
 import AdditionalFields from "./form-fields/AdditionalFields";
+import { useCustomers } from "@/hooks/useCustomers";
 
 interface CreateSaleModalProps {
   isOpen: boolean;
@@ -22,8 +23,24 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
     handleSubmit,
     handleServiceTypeChange,
     handleServiceSelect,
+    handleNewCustomerCreated,
+    tempCustomers,
     createSaleMutation
   } = useCreateSaleForm(onClose);
+
+  const { data: customers } = useCustomers();
+
+  // Combinar clientes reais com temporários para exibição
+  const allCustomers = [
+    ...(customers || []),
+    ...tempCustomers
+  ];
+
+  // Encontrar o cliente selecionado (real ou temporário)
+  const selectedCustomer = allCustomers.find(c => c.id === formData.customer_id);
+  const selectedCustomerName = selectedCustomer ? 
+    `${selectedCustomer.full_name} - ${selectedCustomer.email}${selectedCustomer.id.startsWith('temp_') ? ' (Novo)' : ''}` : 
+    '';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -36,7 +53,20 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
           <CustomerSelectField
             value={formData.customer_id}
             onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
+            onNewCustomerCreated={handleNewCustomerCreated}
           />
+
+          {/* Mostrar cliente selecionado se for novo */}
+          {formData.customer_id.startsWith('temp_') && (
+            <div className="bg-gray-700 p-3 rounded border border-senvia-500">
+              <p className="text-sm text-senvia-400">
+                ✓ Novo cliente: {selectedCustomerName}
+              </p>
+              <p className="text-xs text-gray-400">
+                Este cliente será criado quando a venda for salva.
+              </p>
+            </div>
+          )}
 
           <ServiceTypeField
             value={formData.service_type}

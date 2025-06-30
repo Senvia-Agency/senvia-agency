@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { useCreateSale } from "@/hooks/useSales";
 import { useCustomServices } from "@/hooks/useCustomServices";
-import { useQuery } from "@tanstack/react-query";
+import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export const useCreateSaleForm = (onClose: () => void) => {
   const [formData, setFormData] = useState({
@@ -21,8 +23,13 @@ export const useCreateSaleForm = (onClose: () => void) => {
     expected_delivery_date: ''
   });
 
+  const [tempCustomers, setTempCustomers] = useState<any[]>([]);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const createSaleMutation = useCreateSale();
   const { data: customServices } = useCustomServices();
+  const convertLeadToCustomerMutation = useConvertLeadToCustomer();
   
   const { data: stripeProducts } = useQuery({
     queryKey: ['stripe-products-for-sale'],
@@ -35,6 +42,28 @@ export const useCreateSaleForm = (onClose: () => void) => {
       if (error) throw error;
       return data;
     },
+  });
+
+  // Mutation para criar novo cliente
+  const createCustomerMutation = useMutation({
+    mutationFn: async (customerData: any) => {
+      const { data, error } = await supabase
+        .from('customers')
+        .insert([{
+          full_name: customerData.full_name,
+          email: customerData.email,
+          phone: customerData.phone,
+          company_name: customerData.company_name
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    }
   });
 
   const resetForm = () => {
@@ -52,14 +81,35 @@ export const useCreateSaleForm = (onClose: () => void) => {
       notes: '',
       expected_delivery_date: ''
     });
+    setTempCustomers([]);
+  };
+
+  const handleNewCustomerCreated = (newCustomer: any) => {
+    setTempCustomers(prev => [...prev, newCustomer]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
+      let finalCustomerId = formData.customer_id;
+
+      // Se é um cliente temporário, criar no banco primeiro
+      if (finalCustomerId.startsWith('temp_')) {
+        const tempCustomer = tempCustomers.find(c => c.id === finalCustomerId);
+        if (tempCustomer) {
+          const createdCustomer = await createCustomerMutation.mutateAsync(tempCustomer);
+          finalCustomerId = createdCustomer.id;
+          
+          toast({
+            title: "Cliente criado",
+            description: `Cliente ${tempCustomer.full_name} foi criado com sucesso.`
+          });
+        }
+      }
+      
       await createSaleMutation.mutateAsync({
-        customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
+        customer_id: finalCustomerId === 'none' ? undefined : finalCustomerId || undefined,
         service_type: formData.service_type,
         service_id: formData.service_id || undefined,
         service_name: formData.service_name,
@@ -124,6 +174,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
     handleSubmit,
     handleServiceTypeChange,
     handleServiceSelect,
+    handleNewCustomerCreated,
+    tempCustomers,
     createSaleMutation
   };
 };

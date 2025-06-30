@@ -36,25 +36,6 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
     },
   });
 
-  if (serviceType === 'manual') return null;
-
-  const services = serviceType === 'custom_service' 
-    ? customServices?.filter(s => s.status === 'active') || []
-    : stripeProducts || [];
-
-  const selectedService = services.find(s => s.id === serviceId);
-  const selectedServiceName = selectedService ? 
-    (serviceType === 'custom_service' 
-      ? `${selectedService.name} - €${selectedService.base_price}`
-      : selectedService.name
-    ) : '';
-
-  // Filter services based on search term
-  const filteredServices = services.filter(service => 
-    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
   // Focus input when dropdown opens
   useEffect(() => {
     if (open && inputRef.current) {
@@ -81,6 +62,26 @@ const ServiceSearchField = ({ serviceType, serviceId, onServiceSelect }: Service
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [open]);
+
+  // Return null after all hooks are declared
+  if (serviceType === 'manual') return null;
+
+  const services = serviceType === 'custom_service' 
+    ? customServices?.filter(s => s.status === 'active') || []
+    : stripeProducts || [];
+
+  const selectedService = services.find(s => s.id === serviceId);
+  const selectedServiceName = selectedService ? 
+    (serviceType === 'custom_service' 
+      ? `${selectedService.name} - €${selectedService.base_price}`
+      : selectedService.name
+    ) : '';
+
+  // Filter services based on search term
+  const filteredServices = services.filter(service => 
+    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const handleSelect = (selectedServiceId: string) => {
     console.log('Selecting service:', selectedServiceId);

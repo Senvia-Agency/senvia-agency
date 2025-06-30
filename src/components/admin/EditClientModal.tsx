@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -110,19 +111,19 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto bg-gray-800 border-gray-600 text-white">
+      <DialogContent className="max-w-5xl h-[90vh] bg-gray-800 border-gray-600 text-white">
         <DialogHeader>
           <DialogTitle className="text-xl">Editar Cliente - {client.full_name}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-700">
+        <Tabs defaultValue="details" className="w-full h-full flex flex-col">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-700 flex-shrink-0">
             <TabsTrigger value="details" className="data-[state=active]:bg-senvia-500">Detalhes</TabsTrigger>
             <TabsTrigger value="projects" className="data-[state=active]:bg-senvia-500">Projetos</TabsTrigger>
             <TabsTrigger value="activity" className="data-[state=active]:bg-senvia-500">Histórico</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="details" className="space-y-6 mt-6">
+          <TabsContent value="details" className="flex-1 overflow-y-auto mt-6 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Informações básicas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -265,11 +266,11 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
             </form>
           </TabsContent>
 
-          <TabsContent value="projects" className="mt-6">
+          <TabsContent value="projects" className="flex-1 overflow-y-auto mt-6">
             <CustomerProjectsSection customerId={client.id} />
           </TabsContent>
 
-          <TabsContent value="activity" className="mt-6">
+          <TabsContent value="activity" className="flex-1 overflow-y-auto mt-6">
             <ActivityHistorySection 
               entityType="customer" 
               entityId={client.id} 

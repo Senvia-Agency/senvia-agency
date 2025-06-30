@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   BarChart,
@@ -9,14 +10,16 @@ import {
   FileText,
   Settings,
   UserCheck,
-  TrendingUp
+  TrendingUp,
+  Menu,
+  User,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { ModeToggle } from "@/components/ModeToggle";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -29,13 +32,14 @@ import { useNavigate } from "react-router-dom";
 
 interface AdminSidebarProps {
   activeSection: string;
-  onSectionChange: (section: string) => void;
+  setActiveSection: (section: string) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
 }
 
-const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen }: AdminSidebarProps) => {
   const { toast } = useToast();
-  const { signOut } = useUser();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   const menuItems = [
@@ -52,8 +56,8 @@ const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => 
   ];
 
   const handleNavigation = (sectionId: string) => {
-    onSectionChange(sectionId);
-    setIsMobileOpen(false);
+    setActiveSection(sectionId);
+    setSidebarOpen(false);
   };
 
   const handleSignOut = async () => {
@@ -76,20 +80,19 @@ const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => 
   return (
     <>
       {/* Mobile Menu */}
-      <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
             className="md:hidden"
           >
-            <MenuIcon className="h-5 w-5" />
+            <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64">
           <div className="flex items-center justify-between py-2">
             <h2 className="text-lg font-semibold">Admin Dashboard</h2>
-            <ModeToggle />
           </div>
           <Separator />
           <div className="grid gap-4 py-4">
@@ -135,7 +138,6 @@ const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => 
       <div className="hidden md:flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 h-screen py-4">
         <div className="flex items-center justify-between px-4">
           <h2 className="text-lg font-semibold">Admin Dashboard</h2>
-          <ModeToggle />
         </div>
         <Separator className="my-4" />
         <div className="flex-grow flex flex-col gap-4 px-4">

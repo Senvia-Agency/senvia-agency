@@ -143,7 +143,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
                 <SelectValue placeholder="Selecionar cliente existente" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Venda direta (sem cliente)</SelectItem>
+                <SelectItem value="none">Venda direta (sem cliente)</SelectItem>
                 {customers?.map((customer) => (
                   <SelectItem key={customer.id} value={customer.id}>
                     {customer.full_name} - {customer.email}

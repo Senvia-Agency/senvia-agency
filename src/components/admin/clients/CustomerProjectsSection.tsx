@@ -250,14 +250,14 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
               {editingAssignee === sale.id ? (
                 <div className="flex items-center gap-1 flex-1">
                   <Select
-                    value={sale.assigned_to || ''}
-                    onValueChange={(value) => updateSaleAssignee(sale.id, value)}
+                    value={sale.assigned_to || 'unassigned'}
+                    onValueChange={(value) => updateSaleAssignee(sale.id, value === 'unassigned' ? '' : value)}
                   >
                     <SelectTrigger className="h-6 text-xs bg-gray-600 border-gray-500 flex-1">
                       <SelectValue placeholder="Selecionar responsável" />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="">Não atribuído</SelectItem>
+                      <SelectItem value="unassigned">Não atribuído</SelectItem>
                       {adminUsers?.map((user) => (
                         <SelectItem key={user.user_id} value={user.user_id}>
                           {user.full_name}

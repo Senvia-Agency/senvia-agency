@@ -1,152 +1,179 @@
-
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { 
-  LayoutDashboard, 
-  Users, 
-  CreditCard, 
-  Package, 
-  LogOut,
-  BarChart3,
+import React, { useState } from "react";
+import {
+  BarChart,
+  Users,
+  DollarSign,
+  Package,
+  CreditCard,
+  RefreshCw,
+  FileText,
+  Settings,
   UserCheck,
-  FileText
+  TrendingUp
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { ModeToggle } from "@/components/ModeToggle";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/hooks/useUser";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useNavigate } from "react-router-dom";
 
 interface AdminSidebarProps {
   activeSection: string;
-  setActiveSection: (section: string) => void;
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
+  onSectionChange: (section: string) => void;
 }
 
-const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebarOpen }: AdminSidebarProps) => {
-  const { signOut } = useAuth();
+const AdminSidebar = ({ activeSection, onSectionChange }: AdminSidebarProps) => {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { toast } = useToast();
+  const { signOut } = useUser();
+  const navigate = useNavigate();
 
   const menuItems = [
-    {
-      id: 'overview',
-      label: 'Visão Geral',
-      icon: LayoutDashboard
-    },
-    {
-      id: 'leads',
-      label: 'Gestão de Leads',
-      icon: Users
-    },
-    {
-      id: 'clientes',
-      label: 'Clientes',
-      icon: UserCheck
-    },
-    {
-      id: 'blog',
-      label: 'Gestão de Blog',
-      icon: FileText
-    },
-    {
-      id: 'financeiro',
-      label: 'Módulo Financeiro',
-      icon: BarChart3
-    },
-    {
-      id: 'produtos-assinaturas',
-      label: 'Produtos & Assinaturas',
-      icon: Package
-    }
+    { id: "overview", label: "Visão Geral", icon: BarChart },
+    { id: "leads", label: "Leads", icon: Users },
+    { id: "vendas", label: "Vendas", icon: TrendingUp },
+    { id: "clientes", label: "Clientes", icon: UserCheck },
+    { id: "financeiro", label: "Financeiro", icon: DollarSign },
+    { id: "produtos", label: "Produtos & Assinaturas", icon: Package },
+    { id: "pagamentos", label: "Pagamentos", icon: CreditCard },
+    { id: "assinaturas", label: "Assinaturas", icon: RefreshCw },
+    { id: "blog", label: "Blog", icon: FileText },
+    { id: "configuracoes", label: "Configurações", icon: Settings }
   ];
+
+  const handleNavigation = (sectionId: string) => {
+    onSectionChange(sectionId);
+    setIsMobileOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logout realizado",
+        description: "Sessão encerrada com sucesso.",
+      });
+      navigate('/login');
+    } catch (error) {
+      toast({
+        title: "Erro ao fazer logout",
+        description: "Não foi possível encerrar a sessão.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-gray-900 border-r border-gray-700 flex-col">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-700">
-          <div className="text-2xl font-bold text-senvia-500 glow">SENVIA</div>
-          <div className="text-sm text-gray-400">Admin Dashboard</div>
-        </div>
-
-        {/* Menu */}
-        <nav className="flex-1 p-4 space-y-2">
-          {menuItems.map((item) => (
-            <Button
-              key={item.id}
-              variant={activeSection === item.id ? "default" : "ghost"}
-              onClick={() => setActiveSection(item.id)}
-              className={`w-full justify-start gap-3 ${
-                activeSection === item.id 
-                  ? 'bg-senvia-500 text-black hover:bg-senvia-400' 
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </Button>
-          ))}
-        </nav>
-
-        {/* Logout */}
-        <div className="p-4 border-t border-gray-700">
+      {/* Mobile Menu */}
+      <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+        <SheetTrigger asChild>
           <Button
             variant="ghost"
-            onClick={signOut}
-            className="w-full justify-start gap-3 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            size="icon"
+            className="md:hidden"
           >
-            <LogOut className="h-5 w-5" />
-            Sair
+            <MenuIcon className="h-5 w-5" />
           </Button>
-        </div>
-      </div>
-
-      {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed left-0 top-0 h-full w-64 bg-gray-900 border-r border-gray-700 flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        {/* Header */}
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-          <div>
-            <div className="text-xl font-bold text-senvia-500 glow">SENVIA</div>
-            <div className="text-xs text-gray-400">Admin Dashboard</div>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64">
+          <div className="flex items-center justify-between py-2">
+            <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+            <ModeToggle />
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="p-1 text-gray-400 hover:text-white"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+          <Separator />
+          <div className="grid gap-4 py-4">
+            {menuItems.map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={`w-full justify-start ${activeSection === item.id ? 'font-semibold' : ''}`}
+                onClick={() => handleNavigation(item.id)}
+              >
+                <item.icon className="mr-2 h-4 w-4" />
+                <span>{item.label}</span>
+              </Button>
+            ))}
+          </div>
+          <Separator />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="justify-start w-full mt-2">
+                <Avatar className="mr-2 h-6 w-6">
+                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                  <AvatarFallback>SC</AvatarFallback>
+                </Avatar>
+                <span>Minha Conta</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Perfil</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SheetContent>
+      </Sheet>
 
-        {/* Menu */}
-        <nav className="flex-1 p-3 space-y-1">
+      {/* Desktop Menu */}
+      <div className="hidden md:flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 h-screen py-4">
+        <div className="flex items-center justify-between px-4">
+          <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+          <ModeToggle />
+        </div>
+        <Separator className="my-4" />
+        <div className="flex-grow flex flex-col gap-4 px-4">
           {menuItems.map((item) => (
             <Button
               key={item.id}
-              variant={activeSection === item.id ? "default" : "ghost"}
-              onClick={() => setActiveSection(item.id)}
-              className={`w-full justify-start gap-3 text-sm ${
-                activeSection === item.id 
-                  ? 'bg-senvia-500 text-black hover:bg-senvia-400' 
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
-              }`}
+              variant="ghost"
+              className={`w-full justify-start ${activeSection === item.id ? 'font-semibold' : ''}`}
+              onClick={() => handleNavigation(item.id)}
             >
-              <item.icon className="h-4 w-4" />
-              <span className="truncate">{item.label}</span>
+              <item.icon className="mr-2 h-4 w-4" />
+              <span>{item.label}</span>
             </Button>
           ))}
-        </nav>
-
-        {/* Logout */}
-        <div className="p-3 border-t border-gray-700">
-          <Button
-            variant="ghost"
-            onClick={signOut}
-            className="w-full justify-start gap-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10"
-          >
-            <LogOut className="h-4 w-4" />
-            Sair
-          </Button>
         </div>
+        <Separator />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="justify-start w-full mt-2">
+              <Avatar className="mr-2 h-6 w-6">
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>SC</AvatarFallback>
+              </Avatar>
+              <span>Minha Conta</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              <span>Perfil</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Sair</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </>
   );

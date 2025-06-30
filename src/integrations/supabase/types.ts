@@ -162,6 +162,51 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_services: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          description: string | null
+          estimated_hours: number | null
+          id: string
+          includes_features: Json | null
+          name: string
+          pricing_model: string
+          service_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          includes_features?: Json | null
+          name: string
+          pricing_model?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          includes_features?: Json | null
+          name?: string
+          pricing_model?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_settings: {
         Row: {
           billing_address: Json | null
@@ -833,6 +878,146 @@ export type Database = {
         }
         Relationships: []
       }
+      sale_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string
+          payment_reference: string | null
+          payment_status: string
+          sale_id: string
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method: string
+          payment_reference?: string | null
+          payment_status?: string
+          sale_id: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string
+          payment_reference?: string | null
+          payment_status?: string
+          sale_id?: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_payments_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          assigned_to: string | null
+          commission_rate: number | null
+          created_at: string
+          customer_id: string | null
+          delivered_at: string | null
+          expected_delivery_date: string | null
+          id: string
+          internal_notes: string | null
+          lead_id: string | null
+          notes: string | null
+          paid_amount: number
+          payment_method: string | null
+          payment_status: string
+          remaining_amount: number | null
+          sale_date: string
+          sale_number: string
+          sale_status: string
+          service_description: string | null
+          service_id: string | null
+          service_name: string
+          service_type: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          total_value: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          customer_id?: string | null
+          delivered_at?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          paid_amount?: number
+          payment_method?: string | null
+          payment_status?: string
+          remaining_amount?: number | null
+          sale_date?: string
+          sale_number: string
+          sale_status?: string
+          service_description?: string | null
+          service_id?: string | null
+          service_name: string
+          service_type: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          total_value?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          customer_id?: string | null
+          delivered_at?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          paid_amount?: number
+          payment_method?: string | null
+          payment_status?: string
+          remaining_amount?: number | null
+          sale_date?: string
+          sale_number?: string
+          sale_status?: string
+          service_description?: string | null
+          service_id?: string | null
+          service_name?: string
+          service_type?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          total_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       senvia_assistant_subscriptions: {
         Row: {
           billing_cycle: string
@@ -1141,8 +1326,23 @@ export type Database = {
         Args: { lead_id: string }
         Returns: string
       }
+      convert_lead_to_sale: {
+        Args: {
+          p_lead_id: string
+          p_service_id?: string
+          p_service_type?: string
+          p_service_name?: string
+          p_total_value?: number
+          p_notes?: string
+        }
+        Returns: string
+      }
       generate_blog_slug: {
         Args: { title: string }
+        Returns: string
+      }
+      generate_sale_number: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       get_leads_stats: {

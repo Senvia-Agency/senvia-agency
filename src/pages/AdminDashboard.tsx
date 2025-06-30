@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
@@ -7,19 +6,43 @@ import AdminClientes from "@/components/admin/AdminClientes";
 import AdminBlog from "@/components/admin/AdminBlog";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
+import AdminVendas from "@/components/admin/AdminVendas";
+import AdminPayments from "@/components/admin/AdminPayments";
+import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
+import AdminSettings from "@/components/admin/AdminSettings";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState(() => {
-    try {
-      return localStorage.getItem(SECTION_STORAGE_KEY) || DEFAULT_SECTION;
-    } catch (error) {
-      console.error('Erro ao recuperar seção ativa:', error);
-      return DEFAULT_SECTION;
+  const [activeSection, setActiveSection] = useState("overview");
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "overview":
+        return <AdminOverview />;
+      case "leads":
+        return <AdminLeads />;
+      case "vendas":
+        return <AdminVendas />;
+      case "clientes":
+        return <AdminClientes />;
+      case "financeiro":
+        return <AdminFinanceiro />;
+      case "produtos":
+        return <AdminProdutosAssinaturas />;
+      case "pagamentos":
+        return <AdminPayments />;
+      case "assinaturas":
+        return <AdminSubscriptions />;
+      case "blog":
+        return <AdminBlog />;
+      case "configuracoes":
+        return <AdminSettings />;
+      default:
+        return <AdminOverview />;
     }
-  });
+  };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -46,26 +69,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     console.log('AdminDashboard: Active section changed to:', activeSection);
   }, [activeSection]);
-
-  const renderActiveSection = () => {
-    console.log('AdminDashboard: Rendering section:', activeSection);
-    switch (activeSection) {
-      case 'overview':
-        return <AdminOverview />;
-      case 'leads':
-        return <AdminLeads />;
-      case 'clientes':
-        return <AdminClientes />;
-      case 'blog':
-        return <AdminBlog />;
-      case 'financeiro':
-        return <AdminFinanceiro />;
-      case 'produtos-assinaturas':
-        return <AdminProdutosAssinaturas />;
-      default:
-        return <AdminOverview />;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -99,7 +102,7 @@ const AdminDashboard = () => {
           </div>
           
           <div className="max-w-7xl mx-auto w-full overflow-hidden">
-            {renderActiveSection()}
+            {renderContent()}
           </div>
         </main>
       </div>

@@ -6,6 +6,7 @@ import ActivityHistorySection from "./shared/ActivityHistorySection";
 import CustomerProjectsSection from "./clients/CustomerProjectsSection";
 import { ClientDetailsForm } from "./clients/components/ClientDetailsForm";
 import { ClientInfoDisplay } from "./clients/components/ClientInfoDisplay";
+import OriginalLeadInfo from "./clients/components/OriginalLeadInfo";
 import EntityContactsSection from "./shared/EntityContactsSection";
 
 interface EditClientModalProps {
@@ -56,6 +57,7 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
                   <div className="space-y-6">
                     <ClientDetailsForm client={client} onClose={onClose} />
                     <ClientInfoDisplay client={client} />
+                    <OriginalLeadInfo client={client} />
                   </div>
                 </TabsContent>
 

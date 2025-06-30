@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -146,6 +145,28 @@ const LeadDetailModal = ({ selectedLead, isOpen, onClose, onUpdate }: LeadDetail
                     value={editedLead?.company_name || ''}
                     onChange={(e) => setEditedLead(prev => ({ ...prev, company_name: e.target.value }))}
                     className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/* Informações do negócio */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-300">Objetivo Principal</label>
+                  <Input
+                    value={editedLead?.objective || ''}
+                    onChange={(e) => setEditedLead(prev => ({ ...prev, objective: e.target.value }))}
+                    className="bg-gray-700 border-gray-600"
+                    placeholder="Ex: Aumentar vendas, captar leads..."
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-300">Produto/Serviço Principal</label>
+                  <Input
+                    value={editedLead?.main_product_service || ''}
+                    onChange={(e) => setEditedLead(prev => ({ ...prev, main_product_service: e.target.value }))}
+                    className="bg-gray-700 border-gray-600"
+                    placeholder="Ex: Consultoria, E-commerce, App..."
                   />
                 </div>
               </div>

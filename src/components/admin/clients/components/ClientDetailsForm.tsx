@@ -24,7 +24,9 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
     website: client.website || '',
     customer_status: client.customer_status || 'active',
     customer_tier: client.customer_tier || 'bronze',
-    project_status: client.project_status || 'planning'
+    project_status: client.project_status || 'planning',
+    objective: client.objective || '',
+    main_product_service: client.main_product_service || ''
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -124,6 +126,28 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
             value={formData.website}
             onChange={(e) => handleInputChange('website', e.target.value)}
             className="bg-gray-700 border-gray-600 text-white"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="objective">Objetivo Principal</Label>
+          <Input
+            id="objective"
+            value={formData.objective}
+            onChange={(e) => handleInputChange('objective', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
+            placeholder="Ex: Aumentar vendas, captar leads..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="main_product_service">Produto/Serviço Principal</Label>
+          <Input
+            id="main_product_service"
+            value={formData.main_product_service}
+            onChange={(e) => handleInputChange('main_product_service', e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white"
+            placeholder="Ex: Consultoria, E-commerce, App..."
           />
         </div>
 

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ const EditDueDateModal = ({ account, isOpen, onClose }: EditDueDateModalProps) =
   };
 
   // Resetar o formulário quando abrir/fechar
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && account?.due_date) {
       setNewDueDate(formatDateForInput(account.due_date));
     } else if (!isOpen) {

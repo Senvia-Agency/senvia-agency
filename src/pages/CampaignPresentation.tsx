@@ -341,7 +341,7 @@ const CampaignPresentation = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </CardContent>
                 </Card>
 
                 <Card className="bg-card/50 backdrop-blur-sm border-senvia-500/20">

@@ -28,6 +28,7 @@ interface Project {
   expected_delivery_date?: string;
   delivered_at?: string;
   assigned_to?: string;
+  internal_notes?: string;
   customers?: {
     full_name: string;
     email: string;

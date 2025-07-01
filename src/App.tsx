@@ -20,6 +20,7 @@ const Websites = lazy(() => import("./pages/Websites"));
 const Ecommerce = lazy(() => import("./pages/Ecommerce"));
 const SocialMedia = lazy(() => import("./pages/SocialMedia"));
 const TrafegoPago = lazy(() => import("./pages/TrafegoPago"));
+const CampaignPresentation = lazy(() => import("./pages/CampaignPresentation"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
@@ -63,6 +64,7 @@ function App() {
                 <Route path="/ecommerce" element={<Ecommerce />} />
                 <Route path="/social-media" element={<SocialMedia />} />
                 <Route path="/trafego-pago" element={<TrafegoPago />} />
+                <Route path="/campaign-presentation" element={<CampaignPresentation />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/obrigado" element={<ThankYou />} />

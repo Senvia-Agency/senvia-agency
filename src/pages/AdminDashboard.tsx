@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
@@ -11,6 +10,7 @@ import AdminVendas from "@/components/admin/AdminVendas";
 import AdminPayments from "@/components/admin/AdminPayments";
 import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
 import AdminSettings from "@/components/admin/AdminSettings";
+import AdminMeusProjetos from "@/components/admin/AdminMeusProjetos";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
@@ -28,6 +28,8 @@ const AdminDashboard = () => {
         return <AdminVendas />;
       case "clientes":
         return <AdminClientes />;
+      case "meus-projetos":
+        return <AdminMeusProjetos />;
       case "financeiro":
         return <AdminFinanceiro />;
       case "produtos":

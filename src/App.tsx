@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,7 +33,6 @@ const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const MeusProjetos = lazy(() => import("./pages/MeusProjetos"));
 
 const queryClient = new QueryClient();
 
@@ -89,11 +89,6 @@ function App() {
                 <Route path="/dashboard/settings" element={
                   <ProtectedRoute>
                     <DashboardSettings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/meus-projetos" element={
-                  <ProtectedRoute>
-                    <MeusProjetos />
                   </ProtectedRoute>
                 } />
                 

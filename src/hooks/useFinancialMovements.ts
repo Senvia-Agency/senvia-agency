@@ -81,10 +81,11 @@ export const useFinancialMovements = (dateRange: number = 30) => {
     }
   });
 
-  // Calcular estatísticas
+  // Calcular estatísticas (excluindo estornos das despesas totais)
   const stats = {
     totalReceitas: movements?.filter(m => m.movement_type === 'receita').reduce((sum, m) => sum + Number(m.amount), 0) || 0,
-    totalDespesas: movements?.filter(m => m.movement_type === 'despesa').reduce((sum, m) => sum + Number(m.amount), 0) || 0,
+    totalDespesas: movements?.filter(m => m.movement_type === 'despesa' && m.category !== 'estorno').reduce((sum, m) => sum + Number(m.amount), 0) || 0,
+    totalEstornos: movements?.filter(m => m.movement_type === 'despesa' && m.category === 'estorno').reduce((sum, m) => sum + Number(m.amount), 0) || 0,
     lucroLiquido: 0,
     margemLucro: 0
   };

@@ -49,7 +49,7 @@ export const ProjectCancellation = ({ project, onUpdate, onClose }: ProjectCance
 
       // Se houver estorno
       if (shouldRefund && refundAmount > 0) {
-        // Criar movimento financeiro de estorno
+        // Criar movimento financeiro de estorno (categoria especial que não conta como despesa)
         const { error: refundError } = await supabase
           .from('financial_movements')
           .insert({

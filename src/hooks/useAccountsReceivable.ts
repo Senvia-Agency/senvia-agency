@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +37,7 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
           unified_leads(full_name, email)
         `)
         .in('payment_status', ['pending', 'partial', 'overdue'])
+        .neq('sale_status', 'cancelled') // Filtrar projetos cancelados
         .gte('created_at', startDate.toISOString())
         .order('sale_date', { ascending: false });
 

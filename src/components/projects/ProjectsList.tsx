@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,27 +7,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ProjectDetailModal } from "./ProjectDetailModal";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
-
-interface Project {
-  id: string;
-  sale_number: string;
-  service_name: string;
-  service_description?: string;
-  total_value: number;
-  paid_amount: number;
-  sale_status: string;
-  payment_status: string;
-  sale_date: string;
-  expected_delivery_date?: string;
-  delivered_at?: string;
-  assigned_to?: string;
-  customers?: {
-    full_name: string;
-    email: string;
-    phone?: string;
-    company_name?: string;
-  };
-}
+import { Project } from "./types";
 
 interface ProjectsListProps {
   projects?: Project[];

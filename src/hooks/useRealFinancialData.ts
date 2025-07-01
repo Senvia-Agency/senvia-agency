@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -76,9 +75,14 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         .filter(m => m.movement_type === 'receita')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
-      // Despesas dos movimentos financeiros
+      // Despesas dos movimentos financeiros (excluindo estornos)
       const movementsExpenses = (financialMovements || [])
-        .filter(m => m.movement_type === 'despesa')
+        .filter(m => m.movement_type === 'despesa' && m.category !== 'estorno')
+        .reduce((sum, movement) => sum + Number(movement.amount), 0);
+      
+      // Calcular estornos separadamente
+      const totalRefunds = (financialMovements || [])
+        .filter(m => m.movement_type === 'despesa' && m.category === 'estorno')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
       const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + salesRevenue + movementsRevenue;
@@ -94,6 +98,7 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         movementsRevenue,
         totalRevenue,
         totalExpenses,
+        totalRefunds,
         netProfit,
         profitMargin
       });
@@ -119,10 +124,12 @@ export const useRealFinancialData = (dateRange: number = 30) => {
         financial_movements: {
           revenue: movementsRevenue,
           expenses: movementsExpenses,
+          refunds: totalRefunds,
           movements: financialMovements || []
         },
         total_revenue: totalRevenue,
         total_expenses: totalExpenses,
+        total_refunds: totalRefunds,
         net_profit: netProfit,
         profit_margin: profitMargin
       };

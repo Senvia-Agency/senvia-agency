@@ -9,6 +9,7 @@ import BasicServiceFields from "./form-fields/BasicServiceFields";
 import ValueFields from "./form-fields/ValueFields";
 import StatusFields from "./form-fields/StatusFields";
 import AdditionalFields from "./form-fields/AdditionalFields";
+import AssigneeField from "./form-fields/AssigneeField";
 
 interface CreateSaleModalProps {
   isOpen: boolean;
@@ -69,6 +70,11 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
               paymentStatus={formData.payment_status}
               onSaleStatusChange={(value) => setFormData(prev => ({ ...prev, sale_status: value as any }))}
               onPaymentStatusChange={(value) => setFormData(prev => ({ ...prev, payment_status: value as any }))}
+            />
+
+            <AssigneeField
+              value={formData.assigned_to}
+              onChange={(value) => setFormData(prev => ({ ...prev, assigned_to: value }))}
             />
 
             <AdditionalFields

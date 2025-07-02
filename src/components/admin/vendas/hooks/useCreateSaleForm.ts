@@ -19,7 +19,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
     sale_status: 'pending' as const,
     payment_status: 'pending' as const,
     notes: '',
-    expected_delivery_date: ''
+    expected_delivery_date: '',
+    assigned_to: ''
   });
 
   const { toast } = useToast();
@@ -52,7 +53,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
       sale_status: 'pending',
       payment_status: 'pending',
       notes: '',
-      expected_delivery_date: ''
+      expected_delivery_date: '',
+      assigned_to: ''
     });
   };
 
@@ -76,7 +78,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
         notes: formData.notes,
         expected_delivery_date: formData.expected_delivery_date || undefined,
         sale_date: new Date().toISOString(),
-        commission_rate: 0
+        commission_rate: 0,
+        assigned_to: formData.assigned_to || undefined
       });
       
       toast({

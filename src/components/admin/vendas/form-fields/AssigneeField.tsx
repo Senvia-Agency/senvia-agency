@@ -26,7 +26,7 @@ const AssigneeField = ({ value, onChange }: AssigneeFieldProps) => {
           <SelectValue placeholder={isLoading ? "Carregando..." : "Selecionar responsável"} />
         </SelectTrigger>
         <SelectContent className="bg-gray-700 border-gray-600">
-          <SelectItem value="">Não atribuído</SelectItem>
+          <SelectItem value="unassigned">Não atribuído</SelectItem>
           {adminUsers?.map((user) => (
             <SelectItem key={user.user_id} value={user.user_id}>
               {user.full_name} ({user.email})

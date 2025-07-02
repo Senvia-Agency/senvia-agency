@@ -79,7 +79,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
         expected_delivery_date: formData.expected_delivery_date || undefined,
         sale_date: new Date().toISOString(),
         commission_rate: 0,
-        assigned_to: formData.assigned_to || undefined
+        assigned_to: formData.assigned_to === 'unassigned' ? undefined : formData.assigned_to || undefined
       });
       
       toast({

@@ -81,6 +81,35 @@ export const useFinancialMovements = (dateRange: number = 30) => {
     }
   });
 
+  const updateMovementMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<FinancialMovement> }) => {
+      const { data, error } = await supabase
+        .from('financial_movements')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
+      toast({
+        title: "Movimento atualizado",
+        description: "O movimento financeiro foi atualizado com sucesso."
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atualizar movimento",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
   // Calcular estatísticas (excluindo estornos das despesas totais)
   const stats = {
     totalReceitas: movements?.filter(m => m.movement_type === 'receita').reduce((sum, m) => sum + Number(m.amount), 0) || 0,
@@ -98,6 +127,8 @@ export const useFinancialMovements = (dateRange: number = 30) => {
     stats,
     isLoading,
     addMovement: addMovementMutation.mutate,
-    isAddingMovement: addMovementMutation.isPending
+    isAddingMovement: addMovementMutation.isPending,
+    updateMovement: updateMovementMutation.mutate,
+    isUpdatingMovement: updateMovementMutation.isPending
   };
 };

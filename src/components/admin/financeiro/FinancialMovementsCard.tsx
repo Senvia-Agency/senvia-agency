@@ -4,13 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Plus, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useState } from "react";
+import EditMovementModal from "./EditMovementModal";
+import { FinancialMovement } from "@/hooks/useFinancialMovements";
 
 interface FinancialMovementsCardProps {
-  movements: any[];
+  movements: FinancialMovement[];
   onAddMovement: () => void;
+  onUpdateMovement: (id: string, updates: Partial<FinancialMovement>) => void;
+  isUpdating: boolean;
 }
 
-const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovementsCardProps) => {
+const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
+  const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -31,7 +37,11 @@ const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovements
       </CardHeader>
       <CardContent className="space-y-3">
         {movements.slice(0, 5).map((movement) => (
-          <div key={movement.id} className="flex justify-between items-center">
+          <div 
+            key={movement.id} 
+            className="flex justify-between items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
+            onClick={() => setSelectedMovement(movement)}
+          >
             <div>
               <div className="font-medium text-sm">{movement.description}</div>
               <div className="text-xs text-gray-400 capitalize">
@@ -54,6 +64,14 @@ const FinancialMovementsCard = ({ movements, onAddMovement }: FinancialMovements
           </div>
         )}
       </CardContent>
+      
+      <EditMovementModal
+        movement={selectedMovement}
+        isOpen={!!selectedMovement}
+        onClose={() => setSelectedMovement(null)}
+        onUpdate={onUpdateMovement}
+        isUpdating={isUpdating}
+      />
     </Card>
   );
 };

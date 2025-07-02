@@ -19,7 +19,7 @@ const AdminFinanceiro = () => {
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
 
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
-  const { movements, addMovement, isAddingMovement } = useFinancialMovements(selectedPeriod);
+  const { movements, addMovement, isAddingMovement, updateMovement, isUpdatingMovement } = useFinancialMovements(selectedPeriod);
   const { data: accountsReceivable, isLoading: isLoadingAccounts } = useAccountsReceivable(selectedPeriod);
   const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
 
@@ -30,6 +30,10 @@ const AdminFinanceiro = () => {
 
   const handleAddMovement = (movement: any) => {
     addMovement(movement);
+  };
+
+  const handleUpdateMovement = (id: string, updates: any) => {
+    updateMovement({ id, updates });
   };
 
   const handleMarkAsPaid = (accountId: string) => {
@@ -96,6 +100,8 @@ const AdminFinanceiro = () => {
         <FinancialMovementsCard
           movements={movements}
           onAddMovement={() => setIsMovementModalOpen(true)}
+          onUpdateMovement={handleUpdateMovement}
+          isUpdating={isUpdatingMovement}
         />
       </div>
 

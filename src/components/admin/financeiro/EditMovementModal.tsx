@@ -40,7 +40,7 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
         description: movement.description,
         category: movement.category,
         movement_date: movement.movement_date,
-        customer_id: movement.customer_id || '',
+        customer_id: movement.customer_id || 'none',
         notes: movement.notes || ''
       });
     }
@@ -57,7 +57,7 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
       description: formData.description,
       category: formData.category,
       movement_date: formData.movement_date,
-      customer_id: formData.customer_id || undefined,
+      customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
       notes: formData.notes || undefined
     };
 
@@ -184,7 +184,7 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
                 <SelectValue placeholder="Selecionar cliente (opcional)" />
               </SelectTrigger>
               <SelectContent className="bg-gray-700 border-gray-600">
-                <SelectItem value="">Nenhum cliente</SelectItem>
+                <SelectItem value="none">Nenhum cliente</SelectItem>
                 {customers?.map((customer) => (
                   <SelectItem key={customer.id} value={customer.id}>
                     {customer.full_name} ({customer.email})

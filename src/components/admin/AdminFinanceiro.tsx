@@ -85,9 +85,6 @@ const AdminFinanceiro = () => {
         <AccountsReceivableKPICards stats={accountsStats} />
       </div>
 
-      {/* Gráficos de Evolução */}
-      <ReceivablesEvolutionChart accounts={accountsReceivable || []} />
-
       {/* Lista de Contas a Receber */}
       <AccountsReceivableList 
         accounts={accountsReceivable || []} 

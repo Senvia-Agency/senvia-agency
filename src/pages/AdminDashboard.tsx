@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
@@ -16,6 +17,7 @@ const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
 
 const AdminDashboard = () => {
+  const [searchParams] = useSearchParams();
   const [activeSection, setActiveSection] = useState("overview");
 
   const renderContent = () => {
@@ -64,10 +66,16 @@ const AdminDashboard = () => {
     document.title = "Admin Dashboard | SENVIA";
     console.log('AdminDashboard: Component mounted');
     
+    // Verificar se há uma aba especificada na URL
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && tabFromUrl !== activeSection) {
+      setActiveSection(tabFromUrl);
+    }
+    
     return () => {
       console.log('AdminDashboard: Component will unmount');
     };
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     console.log('AdminDashboard: Active section changed to:', activeSection);

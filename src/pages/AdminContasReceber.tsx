@@ -36,10 +36,10 @@ const AdminContasReceber = () => {
         {/* Header */}
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <Link to="/admin">
+            <Link to="/admin?tab=financeiro">
               <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
+                Voltar para Financeiro
               </Button>
             </Link>
             <div>

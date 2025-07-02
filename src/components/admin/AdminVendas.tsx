@@ -122,6 +122,10 @@ const AdminVendas = () => {
         sale={selectedSale}
         isOpen={!!selectedSale}
         onClose={() => setSelectedSale(null)}
+        onSaleUpdated={() => {
+          // Recarregar dados após atualização
+          window.location.reload();
+        }}
       />
     </div>
   );

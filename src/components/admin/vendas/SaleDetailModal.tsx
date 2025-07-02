@@ -6,14 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Calendar, DollarSign, User, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useState } from "react";
+import EditSaleModal from "./EditSaleModal";
 
 interface SaleDetailModalProps {
   sale: any;
   isOpen: boolean;
   onClose: () => void;
+  onSaleUpdated?: () => void;
 }
 
-const SaleDetailModal = ({ sale, isOpen, onClose }: SaleDetailModalProps) => {
+const SaleDetailModal = ({ sale, isOpen, onClose, onSaleUpdated }: SaleDetailModalProps) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
   if (!sale) return null;
 
   const getStatusColor = (status: string) => {
@@ -285,6 +290,7 @@ const SaleDetailModal = ({ sale, isOpen, onClose }: SaleDetailModalProps) => {
           <div className="flex justify-end gap-2 pt-4 border-t border-gray-600">
             <Button
               variant="outline"
+              onClick={() => setIsEditModalOpen(true)}
               className="border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -298,6 +304,17 @@ const SaleDetailModal = ({ sale, isOpen, onClose }: SaleDetailModalProps) => {
             </Button>
           </div>
         </div>
+        
+        {/* Modal de Edição */}
+        <EditSaleModal
+          sale={sale}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSaleUpdated={() => {
+            onSaleUpdated?.();
+            setIsEditModalOpen(false);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

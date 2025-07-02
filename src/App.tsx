@@ -28,6 +28,7 @@ const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
 const CRM = lazy(() => import("./pages/CRM"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Blog = lazy(() => import("./pages/Blog"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
@@ -103,6 +104,11 @@ function App() {
                 <Route path="/admin" element={
                   <AdminRoute>
                     <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/contas-receber" element={
+                  <AdminRoute>
+                    <AdminContasReceber />
                   </AdminRoute>
                 } />
                 

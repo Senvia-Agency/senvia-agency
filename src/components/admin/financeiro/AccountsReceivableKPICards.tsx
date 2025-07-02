@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, AlertTriangle, Euro, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AccountsReceivableKPICardsProps {
   stats: {
@@ -17,22 +18,24 @@ const AccountsReceivableKPICards = ({ stats }: AccountsReceivableKPICardsProps) 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-yellow-500" />
-            Total a Receber
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-yellow-500">
-            €{stats.totalPending.toFixed(2)}
-          </div>
-          <div className="text-xs text-gray-400">
-            {stats.pendingCount} pendências
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/contas-receber">
+        <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+              <Clock className="h-4 w-4 text-yellow-500" />
+              Total a Receber
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-500">
+              €{stats.totalPending.toFixed(2)}
+            </div>
+            <div className="text-xs text-gray-400">
+              {stats.pendingCount} pendências
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="pb-2">

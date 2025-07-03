@@ -195,47 +195,74 @@ export const useFinancialMovements = (dateRange: number = 30) => {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<FinancialMovement> }) => {
       console.log('Tentando atualizar movimento:', id, updates);
       
-      // Primeiro, verificar se o movimento existe na tabela financial_movements
-      const { data: existingMovement, error: checkError } = await supabase
+      // Primeiro, tentar atualizar na tabela financial_movements
+      const { data: financialMovement, error: financialError } = await supabase
         .from('financial_movements')
-        .select('id')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Erro ao verificar movimento:', checkError);
-        throw checkError;
-      }
-
-      if (!existingMovement) {
-        throw new Error('Este movimento não pode ser editado pois não é um movimento manual.');
-      }
-
-      // Filtrar apenas os campos que podem ser atualizados
-      const allowedUpdates = {
-        movement_type: updates.movement_type,
-        amount: updates.amount,
-        description: updates.description,
-        category: updates.category,
-        movement_date: updates.movement_date,
-        customer_id: updates.customer_id || null,
-        notes: updates.notes || null
-      };
-
-      const { data, error } = await supabase
-        .from('financial_movements')
-        .update(allowedUpdates)
+        .update({
+          movement_type: updates.movement_type,
+          amount: updates.amount,
+          description: updates.description,
+          category: updates.category,
+          movement_date: updates.movement_date,
+          customer_id: updates.customer_id || null,
+          notes: updates.notes || null
+        })
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Erro ao atualizar movimento:', error);
-        throw error;
+      if (financialError) {
+        console.error('Erro ao atualizar na tabela financial_movements:', financialError);
       }
-      
-      console.log('Movimento atualizado com sucesso:', data);
-      return data;
+
+      if (financialMovement) {
+        console.log('Movimento atualizado na tabela financial_movements:', financialMovement);
+        return financialMovement;
+      }
+
+      // Se não encontrou na tabela financial_movements, tentar nas outras tabelas
+      // Tentar atualizar na tabela sales
+      const { data: saleMovement, error: saleError } = await supabase
+        .from('sales')
+        .update({
+          service_name: updates.description,
+          paid_amount: updates.amount,
+          notes: updates.notes
+        })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+
+      if (saleError) {
+        console.error('Erro ao atualizar na tabela sales:', saleError);
+      }
+
+      if (saleMovement) {
+        console.log('Movimento atualizado na tabela sales:', saleMovement);
+        return saleMovement;
+      }
+
+      // Tentar atualizar na tabela customer_transactions
+      const { data: transactionMovement, error: transactionError } = await supabase
+        .from('customer_transactions')
+        .update({
+          product_description: updates.description,
+          amount: updates.amount
+        })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+
+      if (transactionError) {
+        console.error('Erro ao atualizar na tabela customer_transactions:', transactionError);
+      }
+
+      if (transactionMovement) {
+        console.log('Movimento atualizado na tabela customer_transactions:', transactionMovement);
+        return transactionMovement;
+      }
+
+      throw new Error('Movimento não encontrado em nenhuma tabela para atualização');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['financial-movements'] });

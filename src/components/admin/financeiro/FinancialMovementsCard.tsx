@@ -19,24 +19,19 @@ interface FinancialMovementsCardProps {
 const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
   const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
   
-  // Função para verificar se é um movimento manual editável
-  const isManualMovement = (movement: FinancialMovement) => {
-    // Movimentos automáticos vêm de outras tabelas e têm características específicas
+  // Função para identificar se é um movimento automático (apenas para exibição)
+  const isAutomaticMovement = (movement: FinancialMovement) => {
     const isFromSales = movement.category === 'venda';
     const isFromLandingPage = movement.category === 'landing_page' || movement.description.includes('Landing Page €4.99');
     const isFromTransactions = movement.description === 'Transação de cliente';
     
-    // Se não é de nenhuma fonte automática, é um movimento manual
-    return !isFromSales && !isFromLandingPage && !isFromTransactions;
+    return isFromSales || isFromLandingPage || isFromTransactions;
   };
   
   const handleMovementClick = (movement: FinancialMovement) => {
     console.log('Clicando no movimento:', movement);
-    console.log('É movimento manual?', isManualMovement(movement));
-    
-    if (isManualMovement(movement)) {
-      setSelectedMovement(movement);
-    }
+    // Agora todos os movimentos são editáveis
+    setSelectedMovement(movement);
   };
   
   return (
@@ -61,24 +56,20 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         <ScrollArea className="h-[200px] px-6">
           <div className="space-y-3 py-3">
             {movements.slice(0, 20).map((movement) => {
-              const canEdit = isManualMovement(movement);
+              const isAutomatic = isAutomaticMovement(movement);
               
               return (
                 <div 
                   key={movement.id} 
-                  className={`flex justify-between items-center p-2 rounded transition-colors ${
-                    canEdit 
-                      ? 'cursor-pointer hover:bg-gray-700' 
-                      : 'cursor-default'
-                  }`}
+                  className="flex justify-between items-center p-2 rounded cursor-pointer hover:bg-gray-700 transition-colors"
                   onClick={() => handleMovementClick(movement)}
                 >
                   <div>
                     <div className="font-medium text-sm">{movement.description}</div>
                     <div className="text-xs text-gray-400 capitalize flex items-center gap-2">
                       {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
-                      {!canEdit && (
-                        <span className="text-xs bg-gray-600 px-2 py-1 rounded">Automático</span>
+                      {isAutomatic && (
+                        <span className="text-xs bg-blue-600 px-2 py-1 rounded">Automático</span>
                       )}
                     </div>
                   </div>

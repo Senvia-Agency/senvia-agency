@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Settings } from "lucide-react";
 import ProductsTable from "./produtos/ProductsTable";
 import CustomServicesSection from "./produtos/CustomServicesSection";
-import ProductStatsCards from "./produtos/ProductStatsCards";
 import { useAdminSubscriptions } from "@/hooks/useAdminSubscriptions";
 import { useAdminProducts } from "@/hooks/useAdminProducts";
 import { useSyncStripeProducts } from "@/hooks/useSyncStripeProducts";
@@ -19,15 +18,6 @@ const AdminProdutosAssinaturas = () => {
     syncStripeProductsMutation.mutate();
   };
 
-  // Stats for ProductStatsCards component
-  const mockStatsCards = {
-    totalProducts: products?.length || 0,
-    activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
-    trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0,
-    totalSales: 0,
-    totalRevenue: 0
-  };
-
   return (
     <div className="space-y-8 p-8">
       <div>
@@ -36,9 +26,6 @@ const AdminProdutosAssinaturas = () => {
           Gerencie o catálogo de produtos e serviços personalizados
         </p>
       </div>
-
-      {/* Stats Cards */}
-      <ProductStatsCards stats={mockStatsCards} />
 
       {/* Tabs para diferentes seções */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

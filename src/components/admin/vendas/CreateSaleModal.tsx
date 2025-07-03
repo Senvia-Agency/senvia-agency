@@ -273,10 +273,8 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
           <AdditionalFields
             notes={formData.notes}
             expectedDeliveryDate={formData.expected_delivery_date}
-            paymentMethod={formData.payment_method}
             onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
             onExpectedDeliveryDateChange={(value) => setFormData(prev => ({ ...prev, expected_delivery_date: value }))}
-            onPaymentMethodChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
           />
 
           <AssigneeField

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp, Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSales } from "@/hooks/useSales";
 import { useSalesStats } from "@/hooks/useSalesStats";
 import { useSalesFilters } from "@/hooks/useSalesFilters";
@@ -69,7 +70,7 @@ const AdminVendas = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -115,18 +116,22 @@ const AdminVendas = () => {
         </div>
       )}
 
-      {/* Lista de Vendas */}
-      <div className="space-y-2">
-        {filteredSales.map((sale) => (
-          <SaleCard 
-            key={sale.id} 
-            sale={sale} 
-            onViewDetails={setSelectedSale}
-            onConvertToRecurring={handleConvertToRecurring}
-            onEdit={handleEditSale}
-            onDelete={handleDeleteSale}
-          />
-        ))}
+      {/* Lista de Vendas com Scroll */}
+      <div className="flex-1 min-h-0">
+        <ScrollArea className="h-[calc(100vh-450px)]">
+          <div className="space-y-2 pr-4">
+            {filteredSales.map((sale) => (
+              <SaleCard 
+                key={sale.id} 
+                sale={sale} 
+                onViewDetails={setSelectedSale}
+                onConvertToRecurring={handleConvertToRecurring}
+                onEdit={handleEditSale}
+                onDelete={handleDeleteSale}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Empty State */}

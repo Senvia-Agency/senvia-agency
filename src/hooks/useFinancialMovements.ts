@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -58,17 +57,19 @@ export const useFinancialMovements = (dateRange: number = 30) => {
           customers(full_name, email)
         `)
         .eq('status', 'completed')
+        .gt('amount', 0)
         .gte('created_at', startDate.toISOString());
 
       if (transactionsError) throw transactionsError;
 
-      // Buscar vendas (receitas)
+      // Buscar vendas (receitas) - apenas vendas com valor pago > 0
       const { data: sales, error: salesError } = await supabase
         .from('sales')
         .select(`
           *,
           customers(full_name, email)
         `)
+        .gt('paid_amount', 0)
         .gte('created_at', startDate.toISOString());
 
       if (salesError) throw salesError;
@@ -78,6 +79,7 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         .from('payments')
         .select('*')
         .eq('status', 'paid')
+        .gt('amount', 0)
         .gte('created_at', startDate.toISOString());
 
       if (paymentsError) throw paymentsError;
@@ -150,10 +152,12 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         })));
       }
 
-      // Ordenar por data (mais recente primeiro)
-      return allMovements.sort((a, b) => 
-        new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
-      );
+      // Filtrar movimentos com valor 0 e ordenar por data (mais recente primeiro)
+      return allMovements
+        .filter(movement => movement.amount > 0)
+        .sort((a, b) => 
+          new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
+        );
     },
     refetchInterval: 10000,
   });

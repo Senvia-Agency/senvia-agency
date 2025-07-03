@@ -8,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCustomers } from "@/hooks/useCustomers";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
-import ServiceSelectionField from "./form-fields/ServiceSelectionField";
-import CustomerSelectField from "./form-fields/CustomerSelectField";
+import CustomerSearchField from "./form-fields/CustomerSearchField";
+import ServiceSearchField from "./form-fields/ServiceSearchField";
 import StatusFields from "./form-fields/StatusFields";
 import ValueFields from "./form-fields/ValueFields";
 import AdditionalFields from "./form-fields/AdditionalFields";
@@ -44,6 +44,21 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
   // Verificar se o serviço selecionado é recorrente
   const selectedService = customServices?.find(s => s.id === formData.service_id);
   const isRecurringService = selectedService?.service_type === 'recurring';
+
+  const handleServiceSelectWithData = (serviceId: string) => {
+    const service = customServices?.find(s => s.id === serviceId);
+    if (service) {
+      setFormData(prev => ({
+        ...prev,
+        service_id: serviceId,
+        service_name: service.name,
+        service_description: service.description || '',
+        total_value: service.base_price.toString(),
+        service_type: 'custom_service'
+      }));
+    }
+    handleServiceSelect(serviceId);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,21 +115,36 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Cliente */}
-            <CustomerSelectField
-              customers={customers}
+            {/* Cliente com busca */}
+            <CustomerSearchField
               value={formData.customer_id}
               onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
             />
 
-            {/* Seleção de Serviço */}
-            <ServiceSelectionField
+            {/* Busca de Serviços */}
+            <div className="space-y-2">
+              <Label className="text-gray-300">Tipo de Serviço</Label>
+              <Select value={formData.service_type} onValueChange={handleServiceTypeChange}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Selecionar tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="manual">Manual</SelectItem>
+                  <SelectItem value="custom_service">Serviço Personalizado</SelectItem>
+                  <SelectItem value="stripe_product">Produto do Stripe</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Campo de busca de serviços */}
+          {formData.service_type !== 'manual' && (
+            <ServiceSearchField
               serviceType={formData.service_type}
               serviceId={formData.service_id}
-              onServiceTypeChange={handleServiceTypeChange}
-              onServiceSelect={handleServiceSelect}
+              onServiceSelect={handleServiceSelectWithData}
             />
-          </div>
+          )}
 
           {/* Informações do Serviço */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

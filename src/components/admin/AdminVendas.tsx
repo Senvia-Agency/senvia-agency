@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import ConvertToRecurringModal from "./vendas/ConvertToRecurringModal";
 import SalesStatsCards from "./vendas/SalesStatsCards";
 import SalesFilters from "./vendas/SalesFilters";
 import SaleCard from "./vendas/SaleCard";
+import EditSaleModal from "./vendas/EditSaleModal";
 
 const AdminVendas = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
@@ -23,6 +23,8 @@ const AdminVendas = () => {
   const [selectedSale, setSelectedSale] = useState<any>(null);
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
   const [saleToConvert, setSaleToConvert] = useState<any>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [saleToEdit, setSaleToEdit] = useState<any>(null);
 
   const { data: sales, isLoading, error } = useSales(selectedPeriod);
   const stats = useSalesStats(sales);
@@ -34,7 +36,8 @@ const AdminVendas = () => {
   };
 
   const handleEditSale = (sale: any) => {
-    setSelectedSale(sale);
+    setSaleToEdit(sale);
+    setIsEditModalOpen(true);
   };
 
   const handleDeleteSale = (sale: any) => {
@@ -182,6 +185,21 @@ const AdminVendas = () => {
         onSaleUpdated={() => {
           // Recarregar dados após atualização
           window.location.reload();
+        }}
+      />
+
+      <EditSaleModal
+        sale={saleToEdit}
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSaleToEdit(null);
+        }}
+        onSaleUpdated={() => {
+          // Recarregar dados após atualização
+          window.location.reload();
+          setIsEditModalOpen(false);
+          setSaleToEdit(null);
         }}
       />
 

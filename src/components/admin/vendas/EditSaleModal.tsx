@@ -178,11 +178,13 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
                     <SelectValue placeholder="Selecionar método" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-700 border-gray-600">
+                    <SelectItem value="mbway">MB Way</SelectItem>
+                    <SelectItem value="bank_transfer">Transferência Bancária</SelectItem>
                     <SelectItem value="card">Cartão</SelectItem>
-                    <SelectItem value="transfer">Transferência</SelectItem>
                     <SelectItem value="cash">Dinheiro</SelectItem>
-                    <SelectItem value="pix">PIX</SelectItem>
                     <SelectItem value="check">Cheque</SelectItem>
+                    <SelectItem value="stripe">Stripe</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

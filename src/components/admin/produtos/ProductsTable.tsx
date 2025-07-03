@@ -28,6 +28,26 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
     return iconMap[category] || '📦';
   };
 
+  const formatPrice = (plans: any[]) => {
+    if (!plans || plans.length === 0) return 'Sem planos';
+    
+    const plan = plans[0];
+    if (plan.price_monthly) {
+      return `€${plan.price_monthly}/mês`;
+    }
+    if (plan.price_yearly) {
+      return `€${plan.price_yearly}/ano`;
+    }
+    return 'Preço não definido';
+  };
+
+  const getStripeId = (product: any) => {
+    if (product.stripe_product_id) {
+      return product.stripe_product_id.substring(0, 20) + '...';
+    }
+    return 'N/A';
+  };
+
   return (
     <div className="border border-slate-600/50 rounded-lg overflow-hidden">
       <Table>
@@ -35,7 +55,9 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
           <TableRow className="border-slate-600/50 bg-slate-700/50">
             <TableHead className="text-slate-300">Produto</TableHead>
             <TableHead className="text-slate-300">Categoria</TableHead>
+            <TableHead className="text-slate-300">Preço</TableHead>
             <TableHead className="text-slate-300">Planos</TableHead>
+            <TableHead className="text-slate-300">Stripe ID</TableHead>
             <TableHead className="text-slate-300">Status</TableHead>
             <TableHead className="text-slate-300">Criado em</TableHead>
             <TableHead className="text-slate-300">Ações</TableHead>
@@ -50,15 +72,22 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
                   <div>
                     <div className="font-medium text-slate-100">{product.name}</div>
                     <div className="text-sm text-slate-400 truncate max-w-xs">
-                      {product.description || 'Sem descrição'}
+                      {product.description || 'Sem descrição disponível'}
                     </div>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
                 <span className="text-slate-300 capitalize">
-                  {product.category.replace('_', ' ')}
+                  {product.category?.replace('_', ' ') || 'N/A'}
                 </span>
+              </TableCell>
+              <TableCell>
+                <div className="text-sm">
+                  <span className="text-senvia-400 font-medium">
+                    {formatPrice(product.product_plans)}
+                  </span>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="text-sm">
@@ -69,6 +98,11 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
                   ) : (
                     <span className="text-slate-500">Sem planos</span>
                   )}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="text-xs text-slate-400 font-mono">
+                  {getStripeId(product)}
                 </div>
               </TableCell>
               <TableCell>

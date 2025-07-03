@@ -14,7 +14,6 @@ import BalanceSummaryCard from "./financeiro/BalanceSummaryCard";
 import AccountsReceivableList from "./financeiro/AccountsReceivableList";
 import RecurringReceivablesList from "./financeiro/RecurringReceivablesList";
 import ReceivablesEvolutionChart from "./financeiro/ReceivablesEvolutionChart";
-import CreateRecurringServiceModal from "./financeiro/CreateRecurringServiceModal";
 import PeriodSelector from "./financeiro/PeriodSelector";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -73,7 +72,6 @@ const AdminFinanceiro = () => {
         </div>
         <div className="flex justify-between items-center">
           <div className="flex gap-2">
-            <CreateRecurringServiceModal />
             <Button 
               onClick={handleGenerateRecurring}
               disabled={generateRecurring.isPending}
@@ -81,7 +79,7 @@ const AdminFinanceiro = () => {
               className="flex items-center gap-2 border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               <RefreshCw className="h-4 w-4" />
-              {generateRecurring.isPending ? "Gerando..." : "Gerar Contas"}
+              {generateRecurring.isPending ? "Gerando..." : "Gerar Contas Recorrentes"}
             </Button>
           </div>
           <PeriodSelector

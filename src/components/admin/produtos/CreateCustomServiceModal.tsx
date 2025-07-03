@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { useCreateCustomService } from "@/hooks/useCustomServices";
+import { useCreateCustomService, useCreateRecurringFromCustomService } from "@/hooks/useCustomServices";
+import { useCustomers } from "@/hooks/useCustomers";
 
 interface CreateCustomServiceModalProps {
   isOpen: boolean;
@@ -28,14 +29,23 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
     status: 'active' as 'active' | 'inactive'
   });
 
+  // Campos adicionais para serviços recorrentes
+  const [recurringData, setRecurringData] = useState({
+    customer_id: '',
+    billing_day: '1',
+    start_date: new Date().toISOString().split('T')[0]
+  });
+
   const [newFeature, setNewFeature] = useState('');
   const createServiceMutation = useCreateCustomService();
+  const createRecurringMutation = useCreateRecurringFromCustomService();
+  const { data: customers } = useCustomers();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      await createServiceMutation.mutateAsync({
+      const serviceResult = await createServiceMutation.mutateAsync({
         name: formData.name,
         description: formData.description,
         base_price: Number(formData.base_price),
@@ -46,8 +56,19 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
         includes_features: formData.includes_features,
         status: formData.status
       });
+
+      // Se for um serviço recorrente e tem cliente selecionado, criar o serviço recorrente
+      if (formData.service_type === 'recurring' && recurringData.customer_id) {
+        await createRecurringMutation.mutateAsync({
+          customServiceId: serviceResult.id,
+          customerId: recurringData.customer_id,
+          billingDay: parseInt(recurringData.billing_day),
+          startDate: recurringData.start_date
+        });
+      }
       
       onClose();
+      // Reset form
       setFormData({
         name: '',
         description: '',
@@ -58,6 +79,11 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
         estimated_hours: '',
         includes_features: [],
         status: 'active'
+      });
+      setRecurringData({
+        customer_id: '',
+        billing_day: '1',
+        start_date: new Date().toISOString().split('T')[0]
       });
     } catch (error) {
       console.error('Erro ao criar serviço:', error);
@@ -83,7 +109,7 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
+      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-white">Novo Serviço Personalizado</DialogTitle>
         </DialogHeader>
@@ -177,6 +203,62 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
             </div>
           </div>
 
+          {/* Campos específicos para serviços recorrentes */}
+          {formData.service_type === 'recurring' && (
+            <div className="p-4 bg-gray-700 rounded-lg space-y-4">
+              <h4 className="text-white font-medium">Configurações de Recorrência</h4>
+              
+              <div>
+                <Label className="text-gray-300">Cliente (opcional)</Label>
+                <Select value={recurringData.customer_id} onValueChange={(value) => setRecurringData(prev => ({ ...prev, customer_id: value }))}>
+                  <SelectTrigger className="bg-gray-600 border-gray-500 text-white">
+                    <SelectValue placeholder="Selecione um cliente para ativar automaticamente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {customers?.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id}>
+                        {customer.full_name} ({customer.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-400 mt-1">
+                  Se selecionar um cliente, o serviço recorrente será ativado automaticamente
+                </p>
+              </div>
+
+              {recurringData.customer_id && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-300">Dia de Cobrança</Label>
+                    <Select value={recurringData.billing_day} onValueChange={(value) => setRecurringData(prev => ({ ...prev, billing_day: value }))}>
+                      <SelectTrigger className="bg-gray-600 border-gray-500 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                          <SelectItem key={day} value={day.toString()}>
+                            Dia {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-gray-300">Data de Início</Label>
+                    <Input
+                      type="date"
+                      value={recurringData.start_date}
+                      onChange={(e) => setRecurringData(prev => ({ ...prev, start_date: e.target.value }))}
+                      className="bg-gray-600 border-gray-500 text-white"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Horas Estimadas (opcional) */}
           {formData.pricing_model === 'hourly' && (
             <div>
@@ -258,10 +340,10 @@ const CreateCustomServiceModal = ({ isOpen, onClose }: CreateCustomServiceModalP
             </Button>
             <Button
               type="submit"
-              disabled={createServiceMutation.isPending}
+              disabled={createServiceMutation.isPending || createRecurringMutation.isPending}
               className="bg-senvia-500 hover:bg-senvia-400 text-black"
             >
-              {createServiceMutation.isPending ? 'Criando...' : 'Criar Serviço'}
+              {(createServiceMutation.isPending || createRecurringMutation.isPending) ? 'Criando...' : 'Criar Serviço'}
             </Button>
           </div>
         </form>

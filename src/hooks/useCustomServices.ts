@@ -97,3 +97,62 @@ export const useUpdateCustomService = () => {
     }
   });
 };
+
+// Nova função para criar serviço recorrente a partir de serviço personalizado
+export const useCreateRecurringFromCustomService = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: {
+      customServiceId: string;
+      customerId: string;
+      billingDay: number;
+      startDate: string;
+    }) => {
+      // Buscar dados do serviço personalizado
+      const { data: customService, error: serviceError } = await supabase
+        .from('custom_services')
+        .select('*')
+        .eq('id', data.customServiceId)
+        .single();
+
+      if (serviceError) throw serviceError;
+
+      // Criar serviço recorrente
+      const { data: recurringService, error } = await supabase
+        .from('recurring_services')
+        .insert([{
+          customer_id: data.customerId,
+          service_id: data.customServiceId,
+          service_name: customService.name,
+          service_description: customService.description,
+          monthly_amount: customService.base_price,
+          billing_day: data.billingDay,
+          start_date: data.startDate,
+          next_billing_date: data.startDate,
+          status: 'active'
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return recurringService;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-stats'] });
+      toast({
+        title: "Serviço recorrente criado",
+        description: "O serviço recorrente foi criado com sucesso."
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao criar serviço recorrente",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+};

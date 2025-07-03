@@ -28,7 +28,7 @@ const AdminMeusProjetos = () => {
   });
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-8 p-8 overflow-auto">
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">Meus Projetos</h1>
         <p className="text-gray-400">

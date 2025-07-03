@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ const AdminContasReceber = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 p-6">
+      <div className="min-h-screen bg-gray-900 p-6 overflow-auto">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-8 text-gray-400">
             Carregando contas a receber...
@@ -31,7 +32,7 @@ const AdminContasReceber = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
+    <div className="min-h-screen bg-gray-900 p-6 overflow-auto">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-4">

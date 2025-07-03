@@ -83,7 +83,7 @@ const AdminDashboard = () => {
   }, [activeSection]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
+    <div className="min-h-screen bg-gray-900 text-white flex overflow-hidden">
       <AdminSidebar 
         activeSection={activeSection} 
         setActiveSection={handleSectionChange}
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
         />
       )}
       
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 overflow-auto">
         {/* Header mobile com hambúrguer */}
         <div className="lg:hidden p-6">
           <button

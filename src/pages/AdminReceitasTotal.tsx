@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import MetaPixel from "@/components/MetaPixel";
 
 const AdminReceitasTotal = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
@@ -38,6 +39,7 @@ const AdminReceitasTotal = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 text-white flex">
+        <MetaPixel />
         <AdminSidebar 
           activeSection={activeSection}
           setActiveSection={setActiveSection}
@@ -55,6 +57,7 @@ const AdminReceitasTotal = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex">
+      <MetaPixel />
       <AdminSidebar 
         activeSection={activeSection}
         setActiveSection={setActiveSection}

@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { usePublishedBlogPosts } from "@/hooks/useBlogPosts";
+import MetaPixel from "../components/MetaPixel";
 
 const Blog = () => {
   const { data: posts, isLoading } = usePublishedBlogPosts();
 
   return (
     <div className="min-h-screen">
+      <MetaPixel />
       <Navbar />
       
       {/* Hero Section */}

@@ -1,11 +1,14 @@
+
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PortfolioSection from "../components/PortfolioSection";
+import MetaPixel from "../components/MetaPixel";
 
 const Projetos = () => {
   return (
     <div className="min-h-screen">
+      <MetaPixel />
       <Navbar />
       
       {/* Hero Section */}

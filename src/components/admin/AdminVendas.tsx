@@ -44,7 +44,7 @@ const AdminVendas = () => {
 
   if (error) {
     return (
-      <div className="h-screen flex flex-col overflow-hidden">
+      <div className="h-full flex flex-col">
         <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
@@ -57,7 +57,7 @@ const AdminVendas = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex flex-col overflow-hidden">
+      <div className="h-full flex flex-col">
         <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
@@ -70,9 +70,9 @@ const AdminVendas = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 pb-4">
+      <div className="flex items-center justify-between p-6 pb-4 flex-shrink-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Módulo de Vendas</h1>
           <p className="text-gray-400 text-sm sm:text-base">Gerencie todas as vendas da SENVIA</p>
@@ -87,12 +87,12 @@ const AdminVendas = () => {
       </div>
 
       {/* Estatísticas */}
-      <div className="px-6 pb-4">
+      <div className="px-6 pb-4 flex-shrink-0">
         <SalesStatsCards stats={stats} />
       </div>
 
       {/* Filtros */}
-      <div className="px-6 pb-4">
+      <div className="px-6 pb-4 flex-shrink-0">
         <SalesFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -107,7 +107,7 @@ const AdminVendas = () => {
 
       {/* Cabeçalho da Tabela */}
       {filteredSales.length > 0 && (
-        <div className="px-6 pb-2">
+        <div className="px-6 pb-2 flex-shrink-0">
           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
             <div className="flex items-center justify-between gap-4 text-sm font-medium text-gray-400">
               <div className="flex-shrink-0 w-24">Código</div>
@@ -123,9 +123,9 @@ const AdminVendas = () => {
       )}
 
       {/* Lista de Vendas com Scroll Interno */}
-      <div className="flex-1 px-6 pb-6 min-h-0">
+      <div className="flex-1 min-h-0 px-6">
         <ScrollArea className="h-full">
-          <div className="space-y-2 pr-4">
+          <div className="space-y-2 pr-4 pb-6">
             {filteredSales.map((sale) => (
               <SaleCard 
                 key={sale.id} 
@@ -142,7 +142,7 @@ const AdminVendas = () => {
 
       {/* Empty State */}
       {(!filteredSales || filteredSales.length === 0) && !isLoading && (
-        <div className="flex-1 px-6 pb-6 flex items-center justify-center">
+        <div className="flex-1 px-6 flex items-center justify-center">
           <Card className="bg-gray-800 border-gray-700 w-full max-w-md">
             <CardContent className="text-center py-12">
               <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />

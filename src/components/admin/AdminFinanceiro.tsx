@@ -1,19 +1,13 @@
+
 import { useState } from "react";
 import { useRealFinancialData } from "@/hooks/useRealFinancialData";
 import { useFinancialMovements } from "@/hooks/useFinancialMovements";
-import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+import { useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 import { useGenerateRecurringReceivables } from "@/hooks/useRecurringServices";
 import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
 import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
-import RecurringServicesKPICards from "./financeiro/RecurringServicesKPICards";
-import RevenueBreakdownCard from "./financeiro/RevenueBreakdownCard";
 import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
-import RecentTransactionsCard from "./financeiro/RecentTransactionsCard";
-import BalanceSummaryCard from "./financeiro/BalanceSummaryCard";
-import AccountsReceivableList from "./financeiro/AccountsReceivableList";
-import RecurringReceivablesList from "./financeiro/RecurringReceivablesList";
-import ReceivablesEvolutionChart from "./financeiro/ReceivablesEvolutionChart";
 import PeriodSelector from "./financeiro/PeriodSelector";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -24,8 +18,6 @@ const AdminFinanceiro = () => {
 
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
   const { movements, addMovement, isAddingMovement, updateMovement, isUpdatingMovement } = useFinancialMovements(selectedPeriod);
-  const { data: accountsReceivable, isLoading: isLoadingAccounts } = useAccountsReceivable(selectedPeriod);
-  const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
   const generateRecurring = useGenerateRecurringReceivables();
 
   const totalRevenue = financialData?.total_revenue || 0;
@@ -41,15 +33,11 @@ const AdminFinanceiro = () => {
     updateMovement({ id, updates });
   };
 
-  const handleMarkAsPaid = (accountId: string) => {
-    console.log('Marcando como pago:', accountId);
-  };
-
   const handleGenerateRecurring = async () => {
     await generateRecurring.mutateAsync();
   };
 
-  if (isLoadingFinancial || isLoadingAccounts) {
+  if (isLoadingFinancial) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -98,47 +86,19 @@ const AdminFinanceiro = () => {
         selectedPeriod={selectedPeriod}
       />
 
-      {/* KPI Cards Serviços Recorrentes */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-white">Serviços Recorrentes</h2>
-        <RecurringServicesKPICards />
-      </div>
-
       {/* KPI Cards Contas a Receber */}
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
-        <AccountsReceivableKPICards stats={accountsStats} />
+        <AccountsReceivableKPICards stats={null} />
       </div>
 
-      {/* Listas de Contas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecurringReceivablesList />
-        <AccountsReceivableList 
-          accounts={accountsReceivable || []} 
-          onMarkAsPaid={handleMarkAsPaid}
-        />
-      </div>
-
-      {/* Revenue Breakdown and Financial Movements */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueBreakdownCard financialData={financialData} />
+      {/* Financial Movements */}
+      <div className="grid grid-cols-1 gap-6">
         <FinancialMovementsCard
           movements={movements}
           onAddMovement={() => setIsMovementModalOpen(true)}
           onUpdateMovement={handleUpdateMovement}
           isUpdating={isUpdatingMovement}
-        />
-      </div>
-
-      {/* Recent Transactions and Balance Summary */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentTransactionsCard financialData={financialData} />
-        <BalanceSummaryCard
-          totalRevenue={totalRevenue}
-          totalExpenses={totalExpenses}
-          netProfit={netProfit}
-          profitMargin={profitMargin}
-          selectedPeriod={selectedPeriod}
         />
       </div>
 

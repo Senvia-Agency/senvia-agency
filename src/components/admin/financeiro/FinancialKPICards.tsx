@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Euro, Target } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface FinancialKPICardsProps {
   totalRevenue: number;
@@ -19,39 +20,43 @@ const FinancialKPICards = ({
 }: FinancialKPICardsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-green-500" />
-            Receita Total
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-500">
-            €{totalRevenue.toFixed(2)}
-          </div>
-          <div className="text-xs text-gray-400">
-            {selectedPeriod} dias
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/receitas-total">
+        <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              Receita Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-500">
+              €{totalRevenue.toFixed(2)}
+            </div>
+            <div className="text-xs text-gray-400">
+              {selectedPeriod} dias
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            Despesas Total
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-500">
-            €{totalExpenses.toFixed(2)}
-          </div>
-          <div className="text-xs text-gray-400">
-            {selectedPeriod} dias
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/despesas-total">
+        <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-red-500" />
+              Despesas Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">
+              €{totalExpenses.toFixed(2)}
+            </div>
+            <div className="text-xs text-gray-400">
+              {selectedPeriod} dias
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="pb-2">

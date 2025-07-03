@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, AlertTriangle, Euro, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 
 interface AccountsReceivableKPICardsProps {
   stats: {
@@ -13,8 +14,27 @@ interface AccountsReceivableKPICardsProps {
   } | null;
 }
 
-const AccountsReceivableKPICards = ({ stats }: AccountsReceivableKPICardsProps) => {
-  if (!stats) return null;
+const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPICardsProps) => {
+  const { data: accountsReceivable, isLoading } = useAccountsReceivable(30);
+  const stats = useAccountsReceivableStats(accountsReceivable || []);
+
+  if (isLoading || !stats) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="bg-gray-800 border-gray-700">
+            <CardHeader className="pb-2">
+              <div className="h-4 w-24 bg-gray-600 rounded animate-pulse"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 w-20 bg-gray-600 rounded animate-pulse mb-2"></div>
+              <div className="h-3 w-16 bg-gray-600 rounded animate-pulse"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -37,22 +57,24 @@ const AccountsReceivableKPICards = ({ stats }: AccountsReceivableKPICardsProps) 
         </Card>
       </Link>
 
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            Em Atraso
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-500">
-            €{stats.totalOverdue.toFixed(2)}
-          </div>
-          <div className="text-xs text-gray-400">
-            {stats.overdueCount} atrasadas
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/contas-atraso">
+        <Card className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              Em Atraso
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">
+              €{stats.totalOverdue.toFixed(2)}
+            </div>
+            <div className="text-xs text-gray-400">
+              {stats.overdueCount} atrasadas
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="pb-2">

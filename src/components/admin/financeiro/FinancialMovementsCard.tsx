@@ -17,6 +17,7 @@ interface FinancialMovementsCardProps {
 
 const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
   const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
+  
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -36,7 +37,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        {movements.slice(0, 5).map((movement) => (
+        {movements.slice(0, 10).map((movement) => (
           <div 
             key={movement.id} 
             className="flex justify-between items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"

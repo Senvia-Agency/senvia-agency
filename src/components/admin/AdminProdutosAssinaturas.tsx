@@ -7,14 +7,22 @@ import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
 import PerformanceSummary from "./produtos/PerformanceSummary";
 import ProductStatsCards from "./produtos/ProductStatsCards";
 import { useAdminSubscriptions } from "@/hooks/useAdminSubscriptions";
+import { useAdminProducts } from "@/hooks/useAdminProducts";
+import { useSyncStripeProducts } from "@/hooks/useSyncStripeProducts";
 
 const AdminProdutosAssinaturas = () => {
   const [activeTab, setActiveTab] = useState("catalog");
   const { data: subscriptions } = useAdminSubscriptions();
+  const { data: products, isLoading: productsLoading } = useAdminProducts();
+  const syncStripeProductsMutation = useSyncStripeProducts();
 
-  // Mock data for stats - you can replace with real hooks
+  const handleSyncWithStripe = () => {
+    syncStripeProductsMutation.mutate();
+  };
+
+  // Stats for ProductStatsCards component
   const mockStatsCards = {
-    totalProducts: 0,
+    totalProducts: products?.length || 0,
     activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
     trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0,
     totalSales: 0,
@@ -30,8 +38,6 @@ const AdminProdutosAssinaturas = () => {
     activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
     trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0
   };
-
-  const mockProducts: any[] = [];
 
   return (
     <div className="space-y-8 p-8">
@@ -80,10 +86,10 @@ const AdminProdutosAssinaturas = () => {
 
         <TabsContent value="catalog" className="space-y-6">
           <ProductCatalog 
-            products={mockProducts}
-            productsLoading={false}
-            syncWithStripe={() => {}}
-            isLoading={false}
+            products={products || []}
+            productsLoading={productsLoading}
+            syncWithStripe={handleSyncWithStripe}
+            isLoading={syncStripeProductsMutation.isPending}
           />
         </TabsContent>
 

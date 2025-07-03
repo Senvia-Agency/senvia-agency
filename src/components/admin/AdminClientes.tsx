@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -99,7 +98,7 @@ const AdminClientes = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 md:space-y-6">
+      <div className="space-y-8 p-8">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
         </div>
@@ -111,9 +110,12 @@ const AdminClientes = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-8 p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Gestão de Clientes</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Gestão de Clientes</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Gerencie todos os clientes da SENVIA</p>
+        </div>
         <div className="w-full sm:w-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

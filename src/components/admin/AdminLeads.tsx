@@ -224,7 +224,7 @@ const AdminLeads = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8 p-8">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Gestão de Leads</h1>
         </div>
@@ -236,7 +236,7 @@ const AdminLeads = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

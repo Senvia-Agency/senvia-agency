@@ -32,6 +32,15 @@ const AdminVendas = () => {
     setIsConvertModalOpen(true);
   };
 
+  const handleEditSale = (sale: any) => {
+    setSelectedSale(sale);
+  };
+
+  const handleDeleteSale = (sale: any) => {
+    // TODO: Implementar lógica de exclusão
+    console.log('Delete sale:', sale.id);
+  };
+
   if (error) {
     return (
       <div className="space-y-6">
@@ -91,14 +100,31 @@ const AdminVendas = () => {
         setSelectedPeriod={setSelectedPeriod}
       />
 
+      {/* Cabeçalho da Tabela */}
+      {filteredSales.length > 0 && (
+        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+          <div className="flex items-center justify-between gap-4 text-sm font-medium text-gray-400">
+            <div className="flex-shrink-0 w-24">Código</div>
+            <div className="flex-shrink-0 w-48">Cliente</div>
+            <div className="flex-1 min-w-0">Serviço</div>
+            <div className="flex-shrink-0 w-20 text-right">Valor</div>
+            <div className="flex-shrink-0">Status</div>
+            <div className="flex-shrink-0 w-24 text-right">Data</div>
+            <div className="flex-shrink-0 w-8"></div>
+          </div>
+        </div>
+      )}
+
       {/* Lista de Vendas */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="space-y-2">
         {filteredSales.map((sale) => (
           <SaleCard 
             key={sale.id} 
             sale={sale} 
             onViewDetails={setSelectedSale}
             onConvertToRecurring={handleConvertToRecurring}
+            onEdit={handleEditSale}
+            onDelete={handleDeleteSale}
           />
         ))}
       </div>

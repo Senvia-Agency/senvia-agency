@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +50,16 @@ const LandingPageForm = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      // Track Facebook Pixel Lead event before submission
+      if (window.fbq) {
+        window.fbq('track', 'Lead', {
+          content_name: 'Landing Page Form Submission',
+          content_category: 'Lead Generation',
+          value: 1.00,
+          currency: 'EUR'
+        });
+      }
+
       const { error } = await supabase
         .from('unified_leads')
         .insert({
@@ -68,6 +77,14 @@ const LandingPageForm = () => {
         });
 
       if (error) throw error;
+      
+      // Track successful conversion
+      if (window.fbq) {
+        window.fbq('track', 'CompleteRegistration', {
+          content_name: 'Landing Page Lead Conversion',
+          content_category: 'Lead Generation'
+        });
+      }
       
       navigate('/obrigado');
     } catch (error) {

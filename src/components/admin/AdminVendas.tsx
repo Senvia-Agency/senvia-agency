@@ -8,6 +8,7 @@ import { useSalesStats } from "@/hooks/useSalesStats";
 import { useSalesFilters } from "@/hooks/useSalesFilters";
 import CreateSaleModal from "./vendas/CreateSaleModal";
 import SaleDetailModal from "./vendas/SaleDetailModal";
+import ConvertToRecurringModal from "./vendas/ConvertToRecurringModal";
 import SalesStatsCards from "./vendas/SalesStatsCards";
 import SalesFilters from "./vendas/SalesFilters";
 import SaleCard from "./vendas/SaleCard";
@@ -19,10 +20,17 @@ const AdminVendas = () => {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<any>(null);
+  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+  const [saleToConvert, setSaleToConvert] = useState<any>(null);
 
   const { data: sales, isLoading, error } = useSales(selectedPeriod);
   const stats = useSalesStats(sales);
   const filteredSales = useSalesFilters(sales, searchTerm, statusFilter, paymentFilter);
+
+  const handleConvertToRecurring = (sale: any) => {
+    setSaleToConvert(sale);
+    setIsConvertModalOpen(true);
+  };
 
   if (error) {
     return (
@@ -90,6 +98,7 @@ const AdminVendas = () => {
             key={sale.id} 
             sale={sale} 
             onViewDetails={setSelectedSale}
+            onConvertToRecurring={handleConvertToRecurring}
           />
         ))}
       </div>
@@ -125,6 +134,15 @@ const AdminVendas = () => {
         onSaleUpdated={() => {
           // Recarregar dados após atualização
           window.location.reload();
+        }}
+      />
+
+      <ConvertToRecurringModal
+        sale={saleToConvert}
+        isOpen={isConvertModalOpen}
+        onClose={() => {
+          setIsConvertModalOpen(false);
+          setSaleToConvert(null);
         }}
       />
     </div>

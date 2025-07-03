@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCreateRecurringFromCustomService } from "@/hooks/useCustomServices";
 import { useCreateRecurringService } from "@/hooks/useRecurringServices";
 import { useCustomers } from "@/hooks/useCustomers";
 import { Sale } from "@/hooks/sales/types";
@@ -22,8 +21,7 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
 
   const { data: customers } = useCustomers();
-  const createRecurringFromCustom = useCreateRecurringFromCustomService();
-  const createRecurringDirect = useCreateRecurringService();
+  const createRecurringService = useCreateRecurringService();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,33 +29,30 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
     if (!sale) return;
 
     try {
-      if (sale.service_type === 'custom_service' && sale.service_id) {
-        // Usar serviço personalizado existente
-        await createRecurringFromCustom.mutateAsync({
-          customServiceId: sale.service_id,
-          customerId: customerId || sale.customer_id || '',
-          billingDay: parseInt(billingDay),
-          startDate: startDate
-        });
-      } else {
-        // Criar serviço recorrente direto
-        await createRecurringDirect.mutateAsync({
-          customer_id: customerId || sale.customer_id || '',
-          service_name: sale.service_name,
-          service_description: sale.service_description,
-          monthly_amount: sale.total_value,
-          billing_day: parseInt(billingDay),
-          start_date: startDate,
-          status: 'active',
-          next_billing_date: startDate
-        });
-      }
+      await createRecurringService.mutateAsync({
+        customer_id: customerId || sale.customer_id || '',
+        service_id: sale.service_id,
+        service_name: sale.service_name,
+        service_description: sale.service_description,
+        monthly_amount: sale.total_value,
+        billing_day: parseInt(billingDay),
+        start_date: startDate,
+        status: 'active',
+        next_billing_date: startDate
+      });
 
       onClose();
     } catch (error) {
       console.error('Erro ao converter para recorrente:', error);
     }
   };
+
+  // Set default customer when sale changes
+  React.useEffect(() => {
+    if (sale?.customer_id) {
+      setCustomerId(sale.customer_id);
+    }
+  }, [sale]);
 
   if (!sale) return null;
 
@@ -134,10 +129,10 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
             </Button>
             <Button 
               type="submit" 
-              disabled={createRecurringFromCustom.isPending || createRecurringDirect.isPending}
-              className="flex-1"
+              disabled={createRecurringService.isPending}
+              className="flex-1 bg-senvia-500 hover:bg-senvia-400 text-black"
             >
-              {(createRecurringFromCustom.isPending || createRecurringDirect.isPending) ? "Convertendo..." : "Converter"}
+              {createRecurringService.isPending ? "Convertendo..." : "Converter"}
             </Button>
           </div>
         </form>

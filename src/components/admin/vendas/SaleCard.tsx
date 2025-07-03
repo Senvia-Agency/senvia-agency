@@ -6,11 +6,11 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sale } from "@/hooks/sales/types";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SaleCardProps {
   sale: Sale;
@@ -91,8 +91,8 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
 
         {/* Menu de Ações */}
         <div className="flex-shrink-0">
-          <ContextMenu>
-            <ContextMenuTrigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
@@ -100,35 +100,35 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
               >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
-            </ContextMenuTrigger>
-            <ContextMenuContent className="bg-gray-800 border-gray-700">
-              <ContextMenuItem 
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-gray-800 border-gray-700" align="end">
+              <DropdownMenuItem 
                 onClick={() => onViewDetails(sale)}
                 className="text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Ver Detalhes
-              </ContextMenuItem>
+              </DropdownMenuItem>
               {onEdit && (
-                <ContextMenuItem 
+                <DropdownMenuItem 
                   onClick={() => onEdit(sale)}
                   className="text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Editar
-                </ContextMenuItem>
+                </DropdownMenuItem>
               )}
               {onDelete && sale.sale_status !== 'cancelled' && (
-                <ContextMenuItem 
+                <DropdownMenuItem 
                   onClick={() => onDelete(sale)}
                   className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Excluir
-                </ContextMenuItem>
+                </DropdownMenuItem>
               )}
-            </ContextMenuContent>
-          </ContextMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

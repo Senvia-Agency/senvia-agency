@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
@@ -30,9 +29,7 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
   console.log('CustomerDropdown - search term:', searchTerm);
 
   const selectedCustomer = customers?.find(c => c.id === value);
-  const selectedCustomerName = selectedCustomer ? 
-    `${selectedCustomer.full_name} - ${selectedCustomer.email}` : 
-    '';
+  const selectedCustomerName = selectedCustomer ? selectedCustomer.full_name : '';
 
   // Filter customers based on search term
   const filteredCustomers = customers?.filter(customer => {
@@ -177,7 +174,6 @@ const CustomerDropdown = ({ customers, value, onChange }: CustomerDropdownProps)
                   />
                   <div className="flex flex-col flex-1 min-w-0">
                     <span className="font-medium text-white truncate">{customer.full_name}</span>
-                    <span className="text-sm text-gray-400 truncate">{customer.email}</span>
                     {customer.company_name && (
                       <span className="text-xs text-gray-500 truncate">{customer.company_name}</span>
                     )}

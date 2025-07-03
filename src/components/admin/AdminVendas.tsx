@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import SalesStatsCards from "./vendas/SalesStatsCards";
 import SalesFilters from "./vendas/SalesFilters";
 import SaleCard from "./vendas/SaleCard";
 import EditSaleModal from "./vendas/EditSaleModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AdminVendas = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
@@ -26,6 +28,7 @@ const AdminVendas = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [saleToEdit, setSaleToEdit] = useState<any>(null);
 
+  const queryClient = useQueryClient();
   const { data: sales, isLoading, error } = useSales(selectedPeriod);
   const stats = useSalesStats(sales);
   const filteredSales = useSalesFilters(sales, searchTerm, statusFilter, paymentFilter);
@@ -53,6 +56,20 @@ const AdminVendas = () => {
   const handleCloseCreateModal = () => {
     console.log('Closing create sale modal...');
     setIsCreateModalOpen(false);
+  };
+
+  const handleSaleUpdated = () => {
+    // Invalidar queries para recarregar os dados sem recarregar a página
+    queryClient.invalidateQueries({ queryKey: ['sales'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
+    setIsEditModalOpen(false);
+    setSaleToEdit(null);
+  };
+
+  const handleSaleDetailUpdated = () => {
+    // Invalidar queries para recarregar os dados sem recarregar a página
+    queryClient.invalidateQueries({ queryKey: ['sales'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
   };
 
   if (error) {
@@ -182,10 +199,7 @@ const AdminVendas = () => {
         sale={selectedSale}
         isOpen={!!selectedSale}
         onClose={() => setSelectedSale(null)}
-        onSaleUpdated={() => {
-          // Recarregar dados após atualização
-          window.location.reload();
-        }}
+        onSaleUpdated={handleSaleDetailUpdated}
       />
 
       <EditSaleModal
@@ -195,12 +209,7 @@ const AdminVendas = () => {
           setIsEditModalOpen(false);
           setSaleToEdit(null);
         }}
-        onSaleUpdated={() => {
-          // Recarregar dados após atualização
-          window.location.reload();
-          setIsEditModalOpen(false);
-          setSaleToEdit(null);
-        }}
+        onSaleUpdated={handleSaleUpdated}
       />
 
       <ConvertToRecurringModal

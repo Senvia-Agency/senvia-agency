@@ -227,7 +227,8 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         .update({
           service_name: updates.description,
           paid_amount: updates.amount,
-          notes: updates.notes
+          notes: updates.notes,
+          sale_date: updates.movement_date ? new Date(updates.movement_date).toISOString() : undefined
         })
         .eq('id', id)
         .select()

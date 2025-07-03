@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
 
   useEffect(() => {
     if (movement) {
+      console.log('Setting form data for movement:', movement);
       setFormData({
         movement_type: movement.movement_type,
         amount: movement.amount.toString(),
@@ -51,15 +53,19 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
     
     if (!movement) return;
 
+    console.log('Submitting update with data:', formData);
+
     const updates = {
       movement_type: formData.movement_type,
       amount: Number(formData.amount),
       description: formData.description,
       category: formData.category,
       movement_date: formData.movement_date,
-      customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
-      notes: formData.notes || undefined
+      customer_id: formData.customer_id === 'none' ? null : formData.customer_id,
+      notes: formData.notes || null
     };
+
+    console.log('Final updates object:', updates);
 
     onUpdate(movement.id, updates);
     onClose();
@@ -166,7 +172,10 @@ const EditMovementModal = ({ movement, isOpen, onClose, onUpdate, isUpdating }: 
                 id="movement_date"
                 type="date"
                 value={formData.movement_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, movement_date: e.target.value }))}
+                onChange={(e) => {
+                  console.log('Date changed to:', e.target.value);
+                  setFormData(prev => ({ ...prev, movement_date: e.target.value }));
+                }}
                 className="bg-gray-700 border-gray-600 text-white"
                 required
               />

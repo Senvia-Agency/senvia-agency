@@ -56,11 +56,13 @@ const ValueFields = ({
             <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
               <SelectValue placeholder="Selecionar método" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="stripe">Stripe</SelectItem>
-              <SelectItem value="bank_transfer">Transferência Bancária</SelectItem>
+            <SelectContent className="bg-gray-700 border-gray-600">
               <SelectItem value="mbway">MB Way</SelectItem>
+              <SelectItem value="bank_transfer">Transferência Bancária</SelectItem>
+              <SelectItem value="card">Cartão</SelectItem>
               <SelectItem value="cash">Dinheiro</SelectItem>
+              <SelectItem value="check">Cheque</SelectItem>
+              <SelectItem value="stripe">Stripe</SelectItem>
               <SelectItem value="other">Outro</SelectItem>
             </SelectContent>
           </Select>

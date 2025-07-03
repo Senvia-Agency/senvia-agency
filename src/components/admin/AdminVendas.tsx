@@ -44,7 +44,7 @@ const AdminVendas = () => {
 
   if (error) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="flex flex-col h-screen max-h-screen overflow-hidden">
         <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
@@ -57,7 +57,7 @@ const AdminVendas = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="flex flex-col h-screen max-h-screen overflow-hidden">
         <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
@@ -70,8 +70,8 @@ const AdminVendas = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
+    <div className="flex flex-col h-screen max-h-screen overflow-hidden">
+      {/* Header fixo */}
       <div className="flex items-center justify-between p-6 pb-4 flex-shrink-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Módulo de Vendas</h1>
@@ -86,12 +86,12 @@ const AdminVendas = () => {
         </Button>
       </div>
 
-      {/* Estatísticas */}
+      {/* Estatísticas fixas */}
       <div className="px-6 pb-4 flex-shrink-0">
         <SalesStatsCards stats={stats} />
       </div>
 
-      {/* Filtros */}
+      {/* Filtros fixos */}
       <div className="px-6 pb-4 flex-shrink-0">
         <SalesFilters
           searchTerm={searchTerm}
@@ -105,7 +105,7 @@ const AdminVendas = () => {
         />
       </div>
 
-      {/* Cabeçalho da Tabela */}
+      {/* Cabeçalho da Tabela fixo */}
       {filteredSales.length > 0 && (
         <div className="px-6 pb-2 flex-shrink-0">
           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
@@ -122,43 +122,42 @@ const AdminVendas = () => {
         </div>
       )}
 
-      {/* Lista de Vendas com Scroll Interno */}
-      <div className="flex-1 min-h-0 px-6">
-        <ScrollArea className="h-full">
-          <div className="space-y-2 pr-4 pb-6">
-            {filteredSales.map((sale) => (
-              <SaleCard 
-                key={sale.id} 
-                sale={sale} 
-                onViewDetails={setSelectedSale}
-                onConvertToRecurring={handleConvertToRecurring}
-                onEdit={handleEditSale}
-                onDelete={handleDeleteSale}
-              />
-            ))}
+      {/* Área de scroll das vendas - só esta área tem scroll */}
+      <div className="flex-1 min-h-0 px-6 pb-6">
+        {filteredSales.length > 0 ? (
+          <ScrollArea className="h-full">
+            <div className="space-y-2 pr-4">
+              {filteredSales.map((sale) => (
+                <SaleCard 
+                  key={sale.id} 
+                  sale={sale} 
+                  onViewDetails={setSelectedSale}
+                  onConvertToRecurring={handleConvertToRecurring}
+                  onEdit={handleEditSale}
+                  onDelete={handleDeleteSale}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <Card className="bg-gray-800 border-gray-700 w-full max-w-md">
+              <CardContent className="text-center py-12">
+                <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-white mb-2">Nenhuma venda encontrada</h3>
+                <p className="text-gray-400 mb-4">Comece criando sua primeira venda ou ajuste os filtros.</p>
+                <Button 
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="bg-senvia-500 hover:bg-senvia-400 text-black"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Criar Primeira Venda
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </ScrollArea>
+        )}
       </div>
-
-      {/* Empty State */}
-      {(!filteredSales || filteredSales.length === 0) && !isLoading && (
-        <div className="flex-1 px-6 flex items-center justify-center">
-          <Card className="bg-gray-800 border-gray-700 w-full max-w-md">
-            <CardContent className="text-center py-12">
-              <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">Nenhuma venda encontrada</h3>
-              <p className="text-gray-400 mb-4">Comece criando sua primeira venda ou ajuste os filtros.</p>
-              <Button 
-                onClick={() => setIsCreateModalOpen(true)}
-                className="bg-senvia-500 hover:bg-senvia-400 text-black"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Criar Primeira Venda
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* Modais */}
       <CreateSaleModal

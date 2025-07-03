@@ -44,8 +44,8 @@ const AdminVendas = () => {
 
   if (error) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-screen flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
         <div className="text-center py-8 text-red-400">
@@ -57,8 +57,8 @@ const AdminVendas = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-screen flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between p-6">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo de Vendas</h1>
         </div>
         <div className="text-center py-8 text-gray-400 flex items-center justify-center gap-2">
@@ -70,9 +70,9 @@ const AdminVendas = () => {
   }
 
   return (
-    <div className="space-y-6 h-full">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between p-6 pb-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Módulo de Vendas</h1>
           <p className="text-gray-400 text-sm sm:text-base">Gerencie todas as vendas da SENVIA</p>
@@ -87,38 +87,44 @@ const AdminVendas = () => {
       </div>
 
       {/* Estatísticas */}
-      <SalesStatsCards stats={stats} />
+      <div className="px-6 pb-4">
+        <SalesStatsCards stats={stats} />
+      </div>
 
       {/* Filtros */}
-      <SalesFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        paymentFilter={paymentFilter}
-        setPaymentFilter={setPaymentFilter}
-        selectedPeriod={selectedPeriod}
-        setSelectedPeriod={setSelectedPeriod}
-      />
+      <div className="px-6 pb-4">
+        <SalesFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          paymentFilter={paymentFilter}
+          setPaymentFilter={setPaymentFilter}
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+        />
+      </div>
 
       {/* Cabeçalho da Tabela */}
       {filteredSales.length > 0 && (
-        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-          <div className="flex items-center justify-between gap-4 text-sm font-medium text-gray-400">
-            <div className="flex-shrink-0 w-24">Código</div>
-            <div className="flex-shrink-0 w-48">Cliente</div>
-            <div className="flex-1 min-w-0">Serviço</div>
-            <div className="flex-shrink-0 w-20 text-right">Valor</div>
-            <div className="flex-shrink-0">Status</div>
-            <div className="flex-shrink-0 w-24 text-right">Data</div>
-            <div className="flex-shrink-0 w-8"></div>
+        <div className="px-6 pb-2">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between gap-4 text-sm font-medium text-gray-400">
+              <div className="flex-shrink-0 w-24">Código</div>
+              <div className="flex-shrink-0 w-48">Cliente</div>
+              <div className="flex-1 min-w-0">Serviço</div>
+              <div className="flex-shrink-0 w-20 text-right">Valor</div>
+              <div className="flex-shrink-0">Status</div>
+              <div className="flex-shrink-0 w-24 text-right">Data</div>
+              <div className="flex-shrink-0 w-8"></div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Lista de Vendas com Scroll */}
-      <div className="flex-1 min-h-0">
-        <ScrollArea className="h-[calc(100vh-450px)]">
+      {/* Lista de Vendas com Scroll Interno */}
+      <div className="flex-1 px-6 pb-6 min-h-0">
+        <ScrollArea className="h-full">
           <div className="space-y-2 pr-4">
             {filteredSales.map((sale) => (
               <SaleCard 
@@ -136,20 +142,22 @@ const AdminVendas = () => {
 
       {/* Empty State */}
       {(!filteredSales || filteredSales.length === 0) && !isLoading && (
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="text-center py-12">
-            <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">Nenhuma venda encontrada</h3>
-            <p className="text-gray-400 mb-4">Comece criando sua primeira venda ou ajuste os filtros.</p>
-            <Button 
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-senvia-500 hover:bg-senvia-400 text-black"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Primeira Venda
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex-1 px-6 pb-6 flex items-center justify-center">
+          <Card className="bg-gray-800 border-gray-700 w-full max-w-md">
+            <CardContent className="text-center py-12">
+              <TrendingUp className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">Nenhuma venda encontrada</h3>
+              <p className="text-gray-400 mb-4">Comece criando sua primeira venda ou ajuste os filtros.</p>
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-senvia-500 hover:bg-senvia-400 text-black"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Criar Primeira Venda
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Modais */}

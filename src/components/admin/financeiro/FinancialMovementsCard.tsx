@@ -19,20 +19,25 @@ interface FinancialMovementsCardProps {
 const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
   const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
   
-  // Filtrar apenas movimentos que podem ser editados (movimentos manuais da tabela financial_movements)
+  // Função para verificar se é um movimento manual editável
+  const isManualMovement = (movement: FinancialMovement) => {
+    // Movimentos manuais são aqueles criados diretamente na tabela financial_movements
+    // Eles não têm IDs compostos e não são de fontes externas
+    const hasCompositeId = movement.id.includes('-');
+    const isFromExternalSource = movement.category === 'venda' || 
+      movement.category === 'landing_page' ||
+      movement.description === 'Transação de cliente' ||
+      movement.description.includes('Landing Page €4.99');
+    
+    return !hasCompositeId && !isFromExternalSource;
+  };
+  
   const handleMovementClick = (movement: FinancialMovement) => {
-    // Verificar se é um movimento manual (tem todas as propriedades necessárias)
-    if (movement.category && movement.description && movement.movement_type) {
-      // Verificar se não é de uma fonte externa (vendas, transações, etc.)
-      const isManualMovement = !movement.id.includes('-') && 
-        movement.category !== 'venda' && 
-        movement.category !== 'landing_page' &&
-        movement.description !== 'Transação de cliente' &&
-        !movement.description.includes('Landing Page €4.99');
-      
-      if (isManualMovement) {
-        setSelectedMovement(movement);
-      }
+    console.log('Clicando no movimento:', movement);
+    console.log('É movimento manual?', isManualMovement(movement));
+    
+    if (isManualMovement(movement)) {
+      setSelectedMovement(movement);
     }
   };
   
@@ -55,30 +60,26 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[220px] px-6">
+        <ScrollArea className="h-[200px] px-6">
           <div className="space-y-3 py-3">
             {movements.slice(0, 20).map((movement) => {
-              const isManualMovement = !movement.id.includes('-') && 
-                movement.category !== 'venda' && 
-                movement.category !== 'landing_page' &&
-                movement.description !== 'Transação de cliente' &&
-                !movement.description.includes('Landing Page €4.99');
+              const canEdit = isManualMovement(movement);
               
               return (
                 <div 
                   key={movement.id} 
                   className={`flex justify-between items-center p-2 rounded transition-colors ${
-                    isManualMovement 
+                    canEdit 
                       ? 'cursor-pointer hover:bg-gray-700' 
                       : 'cursor-default'
                   }`}
-                  onClick={() => isManualMovement && handleMovementClick(movement)}
+                  onClick={() => handleMovementClick(movement)}
                 >
                   <div>
                     <div className="font-medium text-sm">{movement.description}</div>
                     <div className="text-xs text-gray-400 capitalize flex items-center gap-2">
                       {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
-                      {!isManualMovement && (
+                      {!canEdit && (
                         <span className="text-xs bg-gray-600 px-2 py-1 rounded">Automático</span>
                       )}
                     </div>

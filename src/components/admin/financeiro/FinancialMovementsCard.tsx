@@ -44,7 +44,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         </div>
       </CardHeader>
       <CardContent className="flex-1 p-0 overflow-hidden">
-        <div className="h-full max-h-[400px] overflow-y-auto">
+        <div className="h-full max-h-[400px] overflow-y-auto custom-scrollbar">
           <div className="space-y-3 p-6">
             {movements.slice(0, 50).map((movement) => {
               return (
@@ -86,6 +86,33 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         onUpdate={onUpdateMovement}
         isUpdating={isUpdating}
       />
+
+      {/* CSS customizado para scrollbar mais discreta */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(55, 65, 81, 0.3);
+          border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(107, 114, 128, 0.5);
+          border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(107, 114, 128, 0.7);
+        }
+        
+        /* Firefox */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(107, 114, 128, 0.5) rgba(55, 65, 81, 0.3);
+        }
+      `}</style>
     </Card>
   );
 };

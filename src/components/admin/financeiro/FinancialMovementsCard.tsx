@@ -46,7 +46,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
             <div>
               <div className="font-medium text-sm">{movement.description}</div>
               <div className="text-xs text-gray-400 capitalize">
-                {movement.category.replace('_', ' ')} • {movement.movement_type}
+                {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
               </div>
             </div>
             <div className="text-right">

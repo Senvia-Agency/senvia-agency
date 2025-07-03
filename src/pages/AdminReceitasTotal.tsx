@@ -16,6 +16,8 @@ const AdminReceitasTotal = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activeSection, setActiveSection] = useState("financeiro");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const { movements, isLoading } = useFinancialMovements(selectedPeriod);
   
@@ -36,7 +38,12 @@ const AdminReceitasTotal = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex">
-        <AdminSidebar />
+        <AdminSidebar 
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
         <div className="flex-1 p-6">
           <div className="text-center py-8 text-gray-400">
             Carregando receitas...
@@ -48,7 +55,12 @@ const AdminReceitasTotal = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AdminSidebar />
+      <AdminSidebar 
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
       <div className="flex-1 space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">

@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { Package } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Package, Settings } from "lucide-react";
 import ProductsTable from "./produtos/ProductsTable";
 import CustomServicesSection from "./produtos/CustomServicesSection";
 import ProductStatsCards from "./produtos/ProductStatsCards";
@@ -9,6 +10,7 @@ import { useAdminProducts } from "@/hooks/useAdminProducts";
 import { useSyncStripeProducts } from "@/hooks/useSyncStripeProducts";
 
 const AdminProdutosAssinaturas = () => {
+  const [activeTab, setActiveTab] = useState("produtos");
   const { data: subscriptions } = useAdminSubscriptions();
   const { data: products, isLoading: productsLoading } = useAdminProducts();
   const syncStripeProductsMutation = useSyncStripeProducts();
@@ -38,20 +40,44 @@ const AdminProdutosAssinaturas = () => {
       {/* Stats Cards */}
       <ProductStatsCards stats={mockStatsCards} />
 
-      {/* Header da seção */}
-      <div className="flex items-center gap-2 mb-6">
-        <Package className="h-6 w-6 text-senvia-500" />
-        <h2 className="text-xl font-semibold text-white">Catálogo</h2>
-      </div>
+      {/* Tabs para diferentes seções */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-800 border-gray-700">
+          <TabsTrigger 
+            value="produtos" 
+            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
+          >
+            <Package className="h-4 w-4" />
+            Produtos Stripe
+          </TabsTrigger>
+          <TabsTrigger 
+            value="servicos" 
+            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
+          >
+            <Settings className="h-4 w-4" />
+            Serviços
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Products Display */}
-      <ProductsTable 
-        products={products || []}
-        onUpdate={handleSyncWithStripe}
-      />
+        <TabsContent value="produtos" className="space-y-6">
+          {/* Header da seção */}
+          <div className="flex items-center gap-2 mb-6">
+            <Package className="h-6 w-6 text-senvia-500" />
+            <h2 className="text-xl font-semibold text-white">Produtos Stripe</h2>
+          </div>
 
-      {/* Custom Services Section */}
-      <CustomServicesSection />
+          {/* Products Display */}
+          <ProductsTable 
+            products={products || []}
+            onUpdate={handleSyncWithStripe}
+          />
+        </TabsContent>
+
+        <TabsContent value="servicos" className="space-y-6">
+          {/* Custom Services Section */}
+          <CustomServicesSection />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

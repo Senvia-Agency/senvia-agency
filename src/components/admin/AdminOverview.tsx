@@ -4,8 +4,17 @@ import AdminRevenueBreakdown from './AdminRevenueBreakdown';
 import AdminLeadsBreakdown from './AdminLeadsBreakdown';
 import AdminRecentLeads from './AdminRecentLeads';
 import AdminRecentPayments from './AdminRecentPayments';
+import { useAdminRevenue } from '@/hooks/useAdminRevenue';
+import { useAdminLeads } from '@/hooks/useAdminLeads';
+import { useAdminSubscriptions } from '@/hooks/useAdminSubscriptions';
+import { useAdminActivity } from '@/hooks/useAdminActivity';
 
 const AdminOverview = () => {
+  const { data: revenueMetrics } = useAdminRevenue(30);
+  const { data: leadsStats } = useAdminLeads(30);
+  const { data: subscriptions } = useAdminSubscriptions();
+  const { data: recentActivity } = useAdminActivity();
+
   return (
     <div className="space-y-8 p-8">
       <div>
@@ -14,18 +23,22 @@ const AdminOverview = () => {
       </div>
 
       {/* KPI Cards */}
-      <AdminKPICards />
+      <AdminKPICards 
+        revenueMetrics={revenueMetrics} 
+        leadsStats={leadsStats} 
+        subscriptions={subscriptions || []} 
+      />
 
       {/* Revenue Breakdown */}
-      <AdminRevenueBreakdown />
+      <AdminRevenueBreakdown revenueMetrics={revenueMetrics} />
 
       {/* Leads Breakdown */}
-      <AdminLeadsBreakdown />
+      <AdminLeadsBreakdown leadsStats={leadsStats} />
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AdminRecentLeads />
-        <AdminRecentPayments />
+        <AdminRecentLeads recentActivity={recentActivity} />
+        <AdminRecentPayments recentActivity={recentActivity} />
       </div>
     </div>
   );

@@ -6,9 +6,22 @@ import ProductCatalog from "./produtos/ProductCatalog";
 import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
 import PerformanceSummary from "./produtos/PerformanceSummary";
 import ProductStatsCards from "./produtos/ProductStatsCards";
+import { useAdminSubscriptions } from "@/hooks/useAdminSubscriptions";
 
 const AdminProdutosAssinaturas = () => {
   const [activeTab, setActiveTab] = useState("catalog");
+  const { data: subscriptions } = useAdminSubscriptions();
+
+  // Mock data for stats and products - you can replace with real hooks
+  const mockStats = {
+    totalProducts: 0,
+    activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
+    trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0,
+    totalSales: 0,
+    totalRevenue: 0
+  };
+
+  const mockProducts: any[] = [];
 
   return (
     <div className="space-y-8 p-8">
@@ -20,7 +33,7 @@ const AdminProdutosAssinaturas = () => {
       </div>
 
       {/* Stats Cards */}
-      <ProductStatsCards />
+      <ProductStatsCards stats={mockStats} />
 
       {/* Tabs para diferentes seções */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -56,15 +69,20 @@ const AdminProdutosAssinaturas = () => {
         </TabsList>
 
         <TabsContent value="catalog" className="space-y-6">
-          <ProductCatalog />
+          <ProductCatalog 
+            products={mockProducts}
+            productsLoading={false}
+            syncWithStripe={() => {}}
+            isLoading={false}
+          />
         </TabsContent>
 
         <TabsContent value="subscriptions" className="space-y-6">
-          <ActiveSubscriptionsList />
+          <ActiveSubscriptionsList activeSubscriptions={subscriptions || []} />
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-6">
-          <PerformanceSummary />
+          <PerformanceSummary stats={mockStats} />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">

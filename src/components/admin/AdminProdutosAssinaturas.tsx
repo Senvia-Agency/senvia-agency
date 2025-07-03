@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,19 +10,25 @@ import {
   DollarSign,
   Plus,
   Settings,
-  Eye
+  Eye,
+  Edit
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomServices } from "@/hooks/useCustomServices";
 import ProductCatalog from "./produtos/ProductCatalog";
 import CreateCustomServiceModal from "./produtos/CreateCustomServiceModal";
+import CustomServiceDetailModal from "./produtos/CustomServiceDetailModal";
+import EditCustomServiceModal from "./produtos/EditCustomServiceModal";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const AdminProdutosAssinaturas = () => {
   const { toast } = useToast();
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
   // Buscar produtos do Stripe
   const { data: products, refetch: refetchProducts, isLoading: productsLoading } = useQuery({
@@ -77,6 +82,21 @@ const AdminProdutosAssinaturas = () => {
                        (customServices?.filter(s => s.status === 'active').length || 0);
   const totalStripeProducts = products?.length || 0;
   const totalCustomServices = customServices?.length || 0;
+
+  const handleViewDetails = (service: any) => {
+    setSelectedService(service);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleEditService = (service: any) => {
+    setSelectedService(service);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditFromDetail = () => {
+    setIsDetailModalOpen(false);
+    setIsEditModalOpen(true);
+  };
 
   if (productsLoading || servicesLoading) {
     return (
@@ -252,10 +272,21 @@ const AdminProdutosAssinaturas = () => {
                       <Button 
                         variant="outline" 
                         size="sm" 
+                        onClick={() => handleViewDetails(service)}
                         className="w-full sm:flex-1 border-slate-600 text-slate-300 hover:bg-slate-600/50 text-xs sm:text-sm"
                       >
                         <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                         Ver Detalhes
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditService(service)}
+                        className="border-senvia-500 text-senvia-500 hover:bg-senvia-500/10 text-xs sm:text-sm"
+                      >
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                        Editar
                       </Button>
                     </div>
                   </CardContent>
@@ -279,10 +310,23 @@ const AdminProdutosAssinaturas = () => {
         </CardContent>
       </Card>
 
-      {/* Modal para criar serviço personalizado */}
+      {/* Modais */}
       <CreateCustomServiceModal
         isOpen={isCreateServiceModalOpen}
         onClose={() => setIsCreateServiceModalOpen(false)}
+      />
+
+      <CustomServiceDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        service={selectedService}
+        onEdit={handleEditFromDetail}
+      />
+
+      <EditCustomServiceModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        service={selectedService}
       />
     </div>
   );

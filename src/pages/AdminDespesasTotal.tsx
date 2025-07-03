@@ -44,7 +44,7 @@ const AdminDespesasTotal = () => {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
         />
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-8">
           <div className="text-center py-8 text-gray-400">
             Carregando despesas...
           </div>
@@ -72,7 +72,7 @@ const AdminDespesasTotal = () => {
 
       <main className="flex-1 min-w-0">
         {/* Header mobile com hambúrguer */}
-        <div className="lg:hidden p-4">
+        <div className="lg:hidden p-6">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
@@ -83,7 +83,7 @@ const AdminDespesasTotal = () => {
           </button>
         </div>
 
-        <div className="space-y-6 p-6">
+        <div className="space-y-8 p-8">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

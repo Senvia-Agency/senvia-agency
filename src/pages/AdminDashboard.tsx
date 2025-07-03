@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -100,7 +101,7 @@ const AdminDashboard = () => {
       
       <main className="flex-1 min-w-0">
         {/* Header mobile com hambúrguer */}
-        <div className="lg:hidden p-4">
+        <div className="lg:hidden p-6">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"

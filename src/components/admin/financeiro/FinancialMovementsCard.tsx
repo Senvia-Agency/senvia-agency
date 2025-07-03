@@ -19,6 +19,23 @@ interface FinancialMovementsCardProps {
 const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
   const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
   
+  // Filtrar apenas movimentos que podem ser editados (movimentos manuais da tabela financial_movements)
+  const handleMovementClick = (movement: FinancialMovement) => {
+    // Verificar se é um movimento manual (tem todas as propriedades necessárias)
+    if (movement.category && movement.description && movement.movement_type) {
+      // Verificar se não é de uma fonte externa (vendas, transações, etc.)
+      const isManualMovement = !movement.id.includes('-') && 
+        movement.category !== 'venda' && 
+        movement.category !== 'landing_page' &&
+        movement.description !== 'Transação de cliente' &&
+        !movement.description.includes('Landing Page €4.99');
+      
+      if (isManualMovement) {
+        setSelectedMovement(movement);
+      }
+    }
+  };
+  
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
@@ -40,28 +57,43 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
       <CardContent className="p-0">
         <ScrollArea className="h-[220px] px-6">
           <div className="space-y-3 py-3">
-            {movements.slice(0, 20).map((movement) => (
-              <div 
-                key={movement.id} 
-                className="flex justify-between items-center cursor-pointer hover:bg-gray-700 p-2 rounded transition-colors"
-                onClick={() => setSelectedMovement(movement)}
-              >
-                <div>
-                  <div className="font-medium text-sm">{movement.description}</div>
-                  <div className="text-xs text-gray-400 capitalize">
-                    {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
+            {movements.slice(0, 20).map((movement) => {
+              const isManualMovement = !movement.id.includes('-') && 
+                movement.category !== 'venda' && 
+                movement.category !== 'landing_page' &&
+                movement.description !== 'Transação de cliente' &&
+                !movement.description.includes('Landing Page €4.99');
+              
+              return (
+                <div 
+                  key={movement.id} 
+                  className={`flex justify-between items-center p-2 rounded transition-colors ${
+                    isManualMovement 
+                      ? 'cursor-pointer hover:bg-gray-700' 
+                      : 'cursor-default'
+                  }`}
+                  onClick={() => isManualMovement && handleMovementClick(movement)}
+                >
+                  <div>
+                    <div className="font-medium text-sm">{movement.description}</div>
+                    <div className="text-xs text-gray-400 capitalize flex items-center gap-2">
+                      {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
+                      {!isManualMovement && (
+                        <span className="text-xs bg-gray-600 px-2 py-1 rounded">Automático</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`font-bold ${movement.movement_type === 'receita' ? 'text-green-400' : 'text-red-400'}`}>
+                      {movement.movement_type === 'receita' ? '+' : '-'}€{Number(movement.amount).toFixed(2)}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {format(new Date(movement.movement_date), 'dd/MM', { locale: ptBR })}
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className={`font-bold ${movement.movement_type === 'receita' ? 'text-green-400' : 'text-red-400'}`}>
-                    {movement.movement_type === 'receita' ? '+' : '-'}€{Number(movement.amount).toFixed(2)}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {format(new Date(movement.movement_date), 'dd/MM', { locale: ptBR })}
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
             {movements.length === 0 && (
               <div className="text-center text-gray-400 py-8">
                 Nenhum movimento registrado

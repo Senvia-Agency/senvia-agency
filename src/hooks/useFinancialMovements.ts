@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -147,7 +148,7 @@ export const useFinancialMovements = (dateRange: number = 30) => {
           notes: null,
           tags: null,
           created_at: p.created_at,
-          updated_at: p.updated_at,
+          updated_at: p.created_at,
           customers: null
         })));
       }
@@ -192,14 +193,48 @@ export const useFinancialMovements = (dateRange: number = 30) => {
 
   const updateMovementMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<FinancialMovement> }) => {
+      console.log('Tentando atualizar movimento:', id, updates);
+      
+      // Primeiro, verificar se o movimento existe na tabela financial_movements
+      const { data: existingMovement, error: checkError } = await supabase
+        .from('financial_movements')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Erro ao verificar movimento:', checkError);
+        throw checkError;
+      }
+
+      if (!existingMovement) {
+        throw new Error('Este movimento não pode ser editado pois não é um movimento manual.');
+      }
+
+      // Filtrar apenas os campos que podem ser atualizados
+      const allowedUpdates = {
+        movement_type: updates.movement_type,
+        amount: updates.amount,
+        description: updates.description,
+        category: updates.category,
+        movement_date: updates.movement_date,
+        customer_id: updates.customer_id || null,
+        notes: updates.notes || null
+      };
+
       const { data, error } = await supabase
         .from('financial_movements')
-        .update(updates)
+        .update(allowedUpdates)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao atualizar movimento:', error);
+        throw error;
+      }
+      
+      console.log('Movimento atualizado com sucesso:', data);
       return data;
     },
     onSuccess: () => {
@@ -211,6 +246,7 @@ export const useFinancialMovements = (dateRange: number = 30) => {
       });
     },
     onError: (error: any) => {
+      console.error('Erro na mutation:', error);
       toast({
         title: "Erro ao atualizar movimento",
         description: error.message,

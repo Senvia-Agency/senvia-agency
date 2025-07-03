@@ -41,13 +41,6 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
     return 'Preço não definido';
   };
 
-  const getStripeId = (product: any) => {
-    if (product.stripe_product_id) {
-      return product.stripe_product_id.substring(0, 20) + '...';
-    }
-    return 'N/A';
-  };
-
   return (
     <div className="border border-slate-600/50 rounded-lg overflow-hidden">
       <Table>
@@ -57,7 +50,6 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
             <TableHead className="text-slate-300">Categoria</TableHead>
             <TableHead className="text-slate-300">Preço</TableHead>
             <TableHead className="text-slate-300">Planos</TableHead>
-            <TableHead className="text-slate-300">Stripe ID</TableHead>
             <TableHead className="text-slate-300">Status</TableHead>
             <TableHead className="text-slate-300">Criado em</TableHead>
             <TableHead className="text-slate-300">Ações</TableHead>
@@ -98,11 +90,6 @@ const ProductsTable = ({ products, onUpdate }: ProductsTableProps) => {
                   ) : (
                     <span className="text-slate-500">Sem planos</span>
                   )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="text-xs text-slate-400 font-mono">
-                  {getStripeId(product)}
                 </div>
               </TableCell>
               <TableCell>

@@ -1,8 +1,7 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Repeat, Settings, BarChart3, Table, Grid3X3 } from "lucide-react";
-import ProductCatalog from "./produtos/ProductCatalog";
+import { Package, Repeat, Settings, BarChart3 } from "lucide-react";
 import ProductsTable from "./produtos/ProductsTable";
 import CustomServicesSection from "./produtos/CustomServicesSection";
 import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
@@ -14,7 +13,6 @@ import { useSyncStripeProducts } from "@/hooks/useSyncStripeProducts";
 
 const AdminProdutosAssinaturas = () => {
   const [activeTab, setActiveTab] = useState("catalog");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const { data: subscriptions } = useAdminSubscriptions();
   const { data: products, isLoading: productsLoading } = useAdminProducts();
   const syncStripeProductsMutation = useSyncStripeProducts();
@@ -88,46 +86,11 @@ const AdminProdutosAssinaturas = () => {
         </TabsList>
 
         <TabsContent value="catalog" className="space-y-6">
-          {/* View Mode Toggle */}
-          <div className="flex justify-end">
-            <div className="flex items-center gap-2 bg-gray-800 p-1 rounded-lg border border-gray-700">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "grid" 
-                    ? "bg-senvia-500 text-black" 
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("table")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "table" 
-                    ? "bg-senvia-500 text-black" 
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Table className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
           {/* Products Display */}
-          {viewMode === "grid" ? (
-            <ProductCatalog 
-              products={products || []}
-              productsLoading={productsLoading}
-              syncWithStripe={handleSyncWithStripe}
-              isLoading={syncStripeProductsMutation.isPending}
-            />
-          ) : (
-            <ProductsTable 
-              products={products || []}
-              onUpdate={handleSyncWithStripe}
-            />
-          )}
+          <ProductsTable 
+            products={products || []}
+            onUpdate={handleSyncWithStripe}
+          />
 
           {/* Custom Services Section */}
           <CustomServicesSection />

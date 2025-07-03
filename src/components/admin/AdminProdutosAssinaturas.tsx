@@ -12,13 +12,23 @@ const AdminProdutosAssinaturas = () => {
   const [activeTab, setActiveTab] = useState("catalog");
   const { data: subscriptions } = useAdminSubscriptions();
 
-  // Mock data for stats and products - you can replace with real hooks
-  const mockStats = {
+  // Mock data for stats - you can replace with real hooks
+  const mockStatsCards = {
     totalProducts: 0,
     activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
     trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0,
     totalSales: 0,
     totalRevenue: 0
+  };
+
+  // Stats for PerformanceSummary component
+  const performanceStats = {
+    subscriptionRevenue: 0,
+    salesRevenue: 0,
+    totalSubscriptions: subscriptions?.length || 0,
+    totalSales: 0,
+    activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
+    trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0
   };
 
   const mockProducts: any[] = [];
@@ -33,7 +43,7 @@ const AdminProdutosAssinaturas = () => {
       </div>
 
       {/* Stats Cards */}
-      <ProductStatsCards stats={mockStats} />
+      <ProductStatsCards stats={mockStatsCards} />
 
       {/* Tabs para diferentes seções */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -82,7 +92,7 @@ const AdminProdutosAssinaturas = () => {
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-6">
-          <PerformanceSummary stats={mockStats} />
+          <PerformanceSummary stats={performanceStats} />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">

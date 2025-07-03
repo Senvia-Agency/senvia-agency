@@ -21,15 +21,13 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
   
   // Função para verificar se é um movimento manual editável
   const isManualMovement = (movement: FinancialMovement) => {
-    // Movimentos manuais são aqueles criados diretamente na tabela financial_movements
-    // Eles não têm IDs compostos e não são de fontes externas
-    const hasCompositeId = movement.id.includes('-');
-    const isFromExternalSource = movement.category === 'venda' || 
-      movement.category === 'landing_page' ||
-      movement.description === 'Transação de cliente' ||
-      movement.description.includes('Landing Page €4.99');
+    // Movimentos automáticos vêm de outras tabelas e têm características específicas
+    const isFromSales = movement.category === 'venda';
+    const isFromLandingPage = movement.category === 'landing_page' || movement.description.includes('Landing Page €4.99');
+    const isFromTransactions = movement.description === 'Transação de cliente';
     
-    return !hasCompositeId && !isFromExternalSource;
+    // Se não é de nenhuma fonte automática, é um movimento manual
+    return !isFromSales && !isFromLandingPage && !isFromTransactions;
   };
   
   const handleMovementClick = (movement: FinancialMovement) => {

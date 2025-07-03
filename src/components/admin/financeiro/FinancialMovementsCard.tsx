@@ -43,8 +43,8 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-0 flex-1 min-h-0 overflow-hidden">
-        <ScrollArea className="h-full">
+      <CardContent className="flex-1 p-0 overflow-hidden">
+        <div className="h-full max-h-[400px] overflow-y-auto">
           <div className="space-y-3 p-6">
             {movements.slice(0, 50).map((movement) => {
               return (
@@ -76,7 +76,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </CardContent>
       
       <EditMovementModal

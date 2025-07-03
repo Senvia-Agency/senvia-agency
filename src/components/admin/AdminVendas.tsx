@@ -123,9 +123,9 @@ const AdminVendas = () => {
               <div className="flex-shrink-0 w-24">Código</div>
               <div className="flex-shrink-0 w-48">Cliente</div>
               <div className="flex-1 min-w-0">Serviço</div>
-              <div className="flex-shrink-0 w-20 text-right">Valor</div>
-              <div className="flex-shrink-0">Status</div>
-              <div className="flex-shrink-0 w-24 text-right">Data</div>
+              <div className="flex-shrink-0 w-24 text-right">Valor</div>
+              <div className="flex-shrink-0 w-24 text-center">Status</div>
+              <div className="flex-shrink-0 w-20 text-right">Data</div>
               <div className="flex-shrink-0 w-8"></div>
             </div>
           </div>

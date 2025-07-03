@@ -68,22 +68,22 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
           </span>
         </div>
 
-        {/* Valor */}
-        <div className="flex-shrink-0 w-20 text-right">
+        {/* Valor - Alinhado à direita para combinar com o cabeçalho */}
+        <div className="flex-shrink-0 w-24 text-right">
           <span className="text-sm font-medium text-green-400">
             €{sale.total_value}
           </span>
         </div>
 
-        {/* Status */}
-        <div className="flex-shrink-0">
+        {/* Status - Centralizado para combinar com o cabeçalho */}
+        <div className="flex-shrink-0 w-24 flex justify-center">
           <Badge variant="outline" className={`${getStatusColor(sale.sale_status)} text-xs`}>
             {getStatusText(sale.sale_status)}
           </Badge>
         </div>
 
-        {/* Data da Venda */}
-        <div className="flex-shrink-0 w-24 text-right">
+        {/* Data da Venda - Alinhada à direita para combinar com o cabeçalho */}
+        <div className="flex-shrink-0 w-20 text-right">
           <span className="text-sm text-gray-400">
             {format(new Date(sale.sale_date), 'dd/MM/yy', { locale: ptBR })}
           </span>

@@ -42,6 +42,16 @@ const AdminVendas = () => {
     console.log('Delete sale:', sale.id);
   };
 
+  const handleCreateSale = () => {
+    console.log('Opening create sale modal...');
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    console.log('Closing create sale modal...');
+    setIsCreateModalOpen(false);
+  };
+
   if (error) {
     return (
       <div className="flex flex-col h-screen max-h-screen overflow-hidden">
@@ -78,7 +88,7 @@ const AdminVendas = () => {
           <p className="text-gray-400 text-sm sm:text-base">Gerencie todas as vendas da SENVIA</p>
         </div>
         <Button 
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={handleCreateSale}
           className="bg-senvia-500 hover:bg-senvia-400 text-black"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -147,7 +157,7 @@ const AdminVendas = () => {
                 <h3 className="text-lg font-medium text-white mb-2">Nenhuma venda encontrada</h3>
                 <p className="text-gray-400 mb-4">Comece criando sua primeira venda ou ajuste os filtros.</p>
                 <Button 
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={handleCreateSale}
                   className="bg-senvia-500 hover:bg-senvia-400 text-black"
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -162,7 +172,7 @@ const AdminVendas = () => {
       {/* Modais */}
       <CreateSaleModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={handleCloseCreateModal}
       />
 
       <SaleDetailModal

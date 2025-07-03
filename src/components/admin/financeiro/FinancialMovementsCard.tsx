@@ -19,15 +19,6 @@ interface FinancialMovementsCardProps {
 const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, isUpdating }: FinancialMovementsCardProps) => {
   const [selectedMovement, setSelectedMovement] = useState<FinancialMovement | null>(null);
   
-  // Função para identificar se é um movimento automático (apenas para exibição)
-  const isAutomaticMovement = (movement: FinancialMovement) => {
-    const isFromSales = movement.category === 'venda';
-    const isFromLandingPage = movement.category === 'landing_page' || movement.description.includes('Landing Page €4.99');
-    const isFromTransactions = movement.description === 'Transação de cliente';
-    
-    return isFromSales || isFromLandingPage || isFromTransactions;
-  };
-  
   const handleMovementClick = (movement: FinancialMovement) => {
     console.log('Clicando no movimento:', movement);
     // Agora todos os movimentos são editáveis
@@ -56,8 +47,6 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         <ScrollArea className="h-[200px] px-6">
           <div className="space-y-3 py-3">
             {movements.slice(0, 20).map((movement) => {
-              const isAutomatic = isAutomaticMovement(movement);
-              
               return (
                 <div 
                   key={movement.id} 
@@ -66,11 +55,8 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
                 >
                   <div>
                     <div className="font-medium text-sm">{movement.description}</div>
-                    <div className="text-xs text-gray-400 capitalize flex items-center gap-2">
+                    <div className="text-xs text-gray-400 capitalize">
                       {movement.category.replace('_', ' ')} • {movement.movement_type === 'receita' ? 'Receita' : 'Despesa'}
-                      {isAutomatic && (
-                        <span className="text-xs bg-blue-600 px-2 py-1 rounded">Automático</span>
-                      )}
                     </div>
                   </div>
                   <div className="text-right">

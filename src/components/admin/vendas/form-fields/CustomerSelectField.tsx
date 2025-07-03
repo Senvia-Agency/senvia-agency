@@ -1,4 +1,3 @@
-
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -9,13 +8,16 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 interface CustomerSelectFieldProps {
+  customers?: any[];
   value: string;
   onChange: (value: string) => void;
   onNewCustomerCreated?: (customer: any) => void;
 }
 
-const CustomerSelectField = ({ value, onChange, onNewCustomerCreated }: CustomerSelectFieldProps) => {
-  const { data: customers } = useCustomers();
+const CustomerSelectField = ({ customers: propCustomers, value, onChange, onNewCustomerCreated }: CustomerSelectFieldProps) => {
+  const { data: hookCustomers } = useCustomers();
+  const customers = propCustomers || hookCustomers;
+  
   const [showNewCustomerDialog, setShowNewCustomerDialog] = useState(false);
   const [newCustomerData, setNewCustomerData] = useState({
     full_name: '',

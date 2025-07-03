@@ -207,8 +207,8 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
           <StatusFields
             saleStatus={formData.sale_status}
             paymentStatus={formData.payment_status}
-            onSaleStatusChange={(value) => setFormData(prev => ({ ...prev, sale_status: value }))}
-            onPaymentStatusChange={(value) => setFormData(prev => ({ ...prev, payment_status: value }))}
+            onSaleStatusChange={(value: any) => setFormData(prev => ({ ...prev, sale_status: value }))}
+            onPaymentStatusChange={(value: any) => setFormData(prev => ({ ...prev, payment_status: value }))}
           />
 
           <AdditionalFields

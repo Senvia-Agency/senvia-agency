@@ -8,10 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 interface ServiceSelectionFieldProps {
   serviceType: string;
   serviceId: string;
+  onServiceTypeChange?: (value: string) => void;
   onServiceSelect: (serviceId: string) => void;
 }
 
-const ServiceSelectionField = ({ serviceType, serviceId, onServiceSelect }: ServiceSelectionFieldProps) => {
+const ServiceSelectionField = ({ serviceType, serviceId, onServiceTypeChange, onServiceSelect }: ServiceSelectionFieldProps) => {
   const { data: customServices } = useCustomServices();
   
   const { data: stripeProducts } = useQuery({

@@ -10,6 +10,7 @@ import CTASection from "../components/landing/CTASection";
 import ProcessSection from "../components/landing/ProcessSection";
 import FAQSection from "../components/landing/FAQSection";
 import ContactFormSection from "../components/landing/ContactFormSection";
+import MetaPixel from "../components/MetaPixel";
 
 const LandingPages = () => {
   useEffect(() => {
@@ -18,6 +19,7 @@ const LandingPages = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <MetaPixel />
       <Navbar />
       <HeroSection />
       <FeaturesSection />

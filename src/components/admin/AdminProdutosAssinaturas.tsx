@@ -1,18 +1,14 @@
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Repeat, Settings, BarChart3 } from "lucide-react";
+import { Package } from "lucide-react";
 import ProductsTable from "./produtos/ProductsTable";
 import CustomServicesSection from "./produtos/CustomServicesSection";
-import ActiveSubscriptionsList from "./produtos/ActiveSubscriptionsList";
-import PerformanceSummary from "./produtos/PerformanceSummary";
 import ProductStatsCards from "./produtos/ProductStatsCards";
 import { useAdminSubscriptions } from "@/hooks/useAdminSubscriptions";
 import { useAdminProducts } from "@/hooks/useAdminProducts";
 import { useSyncStripeProducts } from "@/hooks/useSyncStripeProducts";
 
 const AdminProdutosAssinaturas = () => {
-  const [activeTab, setActiveTab] = useState("catalog");
   const { data: subscriptions } = useAdminSubscriptions();
   const { data: products, isLoading: productsLoading } = useAdminProducts();
   const syncStripeProductsMutation = useSyncStripeProducts();
@@ -30,87 +26,32 @@ const AdminProdutosAssinaturas = () => {
     totalRevenue: 0
   };
 
-  // Stats for PerformanceSummary component
-  const performanceStats = {
-    subscriptionRevenue: 0,
-    salesRevenue: 0,
-    totalSubscriptions: subscriptions?.length || 0,
-    totalSales: 0,
-    activeSubscriptions: subscriptions?.filter(s => s.status === 'active').length || 0,
-    trialSubscriptions: subscriptions?.filter(s => s.status === 'trial').length || 0
-  };
-
   return (
     <div className="space-y-8 p-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Produtos & Assinaturas</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Produtos & Serviços</h1>
         <p className="text-gray-400 text-sm sm:text-base">
-          Gerencie o catálogo de produtos e acompanhe as assinaturas ativas
+          Gerencie o catálogo de produtos e serviços personalizados
         </p>
       </div>
 
       {/* Stats Cards */}
       <ProductStatsCards stats={mockStatsCards} />
 
-      {/* Tabs para diferentes seções */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
-          <TabsTrigger 
-            value="catalog" 
-            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
-          >
-            <Package className="h-4 w-4" />
-            Catálogo
-          </TabsTrigger>
-          <TabsTrigger 
-            value="subscriptions" 
-            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
-          >
-            <Repeat className="h-4 w-4" />
-            Assinaturas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="performance" 
-            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
-          >
-            <BarChart3 className="h-4 w-4" />
-            Performance
-          </TabsTrigger>
-          <TabsTrigger 
-            value="settings" 
-            className="flex items-center gap-2 data-[state=active]:bg-gray-700"
-          >
-            <Settings className="h-4 w-4" />
-            Configurações
-          </TabsTrigger>
-        </TabsList>
+      {/* Header da seção */}
+      <div className="flex items-center gap-2 mb-6">
+        <Package className="h-6 w-6 text-senvia-500" />
+        <h2 className="text-xl font-semibold text-white">Catálogo</h2>
+      </div>
 
-        <TabsContent value="catalog" className="space-y-6">
-          {/* Products Display */}
-          <ProductsTable 
-            products={products || []}
-            onUpdate={handleSyncWithStripe}
-          />
+      {/* Products Display */}
+      <ProductsTable 
+        products={products || []}
+        onUpdate={handleSyncWithStripe}
+      />
 
-          {/* Custom Services Section */}
-          <CustomServicesSection />
-        </TabsContent>
-
-        <TabsContent value="subscriptions" className="space-y-6">
-          <ActiveSubscriptionsList activeSubscriptions={subscriptions || []} />
-        </TabsContent>
-
-        <TabsContent value="performance" className="space-y-6">
-          <PerformanceSummary stats={performanceStats} />
-        </TabsContent>
-
-        <TabsContent value="settings" className="space-y-6">
-          <div className="text-center py-12 text-gray-400">
-            <Settings className="h-12 w-12 mx-auto mb-4" />
-            <p>Configurações de produtos em desenvolvimento</p>
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Custom Services Section */}
+      <CustomServicesSection />
     </div>
   );
 };

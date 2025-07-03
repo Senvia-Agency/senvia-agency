@@ -38,7 +38,7 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[300px] px-6">
+        <ScrollArea className="h-[280px] px-6">
           <div className="space-y-3 py-3">
             {movements.slice(0, 20).map((movement) => (
               <div 

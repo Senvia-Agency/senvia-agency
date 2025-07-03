@@ -26,8 +26,8 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
   };
   
   return (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
+    <Card className="bg-gray-800 border-gray-700 flex flex-col h-full">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <ArrowUpDown className="h-5 w-5 text-senvia-400" />
@@ -43,8 +43,8 @@ const FinancialMovementsCard = ({ movements, onAddMovement, onUpdateMovement, is
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-[300px] px-6">
+      <CardContent className="p-0 flex-1 min-h-0">
+        <ScrollArea className="h-full px-6">
           <div className="space-y-3 py-3">
             {movements.slice(0, 20).map((movement) => {
               return (

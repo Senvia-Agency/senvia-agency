@@ -31,7 +31,7 @@ const AdminFinanceiro = () => {
 
   if (isLoadingFinancial) {
     return (
-      <div className="space-y-8 p-8">
+      <div className="space-y-6 p-6 h-screen overflow-hidden">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo Financeiro</h1>
         </div>
@@ -43,11 +43,11 @@ const AdminFinanceiro = () => {
   }
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-6 p-6 h-screen overflow-hidden">
       {/* Header */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2 whitespace-nowrap">Módulo Financeiro</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 whitespace-nowrap">Módulo Financeiro</h1>
           <p className="text-gray-400 text-sm sm:text-base">Controle completo das finanças da SENVIA</p>
         </div>
         <div className="flex justify-end items-center">
@@ -74,7 +74,7 @@ const AdminFinanceiro = () => {
       </div>
 
       {/* Financial Movements */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-4 flex-1 min-h-0">
         <FinancialMovementsCard
           movements={movements}
           onAddMovement={() => setIsMovementModalOpen(true)}

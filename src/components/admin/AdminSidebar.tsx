@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   BarChart,
@@ -134,7 +135,7 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
       </Sheet>
 
       {/* Desktop Menu */}
-      <div className="hidden lg:flex flex-col w-64 bg-gray-800 border-r border-gray-700 h-screen">
+      <div className="hidden lg:flex flex-col w-64 bg-gray-800 border-r border-gray-700 min-h-screen">
         <div className="flex items-center gap-2 p-6 border-b border-gray-700">
           <div className="w-8 h-8 bg-senvia-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">S</span>

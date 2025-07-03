@@ -16,6 +16,7 @@ import AdditionalFields from "./form-fields/AdditionalFields";
 import AssigneeField from "./form-fields/AssigneeField";
 import { useCustomServices } from "@/hooks/useCustomServices";
 import { useCreateRecurringService } from "@/hooks/useRecurringServices";
+import { useToast } from "@/hooks/use-toast";
 
 interface CreateSaleModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
   const { data: customers } = useCustomers();
   const { data: customServices } = useCustomServices();
   const createRecurringService = useCreateRecurringService();
+  const { toast } = useToast();
   
   const {
     formData,
@@ -64,6 +66,8 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
     e.preventDefault();
     
     try {
+      console.log('Creating sale with data:', formData);
+      
       // Criar a venda primeiro
       const saleData = {
         customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
@@ -84,25 +88,50 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
       };
 
       const createdSale = await createSaleMutation.mutateAsync(saleData);
+      console.log('Sale created successfully:', createdSale);
 
-      // Se for um serviço recorrente e tem cliente, criar automaticamente o serviço recorrente
+      // Se for um serviço recorrente e tem cliente, tentar criar o serviço recorrente
       if (isRecurringService && formData.customer_id && formData.customer_id !== 'none') {
-        await createRecurringService.mutateAsync({
-          customer_id: formData.customer_id,
-          service_id: formData.service_id || undefined,
-          service_name: formData.service_name,
-          service_description: formData.service_description,
-          monthly_amount: Number(formData.total_value),
-          billing_day: parseInt(recurringData.billing_day),
-          start_date: recurringData.start_date,
-          status: 'active' as const,
-          next_billing_date: recurringData.start_date
-        });
+        try {
+          console.log('Creating recurring service for customer:', formData.customer_id);
+          
+          await createRecurringService.mutateAsync({
+            customer_id: formData.customer_id,
+            service_id: formData.service_id || undefined,
+            service_name: formData.service_name,
+            service_description: formData.service_description,
+            monthly_amount: Number(formData.total_value),
+            billing_day: parseInt(recurringData.billing_day),
+            start_date: recurringData.start_date,
+            status: 'active' as const,
+            next_billing_date: recurringData.start_date
+          });
+          
+          console.log('Recurring service created successfully');
+        } catch (recurringError) {
+          console.error('Error creating recurring service:', recurringError);
+          // Não falhar a venda por causa do serviço recorrente
+          toast({
+            title: "Venda criada com sucesso",
+            description: "Serviço recorrente não pôde ser configurado automaticamente. Configure manualmente no módulo financeiro.",
+            variant: "default"
+          });
+        }
       }
 
+      toast({
+        title: "Venda criada",
+        description: "A venda foi criada com sucesso."
+      });
+      
       onClose();
     } catch (error) {
       console.error('Erro ao criar venda:', error);
+      toast({
+        title: "Erro ao criar venda",
+        description: "Não foi possível criar a venda. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -244,8 +273,10 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
           <AdditionalFields
             notes={formData.notes}
             expectedDeliveryDate={formData.expected_delivery_date}
+            paymentMethod={formData.payment_method}
             onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
             onExpectedDeliveryDateChange={(value) => setFormData(prev => ({ ...prev, expected_delivery_date: value }))}
+            onPaymentMethodChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
           />
 
           <AssigneeField
@@ -264,10 +295,10 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
             </Button>
             <Button
               type="submit"
-              disabled={createSaleMutation.isPending || createRecurringService.isPending}
+              disabled={createSaleMutation.isPending}
               className="bg-senvia-500 hover:bg-senvia-400 text-black"
             >
-              {(createSaleMutation.isPending || createRecurringService.isPending) ? 'Criando...' : 'Criar Venda'}
+              {createSaleMutation.isPending ? 'Criando...' : 'Criar Venda'}
             </Button>
           </div>
         </form>

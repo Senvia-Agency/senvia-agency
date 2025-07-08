@@ -134,38 +134,22 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  console.log('CPC input value:', value);
                   
                   if (value === "") {
-                    field.onChange(undefined);
+                    field.onChange("");
                     return;
                   }
                   
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
-                  console.log('CPC clean value:', cleanValue);
                   
                   // Se o valor limpo é diferente do original, não permitir
                   if (cleanValue !== value) {
                     return;
                   }
                   
-                  // Se termina com vírgula ou ponto, manter o valor como string para display
-                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
-                    console.log('CPC ends with comma/dot, keeping as display');
-                    // Atualizar o display mas não converter para número ainda
-                    e.target.value = cleanValue;
-                    return;
-                  }
-                  
-                  // Substituir vírgula por ponto para conversão numérica
-                  const normalizedValue = cleanValue.replace(/,/g, '.');
-                  console.log('CPC normalized value:', normalizedValue);
-                  
-                  const numValue = parseFloat(normalizedValue);
-                  if (!isNaN(numValue)) {
-                    field.onChange(numValue);
-                  }
+                  // Atualizar o valor no formulário diretamente
+                  field.onChange(cleanValue);
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 0,07 ou 0.07"
@@ -188,38 +172,22 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  console.log('Spend input value:', value);
                   
                   if (value === "") {
-                    field.onChange(undefined);
+                    field.onChange("");
                     return;
                   }
                   
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
-                  console.log('Spend clean value:', cleanValue);
                   
                   // Se o valor limpo é diferente do original, não permitir
                   if (cleanValue !== value) {
                     return;
                   }
                   
-                  // Se termina com vírgula ou ponto, manter o valor como string para display
-                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
-                    console.log('Spend ends with comma/dot, keeping as display');
-                    // Atualizar o display mas não converter para número ainda
-                    e.target.value = cleanValue;
-                    return;
-                  }
-                  
-                  // Substituir vírgula por ponto para conversão numérica
-                  const normalizedValue = cleanValue.replace(/,/g, '.');
-                  console.log('Spend normalized value:', normalizedValue);
-                  
-                  const numValue = parseFloat(normalizedValue);
-                  if (!isNaN(numValue)) {
-                    field.onChange(numValue);
-                  }
+                  // Atualizar o valor no formulário diretamente
+                  field.onChange(cleanValue);
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 100,50 ou 100.50"

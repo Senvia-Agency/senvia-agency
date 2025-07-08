@@ -15,22 +15,18 @@ interface MetricsFieldsProps {
 
 export const MetricsFields = ({ form }: MetricsFieldsProps) => {
   const handleDecimalInput = (value: string, onChange: (value: number | undefined) => void) => {
-    if (value === "") {
-      onChange(undefined);
-      return;
-    }
-    
-    // Permitir vírgulas e pontos diretamente sem rejeitar
-    if (/^[0-9.,]*$/.test(value)) {
-      // Se é apenas dígitos, vírgulas e pontos, deixar passar
-      // Converter vírgula para ponto para parsing apenas no final
-      if (!value.endsWith(',') && !value.endsWith('.')) {
-        const normalizedValue = value.replace(/,/g, '.');
-        const numValue = parseFloat(normalizedValue);
-        if (!isNaN(numValue)) {
-          onChange(numValue);
-        }
+    // Permitir qualquer entrada que contenha apenas números, vírgulas e pontos
+    if (value === "" || /^[0-9.,]+$/.test(value)) {
+      // Se termina com vírgula ou ponto, não converter ainda
+      if (value.endsWith(',') || value.endsWith('.')) {
+        // Deixar o usuário continuar digitando
+        return;
       }
+      
+      // Converter vírgula para ponto e tentar converter para número
+      const normalized = value.replace(',', '.');
+      const num = parseFloat(normalized);
+      onChange(isNaN(num) ? undefined : num);
     }
   };
 

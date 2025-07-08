@@ -87,27 +87,29 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
   const watchedValues = form.watch();
   
   useEffect(() => {
-    const { impressions, clicks, conversions, spend, cpc } = watchedValues;
+    const { impressions, clicks, conversions, spend } = watchedValues;
     
-    if (impressions && clicks) {
+    // CTR = (Cliques / Impressões) × 100
+    if (impressions && clicks && impressions > 0) {
       const ctr = (clicks / impressions) * 100;
       form.setValue('ctr', Number(ctr.toFixed(2)));
     }
     
-    if (conversions && clicks) {
+    // Taxa de Conversão = (Conversões / Cliques) × 100
+    if (conversions && clicks && clicks > 0) {
       const conversionRate = (conversions / clicks) * 100;
       form.setValue('conversion_rate', Number(conversionRate.toFixed(2)));
     }
     
+    // Custo por Conversão = Investimento / Conversões
     if (spend && conversions && conversions > 0) {
       const costPerConversion = spend / conversions;
       form.setValue('cost_per_conversion', Number(costPerConversion.toFixed(2)));
     }
     
-    if (spend && conversions && conversions > 0) {
-      // ROAS = Receita / Investimento. Como não temos receita, vamos usar uma estimativa baseada no valor médio por conversão
-      // Por agora, vamos calcular como uma métrica simples
-      const roas = conversions > 0 ? conversions * 10 / spend : 0; // Estimativa básica
+    // ROAS = Receita / Investimento (estimativa básica)
+    if (spend && conversions && conversions > 0 && spend > 0) {
+      const roas = conversions * 10 / spend; // Estimativa básica
       form.setValue('roas', Number(roas.toFixed(2)));
     }
   }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);

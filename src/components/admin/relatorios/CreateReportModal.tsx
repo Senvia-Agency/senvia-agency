@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,13 +38,13 @@ const formSchema = z.object({
   ad_sets_count: z.number().min(0, "Valor deve ser positivo"),
   impressions: z.number().min(0, "Valor deve ser positivo"),
   clicks: z.number().min(0, "Valor deve ser positivo"),
-  ctr: z.number().min(0, "Valor deve ser positivo"),
+  ctr: z.number().min(0, "Valor deve ser positivo").optional(),
   cpc: z.number().min(0, "Valor deve ser positivo"),
   spend: z.number().min(0, "Valor deve ser positivo"),
   conversions: z.number().min(0, "Valor deve ser positivo"),
-  conversion_rate: z.number().min(0, "Valor deve ser positivo"),
-  cost_per_conversion: z.number().min(0, "Valor deve ser positivo"),
-  roas: z.number().min(0, "Valor deve ser positivo"),
+  conversion_rate: z.number().min(0, "Valor deve ser positivo").optional(),
+  cost_per_conversion: z.number().min(0, "Valor deve ser positivo").optional(),
+  roas: z.number().min(0, "Valor deve ser positivo").optional(),
   notes: z.string().optional(),
   status: z.enum(["draft", "final"]),
 });
@@ -68,27 +68,71 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
       report_period_start: "",
       report_period_end: "",
       report_type: "weekly",
-      ad_sets_count: 0,
-      impressions: 0,
-      clicks: 0,
-      ctr: 0,
-      cpc: 0,
-      spend: 0,
-      conversions: 0,
-      conversion_rate: 0,
-      cost_per_conversion: 0,
-      roas: 0,
+      ad_sets_count: undefined,
+      impressions: undefined,
+      clicks: undefined,
+      ctr: undefined,
+      cpc: undefined,
+      spend: undefined,
+      conversions: undefined,
+      conversion_rate: undefined,
+      cost_per_conversion: undefined,
+      roas: undefined,
       notes: "",
       status: "draft",
     },
   });
 
+  // Calcular valores automáticos
+  const watchedValues = form.watch();
+  
+  useEffect(() => {
+    const { impressions, clicks, conversions, spend, cpc } = watchedValues;
+    
+    if (impressions && clicks) {
+      const ctr = (clicks / impressions) * 100;
+      form.setValue('ctr', Number(ctr.toFixed(2)));
+    }
+    
+    if (conversions && clicks) {
+      const conversionRate = (conversions / clicks) * 100;
+      form.setValue('conversion_rate', Number(conversionRate.toFixed(2)));
+    }
+    
+    if (spend && conversions && conversions > 0) {
+      const costPerConversion = spend / conversions;
+      form.setValue('cost_per_conversion', Number(costPerConversion.toFixed(2)));
+    }
+    
+    if (spend && conversions && conversions > 0) {
+      // ROAS = Receita / Investimento. Como não temos receita, vamos usar uma estimativa baseada no valor médio por conversão
+      // Por agora, vamos calcular como uma métrica simples
+      const roas = conversions > 0 ? conversions * 10 / spend : 0; // Estimativa básica
+      form.setValue('roas', Number(roas.toFixed(2)));
+    }
+  }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);
+
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
+      // Preparar dados garantindo que campos numéricos sejam tratados corretamente
+      const submitData = {
+        ...data,
+        ad_sets_count: data.ad_sets_count || 0,
+        impressions: data.impressions || 0,
+        clicks: data.clicks || 0,
+        ctr: data.ctr || 0,
+        cpc: data.cpc || 0,
+        spend: data.spend || 0,
+        conversions: data.conversions || 0,
+        conversion_rate: data.conversion_rate || 0,
+        cost_per_conversion: data.cost_per_conversion || 0,
+        roas: data.roas || 0,
+      };
+
       const { error } = await supabase
         .from('marketing_reports')
-        .insert([data]);
+        .insert([submitData]);
 
       if (error) throw error;
 
@@ -218,7 +262,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -237,7 +282,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -256,7 +302,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -270,14 +317,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                 name="ctr"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">CTR (%)</FormLabel>
+                    <FormLabel className="text-white">CTR (%) - Automático</FormLabel>
                     <FormControl>
                       <Input 
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        value={field.value || ""}
+                        readOnly
+                        className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
+                        placeholder="Calculado automaticamente"
                       />
                     </FormControl>
                     <FormMessage />
@@ -296,7 +345,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -316,7 +366,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -335,7 +386,8 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </FormControl>
@@ -349,14 +401,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                 name="conversion_rate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Taxa de Conversão (%)</FormLabel>
+                    <FormLabel className="text-white">Taxa de Conversão (%) - Automático</FormLabel>
                     <FormControl>
                       <Input 
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        value={field.value || ""}
+                        readOnly
+                        className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
+                        placeholder="Calculado automaticamente"
                       />
                     </FormControl>
                     <FormMessage />
@@ -369,14 +423,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                 name="cost_per_conversion"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Custo por Conversão (€)</FormLabel>
+                    <FormLabel className="text-white">Custo por Conversão (€) - Automático</FormLabel>
                     <FormControl>
                       <Input 
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        value={field.value || ""}
+                        readOnly
+                        className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
+                        placeholder="Calculado automaticamente"
                       />
                     </FormControl>
                     <FormMessage />
@@ -389,14 +445,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                 name="roas"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">ROAS</FormLabel>
+                    <FormLabel className="text-white">ROAS - Automático</FormLabel>
                     <FormControl>
                       <Input 
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
+                        value={field.value || ""}
+                        readOnly
+                        className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
+                        placeholder="Calculado automaticamente"
                       />
                     </FormControl>
                     <FormMessage />

@@ -1,3 +1,4 @@
+
 import {
   FormControl,
   FormField,
@@ -141,14 +142,14 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
                   
-                  // Substituir vírgula por ponto para conversão
-                  const normalizedValue = cleanValue.replace(',', '.');
-                  
-                  // Se termina com ponto ou vírgula, permitir (usuário ainda está digitando)
-                  if (cleanValue.endsWith('.') || cleanValue.endsWith(',')) {
-                    // Não fazer conversão ainda, apenas atualizar o display
+                  // Permitir vírgula no final (usuário digitando)
+                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
+                    // Não converter ainda, deixar o usuário continuar digitando
                     return;
                   }
+                  
+                  // Substituir vírgula por ponto para conversão
+                  const normalizedValue = cleanValue.replace(/,/g, '.');
                   
                   const numValue = parseFloat(normalizedValue);
                   if (!isNaN(numValue)) {
@@ -184,14 +185,14 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
                   
-                  // Substituir vírgula por ponto para conversão
-                  const normalizedValue = cleanValue.replace(',', '.');
-                  
-                  // Se termina com ponto ou vírgula, permitir (usuário ainda está digitando)
-                  if (cleanValue.endsWith('.') || cleanValue.endsWith(',')) {
-                    // Não fazer conversão ainda, apenas atualizar o display
+                  // Permitir vírgula no final (usuário digitando)
+                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
+                    // Não converter ainda, deixar o usuário continuar digitando
                     return;
                   }
+                  
+                  // Substituir vírgula por ponto para conversão
+                  const normalizedValue = cleanValue.replace(/,/g, '.');
                   
                   const numValue = parseFloat(normalizedValue);
                   if (!isNaN(numValue)) {

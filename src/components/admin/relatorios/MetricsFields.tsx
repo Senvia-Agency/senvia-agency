@@ -1,4 +1,3 @@
-
 import {
   FormControl,
   FormField,
@@ -130,21 +129,34 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">CPC (€)</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.001"
-                min="0"
+                type="text"
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === "") {
                     field.onChange(undefined);
-                  } else {
-                    const numValue = parseFloat(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                    return;
+                  }
+                  
+                  // Permitir apenas números, vírgulas e pontos
+                  const cleanValue = value.replace(/[^0-9.,]/g, '');
+                  
+                  // Substituir vírgula por ponto para conversão
+                  const normalizedValue = cleanValue.replace(',', '.');
+                  
+                  // Se termina com ponto ou vírgula, permitir (usuário ainda está digitando)
+                  if (cleanValue.endsWith('.') || cleanValue.endsWith(',')) {
+                    // Não fazer conversão ainda, apenas atualizar o display
+                    return;
+                  }
+                  
+                  const numValue = parseFloat(normalizedValue);
+                  if (!isNaN(numValue)) {
+                    field.onChange(numValue);
                   }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
-                placeholder="Ex: 0.07"
+                placeholder="Ex: 0,07 ou 0.07"
               />
             </FormControl>
             <FormMessage />
@@ -160,20 +172,34 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">Investimento (€)</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.01"
+                type="text"
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === "") {
                     field.onChange(undefined);
-                  } else {
-                    const numValue = parseFloat(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                    return;
+                  }
+                  
+                  // Permitir apenas números, vírgulas e pontos
+                  const cleanValue = value.replace(/[^0-9.,]/g, '');
+                  
+                  // Substituir vírgula por ponto para conversão
+                  const normalizedValue = cleanValue.replace(',', '.');
+                  
+                  // Se termina com ponto ou vírgula, permitir (usuário ainda está digitando)
+                  if (cleanValue.endsWith('.') || cleanValue.endsWith(',')) {
+                    // Não fazer conversão ainda, apenas atualizar o display
+                    return;
+                  }
+                  
+                  const numValue = parseFloat(normalizedValue);
+                  if (!isNaN(numValue)) {
+                    field.onChange(numValue);
                   }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
-                placeholder="Ex: 100.50"
+                placeholder="Ex: 100,50 ou 100.50"
               />
             </FormControl>
             <FormMessage />

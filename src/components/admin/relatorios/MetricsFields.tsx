@@ -134,6 +134,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
+                  console.log('CPC input value:', value);
+                  
                   if (value === "") {
                     field.onChange(undefined);
                     return;
@@ -141,15 +143,24 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                   
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
+                  console.log('CPC clean value:', cleanValue);
                   
-                  // Permitir vírgula no final (usuário digitando)
-                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
-                    // Não converter ainda, deixar o usuário continuar digitando
+                  // Se o valor limpo é diferente do original, não permitir
+                  if (cleanValue !== value) {
                     return;
                   }
                   
-                  // Substituir vírgula por ponto para conversão
+                  // Se termina com vírgula ou ponto, manter o valor como string para display
+                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
+                    console.log('CPC ends with comma/dot, keeping as display');
+                    // Atualizar o display mas não converter para número ainda
+                    e.target.value = cleanValue;
+                    return;
+                  }
+                  
+                  // Substituir vírgula por ponto para conversão numérica
                   const normalizedValue = cleanValue.replace(/,/g, '.');
+                  console.log('CPC normalized value:', normalizedValue);
                   
                   const numValue = parseFloat(normalizedValue);
                   if (!isNaN(numValue)) {
@@ -177,6 +188,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
+                  console.log('Spend input value:', value);
+                  
                   if (value === "") {
                     field.onChange(undefined);
                     return;
@@ -184,15 +197,24 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                   
                   // Permitir apenas números, vírgulas e pontos
                   const cleanValue = value.replace(/[^0-9.,]/g, '');
+                  console.log('Spend clean value:', cleanValue);
                   
-                  // Permitir vírgula no final (usuário digitando)
-                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
-                    // Não converter ainda, deixar o usuário continuar digitando
+                  // Se o valor limpo é diferente do original, não permitir
+                  if (cleanValue !== value) {
                     return;
                   }
                   
-                  // Substituir vírgula por ponto para conversão
+                  // Se termina com vírgula ou ponto, manter o valor como string para display
+                  if (cleanValue.endsWith(',') || cleanValue.endsWith('.')) {
+                    console.log('Spend ends with comma/dot, keeping as display');
+                    // Atualizar o display mas não converter para número ainda
+                    e.target.value = cleanValue;
+                    return;
+                  }
+                  
+                  // Substituir vírgula por ponto para conversão numérica
                   const normalizedValue = cleanValue.replace(/,/g, '.');
+                  console.log('Spend normalized value:', normalizedValue);
                   
                   const numValue = parseFloat(normalizedValue);
                   if (!isNaN(numValue)) {

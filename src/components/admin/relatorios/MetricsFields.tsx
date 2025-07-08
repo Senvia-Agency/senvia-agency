@@ -29,7 +29,12 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                  if (value === "") {
+                    field.onChange(undefined);
+                  } else {
+                    const numValue = parseInt(value);
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                  }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 5"
@@ -52,7 +57,12 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                  if (value === "") {
+                    field.onChange(undefined);
+                  } else {
+                    const numValue = parseInt(value);
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                  }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 14226"
@@ -75,7 +85,12 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                  if (value === "") {
+                    field.onChange(undefined);
+                  } else {
+                    const numValue = parseInt(value);
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                  }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 249"
@@ -121,14 +136,11 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // Permitir campo vazio ou valor numérico válido
                   if (value === "") {
                     field.onChange(undefined);
                   } else {
                     const numValue = parseFloat(value);
-                    if (!isNaN(numValue)) {
-                      field.onChange(numValue);
-                    }
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
                   }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
@@ -153,7 +165,12 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? undefined : parseFloat(value) || 0);
+                  if (value === "") {
+                    field.onChange(undefined);
+                  } else {
+                    const numValue = parseFloat(value);
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                  }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 100.50"
@@ -176,7 +193,12 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
                 value={field.value?.toString() || ""}
                 onChange={(e) => {
                   const value = e.target.value;
-                  field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                  if (value === "") {
+                    field.onChange(undefined);
+                  } else {
+                    const numValue = parseInt(value);
+                    field.onChange(isNaN(numValue) ? undefined : numValue);
+                  }
                 }}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 12"

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,13 +36,13 @@ const formSchema = z.object({
   report_period_start: z.string().min(1, "Data de início é obrigatória"),
   report_period_end: z.string().min(1, "Data de fim é obrigatória"),
   report_type: z.enum(["weekly", "monthly"]),
-  ad_sets_count: z.number().min(0, "Valor deve ser positivo"),
-  impressions: z.number().min(0, "Valor deve ser positivo"),
-  clicks: z.number().min(0, "Valor deve ser positivo"),
+  ad_sets_count: z.number().min(0, "Valor deve ser positivo").optional(),
+  impressions: z.number().min(0, "Valor deve ser positivo").optional(),
+  clicks: z.number().min(0, "Valor deve ser positivo").optional(),
   ctr: z.number().min(0, "Valor deve ser positivo").optional(),
-  cpc: z.number().min(0, "Valor deve ser positivo"),
-  spend: z.number().min(0, "Valor deve ser positivo"),
-  conversions: z.number().min(0, "Valor deve ser positivo"),
+  cpc: z.number().min(0, "Valor deve ser positivo").optional(),
+  spend: z.number().min(0, "Valor deve ser positivo").optional(),
+  conversions: z.number().min(0, "Valor deve ser positivo").optional(),
   conversion_rate: z.number().min(0, "Valor deve ser positivo").optional(),
   cost_per_conversion: z.number().min(0, "Valor deve ser positivo").optional(),
   roas: z.number().min(0, "Valor deve ser positivo").optional(),
@@ -68,16 +69,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
       report_period_start: "",
       report_period_end: "",
       report_type: "weekly",
-      ad_sets_count: undefined,
-      impressions: undefined,
-      clicks: undefined,
-      ctr: undefined,
-      cpc: undefined,
-      spend: undefined,
-      conversions: undefined,
-      conversion_rate: undefined,
-      cost_per_conversion: undefined,
-      roas: undefined,
+      ad_sets_count: 0,
+      impressions: 0,
+      clicks: 0,
+      ctr: 0,
+      cpc: 0,
+      spend: 0,
+      conversions: 0,
+      conversion_rate: 0,
+      cost_per_conversion: 0,
+      roas: 0,
       notes: "",
       status: "draft",
     },
@@ -89,7 +90,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
   useEffect(() => {
     const { impressions, clicks, conversions, spend } = watchedValues;
     
-    // CTR = (Cliques / Impressões) × 100 - mas vamos mostrar apenas o valor decimal
+    // CTR = (Clicks / Impressions) × 100
     if (clicks && impressions && impressions > 0) {
       const ctr = (clicks / impressions) * 100;
       form.setValue('ctr', Number(ctr.toFixed(2)));
@@ -116,11 +117,17 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
   }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);
 
   const onSubmit = async (data: FormData) => {
+    console.log('Iniciando criação de relatório com dados:', data);
     setLoading(true);
+    
     try {
       // Preparar dados garantindo que campos numéricos sejam tratados corretamente
       const submitData = {
-        ...data,
+        client_name: data.client_name,
+        campaign_name: data.campaign_name,
+        report_period_start: data.report_period_start,
+        report_period_end: data.report_period_end,
+        report_type: data.report_type,
         ad_sets_count: data.ad_sets_count || 0,
         impressions: data.impressions || 0,
         clicks: data.clicks || 0,
@@ -131,21 +138,30 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
         conversion_rate: data.conversion_rate || 0,
         cost_per_conversion: data.cost_per_conversion || 0,
         roas: data.roas || 0,
+        notes: data.notes || null,
+        status: data.status,
       };
 
-      const { error } = await supabase
+      console.log('Dados preparados para envio:', submitData);
+
+      const { data: result, error } = await supabase
         .from('marketing_reports')
-        .insert([submitData]);
+        .insert([submitData])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro do Supabase:', error);
+        throw error;
+      }
 
+      console.log('Relatório criado com sucesso:', result);
       toast.success('Relatório criado com sucesso');
       form.reset();
       onOpenChange(false);
       onSuccess();
     } catch (error) {
       console.error('Erro ao criar relatório:', error);
-      toast.error('Erro ao criar relatório');
+      toast.error('Erro ao criar relatório: ' + (error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -264,10 +280,13 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                     <FormControl>
                       <Input 
                         type="number"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value?.toString() || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 5"
                       />
                     </FormControl>
                     <FormMessage />
@@ -284,10 +303,13 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                     <FormControl>
                       <Input 
                         type="number"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value?.toString() || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 14226"
                       />
                     </FormControl>
                     <FormMessage />
@@ -304,10 +326,13 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                     <FormControl>
                       <Input 
                         type="number"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value?.toString() || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 249"
                       />
                     </FormControl>
                     <FormMessage />
@@ -325,8 +350,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         step="0.01"
-                        {...field}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         readOnly
                         className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                         placeholder="Calculado automaticamente"
@@ -348,15 +372,14 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                         type="number"
                         step="0.001"
                         min="0"
-                        {...field}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         onChange={(e) => {
                           const value = e.target.value;
                           if (value === "") {
-                            field.onChange(undefined);
+                            field.onChange(0);
                           } else {
                             const numValue = parseFloat(value);
-                            if (!isNaN(numValue)) {
+                            if (!isNaN(numValue) && numValue >= 0) {
                               field.onChange(numValue);
                             }
                           }
@@ -380,10 +403,13 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         step="0.01"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value?.toString() || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseFloat(value) || 0);
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 100.50"
                       />
                     </FormControl>
                     <FormMessage />
@@ -400,10 +426,13 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                     <FormControl>
                       <Input 
                         type="number"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value?.toString() || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseInt(value) || 0);
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 12"
                       />
                     </FormControl>
                     <FormMessage />
@@ -421,8 +450,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         step="0.01"
-                        {...field}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         readOnly
                         className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                         placeholder="Calculado automaticamente"
@@ -443,8 +471,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         step="0.01"
-                        {...field}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         readOnly
                         className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                         placeholder="Calculado automaticamente"
@@ -465,8 +492,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                       <Input 
                         type="number"
                         step="0.01"
-                        {...field}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         readOnly
                         className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                         placeholder="Calculado automaticamente"
@@ -525,6 +551,7 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                disabled={loading}
               >
                 Cancelar
               </Button>

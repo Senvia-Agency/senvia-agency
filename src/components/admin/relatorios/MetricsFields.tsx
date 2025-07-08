@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "./types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface MetricsFieldsProps {
   form: UseFormReturn<FormData>;
@@ -18,6 +18,24 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
   // Estados para valores de display dos campos decimais
   const [cpcDisplay, setCpcDisplay] = useState<string>("");
   const [spendDisplay, setSpendDisplay] = useState<string>("");
+
+  // Sincronizar estados de display com valores do form
+  const formValues = form.watch();
+  
+  useEffect(() => {
+    // Se os valores do form foram resetados (são undefined), resetar os displays também
+    if (formValues.cpc === undefined) {
+      setCpcDisplay("");
+    } else if (cpcDisplay === "" && formValues.cpc !== undefined) {
+      setCpcDisplay(formValues.cpc.toString());
+    }
+    
+    if (formValues.spend === undefined) {
+      setSpendDisplay("");
+    } else if (spendDisplay === "" && formValues.spend !== undefined) {
+      setSpendDisplay(formValues.spend.toString());
+    }
+  }, [formValues.cpc, formValues.spend, cpcDisplay, spendDisplay]);
 
   const handleDecimalInput = (
     value: string, 
@@ -40,6 +58,13 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
       if (!value.endsWith(',') && !value.endsWith('.')) {
         const normalized = value.replace(/,/g, '.');
         const num = parseFloat(normalized);
+        if (!isNaN(num)) {
+          onChange(num);
+        }
+      } else {
+        // Se termina com vírgula ou ponto, não enviar valor ainda mas guardar estado
+        const normalized = value.replace(/,/g, '.');
+        const num = parseFloat(normalized.slice(0, -1));
         if (!isNaN(num)) {
           onChange(num);
         }
@@ -133,7 +158,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toFixed(2) || ""}
+                value={field.value ? field.value.toFixed(4) : ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -214,7 +239,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toFixed(2) || ""}
+                value={field.value ? field.value.toFixed(4) + "%" : ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -234,7 +259,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toFixed(2) || ""}
+                value={field.value ? "€" + field.value.toFixed(2) : ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -254,7 +279,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toFixed(2) || ""}
+                value={field.value ? field.value.toFixed(2) + "x" : ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"

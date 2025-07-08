@@ -57,19 +57,20 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
     
     const calculatedValues = calculateAutomaticValues(impressions, clicks, conversions, spend);
     
-    if (calculatedValues.ctr !== undefined) {
+    // Sempre atualizar os valores calculados se mudaram
+    if (calculatedValues.ctr !== undefined && calculatedValues.ctr !== form.getValues('ctr')) {
       form.setValue('ctr', calculatedValues.ctr);
     }
     
-    if (calculatedValues.conversionRate !== undefined) {
+    if (calculatedValues.conversionRate !== undefined && calculatedValues.conversionRate !== form.getValues('conversion_rate')) {
       form.setValue('conversion_rate', calculatedValues.conversionRate);
     }
     
-    if (calculatedValues.costPerConversion !== undefined) {
+    if (calculatedValues.costPerConversion !== undefined && calculatedValues.costPerConversion !== form.getValues('cost_per_conversion')) {
       form.setValue('cost_per_conversion', calculatedValues.costPerConversion);
     }
     
-    if (calculatedValues.roas !== undefined) {
+    if (calculatedValues.roas !== undefined && calculatedValues.roas !== form.getValues('roas')) {
       form.setValue('roas', calculatedValues.roas);
     }
   }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);
@@ -79,23 +80,23 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
     setLoading(true);
     
     try {
-      // Preparar dados garantindo que valores nulos sejam tratados corretamente
+      // Preparar dados garantindo que valores sejam números válidos ou null
       const submitData = {
         client_name: data.client_name,
         campaign_name: data.campaign_name,
         report_period_start: data.report_period_start,
         report_period_end: data.report_period_end,
         report_type: data.report_type,
-        ad_sets_count: data.ad_sets_count || 0,
-        impressions: data.impressions || 0,
-        clicks: data.clicks || 0,
-        ctr: data.ctr || 0,
-        cpc: data.cpc || 0,
-        spend: data.spend || 0,
-        conversions: data.conversions || 0,
-        conversion_rate: data.conversion_rate || 0,
-        cost_per_conversion: data.cost_per_conversion || 0,
-        roas: data.roas || 0,
+        ad_sets_count: data.ad_sets_count ?? null,
+        impressions: data.impressions ?? null,
+        clicks: data.clicks ?? null,
+        ctr: data.ctr ?? null,
+        cpc: data.cpc ?? null,
+        spend: data.spend ?? null,
+        conversions: data.conversions ?? null,
+        conversion_rate: data.conversion_rate ?? null,
+        cost_per_conversion: data.cost_per_conversion ?? null,
+        roas: data.roas ?? null,
         notes: data.notes || null,
         status: data.status,
       };

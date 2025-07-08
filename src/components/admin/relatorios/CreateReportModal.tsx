@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,16 +34,16 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
       report_period_start: "",
       report_period_end: "",
       report_type: "weekly",
-      ad_sets_count: 0,
-      impressions: 0,
-      clicks: 0,
-      ctr: 0,
-      cpc: 0,
-      spend: 0,
-      conversions: 0,
-      conversion_rate: 0,
-      cost_per_conversion: 0,
-      roas: 0,
+      ad_sets_count: undefined,
+      impressions: undefined,
+      clicks: undefined,
+      ctr: undefined,
+      cpc: undefined,
+      spend: undefined,
+      conversions: undefined,
+      conversion_rate: undefined,
+      cost_per_conversion: undefined,
+      roas: undefined,
       notes: "",
       status: "draft",
     },
@@ -76,11 +75,11 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
   }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);
 
   const onSubmit = async (data: FormData) => {
-    console.log('Iniciando criação de relatório com dados:', data);
+    console.log('Dados do formulário antes do envio:', data);
     setLoading(true);
     
     try {
-      // Preparar dados garantindo que campos numéricos sejam tratados corretamente
+      // Preparar dados garantindo que valores nulos sejam tratados corretamente
       const submitData = {
         client_name: data.client_name,
         campaign_name: data.campaign_name,

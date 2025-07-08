@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -9,47 +8,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-const formSchema = z.object({
-  client_name: z.string().min(1, "Nome do cliente é obrigatório"),
-  campaign_name: z.string().min(1, "Nome da campanha é obrigatório"),
-  report_period_start: z.string().min(1, "Data de início é obrigatória"),
-  report_period_end: z.string().min(1, "Data de fim é obrigatória"),
-  report_type: z.enum(["weekly", "monthly"]),
-  ad_sets_count: z.number().min(0, "Valor deve ser positivo"),
-  impressions: z.number().min(0, "Valor deve ser positivo"),
-  clicks: z.number().min(0, "Valor deve ser positivo"),
-  ctr: z.number().min(0, "Valor deve ser positivo"),
-  cpc: z.number().min(0, "Valor deve ser positivo"),
-  spend: z.number().min(0, "Valor deve ser positivo"),
-  conversions: z.number().min(0, "Valor deve ser positivo"),
-  conversion_rate: z.number().min(0, "Valor deve ser positivo"),
-  cost_per_conversion: z.number().min(0, "Valor deve ser positivo"),
-  roas: z.number().min(0, "Valor deve ser positivo"),
-  notes: z.string().optional(),
-  status: z.enum(["draft", "final"]),
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { BasicFields } from "./BasicFields";
+import { MetricsFields } from "./MetricsFields";
+import { NotesField } from "./NotesField";
+import { formSchema, FormData } from "./types";
+import { calculateAutomaticValues } from "./utils";
 
 interface MarketingReport {
   id: string;
@@ -70,6 +36,8 @@ interface MarketingReport {
   roas: number;
   notes: string | null;
   status: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface EditReportModalProps {
@@ -84,38 +52,104 @@ export const EditReportModal = ({ open, onOpenChange, report, onSuccess }: EditR
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      client_name: "",
+      campaign_name: "",
+      report_period_start: "",
+      report_period_end: "",
+      report_type: "weekly",
+      ad_sets_count: undefined,
+      impressions: undefined,
+      clicks: undefined,
+      ctr: undefined,
+      cpc: undefined,
+      spend: undefined,
+      conversions: undefined,
+      conversion_rate: undefined,
+      cost_per_conversion: undefined,
+      roas: undefined,
+      notes: "",
+      status: "draft",
+    },
   });
 
+  // Preencher formulário com dados do relatório
   useEffect(() => {
-    if (report) {
+    if (report && open) {
       form.reset({
         client_name: report.client_name,
         campaign_name: report.campaign_name,
         report_period_start: report.report_period_start,
         report_period_end: report.report_period_end,
         report_type: report.report_type as "weekly" | "monthly",
-        ad_sets_count: report.ad_sets_count,
-        impressions: report.impressions,
-        clicks: report.clicks,
-        ctr: report.ctr,
-        cpc: report.cpc,
-        spend: report.spend,
-        conversions: report.conversions,
-        conversion_rate: report.conversion_rate,
-        cost_per_conversion: report.cost_per_conversion,
-        roas: report.roas,
+        ad_sets_count: report.ad_sets_count || undefined,
+        impressions: report.impressions || undefined,
+        clicks: report.clicks || undefined,
+        ctr: report.ctr || undefined,
+        cpc: report.cpc || undefined,
+        spend: report.spend || undefined,
+        conversions: report.conversions || undefined,
+        conversion_rate: report.conversion_rate || undefined,
+        cost_per_conversion: report.cost_per_conversion || undefined,
+        roas: report.roas || undefined,
         notes: report.notes || "",
         status: report.status as "draft" | "final",
       });
     }
-  }, [report, form]);
+  }, [report, open, form]);
+
+  // Calcular valores automáticos
+  const watchedValues = form.watch();
+  
+  useEffect(() => {
+    const { impressions, clicks, conversions, spend } = watchedValues;
+    
+    const calculatedValues = calculateAutomaticValues(impressions, clicks, conversions, spend);
+    
+    if (calculatedValues.ctr !== undefined) {
+      form.setValue('ctr', calculatedValues.ctr);
+    }
+    
+    if (calculatedValues.conversionRate !== undefined) {
+      form.setValue('conversion_rate', calculatedValues.conversionRate);
+    }
+    
+    if (calculatedValues.costPerConversion !== undefined) {
+      form.setValue('cost_per_conversion', calculatedValues.costPerConversion);
+    }
+    
+    if (calculatedValues.roas !== undefined) {
+      form.setValue('roas', calculatedValues.roas);
+    }
+  }, [watchedValues.impressions, watchedValues.clicks, watchedValues.conversions, watchedValues.spend, form]);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
+    
     try {
+      const submitData = {
+        client_name: data.client_name,
+        campaign_name: data.campaign_name,
+        report_period_start: data.report_period_start,
+        report_period_end: data.report_period_end,
+        report_type: data.report_type,
+        ad_sets_count: data.ad_sets_count || 0,
+        impressions: data.impressions || 0,
+        clicks: data.clicks || 0,
+        ctr: data.ctr || 0,
+        cpc: data.cpc || 0,
+        spend: data.spend || 0,
+        conversions: data.conversions || 0,
+        conversion_rate: data.conversion_rate || 0,
+        cost_per_conversion: data.cost_per_conversion || 0,
+        roas: data.roas || 0,
+        notes: data.notes || null,
+        status: data.status,
+      };
+
       const { error } = await supabase
         .from('marketing_reports')
-        .update(data)
+        .update(submitData)
         .eq('id', report.id);
 
       if (error) throw error;
@@ -125,7 +159,7 @@ export const EditReportModal = ({ open, onOpenChange, report, onSuccess }: EditR
       onSuccess();
     } catch (error) {
       console.error('Erro ao atualizar relatório:', error);
-      toast.error('Erro ao atualizar relatório');
+      toast.error('Erro ao atualizar relatório: ' + (error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -141,334 +175,11 @@ export const EditReportModal = ({ open, onOpenChange, report, onSuccess }: EditR
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="client_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Nome do Cliente</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="campaign_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Nome da Campanha</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="report_period_start"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Data de Início</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="date"
-                        {...field} 
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="report_period_end"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Data de Fim</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="date"
-                        {...field} 
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="report_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Tipo de Relatório</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="weekly">Semanal</SelectItem>
-                        <SelectItem value="monthly">Mensal</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="ad_sets_count"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Conjuntos de Anúncios</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="impressions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Impressões</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="clicks"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Cliques</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="ctr"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">CTR (%)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="cpc"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">CPC (€)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="spend"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Investimento (€)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="conversions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Conversões</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="conversion_rate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Taxa de Conversão (%)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="cost_per_conversion"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Custo por Conversão (€)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="roas"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">ROAS</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="bg-gray-800 border-gray-700 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Status</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="draft">Rascunho</SelectItem>
-                        <SelectItem value="final">Final</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <BasicFields form={form} />
+              <MetricsFields form={form} />
             </div>
 
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Observações</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      {...field} 
-                      className="bg-gray-800 border-gray-700 text-white"
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <NotesField form={form} />
 
             <div className="flex justify-end space-x-4">
               <Button
@@ -476,6 +187,7 @@ export const EditReportModal = ({ open, onOpenChange, report, onSuccess }: EditR
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                disabled={loading}
               >
                 Cancelar
               </Button>

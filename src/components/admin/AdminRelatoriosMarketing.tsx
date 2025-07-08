@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit, FileDown, Trash2, Eye } from "lucide-react";
+import { Plus, Edit, Download, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -202,7 +202,7 @@ const AdminRelatoriosMarketing = () => {
 
       {reports.length === 0 && (
         <div className="text-center py-12">
-          <FileDown className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Download className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-white mb-2">Nenhum relatório encontrado</h3>
           <p className="text-gray-400 mb-4">Crie seu primeiro relatório de marketing</p>
           <Button

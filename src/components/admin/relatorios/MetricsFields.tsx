@@ -14,7 +14,7 @@ interface MetricsFieldsProps {
 }
 
 export const MetricsFields = ({ form }: MetricsFieldsProps) => {
-  const handleNumberInput = (value: string, onChange: (value: number | undefined) => void) => {
+  const handleDecimalInput = (value: string, onChange: (value: number | undefined) => void) => {
     if (value === "") {
       onChange(undefined);
       return;
@@ -23,15 +23,33 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
     // Permitir apenas números, vírgulas e pontos
     const cleanValue = value.replace(/[^0-9.,]/g, '');
     
-    // Se o valor limpo é diferente do original, não permitir
+    // Se o valor limpo é diferente do original, rejeitar a entrada
     if (cleanValue !== value) {
       return;
     }
     
-    // Converter vírgula para ponto e converter para número
+    // Converter vírgula para ponto para parsing
     const normalizedValue = cleanValue.replace(/,/g, '.');
-    const numValue = parseFloat(normalizedValue);
-    onChange(isNaN(numValue) ? undefined : numValue);
+    
+    // Validar se é um número válido
+    if (normalizedValue !== '' && !isNaN(parseFloat(normalizedValue))) {
+      onChange(parseFloat(normalizedValue));
+    } else if (normalizedValue === '' || normalizedValue === '.') {
+      // Permitir valores parciais enquanto digita
+      onChange(undefined);
+    }
+  };
+
+  const handleIntegerInput = (value: string, onChange: (value: number | undefined) => void) => {
+    if (value === "") {
+      onChange(undefined);
+      return;
+    }
+    
+    const numValue = parseInt(value);
+    if (!isNaN(numValue)) {
+      onChange(numValue);
+    }
   };
 
   return (
@@ -45,16 +63,9 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="number"
+                min="0"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "") {
-                    field.onChange(undefined);
-                  } else {
-                    const numValue = parseInt(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
-                  }
-                }}
+                onChange={(e) => handleIntegerInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 5"
               />
@@ -73,16 +84,9 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="number"
+                min="0"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "") {
-                    field.onChange(undefined);
-                  } else {
-                    const numValue = parseInt(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
-                  }
-                }}
+                onChange={(e) => handleIntegerInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 14226"
               />
@@ -101,16 +105,9 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="number"
+                min="0"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "") {
-                    field.onChange(undefined);
-                  } else {
-                    const numValue = parseInt(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
-                  }
-                }}
+                onChange={(e) => handleIntegerInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 249"
               />
@@ -128,9 +125,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">CTR (%) - Automático</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.01"
-                value={field.value?.toString() || ""}
+                type="text"
+                value={field.value?.toFixed(2) || ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -151,7 +147,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
               <Input 
                 type="text"
                 value={field.value?.toString() || ""}
-                onChange={(e) => handleNumberInput(e.target.value, field.onChange)}
+                onChange={(e) => handleDecimalInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 0,07 ou 0.07"
               />
@@ -171,7 +167,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
               <Input 
                 type="text"
                 value={field.value?.toString() || ""}
-                onChange={(e) => handleNumberInput(e.target.value, field.onChange)}
+                onChange={(e) => handleDecimalInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 100,50 ou 100.50"
               />
@@ -190,16 +186,9 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="number"
+                min="0"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "") {
-                    field.onChange(undefined);
-                  } else {
-                    const numValue = parseInt(value);
-                    field.onChange(isNaN(numValue) ? undefined : numValue);
-                  }
-                }}
+                onChange={(e) => handleIntegerInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 12"
               />
@@ -217,9 +206,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">Taxa de Conversão (%) - Automático</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.01"
-                value={field.value?.toString() || ""}
+                type="text"
+                value={field.value?.toFixed(2) || ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -238,9 +226,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">Custo por Conversão (€) - Automático</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.01"
-                value={field.value?.toString() || ""}
+                type="text"
+                value={field.value?.toFixed(2) || ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"
@@ -259,9 +246,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormLabel className="text-white">ROAS - Automático</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                step="0.01"
-                value={field.value?.toString() || ""}
+                type="text"
+                value={field.value?.toFixed(2) || ""}
                 readOnly
                 className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                 placeholder="Calculado automaticamente"

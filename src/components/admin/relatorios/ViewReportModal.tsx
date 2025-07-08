@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { FileDown } from "lucide-react";
+import { Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +41,6 @@ interface ViewReportModalProps {
 }
 
 export const ViewReportModal = ({ open, onOpenChange, report }: ViewReportModalProps) => {
-  const [generating, setGenerating] = useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -59,51 +57,43 @@ export const ViewReportModal = ({ open, onOpenChange, report }: ViewReportModalP
     return new Date(dateString).toLocaleDateString('pt-PT');
   };
 
-  const generatePDF = async () => {
-    setGenerating(true);
-    try {
-      const element = document.getElementById('report-content');
-      if (!element) {
-        toast.error('Erro ao gerar PDF');
-        return;
-      }
+  const exportToPDF = async () => {
+    const element = document.getElementById('report-content');
+    if (!element) return;
 
+    try {
+      toast.loading('Gerando PDF...');
+      
       const canvas = await html2canvas(element, {
         scale: 2,
-        backgroundColor: '#111827', // bg-gray-900
         useCORS: true,
-        logging: false,
+        backgroundColor: '#1f2937'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 0;
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
       
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      const fileName = `relatorio_${report.client_name.replace(/\s+/g, '_')}_${report.report_period_start}_${report.report_period_end}.pdf`;
+      const fileName = `relatorio_${report.client_name.replace(/\s+/g, '_')}_${report.campaign_name.replace(/\s+/g, '_')}.pdf`;
       pdf.save(fileName);
       
-      toast.success('PDF gerado com sucesso');
+      toast.success('PDF gerado com sucesso!');
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
       toast.error('Erro ao gerar PDF');
-    } finally {
-      setGenerating(false);
     }
   };
 
@@ -114,12 +104,11 @@ export const ViewReportModal = ({ open, onOpenChange, report }: ViewReportModalP
           <div className="flex justify-between items-center">
             <DialogTitle className="text-white">Relatório de Marketing</DialogTitle>
             <Button
-              onClick={generatePDF}
-              disabled={generating}
+              onClick={exportToPDF}
               className="bg-senvia-500 hover:bg-senvia-600 text-white"
             >
-              <FileDown className="h-4 w-4 mr-2" />
-              {generating ? "Gerando PDF..." : "Exportar PDF"}
+              <Download className="h-4 w-4 mr-2" />
+              Exportar PDF
             </Button>
           </div>
         </DialogHeader>

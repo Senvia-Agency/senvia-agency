@@ -89,11 +89,11 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
   useEffect(() => {
     const { impressions, clicks, conversions, spend } = watchedValues;
     
-    // CTR = (Cliques / Impressões) × 100
+    // CTR = (Cliques / Impressões) × 100 - mas vamos mostrar apenas o valor decimal
     if (clicks && impressions && impressions > 0) {
       const ctr = (clicks / impressions) * 100;
       form.setValue('ctr', Number(ctr.toFixed(2)));
-      console.log('CTR Calculado:', ctr, '% - Cliques:', clicks, 'Impressões:', impressions);
+      console.log('CTR Calculado:', ctr.toFixed(2), '% - Cliques:', clicks, 'Impressões:', impressions);
     }
     
     // Taxa de Conversão = (Conversões / Cliques) × 100

@@ -346,11 +346,23 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                     <FormControl>
                       <Input 
                         type="number"
-                        step="0.01"
+                        step="0.001"
+                        min="0"
                         {...field}
                         value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "") {
+                            field.onChange(undefined);
+                          } else {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue)) {
+                              field.onChange(numValue);
+                            }
+                          }
+                        }}
                         className="bg-gray-800 border-gray-700 text-white"
+                        placeholder="Ex: 0.07"
                       />
                     </FormControl>
                     <FormMessage />

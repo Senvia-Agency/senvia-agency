@@ -20,23 +20,17 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
       return;
     }
     
-    // Permitir apenas números, vírgulas e pontos
-    const cleanValue = value.replace(/[^0-9.,]/g, '');
-    
-    // Se o valor limpo é diferente do original, rejeitar a entrada
-    if (cleanValue !== value) {
-      return;
-    }
-    
-    // Converter vírgula para ponto para parsing
-    const normalizedValue = cleanValue.replace(/,/g, '.');
-    
-    // Validar se é um número válido
-    if (normalizedValue !== '' && !isNaN(parseFloat(normalizedValue))) {
-      onChange(parseFloat(normalizedValue));
-    } else if (normalizedValue === '' || normalizedValue === '.') {
-      // Permitir valores parciais enquanto digita
-      onChange(undefined);
+    // Permitir vírgulas e pontos diretamente sem rejeitar
+    if (/^[0-9.,]*$/.test(value)) {
+      // Se é apenas dígitos, vírgulas e pontos, deixar passar
+      // Converter vírgula para ponto para parsing apenas no final
+      if (!value.endsWith(',') && !value.endsWith('.')) {
+        const normalizedValue = value.replace(/,/g, '.');
+        const numValue = parseFloat(normalizedValue);
+        if (!isNaN(numValue)) {
+          onChange(numValue);
+        }
+      }
     }
   };
 

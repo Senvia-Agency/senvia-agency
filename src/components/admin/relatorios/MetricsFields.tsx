@@ -1,4 +1,3 @@
-
 import {
   FormControl,
   FormField,
@@ -15,6 +14,26 @@ interface MetricsFieldsProps {
 }
 
 export const MetricsFields = ({ form }: MetricsFieldsProps) => {
+  const handleNumberInput = (value: string, onChange: (value: number | undefined) => void) => {
+    if (value === "") {
+      onChange(undefined);
+      return;
+    }
+    
+    // Permitir apenas números, vírgulas e pontos
+    const cleanValue = value.replace(/[^0-9.,]/g, '');
+    
+    // Se o valor limpo é diferente do original, não permitir
+    if (cleanValue !== value) {
+      return;
+    }
+    
+    // Converter vírgula para ponto e converter para número
+    const normalizedValue = cleanValue.replace(/,/g, '.');
+    const numValue = parseFloat(normalizedValue);
+    onChange(isNaN(numValue) ? undefined : numValue);
+  };
+
   return (
     <>
       <FormField
@@ -132,25 +151,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
               <Input 
                 type="text"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  
-                  if (value === "") {
-                    field.onChange("");
-                    return;
-                  }
-                  
-                  // Permitir apenas números, vírgulas e pontos
-                  const cleanValue = value.replace(/[^0-9.,]/g, '');
-                  
-                  // Se o valor limpo é diferente do original, não permitir
-                  if (cleanValue !== value) {
-                    return;
-                  }
-                  
-                  // Atualizar o valor no formulário diretamente
-                  field.onChange(cleanValue);
-                }}
+                onChange={(e) => handleNumberInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 0,07 ou 0.07"
               />
@@ -170,25 +171,7 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
               <Input 
                 type="text"
                 value={field.value?.toString() || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  
-                  if (value === "") {
-                    field.onChange("");
-                    return;
-                  }
-                  
-                  // Permitir apenas números, vírgulas e pontos
-                  const cleanValue = value.replace(/[^0-9.,]/g, '');
-                  
-                  // Se o valor limpo é diferente do original, não permitir
-                  if (cleanValue !== value) {
-                    return;
-                  }
-                  
-                  // Atualizar o valor no formulário diretamente
-                  field.onChange(cleanValue);
-                }}
+                onChange={(e) => handleNumberInput(e.target.value, field.onChange)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 100,50 ou 100.50"
               />

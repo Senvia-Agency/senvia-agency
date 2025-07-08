@@ -13,6 +13,7 @@ import AdminPayments from "@/components/admin/AdminPayments";
 import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
 import AdminSettings from "@/components/admin/AdminSettings";
 import AdminMeusProjetos from "@/components/admin/AdminMeusProjetos";
+import AdminRelatoriosMarketing from "@/components/admin/AdminRelatoriosMarketing";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
@@ -33,6 +34,8 @@ const AdminDashboard = () => {
         return <AdminClientes />;
       case "meus-projetos":
         return <AdminMeusProjetos />;
+      case "relatorios-marketing":
+        return <AdminRelatoriosMarketing />;
       case "financeiro":
         return <AdminFinanceiro />;
       case "produtos":

@@ -375,11 +375,12 @@ export const CreateReportModal = ({ open, onOpenChange, onSuccess }: CreateRepor
                         value={field.value?.toString() || ""}
                         onChange={(e) => {
                           const value = e.target.value;
+                          // Permitir campo vazio ou valor numérico válido
                           if (value === "") {
-                            field.onChange(0);
+                            field.onChange(undefined);
                           } else {
                             const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
+                            if (!isNaN(numValue)) {
                               field.onChange(numValue);
                             }
                           }

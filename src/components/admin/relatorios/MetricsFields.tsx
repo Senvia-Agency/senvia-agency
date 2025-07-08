@@ -8,25 +8,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { FormData } from "./types";
+import { useState } from "react";
 
 interface MetricsFieldsProps {
   form: UseFormReturn<FormData>;
 }
 
 export const MetricsFields = ({ form }: MetricsFieldsProps) => {
-  const handleDecimalInput = (value: string, onChange: (value: number | undefined) => void) => {
-    // Permitir qualquer entrada que contenha apenas números, vírgulas e pontos
-    if (value === "" || /^[0-9.,]+$/.test(value)) {
-      // Se termina com vírgula ou ponto, não converter ainda
-      if (value.endsWith(',') || value.endsWith('.')) {
-        // Deixar o usuário continuar digitando
-        return;
-      }
+  // Estados para valores de display dos campos decimais
+  const [cpcDisplay, setCpcDisplay] = useState<string>("");
+  const [spendDisplay, setSpendDisplay] = useState<string>("");
+
+  const handleDecimalInput = (
+    value: string, 
+    onChange: (value: number | undefined) => void,
+    setDisplay: (value: string) => void
+  ) => {
+    // Permitir entrada vazia
+    if (value === "") {
+      setDisplay("");
+      onChange(undefined);
+      return;
+    }
+
+    // Permitir apenas números, vírgulas e pontos
+    if (/^[0-9.,]*$/.test(value)) {
+      // Sempre mostrar o que o usuário digitou
+      setDisplay(value);
       
-      // Converter vírgula para ponto e tentar converter para número
-      const normalized = value.replace(',', '.');
-      const num = parseFloat(normalized);
-      onChange(isNaN(num) ? undefined : num);
+      // Se não termina com vírgula ou ponto, converter para número
+      if (!value.endsWith(',') && !value.endsWith('.')) {
+        const normalized = value.replace(/,/g, '.');
+        const num = parseFloat(normalized);
+        if (!isNaN(num)) {
+          onChange(num);
+        }
+      }
     }
   };
 
@@ -136,8 +153,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toString() || ""}
-                onChange={(e) => handleDecimalInput(e.target.value, field.onChange)}
+                value={cpcDisplay || field.value?.toString() || ""}
+                onChange={(e) => handleDecimalInput(e.target.value, field.onChange, setCpcDisplay)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 0,07 ou 0.07"
               />
@@ -156,8 +173,8 @@ export const MetricsFields = ({ form }: MetricsFieldsProps) => {
             <FormControl>
               <Input 
                 type="text"
-                value={field.value?.toString() || ""}
-                onChange={(e) => handleDecimalInput(e.target.value, field.onChange)}
+                value={spendDisplay || field.value?.toString() || ""}
+                onChange={(e) => handleDecimalInput(e.target.value, field.onChange, setSpendDisplay)}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="Ex: 100,50 ou 100.50"
               />

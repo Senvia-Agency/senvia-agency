@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ interface LeadBadgesProps {
 }
 
 const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-blue-500';
@@ -61,7 +63,7 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
 
   return (
     <div className="flex flex-wrap gap-1">
-      <Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <div className="cursor-pointer">
             <Badge 
@@ -83,6 +85,7 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
                 onClick={() => {
                   console.log('Status option clicked:', option.value, 'for lead:', lead.id);
                   onStatusUpdate?.(lead.id, option.value);
+                  setIsOpen(false); // Fecha o popover após seleção
                 }}
               >
                 {option.label}

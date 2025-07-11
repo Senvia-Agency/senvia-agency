@@ -180,21 +180,13 @@ const AdminLeads = () => {
       const leadDate = new Date(lead.created_at);
       const startDate = new Date(dateRange.from);
       const endDate = new Date(dateRange.to);
-      endDate.setHours(23, 59, 59, 999); // Include the full end date
       
-      // Log geral para entender o problema
-      console.log('🔍 FILTRO DATA:', {
-        dateRangeFrom: dateRange.from,
-        dateRangeTo: dateRange.to,
-        leadCreatedAt: lead.created_at,
-        leadDate: leadDate.toLocaleDateString('pt-PT'),
-        startDate: startDate.toLocaleDateString('pt-PT'),
-        endDate: endDate.toLocaleDateString('pt-PT'),
-        isToday: startDate.toDateString() === endDate.toDateString() && startDate.toDateString() === new Date().toDateString(),
-        matchesDate: leadDate >= startDate && leadDate <= endDate
-      });
+      // Normalizar as datas para comparação apenas do dia (ignorar horas)
+      const leadDateNormalized = new Date(leadDate.getFullYear(), leadDate.getMonth(), leadDate.getDate());
+      const startDateNormalized = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const endDateNormalized = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
       
-      matchesDate = leadDate >= startDate && leadDate <= endDate;
+      matchesDate = leadDateNormalized >= startDateNormalized && leadDateNormalized <= endDateNormalized;
     }
     
     return matchesSearch && matchesStatus && matchesSource && matchesDate;

@@ -60,7 +60,12 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
   ];
 
   const handleNavigation = (sectionId: string) => {
-    setActiveSection(sectionId);
+    // Se estamos em uma página admin separada, navegar para o dashboard com a seção
+    if (window.location.pathname !== '/admin') {
+      navigate(`/admin?tab=${sectionId}`);
+    } else {
+      setActiveSection(sectionId);
+    }
     setSidebarOpen(false);
   };
 

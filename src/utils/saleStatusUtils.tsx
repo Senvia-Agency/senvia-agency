@@ -41,6 +41,16 @@ export const getPaymentStatusLabel = (status: string) => {
   }
 };
 
+export const getServiceTypeLabel = (serviceType: string) => {
+  switch (serviceType) {
+    case 'one_time': return 'Único';
+    case 'recurring': return 'Recorrente';
+    case 'custom': return 'Personalizado';
+    case 'subscription': return 'Assinatura';
+    default: return serviceType;
+  }
+};
+
 export const getPaymentStatusColor = (status: string) => {
   switch (status) {
     case 'pending': return 'bg-yellow-500';

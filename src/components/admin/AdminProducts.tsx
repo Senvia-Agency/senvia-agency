@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { getServiceTypeLabel } from "@/utils/saleStatusUtils";
 import { 
   Plus, 
   Package, 
@@ -203,7 +204,7 @@ const AdminProducts = () => {
                 {/* Service Type Badge */}
                 {product.service_type && (
                   <Badge variant="outline" className="border-gray-600 text-gray-400">
-                    {product.service_type.replace('_', ' ')}
+                    {getServiceTypeLabel(product.service_type)}
                   </Badge>
                 )}
 

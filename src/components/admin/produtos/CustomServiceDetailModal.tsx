@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CustomService } from "@/hooks/useCustomServices";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getServiceTypeLabel } from "@/utils/saleStatusUtils";
 import { Edit } from "lucide-react";
 
 interface CustomServiceDetailModalProps {
@@ -76,7 +77,7 @@ const CustomServiceDetailModal = ({ isOpen, onClose, service, onEdit }: CustomSe
             <div>
               <label className="text-sm font-medium text-slate-300">Tipo de Serviço</label>
               <p className="text-sm text-slate-400 capitalize mt-1">
-                {service.service_type.replace('_', ' ')}
+                {getServiceTypeLabel(service.service_type)}
               </p>
             </div>
             <div>

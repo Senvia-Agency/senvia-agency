@@ -7,7 +7,7 @@ import { Edit, Calendar, DollarSign, User, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-import { getSaleStatusLabel, getSaleStatusColor, getPaymentStatusLabel, getPaymentStatusColor } from "@/utils/saleStatusUtils";
+import { getSaleStatusLabel, getSaleStatusColor, getPaymentStatusLabel, getPaymentStatusColor, getServiceTypeLabel } from "@/utils/saleStatusUtils";
 import EditSaleModal from "./EditSaleModal";
 
 interface SaleDetailModalProps {
@@ -109,7 +109,7 @@ const SaleDetailModal = ({ sale, isOpen, onClose, onSaleUpdated }: SaleDetailMod
                 <div>
                   <span className="text-gray-400">Tipo: </span>
                   <span className="text-white capitalize">
-                    {sale.service_type.replace('_', ' ')}
+                    {getServiceTypeLabel(sale.service_type)}
                   </span>
                 </div>
               </CardContent>

@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Eye, Edit, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getServiceTypeLabel } from "@/utils/saleStatusUtils";
 import { useCustomServices } from "@/hooks/useCustomServices";
 import CreateCustomServiceModal from "./CreateCustomServiceModal";
 import CustomServiceDetailModal from "./CustomServiceDetailModal";
@@ -103,7 +104,7 @@ const CustomServicesSection = () => {
                       </TableCell>
                       <TableCell>
                         <span className="text-slate-300 capitalize">
-                          {service.service_type.replace('_', ' ')}
+                          {getServiceTypeLabel(service.service_type)}
                         </span>
                       </TableCell>
                       <TableCell>

@@ -14,6 +14,7 @@ const CTASection = () => {
           size="lg" 
           className="text-sm md:text-base px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 w-full sm:w-auto h-auto min-h-[48px] md:min-h-[56px] max-w-md mx-auto text-slate-900 font-semibold shadow-lg hover:shadow-xl transition-all"
           onClick={handleCTAClick}
+          data-fb-no-track="true"
         >
           <span className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center leading-tight">
             <span className="text-xs sm:text-sm md:text-base font-medium">

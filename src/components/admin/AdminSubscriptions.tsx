@@ -399,7 +399,11 @@ const AdminSubscriptions = () => {
       subscription.customer_id?.includes(searchTerm) ||
       subscription.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === "all" || subscription.status === statusFilter;
+    // Se status é "all", excluir canceladas por padrão
+    // Se status é específico, mostrar apenas esse status
+    const matchesStatus = statusFilter === "all" 
+      ? subscription.status !== 'cancelled' 
+      : subscription.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });

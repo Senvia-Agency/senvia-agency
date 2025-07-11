@@ -2,19 +2,22 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Search } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 interface LeadFiltersProps {
   filters: {
     status: string;
     source: string;
-    dateRange: string;
     search: string;
   };
+  dateRange?: DateRange;
   onFiltersChange: (filters: any) => void;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
 }
 
-const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
+const LeadFilters = ({ filters, dateRange, onFiltersChange, onDateRangeChange }: LeadFiltersProps) => {
   const updateFilter = (key: string, value: string) => {
     onFiltersChange({ ...filters, [key]: value });
   };
@@ -66,17 +69,13 @@ const LeadFilters = ({ filters, onFiltersChange }: LeadFiltersProps) => {
             </Select>
 
             {/* Filtro Período */}
-            <Select value={filters.dateRange} onValueChange={(value) => updateFilter('dateRange', value)}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-9 text-sm sm:col-span-2 lg:col-span-1">
-                <SelectValue placeholder="Período" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700 z-50">
-                <SelectItem value="7">Últimos 7 dias</SelectItem>
-                <SelectItem value="30">Últimos 30 dias</SelectItem>
-                <SelectItem value="90">Últimos 90 dias</SelectItem>
-                <SelectItem value="365">Último ano</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <DateRangePicker
+                value={dateRange}
+                onChange={onDateRangeChange}
+                className="w-full h-9 text-sm"
+              />
+            </div>
           </div>
         </div>
       </CardContent>

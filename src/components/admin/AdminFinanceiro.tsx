@@ -3,16 +3,21 @@ import { useState } from "react";
 import { useRealFinancialData } from "@/hooks/useRealFinancialData";
 import { useFinancialMovements } from "@/hooks/useFinancialMovements";
 import { useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
 import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
 import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
-import PeriodSelector from "./financeiro/PeriodSelector";
 
 const AdminFinanceiro = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(30);
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const { dateRange, setDateRange, getDaysInRange } = useDateRangeFilter({
+    defaultDays: 30,
+    storageKey: 'admin-financeiro-date-range'
+  });
 
+  const selectedPeriod = getDaysInRange();
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
   const { movements, addMovement, isAddingMovement, updateMovement, isUpdatingMovement } = useFinancialMovements(selectedPeriod);
 
@@ -51,9 +56,9 @@ const AdminFinanceiro = () => {
           <p className="text-gray-400 text-sm sm:text-base">Controle completo das finanças da SENVIA</p>
         </div>
         <div className="flex justify-end items-center">
-          <PeriodSelector
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
+          <DateRangePicker
+            value={dateRange}
+            onChange={setDateRange}
           />
         </div>
       </div>

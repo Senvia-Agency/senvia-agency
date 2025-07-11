@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users } from "lucide-react";
 import { useUnifiedLeads, useUpdateUnifiedLead } from "@/hooks/useUnifiedLeads";
 import { useCreateActivity } from "@/hooks/useActivityHistory";
+import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
@@ -15,7 +16,6 @@ const STORAGE_KEY = 'admin-leads-filters';
 const DEFAULT_FILTERS = {
   status: "all",
   source: "all",
-  dateRange: "30",
   search: ""
 };
 
@@ -40,6 +40,12 @@ const AdminLeads = () => {
     // Como último recurso, usar o email
     return user?.email || 'Usuário';
   };
+
+  // Date range filter
+  const { dateRange, setDateRange } = useDateRangeFilter({
+    defaultDays: 30,
+    storageKey: 'admin-leads-date-range'
+  });
 
   // Simplified filters without problematic listeners
   const [filters, setFilters] = useState(() => {
@@ -168,12 +174,15 @@ const AdminLeads = () => {
       (filters.source === "basic" && lead.source_page === "landing_page_basic") ||
       (filters.source === "premium" && lead.source_page === "landing_page_premium");
     
-    // Filtro de data
-    const daysAgo = parseInt(filters.dateRange);
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
-    const leadDate = new Date(lead.created_at);
-    const matchesDate = leadDate >= dateThreshold;
+    // Filtro de data usando o dateRange
+    let matchesDate = true;
+    if (dateRange?.from && dateRange?.to) {
+      const leadDate = new Date(lead.created_at);
+      const startDate = new Date(dateRange.from);
+      const endDate = new Date(dateRange.to);
+      endDate.setHours(23, 59, 59, 999); // Include the full end date
+      matchesDate = leadDate >= startDate && leadDate <= endDate;
+    }
     
     return matchesSearch && matchesStatus && matchesSource && matchesDate;
   });
@@ -222,7 +231,9 @@ const AdminLeads = () => {
       {/* Filtros */}
       <LeadFilters
         filters={filters}
+        dateRange={dateRange}
         onFiltersChange={handleFiltersChange}
+        onDateRangeChange={setDateRange}
       />
 
       {/* Lista de Leads */}

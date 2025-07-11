@@ -9,7 +9,6 @@ import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
 import ConvertLeadModal from "./leads/ConvertLeadModal";
-import PaymentStatusModal from "./leads/PaymentStatusModal";
 import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY = 'admin-leads-filters';
@@ -25,7 +24,6 @@ const AdminLeads = () => {
   const { user } = useAuth();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [convertLead, setConvertLead] = useState<any>(null);
-  const [paymentLead, setPaymentLead] = useState<any>(null);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const createActivity = useCreateActivity();
 
@@ -156,31 +154,6 @@ const AdminLeads = () => {
     }
   };
 
-  // Atualizar informações de pagamento
-  const updatePaymentData = async (updates: any) => {
-    if (!paymentLead) return;
-
-    try {
-      await updateLeadMutation.mutateAsync({
-        leadId: paymentLead.id,
-        updates
-      });
-
-      toast({
-        title: "Pagamento atualizado",
-        description: "As informações de pagamento foram atualizadas com sucesso."
-      });
-
-      refetch();
-    } catch (error) {
-      toast({
-        title: "Erro ao atualizar",
-        description: "Não foi possível atualizar as informações de pagamento.",
-        variant: "destructive"
-      });
-    }
-  };
-
   // Filtrar leads
   const filteredLeads = leads?.filter(lead => {
     const matchesSearch = 
@@ -211,10 +184,6 @@ const AdminLeads = () => {
 
   const handleStatusEdit = (leadId: string) => {
     setEditingStatus(editingStatus === leadId ? null : leadId);
-  };
-
-  const handlePaymentManage = (lead: any) => {
-    setPaymentLead(lead);
   };
 
   const handleConvertSuccess = () => {
@@ -264,7 +233,6 @@ const AdminLeads = () => {
             onLeadClick={handleLeadClick}
             onStatusEdit={handleStatusEdit}
             onStatusUpdate={updateLeadStatus}
-            onPaymentManage={handlePaymentManage}
           />
         ))}
       </div>
@@ -294,15 +262,6 @@ const AdminLeads = () => {
         isOpen={!!convertLead}
         onClose={() => setConvertLead(null)}
         onConvert={handleConvertSuccess}
-      />
-
-      {/* Modal de Gestão de Pagamentos */}
-      <PaymentStatusModal
-        isOpen={!!paymentLead}
-        onClose={() => setPaymentLead(null)}
-        leadOrCustomer={paymentLead}
-        onUpdate={updatePaymentData}
-        type="lead"
       />
     </div>
   );

@@ -3,9 +3,11 @@ import { Badge } from "@/components/ui/badge";
 
 interface LeadBadgesProps {
   lead: any;
+  editingStatus?: string | null;
+  onStatusEdit?: (leadId: string) => void;
 }
 
-const LeadBadges = ({ lead }: LeadBadgesProps) => {
+const LeadBadges = ({ lead, editingStatus, onStatusEdit }: LeadBadgesProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-blue-500';
@@ -50,7 +52,11 @@ const LeadBadges = ({ lead }: LeadBadgesProps) => {
 
   return (
     <div className="flex flex-wrap gap-1">
-      <Badge className={`${getStatusColor(lead.lead_status)} text-white text-xs`}>
+      <Badge 
+        className={`${getStatusColor(lead.lead_status)} text-white text-xs cursor-pointer hover:opacity-80 transition-opacity`}
+        onClick={() => onStatusEdit?.(lead.id)}
+        title="Clique para alterar o status"
+      >
         {getStatusLabel(lead.lead_status)}
       </Badge>
       

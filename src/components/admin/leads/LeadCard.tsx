@@ -37,7 +37,11 @@ const LeadCard = ({
               {lead.full_name || lead.email}
             </h3>
             
-            <LeadBadges lead={lead} />
+            <LeadBadges 
+              lead={lead} 
+              editingStatus={editingStatus}
+              onStatusEdit={onStatusEdit}
+            />
           </div>
 
           <LeadContactInfo lead={lead} />
@@ -56,7 +60,6 @@ const LeadCard = ({
           editingStatus={editingStatus}
           onStatusEdit={onStatusEdit}
           onStatusUpdate={onStatusUpdate}
-          onPaymentManage={onPaymentManage}
         />
       </div>
     </div>

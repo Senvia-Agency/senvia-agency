@@ -1,16 +1,75 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Copy, ExternalLink, Info } from "lucide-react";
-import { useState } from "react";
+import { Copy, ExternalLink, Info, Webhook, Zap, Plus, Trash2, TestTube } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+
+interface WebhookConfig {
+  id: string;
+  name: string;
+  url: string;
+  events: string[];
+  active: boolean;
+  created_at: string;
+}
 
 const WebhookSetup = () => {
   const { toast } = useToast();
   const [webhookUrl] = useState("https://rvrulhbgkdvnrkhzibif.supabase.co/functions/v1/stripe-webhook");
+  const [customWebhooks, setCustomWebhooks] = useState<WebhookConfig[]>([]);
+  const [zapierUrl, setZapierUrl] = useState("");
+  const [newWebhookName, setNewWebhookName] = useState("");
+  const [newWebhookUrl, setNewWebhookUrl] = useState("");
+  const [newWebhookEvents, setNewWebhookEvents] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadWebhooks();
+  }, []);
+
+  const loadWebhooks = async () => {
+    try {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('*')
+        .eq('settings_key', 'custom_webhooks')
+        .single();
+
+      if (data?.settings_value) {
+        setCustomWebhooks(data.settings_value as WebhookConfig[]);
+      }
+    } catch (error) {
+      console.log('No webhooks found yet');
+    }
+  };
+
+  const saveWebhooks = async (webhooks: WebhookConfig[]) => {
+    try {
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          admin_user_id: (await supabase.auth.getUser()).data.user?.id,
+          settings_key: 'custom_webhooks',
+          settings_value: webhooks
+        });
+
+      if (error) throw error;
+      setCustomWebhooks(webhooks);
+    } catch (error) {
+      console.error('Error saving webhooks:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar os webhooks.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -24,79 +83,393 @@ const WebhookSetup = () => {
     window.open("https://dashboard.stripe.com/webhooks", "_blank");
   };
 
+  const addCustomWebhook = async () => {
+    if (!newWebhookName || !newWebhookUrl) {
+      toast({
+        title: "Erro",
+        description: "Nome e URL são obrigatórios.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newWebhook: WebhookConfig = {
+      id: crypto.randomUUID(),
+      name: newWebhookName,
+      url: newWebhookUrl,
+      events: newWebhookEvents.split(',').map(e => e.trim()).filter(Boolean),
+      active: true,
+      created_at: new Date().toISOString()
+    };
+
+    const updatedWebhooks = [...customWebhooks, newWebhook];
+    await saveWebhooks(updatedWebhooks);
+
+    setNewWebhookName("");
+    setNewWebhookUrl("");
+    setNewWebhookEvents("");
+
+    toast({
+      title: "Webhook adicionado",
+      description: "Webhook personalizado criado com sucesso.",
+    });
+  };
+
+  const removeWebhook = async (id: string) => {
+    const updatedWebhooks = customWebhooks.filter(w => w.id !== id);
+    await saveWebhooks(updatedWebhooks);
+
+    toast({
+      title: "Webhook removido",
+      description: "Webhook removido com sucesso.",
+    });
+  };
+
+  const toggleWebhook = async (id: string, active: boolean) => {
+    const updatedWebhooks = customWebhooks.map(w => 
+      w.id === id ? { ...w, active } : w
+    );
+    await saveWebhooks(updatedWebhooks);
+  };
+
+  const testWebhook = async (url: string, name: string) => {
+    setLoading(true);
+    try {
+      const testData = {
+        test: true,
+        timestamp: new Date().toISOString(),
+        webhook_name: name,
+        triggered_from: "admin_panel"
+      };
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify(testData),
+      });
+
+      toast({
+        title: "Teste enviado",
+        description: `Dados de teste enviados para ${name}. Verifique se foi recebido corretamente.`,
+      });
+    } catch (error) {
+      console.error("Error testing webhook:", error);
+      toast({
+        title: "Erro no teste",
+        description: "Falha ao testar o webhook.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const triggerZapier = async () => {
+    if (!zapierUrl) {
+      toast({
+        title: "Erro",
+        description: "Digite a URL do webhook do Zapier.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const zapData = {
+        timestamp: new Date().toISOString(),
+        triggered_from: window.location.origin,
+        action: "manual_trigger",
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      };
+
+      await fetch(zapierUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify(zapData),
+      });
+
+      toast({
+        title: "Zapier acionado",
+        description: "Requisição enviada para o Zapier. Verifique o histórico do seu Zap.",
+      });
+    } catch (error) {
+      console.error("Error triggering Zapier:", error);
+      toast({
+        title: "Erro",
+        description: "Falha ao acionar o Zapier.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Card className="bg-gray-800 border-gray-700">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Info className="h-5 w-5 text-blue-500" />
-          Configuração do Webhook Stripe
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert className="bg-blue-500/10 border-blue-500/20">
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            Para sincronização automática dos pagamentos, configure este webhook no seu painel do Stripe.
-          </AlertDescription>
-        </Alert>
+    <div className="space-y-6">
+      <Tabs defaultValue="stripe" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+          <TabsTrigger value="stripe" className="data-[state=active]:bg-senvia-500">
+            <Webhook className="h-4 w-4 mr-2" />
+            Stripe
+          </TabsTrigger>
+          <TabsTrigger value="custom" className="data-[state=active]:bg-senvia-500">
+            <Plus className="h-4 w-4 mr-2" />
+            Personalizados
+          </TabsTrigger>
+          <TabsTrigger value="zapier" className="data-[state=active]:bg-senvia-500">
+            <Zap className="h-4 w-4 mr-2" />
+            Zapier
+          </TabsTrigger>
+        </TabsList>
 
-        <div className="space-y-2">
-          <Label htmlFor="webhook-url">URL do Webhook:</Label>
-          <div className="flex gap-2">
-            <Input
-              id="webhook-url"
-              value={webhookUrl}
-              readOnly
-              className="bg-gray-700 border-gray-600 text-white font-mono text-sm"
-            />
-            <Button
-              onClick={() => copyToClipboard(webhookUrl)}
-              variant="outline"
-              size="sm"
-              className="border-gray-600"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
+        <TabsContent value="stripe">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Info className="h-5 w-5 text-blue-500" />
+                Configuração do Webhook Stripe
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-blue-500/10 border-blue-500/20">
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  Para sincronização automática dos pagamentos, configure este webhook no seu painel do Stripe.
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <Label htmlFor="webhook-url">URL do Webhook:</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="webhook-url"
+                    value={webhookUrl}
+                    readOnly
+                    className="bg-gray-700 border-gray-600 text-white font-mono text-sm"
+                  />
+                  <Button
+                    onClick={() => copyToClipboard(webhookUrl)}
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-600"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Eventos para escutar:</Label>
+                <div className="bg-gray-700 p-3 rounded border border-gray-600">
+                  <code className="text-sm text-green-400">checkout.session.completed</code>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="font-medium text-white">Passos para configurar:</h4>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-gray-300">
+                  <li>Abra o painel do Stripe</li>
+                  <li>Vá para "Developers" → "Webhooks"</li>
+                  <li>Clique em "Add endpoint"</li>
+                  <li>Cole a URL do webhook acima</li>
+                  <li>Selecione o evento: <code className="bg-gray-700 px-1 rounded">checkout.session.completed</code></li>
+                  <li>Clique em "Add endpoint"</li>
+                  <li>Copie o "Signing secret" e adicione como STRIPE_WEBHOOK_SECRET nas configurações do Supabase</li>
+                </ol>
+              </div>
+
+              <Button
+                onClick={openStripeWebhooks}
+                className="w-full bg-indigo-600 hover:bg-indigo-700"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Abrir Painel do Stripe - Webhooks
+              </Button>
+
+              <Alert className="bg-yellow-500/10 border-yellow-500/20">
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Importante:</strong> Após configurar o webhook no Stripe, você precisa adicionar o 
+                  STRIPE_WEBHOOK_SECRET nas configurações de secrets do Supabase Edge Functions.
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="custom">
+          <div className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus className="h-5 w-5 text-green-500" />
+                  Adicionar Webhook Personalizado
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="webhook-name">Nome do Webhook</Label>
+                    <Input
+                      id="webhook-name"
+                      value={newWebhookName}
+                      onChange={(e) => setNewWebhookName(e.target.value)}
+                      placeholder="Ex: Notificação Slack"
+                      className="bg-gray-700 border-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="webhook-url">URL do Webhook</Label>
+                    <Input
+                      id="webhook-url"
+                      value={newWebhookUrl}
+                      onChange={(e) => setNewWebhookUrl(e.target.value)}
+                      placeholder="https://hooks.slack.com/..."
+                      className="bg-gray-700 border-gray-600"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="webhook-events">Eventos (separados por vírgula)</Label>
+                  <Input
+                    id="webhook-events"
+                    value={newWebhookEvents}
+                    onChange={(e) => setNewWebhookEvents(e.target.value)}
+                    placeholder="lead.created, sale.completed, payment.received"
+                    className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+
+                <Button onClick={addCustomWebhook} className="w-full bg-green-600 hover:bg-green-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Webhook
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle>Webhooks Configurados</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {customWebhooks.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Webhook className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Nenhum webhook personalizado configurado</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {customWebhooks.map((webhook) => (
+                      <div key={webhook.id} className="bg-gray-700 p-4 rounded border border-gray-600">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h4 className="font-medium text-white">{webhook.name}</h4>
+                            <p className="text-sm text-gray-400 break-all">{webhook.url}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={webhook.active}
+                              onCheckedChange={(checked) => toggleWebhook(webhook.id, checked)}
+                            />
+                            <Button
+                              onClick={() => testWebhook(webhook.url, webhook.name)}
+                              variant="outline"
+                              size="sm"
+                              disabled={loading}
+                              className="border-gray-600"
+                            >
+                              <TestTube className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              onClick={() => removeWebhook(webhook.id)}
+                              variant="outline"
+                              size="sm"
+                              className="border-red-600 text-red-400 hover:bg-red-600"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        {webhook.events.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {webhook.events.map((event) => (
+                              <span key={event} className="px-2 py-1 bg-gray-600 text-xs rounded">
+                                {event}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        </TabsContent>
 
-        <div className="space-y-2">
-          <Label>Eventos para escutar:</Label>
-          <div className="bg-gray-700 p-3 rounded border border-gray-600">
-            <code className="text-sm text-green-400">checkout.session.completed</code>
-          </div>
-        </div>
+        <TabsContent value="zapier">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-orange-500" />
+                Integração com Zapier
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-orange-500/10 border-orange-500/20">
+                <Zap className="h-4 w-4" />
+                <AlertDescription>
+                  Conecte com o Zapier para automatizar ações baseadas nos eventos da plataforma.
+                </AlertDescription>
+              </Alert>
 
-        <div className="space-y-3">
-          <h4 className="font-medium text-white">Passos para configurar:</h4>
-          <ol className="list-decimal list-inside space-y-2 text-sm text-gray-300">
-            <li>Abra o painel do Stripe</li>
-            <li>Vá para "Developers" → "Webhooks"</li>
-            <li>Clique em "Add endpoint"</li>
-            <li>Cole a URL do webhook acima</li>
-            <li>Selecione o evento: <code className="bg-gray-700 px-1 rounded">checkout.session.completed</code></li>
-            <li>Clique em "Add endpoint"</li>
-            <li>Copie o "Signing secret" e adicione como STRIPE_WEBHOOK_SECRET nas configurações do Supabase</li>
-          </ol>
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="zapier-url">URL do Webhook do Zapier</Label>
+                <Input
+                  id="zapier-url"
+                  value={zapierUrl}
+                  onChange={(e) => setZapierUrl(e.target.value)}
+                  placeholder="Cole aqui a URL do webhook do seu Zap"
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
 
-        <Button
-          onClick={openStripeWebhooks}
-          className="w-full bg-indigo-600 hover:bg-indigo-700"
-        >
-          <ExternalLink className="h-4 w-4 mr-2" />
-          Abrir Painel do Stripe - Webhooks
-        </Button>
+              <Button
+                onClick={triggerZapier}
+                disabled={loading || !zapierUrl}
+                className="w-full bg-orange-600 hover:bg-orange-700"
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                {loading ? 'Acionando...' : 'Testar Zapier'}
+              </Button>
 
-        <Alert className="bg-yellow-500/10 border-yellow-500/20">
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Importante:</strong> Após configurar o webhook no Stripe, você precisa adicionar o 
-            STRIPE_WEBHOOK_SECRET nas configurações de secrets do Supabase Edge Functions.
-          </AlertDescription>
-        </Alert>
-      </CardContent>
-    </Card>
+              <div className="space-y-3">
+                <h4 className="font-medium text-white">Como configurar:</h4>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-gray-300">
+                  <li>Acesse <a href="https://zapier.com" target="_blank" className="text-orange-400 underline">zapier.com</a> e crie uma conta</li>
+                  <li>Crie um novo Zap</li>
+                  <li>Escolha "Webhooks by Zapier" como trigger</li>
+                  <li>Selecione "Catch Hook"</li>
+                  <li>Copie a URL fornecida pelo Zapier</li>
+                  <li>Cole a URL no campo acima</li>
+                  <li>Configure as ações que deseja automatizar</li>
+                  <li>Teste usando o botão "Testar Zapier"</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

@@ -10,11 +10,13 @@ import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileTex
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WebhookSetup from "./WebhookSetup";
 import { useDatabaseStats } from "@/hooks/useDatabaseStats";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminSettings = () => {
   const { toast } = useToast();
   const { data: dbStats, isLoading: dbStatsLoading } = useDatabaseStats();
   const [loading, setLoading] = useState(false);
+  const [maintenanceLoading, setMaintenanceLoading] = useState<string | null>(null);
   const [settings, setSettings] = useState({
     siteName: "SENVIA",
     siteDescription: "Soluções digitais para o seu negócio",
@@ -46,6 +48,38 @@ const AdminSettings = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMaintenanceAction = async (action: string, actionName: string) => {
+    setMaintenanceLoading(action);
+    try {
+      const { data, error } = await supabase.functions.invoke('database-maintenance', {
+        body: { action }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: `${actionName} Concluída`,
+        description: data.message,
+        variant: data.success ? "default" : "destructive"
+      });
+
+      // Show details if available
+      if (data.details) {
+        console.log(`${actionName} details:`, data.details);
+      }
+
+    } catch (error) {
+      console.error(`Error in ${actionName}:`, error);
+      toast({
+        title: `Erro em ${actionName}`,
+        description: "Não foi possível executar a operação de manutenção.",
+        variant: "destructive"
+      });
+    } finally {
+      setMaintenanceLoading(null);
     }
   };
 
@@ -299,17 +333,32 @@ const AdminSettings = () => {
                   Ferramentas para manutenção e otimização do banco de dados.
                 </p>
                 <div className="space-y-3">
-                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-sm"
+                    onClick={() => handleMaintenanceAction('integrity_check', 'Verificação de Integridade')}
+                    disabled={maintenanceLoading === 'integrity_check'}
+                  >
                     <Database className="h-4 w-4 mr-2" />
-                    Verificar Integridade dos Dados
+                    {maintenanceLoading === 'integrity_check' ? 'Verificando...' : 'Verificar Integridade dos Dados'}
                   </Button>
-                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-sm"
+                    onClick={() => handleMaintenanceAction('performance_analysis', 'Análise de Performance')}
+                    disabled={maintenanceLoading === 'performance_analysis'}
+                  >
                     <BarChart3 className="h-4 w-4 mr-2" />
-                    Analisar Performance
+                    {maintenanceLoading === 'performance_analysis' ? 'Analisando...' : 'Analisar Performance'}
                   </Button>
-                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-sm"
+                    onClick={() => handleMaintenanceAction('storage_optimization', 'Otimização de Armazenamento')}
+                    disabled={maintenanceLoading === 'storage_optimization'}
+                  >
                     <HardDrive className="h-4 w-4 mr-2" />
-                    Otimizar Armazenamento
+                    {maintenanceLoading === 'storage_optimization' ? 'Otimizando...' : 'Otimizar Armazenamento'}
                   </Button>
                 </div>
               </CardContent>

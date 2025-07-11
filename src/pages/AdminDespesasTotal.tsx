@@ -33,7 +33,7 @@ const AdminDespesasTotal = () => {
   });
 
   const totalDespesas = filteredDespesas.reduce((sum, despesa) => sum + Number(despesa.amount), 0);
-  const categories = [...new Set(despesas.map(d => d.category))];
+  const categories = [...new Set(despesas.map(d => d.category).filter(cat => cat && cat.trim() !== ''))];
 
   if (isLoading) {
     return (

@@ -63,12 +63,14 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
     <div className="flex flex-wrap gap-1">
       <Popover>
         <PopoverTrigger asChild>
-          <Badge 
-            className={`${getStatusColor(lead.lead_status)} text-white text-xs cursor-pointer hover:opacity-80 transition-opacity`}
-            title="Clique para alterar o status"
-          >
-            {getStatusLabel(lead.lead_status)}
-          </Badge>
+          <div className="cursor-pointer">
+            <Badge 
+              className={`${getStatusColor(lead.lead_status)} text-white text-xs hover:opacity-80 transition-opacity`}
+              title="Clique para alterar o status"
+            >
+              {getStatusLabel(lead.lead_status)}
+            </Badge>
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-1">
           <div className="flex flex-col gap-1">

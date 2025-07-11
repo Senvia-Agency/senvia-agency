@@ -4,13 +4,6 @@ import { Button } from "@/components/ui/button";
 
 const CTASection = () => {
   const handleCTAClick = () => {
-    // Track Facebook Pixel Lead event
-    if (window.fbq) {
-      window.fbq('track', 'Lead', {
-        content_name: 'CTA Button Click',
-        content_category: 'Landing Page CTA'
-      });
-    }
     document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' });
   };
 

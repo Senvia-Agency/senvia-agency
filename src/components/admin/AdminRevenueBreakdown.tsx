@@ -27,8 +27,8 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
       <CardContent className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm sm:text-base">Vendas Não-Recorrentes</div>
-            <div className="text-xs sm:text-sm text-gray-400">Vendas únicas e fixas</div>
+            <div className="font-medium text-sm sm:text-base">Receitas de Vendas</div>
+            <div className="text-xs sm:text-sm text-gray-400">Vendas únicas e landing pages</div>
           </div>
           <div className="text-left sm:text-right">
             <div className="font-bold text-green-500 text-sm sm:text-base">

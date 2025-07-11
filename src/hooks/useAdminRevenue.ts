@@ -32,18 +32,20 @@ export const useAdminRevenue = (dateRange: number) => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar vendas do módulo de vendas com detalhes dos serviços
+      // Buscar vendas do módulo de vendas
       const { data: salesData, error: salesError } = await supabase
         .from('sales')
-        .select(`
-          *,
-          custom_services:service_id(service_type, pricing_model)
-        `)
+        .select('*')
         .gte('created_at', startDate.toISOString());
 
-      if (transactionsError || paymentsError || subsError || salesError) {
-        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError || salesError);
-        throw transactionsError || paymentsError || subsError || salesError;
+      // Buscar todos os custom_services para fazer o join manualmente
+      const { data: customServices, error: servicesError } = await supabase
+        .from('custom_services')
+        .select('id, service_type, pricing_model');
+
+      if (transactionsError || paymentsError || subsError || salesError || servicesError) {
+        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError || salesError || servicesError);
+        throw transactionsError || paymentsError || subsError || salesError || servicesError;
       }
 
       console.log('Dados encontrados:', {
@@ -65,18 +67,27 @@ export const useAdminRevenue = (dateRange: number) => {
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
 
+      // Criar um mapa dos custom_services para facilitar o lookup
+      const servicesMap = new Map();
+      (customServices || []).forEach(service => {
+        servicesMap.set(service.id, service);
+      });
+
       // Separar vendas recorrentes das não-recorrentes
       const oneTimeSales = (salesData || []).filter(sale => {
-        // Se não tem custom_service, é manual (não-recorrente)
-        if (!sale.custom_services) return true;
+        // Se não tem service_id, é manual (consideramos não-recorrente)
+        if (!sale.service_id) return true;
         
-        // Se tem custom_service, verificar se é one_time
-        return sale.custom_services.service_type === 'one_time';
+        // Se tem service_id, buscar no mapa e verificar se é one_time
+        const service = servicesMap.get(sale.service_id);
+        return !service || service.service_type === 'one_time';
       });
 
       const recurringSales = (salesData || []).filter(sale => {
-        // Se tem custom_service e é recurring
-        return sale.custom_services && sale.custom_services.service_type === 'recurring';
+        // Se tem service_id e é recurring
+        if (!sale.service_id) return false;
+        const service = servicesMap.get(sale.service_id);
+        return service && service.service_type === 'recurring';
       });
 
       // Receita das vendas não-recorrentes (únicas/fixas)

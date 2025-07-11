@@ -78,7 +78,10 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
                 variant="ghost"
                 size="sm"
                 className="justify-start text-xs h-8"
-                onClick={() => onStatusUpdate?.(lead.id, option.value)}
+                onClick={() => {
+                  console.log('Status option clicked:', option.value, 'for lead:', lead.id);
+                  onStatusUpdate?.(lead.id, option.value);
+                }}
               >
                 {option.label}
               </Button>

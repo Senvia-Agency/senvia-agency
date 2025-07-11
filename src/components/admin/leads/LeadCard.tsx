@@ -39,7 +39,10 @@ const LeadCard = ({
             
             <LeadBadges 
               lead={lead} 
-              onStatusUpdate={onStatusUpdate}
+              onStatusUpdate={(leadId, status) => {
+                console.log('LeadCard passing status update:', { leadId, status });
+                onStatusUpdate(leadId, status);
+              }}
             />
           </div>
 

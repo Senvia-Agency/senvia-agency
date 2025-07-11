@@ -70,6 +70,7 @@ const AdminLeads = () => {
 
   // Atualizar status do lead
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
+    console.log('updateLeadStatus called with:', { leadId, newStatus });
     try {
       const lead = leads?.find(l => l.id === leadId);
       const oldStatus = lead?.lead_status;

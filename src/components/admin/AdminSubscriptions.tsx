@@ -435,12 +435,12 @@ const AdminSubscriptions = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl space-y-6">
+    <div className="space-y-6 p-6 h-screen overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Gestão de Assinaturas</h1>
-          <p className="text-gray-400">Monitore todas as assinaturas da SENVIA</p>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 whitespace-nowrap">Gestão de Assinaturas</h1>
+          <p className="text-gray-400 text-sm sm:text-base">Monitore todas as assinaturas da SENVIA</p>
         </div>
       </div>
 

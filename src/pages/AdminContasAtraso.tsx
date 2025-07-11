@@ -20,10 +20,10 @@ const AdminContasAtraso = () => {
   
   const { data: accounts, isLoading } = useAccountsReceivable(selectedPeriod);
   
-  // Filtrar apenas contas em atraso
-  const overdue = new Date();
+  // Filtrar contas em atraso (pending ou partial que passaram da data de vencimento)
   const contasAtraso = (accounts || []).filter(account => 
-    account.payment_status === 'pending' && account.days_overdue > 0
+    (account.payment_status === 'pending' || account.payment_status === 'partial') && 
+    account.days_overdue > 0
   );
   
   // Aplicar filtros

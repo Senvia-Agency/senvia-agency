@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectFilters } from "@/components/projects/ProjectFilters";
-import { ProjectsList } from "@/components/projects/ProjectsList";
+import { CompactProjectsList } from "@/components/projects/CompactProjectsList";
 import { useCustomerProjects } from "@/hooks/useCustomerProjects";
 import { Package } from "lucide-react";
 
@@ -53,7 +53,7 @@ const MeusProjetos = () => {
           </Card>
 
           {/* Projects List */}
-          <ProjectsList 
+          <CompactProjectsList 
             projects={projects} 
             isLoading={isLoading} 
             error={error}

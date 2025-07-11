@@ -102,6 +102,21 @@ type UnifiedSubscription = {
     phone?: string;
     company_name?: string;
   };
+  // Campos específicos para vendas recorrentes
+  sale_payments?: Array<{
+    id: string;
+    amount: number;
+    payment_date: string;
+    payment_status: string;
+    payment_method: string;
+    payment_reference?: string;
+    stripe_payment_intent_id?: string;
+    created_at: string;
+  }>;
+  sale_status?: string;
+  payment_status?: string;
+  assigned_to?: string;
+  notes?: string;
 };
 
 const AdminSubscriptions = () => {
@@ -189,16 +204,27 @@ const AdminSubscriptions = () => {
   const { data: recurringServices } = useQuery({
     queryKey: ['admin-recurring-sales'],
     queryFn: async () => {
+      console.log('Buscando vendas recorrentes...');
+      
       const { data, error } = await supabase
         .from('sales')
         .select(`
           *,
-          customers(full_name, email, phone, company_name)
+          customers(full_name, email, phone, company_name),
+          sale_payments(
+            id, amount, payment_date, payment_status, payment_method, 
+            payment_reference, stripe_payment_intent_id, created_at
+          )
         `)
         .eq('service_type', 'recurring')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Vendas recorrentes encontradas:', data);
+      
+      if (error) {
+        console.error('Erro ao buscar vendas recorrentes:', error);
+        throw error;
+      }
       return data || [];
     },
   });
@@ -221,24 +247,47 @@ const AdminSubscriptions = () => {
     ...(recurringServices?.map(service => {
       const today = new Date();
       const createdDate = new Date(service.created_at);
-      const daysFromCreation = Math.floor((today.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
       
-      // Estimar próxima cobrança (30 dias após criação + múltiplos de 30)
-      const monthsElapsed = Math.floor(daysFromCreation / 30);
-      const nextBilling = new Date(createdDate);
-      nextBilling.setDate(nextBilling.getDate() + ((monthsElapsed + 1) * 30));
+      // Buscar último pagamento para calcular próxima cobrança
+      const lastPayment = service.sale_payments && service.sale_payments.length > 0 
+        ? service.sale_payments.reduce((latest, payment) => 
+            new Date(payment.payment_date) > new Date(latest.payment_date) ? payment : latest
+          )
+        : null;
       
-      // Determinar status baseado no payment_status e data
+      // Calcular próxima data de cobrança
+      let nextBilling: Date;
+      if (lastPayment && lastPayment.payment_status === 'completed') {
+        // Se houve pagamento, próxima cobrança é 30 dias após último pagamento
+        nextBilling = new Date(lastPayment.payment_date);
+        nextBilling.setDate(nextBilling.getDate() + 30);
+      } else {
+        // Se não houve pagamento, baseado na data de criação
+        nextBilling = new Date(createdDate);
+        nextBilling.setDate(nextBilling.getDate() + 30);
+      }
+      
+      // Determinar status baseado no histórico de pagamentos e datas
       let status = 'active';
-      if (service.payment_status === 'overdue') status = 'overdue';
-      else if (service.payment_status === 'cancelled' || service.sale_status === 'cancelled') status = 'cancelled';
-      else if (nextBilling < today && service.payment_status === 'pending') status = 'overdue';
+      const daysSinceNextBilling = Math.floor((today.getTime() - nextBilling.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (service.payment_status === 'cancelled' || service.sale_status === 'cancelled') {
+        status = 'cancelled';
+      } else if (service.payment_status === 'overdue' || daysSinceNextBilling > 7) {
+        status = 'overdue';
+      } else if (daysSinceNextBilling > 0) {
+        status = 'pending';
+      } else if (lastPayment?.payment_status === 'completed' || service.payment_status === 'paid') {
+        status = 'active';
+      } else {
+        status = 'pending';
+      }
       
       return {
         id: service.id,
         customer_id: service.customer_id,
         email: service.customers?.email,
-        customer_name: service.customers?.full_name || service.customers?.company_name,
+        customer_name: service.customers?.full_name || service.customers?.company_name || service.customers?.email,
         product_name: service.service_name,
         plan_name: 'Serviço Recorrente',
         status: status,
@@ -251,7 +300,12 @@ const AdminSubscriptions = () => {
         total_value: service.total_value,
         monthly_price: service.total_value,
         is_overdue: status === 'overdue',
-        customers: service.customers
+        customers: service.customers,
+        sale_payments: service.sale_payments,
+        sale_status: service.sale_status,
+        payment_status: service.payment_status,
+        assigned_to: service.assigned_to,
+        notes: service.notes
       };
     }) || [])
   ];
@@ -277,6 +331,7 @@ const AdminSubscriptions = () => {
     total: allSubscriptions.length,
     active: allSubscriptions.filter(s => s.status === 'active').length,
     trial: allSubscriptions.filter(s => s.status === 'trial').length,
+    pending: allSubscriptions.filter(s => s.status === 'pending').length,
     cancelled: allSubscriptions.filter(s => s.status === 'cancelled').length,
     expired: allSubscriptions.filter(s => s.status === 'expired').length,
     overdue: allSubscriptions.filter(s => s.status === 'overdue').length,
@@ -296,6 +351,7 @@ const AdminSubscriptions = () => {
     const statusMap: { [key: string]: string } = {
       'active': 'Ativo',
       'trial': 'Período de Teste',
+      'pending': 'Pendente',
       'cancelled': 'Cancelado',
       'expired': 'Expirado',
       'suspended': 'Suspenso',
@@ -381,7 +437,7 @@ const AdminSubscriptions = () => {
       </div>
 
       {/* Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
         <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -413,6 +469,18 @@ const AdminSubscriptions = () => {
               <div>
                 <div className="text-sm text-gray-400">Teste</div>
                 <div className="text-xl font-bold">{stats.trial}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-yellow-500" />
+              <div>
+                <div className="text-sm text-gray-400">Pendente</div>
+                <div className="text-xl font-bold">{stats.pending}</div>
               </div>
             </div>
           </CardContent>
@@ -477,6 +545,7 @@ const AdminSubscriptions = () => {
                 <SelectItem value="all">Todos os Status</SelectItem>
                 <SelectItem value="active">Ativo</SelectItem>
                 <SelectItem value="trial">Período de Teste</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
                 <SelectItem value="overdue">Em Atraso</SelectItem>
                 <SelectItem value="cancelled">Cancelado</SelectItem>
                 <SelectItem value="expired">Expirado</SelectItem>
@@ -659,6 +728,77 @@ const AdminSubscriptions = () => {
                                         }
                                       </p>
                                     </div>
+                                  </div>
+                                )}
+
+                                {/* Recurring Service Info */}
+                                {selectedSubscription.subscription_type === 'recurring_service' && (
+                                  <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Status da Venda</label>
+                                        <p className="text-sm text-gray-400 capitalize">
+                                          {selectedSubscription.sale_status || 'N/A'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Status do Pagamento</label>
+                                        <p className="text-sm text-gray-400 capitalize">
+                                          {selectedSubscription.payment_status || 'N/A'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Responsável</label>
+                                        <p className="text-sm text-gray-400">
+                                          {selectedSubscription.assigned_to || 'Não atribuído'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Valor Total</label>
+                                        <p className="text-sm text-gray-400">
+                                          €{selectedSubscription.total_value?.toFixed(2) || '0.00'}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {selectedSubscription.notes && (
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Notas</label>
+                                        <p className="text-sm text-gray-400 bg-gray-700 p-2 rounded">
+                                          {selectedSubscription.notes}
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {/* Payment History */}
+                                    {selectedSubscription.sale_payments && selectedSubscription.sale_payments.length > 0 && (
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300 mb-2 block">Histórico de Pagamentos</label>
+                                        <div className="bg-gray-700 rounded p-3 space-y-2">
+                                          {selectedSubscription.sale_payments
+                                            .sort((a, b) => new Date(b.payment_date).getTime() - new Date(a.payment_date).getTime())
+                                            .map((payment, index) => (
+                                              <div key={payment.id} className="flex justify-between items-center text-sm p-2 bg-gray-800 rounded">
+                                                <div>
+                                                  <div className="text-white">€{payment.amount.toFixed(2)}</div>
+                                                  <div className="text-gray-400">{payment.payment_method}</div>
+                                                </div>
+                                                <div className="text-right">
+                                                  <div className="text-gray-300">
+                                                    {format(new Date(payment.payment_date), 'dd/MM/yyyy', { locale: ptBR })}
+                                                  </div>
+                                                  <Badge 
+                                                    variant={payment.payment_status === 'completed' ? 'default' : 'secondary'}
+                                                    className="text-xs"
+                                                  >
+                                                    {payment.payment_status}
+                                                  </Badge>
+                                                </div>
+                                              </div>
+                                            ))}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
 

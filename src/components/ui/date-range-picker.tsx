@@ -33,44 +33,44 @@ const getDatePresets = (): DatePreset[] => {
       label: "Ontem", 
       value: { from: yesterday, to: yesterday }
     },
-    {
-      label: "Últimos 7 dias",
-      value: { from: subDays(today, 6), to: today }
-    },
-    {
-      label: "Últimos 14 dias",
-      value: { from: subDays(today, 13), to: today }
-    },
-    {
-      label: "Últimos 28 dias",
-      value: { from: subDays(today, 27), to: today }
-    },
-    {
-      label: "Últimos 30 dias",
-      value: { from: subDays(today, 29), to: today }
-    },
-    {
-      label: "Esta semana",
-      value: { from: startOfWeek(today, { weekStartsOn: 1 }), to: endOfWeek(today, { weekStartsOn: 1 }) }
-    },
-    {
-      label: "Semana passada",
-      value: { 
-        from: startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }), 
-        to: endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }) 
-      }
-    },
-    {
-      label: "Este mês",
-      value: { from: startOfMonth(today), to: endOfMonth(today) }
-    },
-    {
-      label: "Mês passado",
-      value: { 
-        from: startOfMonth(subMonths(today, 1)), 
-        to: endOfMonth(subMonths(today, 1)) 
-      }
-    }
+        {
+          label: "7 dias",
+          value: { from: subDays(today, 6), to: today }
+        },
+        {
+          label: "14 dias",
+          value: { from: subDays(today, 13), to: today }
+        },
+        {
+          label: "28 dias",
+          value: { from: subDays(today, 27), to: today }
+        },
+        {
+          label: "30 dias",
+          value: { from: subDays(today, 29), to: today }
+        },
+        {
+          label: "Esta semana",
+          value: { from: startOfWeek(today, { weekStartsOn: 1 }), to: endOfWeek(today, { weekStartsOn: 1 }) }
+        },
+        {
+          label: "Sem. passada",
+          value: { 
+            from: startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }), 
+            to: endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }) 
+          }
+        },
+        {
+          label: "Este mês",
+          value: { from: startOfMonth(today), to: endOfMonth(today) }
+        },
+        {
+          label: "Mês passado",
+          value: { 
+            from: startOfMonth(subMonths(today, 1)), 
+            to: endOfMonth(subMonths(today, 1)) 
+          }
+        }
   ];
 };
 
@@ -84,6 +84,8 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
   const handlePresetClick = (preset: DatePreset) => {
     setSelectedRange(preset.value);
     setSelectedPreset(preset.label);
+    onChange?.(preset.value);
+    setIsOpen(false);
   };
 
   const handleApply = () => {
@@ -125,7 +127,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
       <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
         <div className="flex">
           {/* Presets sidebar */}
-          <div className="w-48 border-r border-gray-700 p-3">
+          <div className="w-40 border-r border-gray-700 p-3">
             <div className="space-y-1">
               {presets.map((preset) => (
                 <button

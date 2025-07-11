@@ -181,6 +181,19 @@ const AdminLeads = () => {
       const startDate = new Date(dateRange.from);
       const endDate = new Date(dateRange.to);
       endDate.setHours(23, 59, 59, 999); // Include the full end date
+      
+      // Log geral para entender o problema
+      console.log('🔍 FILTRO DATA:', {
+        dateRangeFrom: dateRange.from,
+        dateRangeTo: dateRange.to,
+        leadCreatedAt: lead.created_at,
+        leadDate: leadDate.toLocaleDateString('pt-PT'),
+        startDate: startDate.toLocaleDateString('pt-PT'),
+        endDate: endDate.toLocaleDateString('pt-PT'),
+        isToday: startDate.toDateString() === endDate.toDateString() && startDate.toDateString() === new Date().toDateString(),
+        matchesDate: leadDate >= startDate && leadDate <= endDate
+      });
+      
       matchesDate = leadDate >= startDate && leadDate <= endDate;
     }
     

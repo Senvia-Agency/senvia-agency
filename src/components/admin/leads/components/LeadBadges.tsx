@@ -92,11 +92,6 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
         </PopoverContent>
       </Popover>
       
-      {lead.payment_status && (
-        <Badge className={`${getPaymentStatusColor(lead.payment_status)} text-white text-xs`}>
-          {getPaymentStatusLabel(lead.payment_status)}
-        </Badge>
-      )}
       
       <Badge variant="outline" className="border-blue-500 text-blue-500 text-xs">
         {lead.source_page === 'landing_page_basic' ? 'LP Básica' : 'LP Premium'}

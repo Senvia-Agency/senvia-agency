@@ -124,10 +124,10 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           {formatDateRange(value)}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="center" side="bottom" sideOffset={4}>
-        <div className="flex">
+      <PopoverContent className="w-auto max-w-[90vw] p-0 bg-gray-800 border-gray-700" align="end" side="bottom" sideOffset={4}>
+        <div className="flex flex-col sm:flex-row">
           {/* Presets sidebar */}
-          <div className="w-40 border-r border-gray-700 p-3">
+          <div className="w-full sm:w-40 border-b sm:border-b-0 sm:border-r border-gray-700 p-3">
             <div className="space-y-1">
               {presets.map((preset) => (
                 <button
@@ -156,14 +156,14 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           </div>
 
           {/* Calendar */}
-          <div className="p-3">
+          <div className="p-3 overflow-hidden">
             <Calendar
               initialFocus
               mode="range"
               defaultMonth={selectedRange?.from}
               selected={selectedRange}
               onSelect={setSelectedRange}
-              numberOfMonths={2}
+              numberOfMonths={1}
               locale={pt}
               className="pointer-events-auto"
             />

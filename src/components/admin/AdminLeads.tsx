@@ -8,7 +8,7 @@ import { useCreateActivity } from "@/hooks/useActivityHistory";
 import LeadFilters from "./leads/LeadFilters";
 import LeadCard from "./leads/LeadCard";
 import LeadDetailModal from "./leads/LeadDetailModal";
-import ConvertLeadModal from "./leads/ConvertLeadModal";
+import CreateSaleModal from "./vendas/CreateSaleModal";
 import { useAuth } from "@/contexts/AuthContext";
 
 const STORAGE_KEY = 'admin-leads-filters';
@@ -23,7 +23,7 @@ const AdminLeads = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [selectedLead, setSelectedLead] = useState<any>(null);
-  const [convertLead, setConvertLead] = useState<any>(null);
+  const [isCreateSaleModalOpen, setIsCreateSaleModalOpen] = useState(false);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const createActivity = useCreateActivity();
 
@@ -93,11 +93,9 @@ const AdminLeads = () => {
         });
       }
 
-      // Se o status foi alterado para "converted", abrir modal de conversão
+      // Se o status foi alterado para "converted", abrir modal de vendas
       if (newStatus === 'converted') {
-        if (lead) {
-          setConvertLead(lead);
-        }
+        setIsCreateSaleModalOpen(true);
       }
 
       toast({
@@ -187,9 +185,9 @@ const AdminLeads = () => {
     setEditingStatus(editingStatus === leadId ? null : leadId);
   };
 
-  const handleConvertSuccess = () => {
+  const handleSaleCreated = () => {
     refetch();
-    setConvertLead(null);
+    setIsCreateSaleModalOpen(false);
   };
 
   if (isLoading) {
@@ -257,12 +255,10 @@ const AdminLeads = () => {
         onUpdate={updateLeadData}
       />
 
-      {/* Modal de Conversão */}
-      <ConvertLeadModal
-        lead={convertLead}
-        isOpen={!!convertLead}
-        onClose={() => setConvertLead(null)}
-        onConvert={handleConvertSuccess}
+      {/* Modal de Vendas */}
+      <CreateSaleModal
+        isOpen={isCreateSaleModalOpen}
+        onClose={() => setIsCreateSaleModalOpen(false)}
       />
     </div>
   );

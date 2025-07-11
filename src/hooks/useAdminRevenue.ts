@@ -32,10 +32,13 @@ export const useAdminRevenue = (dateRange: number) => {
         .eq('status', 'active')
         .gte('created_at', startDate.toISOString());
 
-      // Buscar vendas do módulo de vendas
+      // Buscar vendas do módulo de vendas com detalhes dos serviços
       const { data: salesData, error: salesError } = await supabase
         .from('sales')
-        .select('*')
+        .select(`
+          *,
+          custom_services:service_id(service_type, pricing_model)
+        `)
         .gte('created_at', startDate.toISOString());
 
       if (transactionsError || paymentsError || subsError || salesError) {
@@ -62,33 +65,64 @@ export const useAdminRevenue = (dateRange: number) => {
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
 
-      // Receita das vendas do módulo
-      const salesRevenue = (salesData || [])
+      // Separar vendas recorrentes das não-recorrentes
+      const oneTimeSales = (salesData || []).filter(sale => {
+        // Se não tem custom_service, é manual (não-recorrente)
+        if (!sale.custom_services) return true;
+        
+        // Se tem custom_service, verificar se é one_time
+        return sale.custom_services.service_type === 'one_time';
+      });
+
+      const recurringSales = (salesData || []).filter(sale => {
+        // Se tem custom_service e é recurring
+        return sale.custom_services && sale.custom_services.service_type === 'recurring';
+      });
+
+      // Receita das vendas não-recorrentes (únicas/fixas)
+      const oneTimeSalesRevenue = oneTimeSales
         .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
       
-      const totalLandingPageRevenue = customerTransactionsRevenue + legacyPaymentsRevenue;
-      const totalRevenue = totalLandingPageRevenue + subscriptionsRevenue + salesRevenue;
+      // Receita das vendas recorrentes
+      const recurringSalesRevenue = recurringSales
+        .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
+      
+      // Total de receitas de assinaturas (Senvia Assistant + vendas recorrentes)
+      const totalSubscriptionRevenue = subscriptionsRevenue + recurringSalesRevenue;
+      
+      // Total de vendas não-recorrentes (Landing Pages + vendas únicas)
+      const totalOneTimeRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + oneTimeSalesRevenue;
+      
+      const totalRevenue = totalOneTimeRevenue + totalSubscriptionRevenue;
       const totalTransactions = (customerTransactions?.length || 0) + (legacyPayments?.length || 0) + (activeSubscriptions?.length || 0) + (salesData?.length || 0);
       
       console.log('Cálculo final das receitas:', {
         customerTransactionsRevenue,
         legacyPaymentsRevenue,
-        totalLandingPageRevenue,
         subscriptionsRevenue,
-        salesRevenue,
+        oneTimeSalesRevenue,
+        recurringSalesRevenue,
+        totalOneTimeRevenue,
+        totalSubscriptionRevenue,
         totalRevenue,
-        totalTransactions
+        oneTimeSalesCount: oneTimeSales.length,
+        recurringSalesCount: recurringSales.length
       });
       
       return {
         total_revenue: totalRevenue,
-        landing_page_revenue: totalLandingPageRevenue,
-        assistant_revenue: subscriptionsRevenue,
-        sales_revenue: salesRevenue,
+        landing_page_revenue: customerTransactionsRevenue + legacyPaymentsRevenue, // Mantém para compatibilidade
+        assistant_revenue: subscriptionsRevenue, // Mantém para compatibilidade
+        sales_revenue: oneTimeSalesRevenue + recurringSalesRevenue, // Mantém para compatibilidade
+        // Novos campos separados
+        one_time_sales_revenue: totalOneTimeRevenue,
+        subscription_revenue: totalSubscriptionRevenue,
         total_transactions: totalTransactions,
         landing_page_sales: (customerTransactions?.length || 0) + (legacyPayments?.length || 0),
         active_subscriptions: activeSubscriptions?.length || 0,
-        sales_count: salesData?.length || 0
+        sales_count: salesData?.length || 0,
+        one_time_sales_count: oneTimeSales.length,
+        recurring_sales_count: recurringSales.length
       };
     },
     refetchInterval: 10000,

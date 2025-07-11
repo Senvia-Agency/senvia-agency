@@ -9,10 +9,12 @@ interface AdminRevenueBreakdownProps {
 const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) => {
   console.log('AdminRevenueBreakdown - Dados recebidos:', revenueMetrics);
 
-  const landingPageRevenue = revenueMetrics?.landing_page_revenue || 0;
-  const assistantRevenue = revenueMetrics?.assistant_revenue || 0;
-  const salesRevenue = revenueMetrics?.sales_revenue || 0;
+  const oneTimeSalesRevenue = revenueMetrics?.one_time_sales_revenue || 0;
+  const subscriptionRevenue = revenueMetrics?.subscription_revenue || 0;
   const totalRevenue = revenueMetrics?.total_revenue || 0;
+  const oneTimeSalesCount = revenueMetrics?.one_time_sales_count || 0;
+  const recurringCount = revenueMetrics?.recurring_sales_count || 0;
+  const assistantCount = revenueMetrics?.active_subscriptions || 0;
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -25,15 +27,15 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
       <CardContent className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm sm:text-base">Vendas Realizadas</div>
-            <div className="text-xs sm:text-sm text-gray-400">Total de vendas confirmadas</div>
+            <div className="font-medium text-sm sm:text-base">Vendas Não-Recorrentes</div>
+            <div className="text-xs sm:text-sm text-gray-400">Vendas únicas e fixas</div>
           </div>
           <div className="text-left sm:text-right">
             <div className="font-bold text-green-500 text-sm sm:text-base">
-              €{salesRevenue.toFixed(2)}
+              €{oneTimeSalesRevenue.toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
-              {revenueMetrics?.sales_count || 0} vendas
+              {oneTimeSalesCount + (revenueMetrics?.landing_page_sales || 0)} vendas
             </div>
           </div>
         </div>
@@ -41,14 +43,14 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
             <div className="font-medium text-sm sm:text-base">Receita de Assinaturas</div>
-            <div className="text-xs sm:text-sm text-gray-400">Senvia Assistant + Landing Pages</div>
+            <div className="text-xs sm:text-sm text-gray-400">Serviços recorrentes confirmados</div>
           </div>
           <div className="text-left sm:text-right">
             <div className="font-bold text-purple-500 text-sm sm:text-base">
-              €{(assistantRevenue + landingPageRevenue).toFixed(2)}
+              €{subscriptionRevenue.toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
-              {(revenueMetrics?.active_subscriptions || 0) + (revenueMetrics?.landing_page_sales || 0)} assinaturas/vendas
+              {recurringCount + assistantCount} assinaturas
             </div>
           </div>
         </div>

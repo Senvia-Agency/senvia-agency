@@ -5,7 +5,7 @@ import {
   Users,
   DollarSign,
   Package,
-  CreditCard,
+  
   RefreshCw,
   FileText,
   Settings,
@@ -53,7 +53,7 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
     { id: "relatorios-marketing", label: "Relatórios Marketing", icon: LineChart },
     { id: "financeiro", label: "Financeiro", icon: DollarSign },
     { id: "produtos", label: "Produtos & Assinaturas", icon: Package },
-    { id: "pagamentos", label: "Pagamentos", icon: CreditCard },
+    
     { id: "assinaturas", label: "Assinaturas", icon: RefreshCw },
     { id: "blog", label: "Blog", icon: FileText },
     { id: "configuracoes", label: "Configurações", icon: Settings }

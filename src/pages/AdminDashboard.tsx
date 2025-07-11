@@ -9,7 +9,7 @@ import AdminBlog from "@/components/admin/AdminBlog";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 import AdminVendas from "@/components/admin/AdminVendas";
-import AdminPayments from "@/components/admin/AdminPayments";
+
 import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
 import AdminSettings from "@/components/admin/AdminSettings";
 import AdminMeusProjetos from "@/components/admin/AdminMeusProjetos";
@@ -40,8 +40,6 @@ const AdminDashboard = () => {
         return <AdminFinanceiro />;
       case "produtos":
         return <AdminProdutosAssinaturas />;
-      case "pagamentos":
-        return <AdminPayments />;
       case "assinaturas":
         return <AdminSubscriptions />;
       case "blog":

@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type SaleStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -45,43 +44,34 @@ export const ProjectStatusBadge = ({ status, saleId, onStatusUpdate }: ProjectSt
     { value: 'cancelled', label: 'Cancelado' }
   ];
 
+  const handleStatusChange = (newStatus: SaleStatus) => {
+    onStatusUpdate(saleId, newStatus);
+    setIsOpen(false);
+  };
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <div className="cursor-pointer">
-          <Badge 
-            className={`${getStatusColor(status)} text-white text-xs hover:opacity-80 transition-opacity`}
-            title="Clique para alterar o status"
-          >
-            {getStatusLabel(status)}
-          </Badge>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-1 bg-gray-700 border-gray-600 z-[9999]" align="start" side="bottom" sideOffset={5}>
-         <div className="flex flex-col gap-1">
-           {statusOptions.map((option) => (
-             <Button
-               key={option.value}
-               variant="ghost"
-               size="sm"
-               className="justify-start text-xs h-8 text-white hover:bg-gray-600"
-               onPointerDown={(e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-                 console.log('ProjectStatusBadge: Clicando para atualizar status', { saleId, newStatus: option.value });
-                 onStatusUpdate(saleId, option.value as SaleStatus);
-                 setIsOpen(false);
-               }}
-               onMouseDown={(e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-               }}
-             >
+    <div className="relative">
+      <Badge 
+        className={`${getStatusColor(status)} text-white text-xs hover:opacity-80 transition-opacity cursor-pointer`}
+        onClick={() => setIsOpen(!isOpen)}
+        title="Clique para alterar o status"
+      >
+        {getStatusLabel(status)}
+      </Badge>
+      
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg z-[9999] min-w-[120px]">
+          {statusOptions.map((option) => (
+            <button
+              key={option.value}
+              className="w-full text-left px-3 py-2 text-xs text-white hover:bg-gray-600 first:rounded-t-md last:rounded-b-md"
+              onClick={() => handleStatusChange(option.value as SaleStatus)}
+            >
               {option.label}
-            </Button>
+            </button>
           ))}
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   );
 };

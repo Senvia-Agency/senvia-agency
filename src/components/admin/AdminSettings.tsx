@@ -470,10 +470,57 @@ const AdminSettings = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="contact_email" className="text-sm font-medium text-gray-300">
+                      Email de Contato (Notificações Gerais)
+                    </Label>
+                    <Input
+                      id="contact_email"
+                      type="email"
+                      value={localSettings.contactEmail}
+                      onChange={(e) => setLocalSettings(prev => ({ ...prev, contactEmail: e.target.value }))}
+                      placeholder="admin@senvia.pt"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Este email receberá notificações sobre novos leads, vendas e pagamentos.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="support_email" className="text-sm font-medium text-gray-300">
+                      Email de Suporte (Erros do Sistema)
+                    </Label>
+                    <Input
+                      id="support_email"
+                      type="email"
+                      value={localSettings.supportEmail}
+                      onChange={(e) => setLocalSettings(prev => ({ ...prev, supportEmail: e.target.value }))}
+                      placeholder="suporte@senvia.pt"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Este email receberá notificações sobre erros críticos do sistema.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="email_notifications"
+                      checked={localSettings.emailNotifications}
+                      onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, emailNotifications: checked }))}
+                    />
+                    <Label htmlFor="email_notifications" className="text-sm text-gray-300">
+                      Ativar notificações por email
+                    </Label>
+                  </div>
+                </div>
+
                 <div className="bg-blue-900/20 border border-blue-700 rounded p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm font-medium text-blue-400">Status do Sistema</span>
+                    <span className="text-sm font-medium text-blue-400">Status Atual</span>
                   </div>
                   <div className="text-sm text-gray-300">
                     {localSettings.emailNotifications ? 
@@ -482,30 +529,10 @@ const AdminSettings = () => {
                     }
                   </div>
                   <div className="text-xs text-gray-400 mt-1">
-                    Emails serão enviados para: {localSettings.contactEmail}
+                    Email principal: {localSettings.contactEmail || 'Não configurado'}
                   </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-300">Tipos de Notificação Ativas:</Label>
-                    <div className="mt-2 space-y-2">
-                      {[
-                        { icon: '🎯', name: 'Novos Leads', desc: 'Quando um novo lead é recebido' },
-                        { icon: '💰', name: 'Vendas Concluídas', desc: 'Quando uma venda é finalizada' },
-                        { icon: '✅', name: 'Pagamentos', desc: 'Quando um pagamento é processado' },
-                        { icon: '👤', name: 'Clientes', desc: 'Atualizações importantes de clientes' },
-                        { icon: '⚠️', name: 'Erros do Sistema', desc: 'Alertas críticos do sistema' }
-                      ].map((type) => (
-                        <div key={type.name} className="flex items-center gap-3 p-2 bg-gray-700 rounded">
-                          <span className="text-lg">{type.icon}</span>
-                          <div>
-                            <div className="text-sm font-medium text-white">{type.name}</div>
-                            <div className="text-xs text-gray-400">{type.desc}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="text-xs text-gray-400">
+                    Email de suporte: {localSettings.supportEmail || 'Não configurado'}
                   </div>
                 </div>
               </CardContent>

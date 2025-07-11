@@ -48,12 +48,10 @@ const AdminSettings = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Configurações do Sistema</h1>
-          <p className="text-gray-400">Gerencie as configurações gerais da plataforma</p>
-        </div>
+    <div className="space-y-8 p-8">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Configurações do Sistema</h1>
+        <p className="text-gray-400 text-sm sm:text-base">Gerencie as configurações gerais da plataforma</p>
       </div>
 
       <Tabs defaultValue="general" className="w-full">

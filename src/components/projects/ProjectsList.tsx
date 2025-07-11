@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -21,6 +22,7 @@ export const ProjectsList = ({ projects, isLoading, error, isDarkTheme = false }
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: adminUsers } = useAdminUsers();
+  const queryClient = useQueryClient();
   
   const cardClass = isDarkTheme ? "bg-gray-800 border-gray-700" : "";
   const textClass = isDarkTheme ? "text-white" : "text-gray-900";
@@ -44,8 +46,10 @@ export const ProjectsList = ({ projects, isLoading, error, isDarkTheme = false }
   };
 
   const handleProjectUpdate = () => {
-    // Trigger a refetch of the projects data
-    window.location.reload();
+    // Invalidate queries to refetch data without page reload
+    queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-sales'] });
+    queryClient.invalidateQueries({ queryKey: ['sales'] });
   };
 
   if (isLoading) {

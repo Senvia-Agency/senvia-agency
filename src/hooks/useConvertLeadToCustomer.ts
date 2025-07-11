@@ -91,30 +91,6 @@ export const useConvertLeadToCustomer = () => {
         customerId = newCustomer.id;
       }
 
-      // Criar transação do cliente apenas se houver valor
-      if (customerData.conversion_value && customerData.conversion_value > 0) {
-        const { error: transactionError } = await supabase
-          .from('customer_transactions')
-          .insert({
-            customer_id: customerId,
-            lead_id: leadId,
-            transaction_type: 'payment',
-            amount: customerData.conversion_value,
-            currency: 'EUR',
-            product_type: leadData.source_page,
-            product_description: leadData.source_page === 'landing_page_basic' 
-              ? 'Landing Page Básica' 
-              : 'Landing Page Premium',
-            status: 'completed',
-            stripe_payment_intent_id: leadData.stripe_payment_id,
-            stripe_session_id: leadData.stripe_session_id
-          });
-
-        if (transactionError) {
-          console.error('Erro ao criar transação:', transactionError);
-          throw transactionError;
-        }
-      }
 
       // Atualizar lead como convertido
       const { error: leadUpdateError } = await supabase

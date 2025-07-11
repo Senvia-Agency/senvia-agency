@@ -75,6 +75,8 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
 
   const updateSaleStatus = async (saleId: string, newStatus: SaleStatus) => {
     try {
+      console.log('CustomerProjectsSection: updateSaleStatus chamada', { saleId, newStatus });
+      
       await updateSale.mutateAsync({
         id: saleId,
         updates: { sale_status: newStatus }
@@ -83,6 +85,8 @@ const CustomerProjectsSection = ({ customerId }: CustomerProjectsSectionProps) =
       setSales(prev => prev.map(sale => 
         sale.id === saleId ? { ...sale, sale_status: newStatus } : sale
       ));
+      
+      console.log('CustomerProjectsSection: Status atualizado com sucesso');
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }

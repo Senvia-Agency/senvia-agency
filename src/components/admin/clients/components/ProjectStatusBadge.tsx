@@ -66,6 +66,7 @@ export const ProjectStatusBadge = ({ status, saleId, onStatusUpdate }: ProjectSt
               size="sm"
               className="justify-start text-xs h-8 text-white hover:bg-gray-600"
               onClick={() => {
+                console.log('ProjectStatusBadge: Clicando para atualizar status', { saleId, newStatus: option.value });
                 onStatusUpdate(saleId, option.value as SaleStatus);
                 setIsOpen(false);
               }}

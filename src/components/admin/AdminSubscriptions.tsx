@@ -200,11 +200,19 @@ const AdminSubscriptions = () => {
     },
   });
 
-  // Buscar vendas com serviços recorrentes (assinaturas)
+  // Buscar vendas que são recorrentes (por tipo ou nome do serviço)
   const { data: recurringServices } = useQuery({
     queryKey: ['admin-recurring-sales'],
     queryFn: async () => {
       console.log('Buscando vendas recorrentes...');
+      
+      // Lista de nomes de serviços que são considerados recorrentes
+      const recurringServiceNames = [
+        'Gestão Tráfego Pago',
+        'Gestão de Redes Sociais', 
+        'Manutenção Senvia',
+        'Agente IA WhatsApp'
+      ];
       
       const { data, error } = await supabase
         .from('sales')
@@ -216,7 +224,7 @@ const AdminSubscriptions = () => {
             payment_reference, stripe_payment_intent_id, created_at
           )
         `)
-        .eq('service_type', 'recurring')
+        .or(`service_type.eq.recurring,service_name.ilike.*Gestão Tráfego Pago*,service_name.ilike.*Gestão de Redes Sociais*,service_name.ilike.*Manutenção Senvia*,service_name.ilike.*Agente IA WhatsApp*`)
         .order('created_at', { ascending: false });
 
       console.log('Vendas recorrentes encontradas:', data);

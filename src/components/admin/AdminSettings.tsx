@@ -1,54 +1,97 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileText } from "lucide-react";
+import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileText, AlertTriangle, CheckCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WebhookSetup from "./WebhookSetup";
 import { useDatabaseStats } from "@/hooks/useDatabaseStats";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
 import { supabase } from "@/integrations/supabase/client";
 
 const AdminSettings = () => {
   const { toast } = useToast();
   const { data: dbStats, isLoading: dbStatsLoading } = useDatabaseStats();
-  const [loading, setLoading] = useState(false);
+  const { 
+    getSetting, 
+    getSettingsByType, 
+    updateSetting, 
+    updateMultipleSettings, 
+    isUpdating, 
+    isLoading: settingsLoading 
+  } = useSystemSettings();
+  
   const [maintenanceLoading, setMaintenanceLoading] = useState<string | null>(null);
-  const [settings, setSettings] = useState({
-    siteName: "SENVIA",
-    siteDescription: "Soluções digitais para o seu negócio",
-    contactEmail: "admin@senvia.pt",
-    supportEmail: "suporte@senvia.pt",
-    companyAddress: "Lisboa, Portugal",
-    systemSettings: {
-      autoSync: true,
-      emailNotifications: true,
-      backupFrequency: "daily"
-    }
+  const [localSettings, setLocalSettings] = useState({
+    siteName: "",
+    siteDescription: "",
+    contactEmail: "",
+    supportEmail: "",
+    companyAddress: "",
+    autoSync: false,
+    emailNotifications: false,
+    backupFrequency: "daily",
+    maxUploadSize: 50,
+    sessionTimeout: 30,
+    apiRateLimit: 100,
+    maintenanceMode: false,
+    enableDebugLogs: false,
+    themeMode: "auto",
+    defaultLanguage: "pt",
+    currency: "EUR"
   });
 
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      // Simular salvamento
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Configurações salvas",
-        description: "As configurações foram atualizadas com sucesso.",
+  // Sincronizar com dados do banco quando carregados
+  useEffect(() => {
+    if (!settingsLoading) {
+      setLocalSettings({
+        siteName: getSetting('site_name', 'SENVIA'),
+        siteDescription: getSetting('site_description', 'Soluções digitais para o seu negócio'),
+        contactEmail: getSetting('contact_email', 'admin@senvia.pt'),
+        supportEmail: getSetting('support_email', 'suporte@senvia.pt'),
+        companyAddress: getSetting('company_address', 'Lisboa, Portugal'),
+        autoSync: getSetting('auto_sync', true),
+        emailNotifications: getSetting('email_notifications', true),
+        backupFrequency: getSetting('backup_frequency', 'daily'),
+        maxUploadSize: getSetting('max_upload_size', 50),
+        sessionTimeout: getSetting('session_timeout', 30),
+        apiRateLimit: getSetting('api_rate_limit', 100),
+        maintenanceMode: getSetting('maintenance_mode', false),
+        enableDebugLogs: getSetting('enable_debug_logs', false),
+        themeMode: getSetting('theme_mode', 'auto'),
+        defaultLanguage: getSetting('default_language', 'pt'),
+        currency: getSetting('currency', 'EUR')
       });
-    } catch (error) {
-      toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível salvar as configurações.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
     }
+  }, [settingsLoading, getSetting]);
+
+  const handleSave = async () => {
+    const updates = [
+      { key: 'site_name', value: localSettings.siteName },
+      { key: 'site_description', value: localSettings.siteDescription },
+      { key: 'contact_email', value: localSettings.contactEmail },
+      { key: 'support_email', value: localSettings.supportEmail },
+      { key: 'company_address', value: localSettings.companyAddress },
+      { key: 'auto_sync', value: localSettings.autoSync },
+      { key: 'email_notifications', value: localSettings.emailNotifications },
+      { key: 'backup_frequency', value: localSettings.backupFrequency },
+      { key: 'max_upload_size', value: localSettings.maxUploadSize },
+      { key: 'session_timeout', value: localSettings.sessionTimeout },
+      { key: 'api_rate_limit', value: localSettings.apiRateLimit },
+      { key: 'maintenance_mode', value: localSettings.maintenanceMode },
+      { key: 'enable_debug_logs', value: localSettings.enableDebugLogs },
+      { key: 'theme_mode', value: localSettings.themeMode },
+      { key: 'default_language', value: localSettings.defaultLanguage },
+      { key: 'currency', value: localSettings.currency }
+    ];
+
+    updateMultipleSettings(updates);
   };
 
   const handleMaintenanceAction = async (action: string, actionName: string) => {
@@ -107,139 +150,298 @@ const AdminSettings = () => {
         </TabsList>
 
         <TabsContent value="general">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle>Informações da Empresa</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="siteName">Nome do Site</Label>
-                  <Input
-                    id="siteName"
-                    value={settings.siteName}
-                    onChange={(e) => setSettings({...settings, siteName: e.target.value})}
-                    className="bg-gray-700 border-gray-600"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="siteDescription">Descrição</Label>
-                  <Textarea
-                    id="siteDescription"
-                    value={settings.siteDescription}
-                    onChange={(e) => setSettings({...settings, siteDescription: e.target.value})}
-                    className="bg-gray-700 border-gray-600"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contactEmail">Email de Contato</Label>
-                  <Input
-                    id="contactEmail"
-                    type="email"
-                    value={settings.contactEmail}
-                    onChange={(e) => setSettings({...settings, contactEmail: e.target.value})}
-                    className="bg-gray-700 border-gray-600"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="supportEmail">Email de Suporte</Label>
-                  <Input
-                    id="supportEmail"
-                    type="email"
-                    value={settings.supportEmail}
-                    onChange={(e) => setSettings({...settings, supportEmail: e.target.value})}
-                    className="bg-gray-700 border-gray-600"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="companyAddress">Endereço da Empresa</Label>
-                  <Textarea
-                    id="companyAddress"
-                    value={settings.companyAddress}
-                    onChange={(e) => setSettings({...settings, companyAddress: e.target.value})}
-                    className="bg-gray-700 border-gray-600"
-                    rows={2}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle>Configurações do Sistema</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Sincronização Automática</Label>
-                    <input
-                      type="checkbox"
-                      checked={settings.systemSettings.autoSync}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        systemSettings: {
-                          ...settings.systemSettings,
-                          autoSync: e.target.checked
-                        }
-                      })}
-                      className="rounded"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Label>Notificações por Email</Label>
-                    <input
-                      type="checkbox"
-                      checked={settings.systemSettings.emailNotifications}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        systemSettings: {
-                          ...settings.systemSettings,
-                          emailNotifications: e.target.checked
-                        }
-                      })}
-                      className="rounded"
+          {settingsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-gray-400">Carregando configurações...</div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Informações da Empresa */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-blue-500" />
+                    Informações da Empresa
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="siteName">Nome do Site</Label>
+                    <Input
+                      id="siteName"
+                      value={localSettings.siteName}
+                      onChange={(e) => setLocalSettings({...localSettings, siteName: e.target.value})}
+                      className="bg-gray-700 border-gray-600"
+                      placeholder="Nome do site"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="backupFreq">Frequência de Backup</Label>
-                    <select
-                      id="backupFreq"
-                      value={settings.systemSettings.backupFrequency}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        systemSettings: {
-                          ...settings.systemSettings,
-                          backupFrequency: e.target.value
-                        }
-                      })}
-                      className="w-full mt-1 p-2 bg-gray-700 border border-gray-600 rounded text-white"
-                    >
-                      <option value="hourly">A cada hora</option>
-                      <option value="daily">Diariamente</option>
-                      <option value="weekly">Semanalmente</option>
-                      <option value="monthly">Mensalmente</option>
-                    </select>
+                    <Label htmlFor="siteDescription">Descrição</Label>
+                    <Textarea
+                      id="siteDescription"
+                      value={localSettings.siteDescription}
+                      onChange={(e) => setLocalSettings({...localSettings, siteDescription: e.target.value})}
+                      className="bg-gray-700 border-gray-600"
+                      rows={3}
+                      placeholder="Descrição do site"
+                    />
                   </div>
-                </div>
 
-                <Button
-                  onClick={handleSave}
-                  disabled={loading}
-                  className="w-full bg-senvia-500 hover:bg-senvia-600"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {loading ? 'Salvando...' : 'Salvar Configurações'}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+                  <div>
+                    <Label htmlFor="contactEmail">Email de Contato</Label>
+                    <Input
+                      id="contactEmail"
+                      type="email"
+                      value={localSettings.contactEmail}
+                      onChange={(e) => setLocalSettings({...localSettings, contactEmail: e.target.value})}
+                      className="bg-gray-700 border-gray-600"
+                      placeholder="contato@empresa.com"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="supportEmail">Email de Suporte</Label>
+                    <Input
+                      id="supportEmail"
+                      type="email"
+                      value={localSettings.supportEmail}
+                      onChange={(e) => setLocalSettings({...localSettings, supportEmail: e.target.value})}
+                      className="bg-gray-700 border-gray-600"
+                      placeholder="suporte@empresa.com"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="companyAddress">Endereço da Empresa</Label>
+                    <Textarea
+                      id="companyAddress"
+                      value={localSettings.companyAddress}
+                      onChange={(e) => setLocalSettings({...localSettings, companyAddress: e.target.value})}
+                      className="bg-gray-700 border-gray-600"
+                      rows={2}
+                      placeholder="Endereço completo da empresa"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Configurações do Sistema */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-5 w-5 text-green-500" />
+                    Configurações do Sistema
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Sincronização Automática</Label>
+                      <p className="text-xs text-gray-400">Sincronizar dados automaticamente</p>
+                    </div>
+                    <Switch
+                      checked={localSettings.autoSync}
+                      onCheckedChange={(checked) => setLocalSettings({...localSettings, autoSync: checked})}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Notificações por Email</Label>
+                      <p className="text-xs text-gray-400">Receber notificações do sistema</p>
+                    </div>
+                    <Switch
+                      checked={localSettings.emailNotifications}
+                      onCheckedChange={(checked) => setLocalSettings({...localSettings, emailNotifications: checked})}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Modo de Manutenção</Label>
+                      <p className="text-xs text-gray-400">Ativar modo de manutenção</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {localSettings.maintenanceMode && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                      <Switch
+                        checked={localSettings.maintenanceMode}
+                        onCheckedChange={(checked) => setLocalSettings({...localSettings, maintenanceMode: checked})}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="backupFreq">Frequência de Backup</Label>
+                    <Select 
+                      value={localSettings.backupFrequency} 
+                      onValueChange={(value) => setLocalSettings({...localSettings, backupFrequency: value})}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectValue placeholder="Selecione a frequência" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hourly">A cada hora</SelectItem>
+                        <SelectItem value="daily">Diariamente</SelectItem>
+                        <SelectItem value="weekly">Semanalmente</SelectItem>
+                        <SelectItem value="monthly">Mensalmente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="maxUpload">Upload Máximo (MB)</Label>
+                      <Input
+                        id="maxUpload"
+                        type="number"
+                        value={localSettings.maxUploadSize}
+                        onChange={(e) => setLocalSettings({...localSettings, maxUploadSize: parseInt(e.target.value)})}
+                        className="bg-gray-700 border-gray-600"
+                        min="1"
+                        max="500"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="sessionTimeout">Timeout Sessão (min)</Label>
+                      <Input
+                        id="sessionTimeout"
+                        type="number"
+                        value={localSettings.sessionTimeout}
+                        onChange={(e) => setLocalSettings({...localSettings, sessionTimeout: parseInt(e.target.value)})}
+                        className="bg-gray-700 border-gray-600"
+                        min="5"
+                        max="480"
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleSave}
+                    disabled={isUpdating}
+                    className="w-full bg-senvia-500 hover:bg-senvia-600"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {isUpdating ? 'Salvando...' : 'Salvar Configurações'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Configurações de Interface */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-purple-500" />
+                    Interface e Localização
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="themeMode">Tema do Sistema</Label>
+                    <Select 
+                      value={localSettings.themeMode} 
+                      onValueChange={(value) => setLocalSettings({...localSettings, themeMode: value})}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectValue placeholder="Selecione o tema" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Claro</SelectItem>
+                        <SelectItem value="dark">Escuro</SelectItem>
+                        <SelectItem value="auto">Automático</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="defaultLanguage">Idioma Padrão</Label>
+                    <Select 
+                      value={localSettings.defaultLanguage} 
+                      onValueChange={(value) => setLocalSettings({...localSettings, defaultLanguage: value})}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectValue placeholder="Selecione o idioma" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pt">Português</SelectItem>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Español</SelectItem>
+                        <SelectItem value="fr">Français</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="currency">Moeda Padrão</Label>
+                    <Select 
+                      value={localSettings.currency} 
+                      onValueChange={(value) => setLocalSettings({...localSettings, currency: value})}
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectValue placeholder="Selecione a moeda" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EUR">Euro (€)</SelectItem>
+                        <SelectItem value="USD">Dólar ($)</SelectItem>
+                        <SelectItem value="BRL">Real (R$)</SelectItem>
+                        <SelectItem value="GBP">Libra (£)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Logs de Debug</Label>
+                      <p className="text-xs text-gray-400">Ativar logs detalhados</p>
+                    </div>
+                    <Switch
+                      checked={localSettings.enableDebugLogs}
+                      onCheckedChange={(checked) => setLocalSettings({...localSettings, enableDebugLogs: checked})}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Configurações Avançadas */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    Configurações Avançadas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="apiRateLimit">Limite de API (req/min)</Label>
+                    <Input
+                      id="apiRateLimit"
+                      type="number"
+                      value={localSettings.apiRateLimit}
+                      onChange={(e) => setLocalSettings({...localSettings, apiRateLimit: parseInt(e.target.value)})}
+                      className="bg-gray-700 border-gray-600"
+                      min="10"
+                      max="1000"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Limite de requests por minuto por usuário</p>
+                  </div>
+
+                  <div className="bg-yellow-900/20 border border-yellow-700 rounded p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                      <span className="text-sm font-medium text-yellow-400">Status do Sistema</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-300">
+                        {localSettings.maintenanceMode ? 'Modo de Manutenção Ativo' : 'Sistema Operacional'}
+                      </span>
+                      <div className={`w-2 h-2 rounded-full ${localSettings.maintenanceMode ? 'bg-yellow-500' : 'bg-green-500'}`} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="webhooks">

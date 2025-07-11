@@ -22,6 +22,7 @@ const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICa
 
   const totalRevenue = revenueMetrics?.total_revenue || 0;
   const totalTransactions = revenueMetrics?.total_transactions || 0;
+  const totalSubscriptions = (subscriptions?.length || 0) + (revenueMetrics?.recurring_sales_count || 0);
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
@@ -85,10 +86,10 @@ const AdminKPICards = ({ revenueMetrics, leadsStats, subscriptions }: AdminKPICa
         </CardHeader>
         <CardContent className="px-3 md:px-6 pb-3 md:pb-6">
           <div className="text-lg md:text-2xl font-bold text-purple-500">
-            {subscriptions?.length || 0}
+            {totalSubscriptions}
           </div>
           <div className="text-xs text-gray-400 truncate">
-            ativas + trial
+            total de assinaturas
           </div>
         </CardContent>
       </Card>

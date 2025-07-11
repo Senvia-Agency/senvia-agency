@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Database, Webhook } from "lucide-react";
+import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WebhookSetup from "./WebhookSetup";
+import { useDatabaseStats } from "@/hooks/useDatabaseStats";
 
 const AdminSettings = () => {
   const { toast } = useToast();
+  const { data: dbStats, isLoading: dbStatsLoading } = useDatabaseStats();
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
     siteName: "SENVIA",
@@ -211,30 +213,145 @@ const AdminSettings = () => {
         </TabsContent>
 
         <TabsContent value="database">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle>Manutenção do Banco de Dados</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400 mb-4">
-                Ferramentas para manutenção e otimização do banco de dados.
-              </p>
-              <div className="space-y-3">
-                <Button variant="outline" className="w-full border-gray-600">
-                  <Database className="h-4 w-4 mr-2" />
-                  Verificar Integridade dos Dados
-                </Button>
-                <Button variant="outline" className="w-full border-gray-600">
-                  <Database className="h-4 w-4 mr-2" />
-                  Otimizar Tabelas
-                </Button>
-                <Button variant="outline" className="w-full border-gray-600">
-                  <Database className="h-4 w-4 mr-2" />
-                  Limpar Logs Antigos
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Estatísticas Gerais */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <HardDrive className="h-5 w-5 text-blue-500" />
+                  Estatísticas do Banco de Dados
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {dbStatsLoading ? (
+                  <div className="text-gray-400">Carregando estatísticas...</div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-700 p-3 rounded">
+                      <div className="text-xs text-gray-400">Tamanho Total</div>
+                      <div className="text-lg font-bold text-blue-400">
+                        {dbStats?.general?.database_size || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 p-3 rounded">
+                      <div className="text-xs text-gray-400">Total de Tabelas</div>
+                      <div className="text-lg font-bold text-green-400">
+                        {dbStats?.general?.total_tables || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 p-3 rounded">
+                      <div className="text-xs text-gray-400">Total de Registros</div>
+                      <div className="text-lg font-bold text-purple-400">
+                        {dbStats?.general?.total_records || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="bg-gray-700 p-3 rounded">
+                      <div className="text-xs text-gray-400">Inserções</div>
+                      <div className="text-lg font-bold text-orange-400">
+                        {dbStats?.general?.total_inserts || 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Maiores Tabelas */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-green-500" />
+                  Principais Tabelas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {dbStatsLoading ? (
+                  <div className="text-gray-400">Carregando tabelas...</div>
+                ) : (
+                  <div className="space-y-3">
+                    {dbStats?.topTables?.slice(0, 6).map((table, index) => (
+                      <div key={table.tablename} className="flex justify-between items-center py-2 border-b border-gray-700 last:border-b-0">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm text-white">{table.tablename}</span>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-300">{table.records} registros</div>
+                          <div className="text-xs text-gray-500">{table.size}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Manutenção */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5 text-yellow-500" />
+                  Manutenção do Banco
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-400 mb-4 text-sm">
+                  Ferramentas para manutenção e otimização do banco de dados.
+                </p>
+                <div className="space-y-3">
+                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                    <Database className="h-4 w-4 mr-2" />
+                    Verificar Integridade dos Dados
+                  </Button>
+                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Analisar Performance
+                  </Button>
+                  <Button variant="outline" className="w-full border-gray-600 text-sm">
+                    <HardDrive className="h-4 w-4 mr-2" />
+                    Otimizar Armazenamento
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Atividade do Sistema */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-purple-500" />
+                  Atividade do Sistema
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {dbStatsLoading ? (
+                  <div className="text-gray-400">Carregando atividade...</div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Atualizações</span>
+                      <span className="text-sm font-medium text-white">
+                        {dbStats?.general?.total_updates || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Exclusões</span>
+                      <span className="text-sm font-medium text-white">
+                        {dbStats?.general?.total_deletes || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="bg-gray-700 p-3 rounded mt-3">
+                      <div className="text-xs text-gray-400 mb-1">Status do Sistema</div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-green-400">Sistema Operacional</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

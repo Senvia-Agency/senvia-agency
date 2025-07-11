@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 interface WebhookConfig {
   id: string;
@@ -19,6 +21,51 @@ interface WebhookConfig {
   created_at: string;
 }
 
+const AVAILABLE_EVENTS = {
+  "Leads": [
+    { key: "lead.created", label: "Lead Criado", description: "Quando um novo lead se cadastra" },
+    { key: "lead.updated", label: "Lead Atualizado", description: "Quando dados do lead são modificados" },
+    { key: "lead.converted", label: "Lead Convertido", description: "Quando lead vira cliente" },
+    { key: "lead.payment_received", label: "Pagamento de Lead", description: "Quando lead efetua pagamento" },
+  ],
+  "Clientes": [
+    { key: "customer.created", label: "Cliente Criado", description: "Novo cliente adicionado" },
+    { key: "customer.updated", label: "Cliente Atualizado", description: "Dados do cliente modificados" },
+    { key: "customer.deleted", label: "Cliente Removido", description: "Cliente removido do sistema" },
+  ],
+  "Vendas": [
+    { key: "sale.created", label: "Venda Criada", description: "Nova venda registrada" },
+    { key: "sale.updated", label: "Venda Atualizada", description: "Status ou dados da venda alterados" },
+    { key: "sale.completed", label: "Venda Concluída", description: "Venda finalizada com sucesso" },
+    { key: "sale.cancelled", label: "Venda Cancelada", description: "Venda cancelada" },
+    { key: "sale.payment_received", label: "Pagamento Recebido", description: "Pagamento da venda confirmado" },
+  ],
+  "Transações": [
+    { key: "transaction.created", label: "Transação Criada", description: "Nova transação registrada" },
+    { key: "transaction.completed", label: "Transação Concluída", description: "Transação processada com sucesso" },
+    { key: "transaction.failed", label: "Transação Falhou", description: "Erro no processamento da transação" },
+  ],
+  "Produtos": [
+    { key: "product.created", label: "Produto Criado", description: "Novo produto adicionado" },
+    { key: "product.updated", label: "Produto Atualizado", description: "Produto modificado" },
+    { key: "product.deleted", label: "Produto Removido", description: "Produto removido do catálogo" },
+  ],
+  "Assinaturas": [
+    { key: "subscription.created", label: "Assinatura Criada", description: "Nova assinatura ativada" },
+    { key: "subscription.updated", label: "Assinatura Atualizada", description: "Assinatura modificada" },
+    { key: "subscription.cancelled", label: "Assinatura Cancelada", description: "Assinatura cancelada" },
+    { key: "subscription.renewed", label: "Assinatura Renovada", description: "Assinatura renovada automaticamente" },
+  ],
+  "Financeiro": [
+    { key: "financial_movement.created", label: "Movimento Financeiro", description: "Novo lançamento financeiro" },
+    { key: "financial_movement.updated", label: "Movimento Atualizado", description: "Lançamento financeiro modificado" },
+  ],
+  "Marketing": [
+    { key: "marketing_report.created", label: "Relatório Criado", description: "Novo relatório de marketing" },
+    { key: "marketing_report.updated", label: "Relatório Atualizado", description: "Relatório de marketing modificado" },
+  ]
+};
+
 const WebhookSetup = () => {
   const { toast } = useToast();
   const [webhookUrl] = useState("https://rvrulhbgkdvnrkhzibif.supabase.co/functions/v1/stripe-webhook");
@@ -26,7 +73,7 @@ const WebhookSetup = () => {
   const [zapierUrl, setZapierUrl] = useState("");
   const [newWebhookName, setNewWebhookName] = useState("");
   const [newWebhookUrl, setNewWebhookUrl] = useState("");
-  const [newWebhookEvents, setNewWebhookEvents] = useState("");
+  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -93,11 +140,20 @@ const WebhookSetup = () => {
       return;
     }
 
+    if (selectedEvents.length === 0) {
+      toast({
+        title: "Erro",
+        description: "Selecione pelo menos um evento.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newWebhook: WebhookConfig = {
       id: crypto.randomUUID(),
       name: newWebhookName,
       url: newWebhookUrl,
-      events: newWebhookEvents.split(',').map(e => e.trim()).filter(Boolean),
+      events: selectedEvents,
       active: true,
       created_at: new Date().toISOString()
     };
@@ -107,7 +163,7 @@ const WebhookSetup = () => {
 
     setNewWebhookName("");
     setNewWebhookUrl("");
-    setNewWebhookEvents("");
+    setSelectedEvents([]);
 
     toast({
       title: "Webhook adicionado",
@@ -130,6 +186,27 @@ const WebhookSetup = () => {
       w.id === id ? { ...w, active } : w
     );
     await saveWebhooks(updatedWebhooks);
+  };
+
+  const toggleEvent = (eventKey: string) => {
+    setSelectedEvents(prev => 
+      prev.includes(eventKey) 
+        ? prev.filter(e => e !== eventKey)
+        : [...prev, eventKey]
+    );
+  };
+
+  const selectAllEventsInCategory = (category: string) => {
+    const categoryEvents = AVAILABLE_EVENTS[category as keyof typeof AVAILABLE_EVENTS].map(e => e.key);
+    setSelectedEvents(prev => {
+      const otherEvents = prev.filter(e => !categoryEvents.includes(e));
+      return [...otherEvents, ...categoryEvents];
+    });
+  };
+
+  const deselectAllEventsInCategory = (category: string) => {
+    const categoryEvents = AVAILABLE_EVENTS[category as keyof typeof AVAILABLE_EVENTS].map(e => e.key);
+    setSelectedEvents(prev => prev.filter(e => !categoryEvents.includes(e)));
   };
 
   const testWebhook = async (url: string, name: string) => {
@@ -338,14 +415,88 @@ const WebhookSetup = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="webhook-events">Eventos (separados por vírgula)</Label>
-                  <Input
-                    id="webhook-events"
-                    value={newWebhookEvents}
-                    onChange={(e) => setNewWebhookEvents(e.target.value)}
-                    placeholder="lead.created, sale.completed, payment.received"
-                    className="bg-gray-700 border-gray-600"
-                  />
+                  <Label>Eventos Disponíveis</Label>
+                  <div className="mt-3 space-y-4 max-h-96 overflow-y-auto border border-gray-600 rounded p-4 bg-gray-700">
+                    {Object.entries(AVAILABLE_EVENTS).map(([category, events]) => {
+                      const categoryEvents = events.map(e => e.key);
+                      const selectedInCategory = selectedEvents.filter(e => categoryEvents.includes(e)).length;
+                      const allSelected = selectedInCategory === categoryEvents.length;
+                      const someSelected = selectedInCategory > 0 && selectedInCategory < categoryEvents.length;
+
+                      return (
+                        <div key={category} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-white flex items-center gap-2">
+                              {category}
+                              <Badge variant="secondary" className="text-xs">
+                                {selectedInCategory}/{categoryEvents.length}
+                              </Badge>
+                            </h4>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => selectAllEventsInCategory(category)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Todos
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deselectAllEventsInCategory(category)}
+                                className="text-xs h-6 px-2"
+                              >
+                                Nenhum
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-2 pl-4">
+                            {events.map((event) => (
+                              <div key={event.key} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={event.key}
+                                  checked={selectedEvents.includes(event.key)}
+                                  onCheckedChange={() => toggleEvent(event.key)}
+                                  className="mt-1"
+                                />
+                                <div className="space-y-1">
+                                  <Label 
+                                    htmlFor={event.key} 
+                                    className="text-sm font-medium text-white cursor-pointer"
+                                  >
+                                    {event.label}
+                                  </Label>
+                                  <p className="text-xs text-gray-400">{event.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {selectedEvents.length > 0 && (
+                    <div className="mt-3">
+                      <Label className="text-sm text-gray-400">Eventos Selecionados ({selectedEvents.length}):</Label>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {selectedEvents.map((eventKey) => {
+                          const event = Object.values(AVAILABLE_EVENTS)
+                            .flat()
+                            .find(e => e.key === eventKey);
+                          return (
+                            <Badge key={eventKey} variant="secondary" className="text-xs">
+                              {event?.label || eventKey}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <Button onClick={addCustomWebhook} className="w-full bg-green-600 hover:bg-green-700">
@@ -400,11 +551,16 @@ const WebhookSetup = () => {
                         </div>
                         {webhook.events.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {webhook.events.map((event) => (
-                              <span key={event} className="px-2 py-1 bg-gray-600 text-xs rounded">
-                                {event}
-                              </span>
-                            ))}
+                            {webhook.events.map((eventKey) => {
+                              const event = Object.values(AVAILABLE_EVENTS)
+                                .flat()
+                                .find(e => e.key === eventKey);
+                              return (
+                                <Badge key={eventKey} variant="secondary" className="text-xs">
+                                  {event?.label || eventKey}
+                                </Badge>
+                              );
+                            })}
                           </div>
                         )}
                       </div>

@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AccountReceivable } from "@/hooks/useAccountsReceivable";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import EditDueDateModal from "./EditDueDateModal";
 
 interface AccountsReceivableListProps {
@@ -38,18 +39,76 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
     }
   };
 
-  const handleSendReminder = (account: AccountReceivable) => {
-    toast({
-      title: "Lembrete enviado",
-      description: `Lembrete de pagamento enviado para ${account.customer_name}`,
-    });
+  const handleSendReminder = async (account: AccountReceivable) => {
+    try {
+      // Registrar atividade no histórico
+      const { error } = await supabase
+        .from('activity_history')
+        .insert({
+          entity_type: 'sale',
+          entity_id: account.id,
+          activity_type: 'communication',
+          title: 'Lembrete de Pagamento Enviado',
+          description: `Lembrete de pagamento enviado para ${account.customer_name}`,
+          contact_method: 'email',
+          contact_person: account.customer_name,
+          metadata: {
+            sale_number: account.sale_number,
+            remaining_amount: account.remaining_amount,
+            customer_email: account.customer_email
+          }
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Lembrete enviado",
+        description: `Lembrete de pagamento enviado para ${account.customer_name}`,
+      });
+    } catch (error: any) {
+      console.error('Erro ao enviar lembrete:', error);
+      toast({
+        title: "❌ Erro ao enviar lembrete",
+        description: "Não foi possível registrar o lembrete.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleCallCustomer = (account: AccountReceivable) => {
-    toast({
-      title: "Ligação iniciada",
-      description: `Preparando ligação para ${account.customer_name}`,
-    });
+  const handleCallCustomer = async (account: AccountReceivable) => {
+    try {
+      // Registrar atividade no histórico
+      const { error } = await supabase
+        .from('activity_history')
+        .insert({
+          entity_type: 'sale',
+          entity_id: account.id,
+          activity_type: 'communication',
+          title: 'Ligação para Cliente',
+          description: `Ligação realizada para ${account.customer_name} sobre pagamento pendente`,
+          contact_method: 'phone',
+          contact_person: account.customer_name,
+          metadata: {
+            sale_number: account.sale_number,
+            remaining_amount: account.remaining_amount,
+            customer_email: account.customer_email
+          }
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "📞 Ligação registrada",
+        description: `Ligação para ${account.customer_name} registrada no histórico`,
+      });
+    } catch (error: any) {
+      console.error('Erro ao registrar ligação:', error);
+      toast({
+        title: "❌ Erro ao registrar ligação",
+        description: "Não foi possível registrar a ligação.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleMarkAsPaid = (account: AccountReceivable) => {

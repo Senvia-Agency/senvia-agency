@@ -4,6 +4,9 @@ import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAc
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AccountsReceivableKPICards from "@/components/admin/financeiro/AccountsReceivableKPICards";
 import AccountsReceivableList from "@/components/admin/financeiro/AccountsReceivableList";
@@ -14,12 +17,78 @@ const AdminContasReceber = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
   const [activeSection, setActiveSection] = useState("financeiro");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { data: accountsReceivable, isLoading } = useAccountsReceivable(selectedPeriod);
   const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
 
-  const handleMarkAsPaid = (accountId: string) => {
-    // Implementar lógica para marcar como pago
-    console.log('Marcando como pago:', accountId);
+  const handleMarkAsPaid = async (accountId: string) => {
+    try {
+      console.log('Marcando como pago:', accountId);
+      
+      // 1. Buscar dados da venda
+      const { data: sale, error: saleError } = await supabase
+        .from('sales')
+        .select('*, customers(full_name, email)')
+        .eq('id', accountId)
+        .single();
+
+      if (saleError) {
+        throw saleError;
+      }
+
+      const remainingAmount = Number(sale.remaining_amount || (sale.total_value - sale.paid_amount));
+      
+      // 2. Atualizar a venda para "pago"
+      const { error: updateError } = await supabase
+        .from('sales')
+        .update({
+          payment_status: 'paid',
+          paid_amount: sale.total_value,
+          remaining_amount: 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', accountId);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // 3. Criar movimento financeiro (receita)
+      const { error: movementError } = await supabase
+        .from('financial_movements')
+        .insert({
+          movement_type: 'receita',
+          category: 'vendas',
+          description: `Recebimento da venda ${sale.sale_number} - ${sale.service_name}`,
+          amount: remainingAmount,
+          currency: 'EUR',
+          customer_id: sale.customer_id,
+          movement_date: new Date().toISOString().split('T')[0],
+          notes: `Pagamento total da venda ${sale.sale_number}. Cliente: ${sale.customers?.full_name || 'N/A'}`
+        });
+
+      if (movementError) {
+        throw movementError;
+      }
+
+      // 4. Invalidar queries para atualizar os dados
+      queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
+
+      toast({
+        title: "✅ Pagamento registrado",
+        description: `Venda ${sale.sale_number} marcada como paga. Receita de €${remainingAmount.toFixed(2)} adicionada aos movimentos financeiros.`,
+      });
+
+    } catch (error: any) {
+      console.error('Erro ao marcar como pago:', error);
+      toast({
+        title: "❌ Erro ao registrar pagamento",
+        description: error.message || "Não foi possível registrar o pagamento.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (isLoading) {

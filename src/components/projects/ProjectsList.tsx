@@ -128,7 +128,7 @@ export const ProjectsList = ({ projects, isLoading, error, isDarkTheme = false }
                 key={project.id}
                 className={`
                   group flex items-center justify-between p-4 
-                  hover:bg-gray-50 dark:hover:bg-gray-750 
+                  hover:bg-gray-700/50 
                   transition-all duration-200 cursor-pointer
                   border-b last:border-b-0
                   ${isDarkTheme ? 'border-gray-700' : 'border-gray-200'}

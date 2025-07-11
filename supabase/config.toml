@@ -84,3 +84,12 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.send-notification-email]
+verify_jwt = false
+
+[functions.database-maintenance]
+verify_jwt = true
+
+[functions.generate-recurring-bills]
+verify_jwt = true

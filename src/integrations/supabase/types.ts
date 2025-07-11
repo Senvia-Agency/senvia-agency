@@ -824,6 +824,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_logs: {
+        Row: {
+          brevo_message_id: string | null
+          entity_id: string | null
+          entity_type: string | null
+          error_message: string | null
+          id: string
+          notification_type: string
+          recipient_email: string
+          sent_at: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          brevo_message_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_message?: string | null
+          id?: string
+          notification_type: string
+          recipient_email: string
+          sent_at?: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          brevo_message_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_message?: string | null
+          id?: string
+          notification_type?: string
+          recipient_email?: string
+          sent_at?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -1634,6 +1673,15 @@ export type Database = {
       }
       migrate_paid_leads_to_customers: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      send_notification: {
+        Args: {
+          notification_type: string
+          notification_subject: string
+          notification_data: Json
+          recipient_email?: string
+        }
         Returns: undefined
       }
     }

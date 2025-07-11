@@ -8,11 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileText, AlertTriangle, CheckCircle } from "lucide-react";
+import { Settings, Save, Database, Webhook, HardDrive, BarChart3, Users, FileText, AlertTriangle, CheckCircle, Mail, Send } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WebhookSetup from "./WebhookSetup";
 import { useDatabaseStats } from "@/hooks/useDatabaseStats";
 import { useSystemSettings } from "@/hooks/useSystemSettings";
+import { useNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
 const AdminSettings = () => {
@@ -26,6 +27,16 @@ const AdminSettings = () => {
     isUpdating, 
     isLoading: settingsLoading 
   } = useSystemSettings();
+  
+  const {
+    notificationLogs,
+    isLoading: notificationsLoading,
+    sendTestNotification,
+    isSendingTest,
+    getStatusColor,
+    getTypeIcon,
+    getTypeName
+  } = useNotifications();
   
   const [maintenanceLoading, setMaintenanceLoading] = useState<string | null>(null);
   const [localSettings, setLocalSettings] = useState({
@@ -134,10 +145,14 @@ const AdminSettings = () => {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+        <TabsList className="grid w-full grid-cols-4 bg-gray-800">
           <TabsTrigger value="general" className="data-[state=active]:bg-senvia-500">
             <Settings className="h-4 w-4 mr-2" />
             Geral
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="data-[state=active]:bg-senvia-500">
+            <Mail className="h-4 w-4 mr-2" />
+            Notificações
           </TabsTrigger>
           <TabsTrigger value="webhooks" className="data-[state=active]:bg-senvia-500">
             <Webhook className="h-4 w-4 mr-2" />
@@ -442,6 +457,178 @@ const AdminSettings = () => {
               </Card>
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Configurações de Email */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-blue-500" />
+                  Configurações de Email
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-blue-900/20 border border-blue-700 rounded p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-400">Status do Sistema</span>
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    {localSettings.emailNotifications ? 
+                      "✅ Notificações por email estão ativadas" : 
+                      "❌ Notificações por email estão desativadas"
+                    }
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    Emails serão enviados para: {localSettings.contactEmail}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-300">Tipos de Notificação Ativas:</Label>
+                    <div className="mt-2 space-y-2">
+                      {[
+                        { icon: '🎯', name: 'Novos Leads', desc: 'Quando um novo lead é recebido' },
+                        { icon: '💰', name: 'Vendas Concluídas', desc: 'Quando uma venda é finalizada' },
+                        { icon: '✅', name: 'Pagamentos', desc: 'Quando um pagamento é processado' },
+                        { icon: '👤', name: 'Clientes', desc: 'Atualizações importantes de clientes' },
+                        { icon: '⚠️', name: 'Erros do Sistema', desc: 'Alertas críticos do sistema' }
+                      ].map((type) => (
+                        <div key={type.name} className="flex items-center gap-3 p-2 bg-gray-700 rounded">
+                          <span className="text-lg">{type.icon}</span>
+                          <div>
+                            <div className="text-sm font-medium text-white">{type.name}</div>
+                            <div className="text-xs text-gray-400">{type.desc}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Teste de Notificações */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Send className="h-5 w-5 text-green-500" />
+                  Teste de Notificações
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-gray-400">
+                  Teste o sistema de notificações enviando emails de exemplo.
+                </p>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => sendTestNotification('new_lead')}
+                    disabled={isSendingTest || !localSettings.emailNotifications}
+                    className="flex items-center gap-2"
+                  >
+                    🎯 Novo Lead
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => sendTestNotification('sale_completed')}
+                    disabled={isSendingTest || !localSettings.emailNotifications}
+                    className="flex items-center gap-2"
+                  >
+                    💰 Venda
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => sendTestNotification('payment_received')}
+                    disabled={isSendingTest || !localSettings.emailNotifications}
+                    className="flex items-center gap-2"
+                  >
+                    ✅ Pagamento
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => sendTestNotification('system_error')}
+                    disabled={isSendingTest || !localSettings.emailNotifications}
+                    className="flex items-center gap-2"
+                  >
+                    ⚠️ Erro
+                  </Button>
+                </div>
+
+                {!localSettings.emailNotifications && (
+                  <div className="bg-yellow-900/20 border border-yellow-700 rounded p-3">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                      <span className="text-sm text-yellow-400">
+                        Ative as notificações por email nas configurações gerais
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Logs de Notificações */}
+            <Card className="bg-gray-800 border-gray-700 lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-purple-500" />
+                  Histórico de Notificações
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {notificationsLoading ? (
+                  <div className="text-gray-400 text-center py-4">Carregando histórico...</div>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {notificationLogs && notificationLogs.length > 0 ? (
+                      notificationLogs.map((log) => (
+                        <div key={log.id} className="flex items-center justify-between p-3 bg-gray-700 rounded">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg">{getTypeIcon(log.notification_type)}</span>
+                            <div>
+                              <div className="text-sm font-medium text-white">{getTypeName(log.notification_type)}</div>
+                              <div className="text-xs text-gray-400">{log.subject}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className={`text-xs font-medium ${getStatusColor(log.status)}`}>
+                              {log.status.toUpperCase()}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {new Date(log.sent_at).toLocaleString('pt-PT')}
+                            </div>
+                            {log.error_message && (
+                              <div className="text-xs text-red-400 mt-1 max-w-48 truncate">
+                                {log.error_message}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-400">
+                        <Mail className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                        <p>Nenhuma notificação enviada ainda</p>
+                        <p className="text-sm">Use os botões de teste acima para enviar sua primeira notificação</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="webhooks">

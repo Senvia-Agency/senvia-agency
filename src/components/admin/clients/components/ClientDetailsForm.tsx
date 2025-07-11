@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useCreateActivity } from "@/hooks/useActivityHistory";
 
 interface ClientDetailsFormProps {
   client: any;
@@ -15,6 +16,7 @@ interface ClientDetailsFormProps {
 
 export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) => {
   const { toast } = useToast();
+  const createActivity = useCreateActivity();
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
     full_name: client.full_name || '',
@@ -38,12 +40,36 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
     setIsUpdating(true);
     
     try {
+      // Detectar mudanças nos dados
+      const changes: string[] = [];
+      
+      if (formData.full_name !== client.full_name) changes.push(`Nome: ${client.full_name} → ${formData.full_name}`);
+      if (formData.email !== client.email) changes.push(`Email: ${client.email} → ${formData.email}`);
+      if (formData.phone !== client.phone) changes.push(`Telefone: ${client.phone || 'vazio'} → ${formData.phone || 'vazio'}`);
+      if (formData.company_name !== client.company_name) changes.push(`Empresa: ${client.company_name || 'vazio'} → ${formData.company_name || 'vazio'}`);
+      if (formData.website !== client.website) changes.push(`Website: ${client.website || 'vazio'} → ${formData.website || 'vazio'}`);
+      if (formData.customer_status !== client.customer_status) changes.push(`Status: ${client.customer_status} → ${formData.customer_status}`);
+      if (formData.customer_tier !== client.customer_tier) changes.push(`Nível: ${client.customer_tier} → ${formData.customer_tier}`);
+      if (formData.project_status !== client.project_status) changes.push(`Status do Projeto: ${client.project_status} → ${formData.project_status}`);
+
       const { error } = await supabase
         .from('customers')
         .update(formData)
         .eq('id', client.id);
 
       if (error) throw error;
+
+      // Criar atividade no histórico se houver mudanças
+      if (changes.length > 0) {
+        createActivity.mutate({
+          entity_type: 'customer',
+          entity_id: client.id,
+          activity_type: 'status_change',
+          title: 'Dados do cliente atualizados',
+          description: `Alterações realizadas:\n${changes.join('\n')}`,
+          contact_method: 'sistema'
+        });
+      }
 
       toast({
         title: "Cliente atualizado",

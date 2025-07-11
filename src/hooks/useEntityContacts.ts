@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useCreateActivity } from "@/hooks/useActivityHistory";
 
 export interface EntityContact {
   id: string;
@@ -40,6 +41,7 @@ export const useEntityContacts = (entityType: 'lead' | 'customer', entityId: str
 export const useCreateEntityContact = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const createActivity = useCreateActivity();
 
   return useMutation({
     mutationFn: async (contact: Omit<EntityContact, 'id' | 'created_at' | 'updated_at' | 'assigned_at'>) => {
@@ -56,6 +58,18 @@ export const useCreateEntityContact = () => {
       queryClient.invalidateQueries({ 
         queryKey: ['entity-contacts', data.entity_type, data.entity_id] 
       });
+      
+      // Criar atividade no histórico
+      createActivity.mutate({
+        entity_type: data.entity_type,
+        entity_id: data.entity_id,
+        activity_type: 'contact',
+        title: 'Novo responsável adicionado',
+        description: `Responsável ${data.contact_person}${data.contact_role ? ` (${data.contact_role})` : ''} foi atribuído`,
+        contact_person: data.contact_person,
+        contact_method: 'sistema'
+      });
+      
       toast({
         title: "Contato adicionado",
         description: "O responsável foi atribuído com sucesso."

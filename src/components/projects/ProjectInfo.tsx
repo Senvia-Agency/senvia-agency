@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getSaleStatusLabel } from "@/utils/saleStatusUtils";
 import { Project } from "./types";
 
 interface ProjectInfoProps {
@@ -21,17 +22,6 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'confirmed': return 'Confirmado';
-      case 'in_progress': return 'Em Progresso';
-      case 'completed': return 'Concluído';
-      case 'cancelled': return 'Cancelado';
-      default: return status;
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -41,7 +31,7 @@ export const ProjectInfo = ({ project }: ProjectInfoProps) => {
           <p className="text-gray-400 mt-1">Projeto #{project.sale_number}</p>
         </div>
         <Badge className={getStatusColor(project.sale_status)}>
-          {getStatusLabel(project.sale_status)}
+          {getSaleStatusLabel(project.sale_status)}
         </Badge>
       </div>
 

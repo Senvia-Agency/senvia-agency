@@ -7,6 +7,7 @@ import { Edit, Calendar, DollarSign, User, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
+import { getSaleStatusLabel, getSaleStatusColor, getPaymentStatusLabel, getPaymentStatusColor } from "@/utils/saleStatusUtils";
 import EditSaleModal from "./EditSaleModal";
 
 interface SaleDetailModalProps {
@@ -21,47 +22,6 @@ const SaleDetailModal = ({ sale, isOpen, onClose, onSaleUpdated }: SaleDetailMod
   
   if (!sale) return null;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-500';
-      case 'confirmed': return 'bg-blue-500';
-      case 'in_progress': return 'bg-purple-500';
-      case 'completed': return 'bg-green-500';
-      case 'cancelled': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'confirmed': return 'Confirmada';
-      case 'in_progress': return 'Em Andamento';
-      case 'completed': return 'Concluída';
-      case 'cancelled': return 'Cancelada';
-      default: return status;
-    }
-  };
-
-  const getPaymentStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-500';
-      case 'partial': return 'bg-orange-500';
-      case 'paid': return 'bg-green-500';
-      case 'overdue': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getPaymentStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'partial': return 'Parcial';
-      case 'paid': return 'Pago';
-      case 'overdue': return 'Em Atraso';
-      default: return status;
-    }
-  };
 
   const paymentProgress = sale.total_value > 0 ? (Number(sale.paid_amount) / Number(sale.total_value)) * 100 : 0;
 
@@ -74,8 +34,8 @@ const SaleDetailModal = ({ sale, isOpen, onClose, onSaleUpdated }: SaleDetailMod
               Detalhes da Venda - {sale.sale_number}
             </DialogTitle>
             <div className="flex gap-2">
-              <Badge className={`${getStatusColor(sale.sale_status)} text-white`}>
-                {getStatusLabel(sale.sale_status)}
+              <Badge className={`${getSaleStatusColor(sale.sale_status)} text-white`}>
+                {getSaleStatusLabel(sale.sale_status)}
               </Badge>
               <Badge className={`${getPaymentStatusColor(sale.payment_status)} text-white`}>
                 {getPaymentStatusLabel(sale.payment_status)}

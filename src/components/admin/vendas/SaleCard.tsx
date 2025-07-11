@@ -5,6 +5,7 @@ import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sale } from "@/hooks/sales/types";
+import { getSaleStatusLabel, getSaleStatusColorWithOpacity } from "@/utils/saleStatusUtils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,30 +22,6 @@ interface SaleCardProps {
 }
 
 const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete }: SaleCardProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-500/20 text-green-400 border-green-500/50';
-      case 'confirmed':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
-      case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
-      case 'cancelled':
-        return 'bg-red-500/20 text-red-400 border-red-500/50';
-      default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed': return 'Concluída';
-      case 'confirmed': return 'Confirmada';
-      case 'pending': return 'Pendente';
-      case 'cancelled': return 'Cancelada';
-      default: return status;
-    }
-  };
 
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-gray-600 transition-colors">
@@ -77,8 +54,8 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
 
         {/* Status - Centralizado para combinar com o cabeçalho */}
         <div className="flex-shrink-0 w-24 flex justify-center">
-          <Badge variant="outline" className={`${getStatusColor(sale.sale_status)} text-xs`}>
-            {getStatusText(sale.sale_status)}
+          <Badge variant="outline" className={`${getSaleStatusColorWithOpacity(sale.sale_status)} text-xs`}>
+            {getSaleStatusLabel(sale.sale_status)}
           </Badge>
         </div>
 

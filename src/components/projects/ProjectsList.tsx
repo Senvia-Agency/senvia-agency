@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Calendar, Euro, User, Package, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getSaleStatusLabel } from "@/utils/saleStatusUtils";
 import { ProjectDetailModal } from "./ProjectDetailModal";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { Project } from "./types";
@@ -104,17 +105,6 @@ export const ProjectsList = ({ projects, isLoading, error, isDarkTheme = false }
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendente';
-      case 'confirmed': return 'Confirmado';
-      case 'in_progress': return 'Em Progresso';
-      case 'completed': return 'Concluído';
-      case 'cancelled': return 'Cancelado';
-      default: return status;
-    }
-  };
-
   const getPaymentProgress = (paid: number, total: number) => {
     return total > 0 ? (paid / total) * 100 : 0;
   };
@@ -144,7 +134,7 @@ export const ProjectsList = ({ projects, isLoading, error, isDarkTheme = false }
                   )}
                 </div>
                 <Badge className={getStatusColor(project.sale_status)}>
-                  {getStatusLabel(project.sale_status)}
+                  {getSaleStatusLabel(project.sale_status)}
                 </Badge>
               </div>
             </CardHeader>

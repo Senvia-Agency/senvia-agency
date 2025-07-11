@@ -176,72 +176,21 @@ const AdminClientes = () => {
               </div>
             ) : (
               filteredClients.map((client) => (
-                <div key={client.id} className="p-3 md:p-4 bg-gray-700 rounded-lg">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div key={client.id} className="p-4 bg-gray-700 rounded-lg">
+                  <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-white text-sm md:text-base truncate">{client.full_name}</h3>
-                        <div className="flex flex-wrap gap-1">
-                          <Badge className={`${getStatusColor(client.customer_status)} text-white text-xs`}>
-                            {client.customer_status}
-                          </Badge>
-                          <Badge className={`${getTierColor(client.customer_tier)} text-white text-xs`}>
-                            {client.customer_tier}
-                          </Badge>
-                          <Badge className={`${getProjectStatusColor(client.project_status || 'pending')} text-white text-xs`}>
-                            {getProjectStatusLabel(client.project_status || 'pending')}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="space-y-1 text-xs md:text-sm text-gray-300">
-                        <div className="break-all">
-                          <span className="text-gray-400">Email:</span> {client.email}
-                        </div>
-                        {client.company_name && (
-                          <div className="truncate">
-                            <span className="text-gray-400">Empresa:</span> {client.company_name}
-                          </div>
-                        )}
-                        <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
-                          <div>
-                            <span className="text-gray-400">Cliente desde:</span> {format(new Date(client.acquisition_date), 'dd/MM/yyyy', { locale: ptBR })}
-                          </div>
-                          <div>
-                            <span className="text-gray-400">Total gasto:</span> €{Number(client.total_spent || 0).toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
-                          {client.phone && (
-                            <div className="truncate">
-                              <span className="text-gray-400">Telefone:</span> {client.phone}
-                            </div>
-                          )}
-                          <div className="truncate">
-                            <span className="text-gray-400">Origem:</span> {client.acquisition_source}
-                          </div>
-                        </div>
-                        {client.objective && (
-                          <div className="truncate">
-                            <span className="text-gray-400">Objetivo:</span> {client.objective}
-                          </div>
-                        )}
-                        {client.main_product_service && (
-                          <div className="truncate">
-                            <span className="text-gray-400">Produto/Serviço:</span> {client.main_product_service}
-                          </div>
-                        )}
-                      </div>
+                      <h3 className="font-semibold text-white text-base truncate">{client.full_name}</h3>
+                      <p className="text-gray-400 text-sm truncate">{client.email}</p>
                     </div>
-                    <div className="flex justify-end lg:justify-start">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditClient(client)}
-                        className="border-gray-600 text-gray-300 hover:bg-gray-600"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditClient(client)}
+                      className="border-gray-600 text-gray-300 hover:bg-gray-600 ml-4"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Ver/Editar
+                    </Button>
                   </div>
                 </div>
               ))

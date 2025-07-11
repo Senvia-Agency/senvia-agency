@@ -22,7 +22,7 @@ const CustomerField = ({ value, customers, onChange }: CustomerFieldProps) => {
           <SelectValue placeholder="Selecionar cliente" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Sem cliente específico</SelectItem>
+          <SelectItem value="none">Sem cliente específico</SelectItem>
           {customers?.map(customer => (
             <SelectItem key={customer.id} value={customer.id}>
               {customer.full_name} ({customer.email})

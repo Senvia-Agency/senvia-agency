@@ -19,7 +19,10 @@ import {
   Eye,
   AlertTriangle,
   CheckCircle,
-  Clock
+  Clock,
+  ChevronDown,
+  ChevronRight,
+  User
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -334,6 +337,47 @@ const AdminSubscriptions = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Agrupar assinaturas por cliente
+  const groupedSubscriptions = filteredSubscriptions.reduce((groups, subscription) => {
+    const clientKey = subscription.email || subscription.customer_name || 'Cliente Desconhecido';
+    
+    if (!groups[clientKey]) {
+      groups[clientKey] = {
+        clientName: subscription.customer_name || subscription.email || 'Cliente Desconhecido',
+        clientEmail: subscription.email || '',
+        subscriptions: [],
+        totalValue: 0,
+        activeCount: 0
+      };
+    }
+    
+    groups[clientKey].subscriptions.push(subscription);
+    groups[clientKey].totalValue += getSubscriptionPrice(subscription);
+    if (subscription.status === 'active') {
+      groups[clientKey].activeCount++;
+    }
+    
+    return groups;
+  }, {} as Record<string, {
+    clientName: string;
+    clientEmail: string;
+    subscriptions: UnifiedSubscription[];
+    totalValue: number;
+    activeCount: number;
+  }>);
+
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  const toggleGroup = (clientKey: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(clientKey)) {
+      newExpanded.delete(clientKey);
+    } else {
+      newExpanded.add(clientKey);
+    }
+    setExpandedGroups(newExpanded);
+  };
+
   // Calcular estatísticas
   const stats = {
     total: allSubscriptions.length,
@@ -581,280 +625,319 @@ const AdminSubscriptions = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredSubscriptions.map((subscription) => {
-                  const daysRemaining = getDaysRemaining(subscription);
-                  const subscriptionPrice = getSubscriptionPrice(subscription);
-                  const subscriptionEmail = getSubscriptionEmail(subscription);
-                  
-                  return (
-                    <TableRow key={`${subscription.subscription_type}-${subscription.id}`} className="border-gray-700">
-                      <TableCell>
-                        <div>
-                          <div className="font-medium text-white">{subscriptionEmail}</div>
-                          <div className="text-xs text-gray-400 font-mono">
-                            {subscription.user_id?.slice(0, 8)}...
+                {Object.entries(groupedSubscriptions).map(([clientKey, group]) => (
+                  <>
+                    {/* Client Group Header */}
+                    <TableRow 
+                      key={`group-${clientKey}`} 
+                      className="border-gray-700 bg-gray-750 hover:bg-gray-700 cursor-pointer"
+                      onClick={() => toggleGroup(clientKey)}
+                    >
+                      <TableCell colSpan={7} className="py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {expandedGroups.has(clientKey) ? (
+                              <ChevronDown className="h-4 w-4 text-gray-400" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-gray-400" />
+                            )}
+                            <User className="h-4 w-4 text-blue-500" />
+                            <div>
+                              <div className="font-medium text-white">{group.clientName}</div>
+                              {group.clientEmail && (
+                                <div className="text-xs text-gray-400">{group.clientEmail}</div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="text-green-500 font-medium">
+                              €{group.totalValue.toFixed(2)}/mês
+                            </div>
+                            <Badge variant="outline" className="border-blue-500 text-blue-500">
+                              {group.subscriptions.length} assinatura{group.subscriptions.length !== 1 ? 's' : ''}
+                            </Badge>
+                            <Badge variant="outline" className="border-green-500 text-green-500">
+                              {group.activeCount} ativa{group.activeCount !== 1 ? 's' : ''}
+                            </Badge>
                           </div>
                         </div>
                       </TableCell>
-                      
-                      <TableCell>
-                        <div className="font-medium text-white">{subscription.product_name}</div>
-                        <div className="text-xs text-gray-400">
-                          {subscription.subscription_type === 'senvia_assistant' ? 'Assistente de IA' : 'Produto Geral'}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <Badge variant="outline" className="border-blue-500 text-blue-500">
-                          {subscription.plan_name}
-                        </Badge>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${getStatusColor(subscription.status)}`}></div>
-                          <span className="text-sm text-gray-300">{getStatusLabel(subscription.status)}</span>
-                        </div>
-                        {daysRemaining !== null && subscription.status === 'trial' && (
-                          <div className="text-xs text-blue-400">
-                            {daysRemaining} dias restantes
-                          </div>
-                        )}
-                      </TableCell>
-                      
-                      <TableCell>
-                        <div className="font-bold text-green-500">
-                          €{subscriptionPrice.toFixed(2)}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          /{subscription.billing_cycle || 'mês'}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <div className="text-sm text-gray-300">
-                          {subscription.next_billing_date 
-                            ? format(new Date(subscription.next_billing_date), 'dd/MM/yyyy', { locale: ptBR })
-                            : '-'
-                          }
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => setSelectedSubscription(subscription)}
-                              className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
-                            <DialogHeader>
-                              <DialogTitle className="text-white">Detalhes da Assinatura</DialogTitle>
-                            </DialogHeader>
-                            
-                            {selectedSubscription && (
-                              <div className="space-y-6">
-                                {/* Basic Info */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Cliente</label>
-                                    <p className="text-sm text-gray-400">{getSubscriptionEmail(selectedSubscription)}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Produto</label>
-                                    <p className="text-sm text-gray-400">{selectedSubscription.product_name}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Plano</label>
-                                    <p className="text-sm text-gray-400">{selectedSubscription.plan_name}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Status</label>
-                                    <div className="flex items-center gap-2">
-                                      {getStatusIcon(selectedSubscription.status)}
-                                      <span className="text-sm text-gray-400">
-                                        {getStatusLabel(selectedSubscription.status)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
+                    </TableRow>
 
-                                {/* Billing Info */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Valor Mensal</label>
-                                    <p className="text-sm text-gray-400">
-                                      €{getSubscriptionPrice(selectedSubscription).toFixed(2)}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Ciclo de Cobrança</label>
-                                    <p className="text-sm text-gray-400 capitalize">
-                                      {selectedSubscription.billing_cycle || 'Mensal'}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Próxima Cobrança</label>
-                                    <p className="text-sm text-gray-400">
-                                      {selectedSubscription.next_billing_date 
-                                        ? format(new Date(selectedSubscription.next_billing_date), 'dd/MM/yyyy', { locale: ptBR })
-                                        : 'Não agendada'
-                                      }
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Moeda</label>
-                                    <p className="text-sm text-gray-400 uppercase">
-                                      {selectedSubscription.currency || 'EUR'}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Trial Info for Senvia Assistant */}
-                                {selectedSubscription.subscription_type === 'senvia_assistant' && (
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                      <label className="text-sm font-medium text-gray-300">Início do Teste</label>
-                                      <p className="text-sm text-gray-400">
-                                        {selectedSubscription.trial_start_date 
-                                          ? format(new Date(selectedSubscription.trial_start_date), 'dd/MM/yyyy', { locale: ptBR })
-                                          : 'Não aplicável'
-                                        }
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-gray-300">Fim do Teste</label>
-                                      <p className="text-sm text-gray-400">
-                                        {selectedSubscription.trial_end_date 
-                                          ? format(new Date(selectedSubscription.trial_end_date), 'dd/MM/yyyy', { locale: ptBR })
-                                          : 'Não aplicável'
-                                        }
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Recurring Service Info */}
-                                {selectedSubscription.subscription_type === 'recurring_service' && (
-                                  <div className="space-y-4">
+                    {/* Individual Subscriptions */}
+                    {expandedGroups.has(clientKey) && group.subscriptions.map((subscription) => {
+                      const daysRemaining = getDaysRemaining(subscription);
+                      const subscriptionPrice = getSubscriptionPrice(subscription);
+                      
+                      return (
+                        <TableRow key={`${subscription.subscription_type}-${subscription.id}`} className="border-gray-700 bg-gray-800">
+                          <TableCell className="pl-12">
+                            <div className="text-sm text-gray-400">
+                              {subscription.product_name}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="text-sm text-gray-300">{subscription.product_name}</div>
+                            <div className="text-xs text-gray-500">
+                              {subscription.subscription_type === 'senvia_assistant' ? 'Assistente de IA' : 
+                               subscription.subscription_type === 'recurring_service' ? 'Serviço Recorrente' : 'Produto Geral'}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <Badge variant="outline" className="border-blue-500 text-blue-500 text-xs">
+                              {subscription.plan_name}
+                            </Badge>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${getStatusColor(subscription.status)}`}></div>
+                              <span className="text-sm text-gray-300">{getStatusLabel(subscription.status)}</span>
+                            </div>
+                            {daysRemaining !== null && subscription.status === 'trial' && (
+                              <div className="text-xs text-blue-400">
+                                {daysRemaining} dias restantes
+                              </div>
+                            )}
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="font-bold text-green-500 text-sm">
+                              €{subscriptionPrice.toFixed(2)}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              /{subscription.billing_cycle || 'mês'}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="text-sm text-gray-300">
+                              {subscription.next_billing_date 
+                                ? format(new Date(subscription.next_billing_date), 'dd/MM/yyyy', { locale: ptBR })
+                                : '-'
+                              }
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setSelectedSubscription(subscription)}
+                                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
+                                <DialogHeader>
+                                  <DialogTitle className="text-white">Detalhes da Assinatura</DialogTitle>
+                                </DialogHeader>
+                                
+                                {selectedSubscription && (
+                                  <div className="space-y-6">
+                                    {/* Basic Info */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       <div>
-                                        <label className="text-sm font-medium text-gray-300">Status da Venda</label>
-                                        <p className="text-sm text-gray-400 capitalize">
-                                          {selectedSubscription.sale_status || 'N/A'}
-                                        </p>
+                                        <label className="text-sm font-medium text-gray-300">Cliente</label>
+                                        <p className="text-sm text-gray-400">{getSubscriptionEmail(selectedSubscription)}</p>
                                       </div>
                                       <div>
-                                        <label className="text-sm font-medium text-gray-300">Status do Pagamento</label>
-                                        <p className="text-sm text-gray-400 capitalize">
-                                          {selectedSubscription.payment_status || 'N/A'}
-                                        </p>
+                                        <label className="text-sm font-medium text-gray-300">Produto</label>
+                                        <p className="text-sm text-gray-400">{selectedSubscription.product_name}</p>
                                       </div>
                                       <div>
-                                        <label className="text-sm font-medium text-gray-300">Responsável</label>
+                                        <label className="text-sm font-medium text-gray-300">Plano</label>
+                                        <p className="text-sm text-gray-400">{selectedSubscription.plan_name}</p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Status</label>
+                                        <div className="flex items-center gap-2">
+                                          {getStatusIcon(selectedSubscription.status)}
+                                          <span className="text-sm text-gray-400">
+                                            {getStatusLabel(selectedSubscription.status)}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Billing Info */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Valor Mensal</label>
                                         <p className="text-sm text-gray-400">
-                                          {selectedSubscription.assigned_to || 'Não atribuído'}
+                                          €{getSubscriptionPrice(selectedSubscription).toFixed(2)}
                                         </p>
                                       </div>
                                       <div>
-                                        <label className="text-sm font-medium text-gray-300">Valor Total</label>
+                                        <label className="text-sm font-medium text-gray-300">Ciclo de Cobrança</label>
+                                        <p className="text-sm text-gray-400 capitalize">
+                                          {selectedSubscription.billing_cycle || 'Mensal'}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Próxima Cobrança</label>
                                         <p className="text-sm text-gray-400">
-                                          €{selectedSubscription.total_value?.toFixed(2) || '0.00'}
+                                          {selectedSubscription.next_billing_date 
+                                            ? format(new Date(selectedSubscription.next_billing_date), 'dd/MM/yyyy', { locale: ptBR })
+                                            : 'Não agendada'
+                                          }
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Moeda</label>
+                                        <p className="text-sm text-gray-400 uppercase">
+                                          {selectedSubscription.currency || 'EUR'}
                                         </p>
                                       </div>
                                     </div>
 
-                                    {selectedSubscription.notes && (
-                                      <div>
-                                        <label className="text-sm font-medium text-gray-300">Notas</label>
-                                        <p className="text-sm text-gray-400 bg-gray-700 p-2 rounded">
-                                          {selectedSubscription.notes}
-                                        </p>
-                                      </div>
-                                    )}
-
-                                    {/* Payment History */}
-                                    {selectedSubscription.sale_payments && selectedSubscription.sale_payments.length > 0 && (
-                                      <div>
-                                        <label className="text-sm font-medium text-gray-300 mb-2 block">Histórico de Pagamentos</label>
-                                        <div className="bg-gray-700 rounded p-3 space-y-2">
-                                          {selectedSubscription.sale_payments
-                                            .sort((a, b) => new Date(b.payment_date).getTime() - new Date(a.payment_date).getTime())
-                                            .map((payment, index) => (
-                                              <div key={payment.id} className="flex justify-between items-center text-sm p-2 bg-gray-800 rounded">
-                                                <div>
-                                                  <div className="text-white">€{payment.amount.toFixed(2)}</div>
-                                                  <div className="text-gray-400">{payment.payment_method}</div>
-                                                </div>
-                                                <div className="text-right">
-                                                  <div className="text-gray-300">
-                                                    {format(new Date(payment.payment_date), 'dd/MM/yyyy', { locale: ptBR })}
-                                                  </div>
-                                                  <Badge 
-                                                    variant={payment.payment_status === 'completed' ? 'default' : 'secondary'}
-                                                    className="text-xs"
-                                                  >
-                                                    {payment.payment_status}
-                                                  </Badge>
-                                                </div>
-                                              </div>
-                                            ))}
+                                    {/* Trial Info for Senvia Assistant */}
+                                    {selectedSubscription.subscription_type === 'senvia_assistant' && (
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-300">Início do Teste</label>
+                                          <p className="text-sm text-gray-400">
+                                            {selectedSubscription.trial_start_date 
+                                              ? format(new Date(selectedSubscription.trial_start_date), 'dd/MM/yyyy', { locale: ptBR })
+                                              : 'Não aplicável'
+                                            }
+                                          </p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-gray-300">Fim do Teste</label>
+                                          <p className="text-sm text-gray-400">
+                                            {selectedSubscription.trial_end_date 
+                                              ? format(new Date(selectedSubscription.trial_end_date), 'dd/MM/yyyy', { locale: ptBR })
+                                              : 'Não aplicável'
+                                            }
+                                          </p>
                                         </div>
                                       </div>
                                     )}
-                                  </div>
-                                )}
 
-                                {/* Stripe Info */}
-                                {(selectedSubscription.stripe_subscription_id || selectedSubscription.stripe_customer_id) && (
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {selectedSubscription.stripe_subscription_id && (
-                                      <div>
-                                        <label className="text-sm font-medium text-gray-300">ID Stripe Subscription</label>
-                                        <p className="text-sm text-gray-400 font-mono">
-                                          {selectedSubscription.stripe_subscription_id}
-                                        </p>
+                                    {/* Recurring Service Info */}
+                                    {selectedSubscription.subscription_type === 'recurring_service' && (
+                                      <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">Status da Venda</label>
+                                            <p className="text-sm text-gray-400 capitalize">
+                                              {selectedSubscription.sale_status || 'N/A'}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">Status do Pagamento</label>
+                                            <p className="text-sm text-gray-400 capitalize">
+                                              {selectedSubscription.payment_status || 'N/A'}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">Responsável</label>
+                                            <p className="text-sm text-gray-400">
+                                              {selectedSubscription.assigned_to || 'Não atribuído'}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">Valor Total</label>
+                                            <p className="text-sm text-gray-400">
+                                              €{selectedSubscription.total_value?.toFixed(2) || '0.00'}
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        {selectedSubscription.notes && (
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">Notas</label>
+                                            <p className="text-sm text-gray-400 bg-gray-700 p-2 rounded">
+                                              {selectedSubscription.notes}
+                                            </p>
+                                          </div>
+                                        )}
+
+                                        {/* Payment History */}
+                                        {selectedSubscription.sale_payments && selectedSubscription.sale_payments.length > 0 && (
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300 mb-2 block">Histórico de Pagamentos</label>
+                                            <div className="bg-gray-700 rounded p-3 space-y-2">
+                                              {selectedSubscription.sale_payments
+                                                .sort((a, b) => new Date(b.payment_date).getTime() - new Date(a.payment_date).getTime())
+                                                .map((payment, index) => (
+                                                  <div key={payment.id} className="flex justify-between items-center text-sm p-2 bg-gray-800 rounded">
+                                                    <div>
+                                                      <div className="text-white">€{payment.amount.toFixed(2)}</div>
+                                                      <div className="text-gray-400">{payment.payment_method}</div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                      <div className="text-gray-300">
+                                                        {format(new Date(payment.payment_date), 'dd/MM/yyyy', { locale: ptBR })}
+                                                      </div>
+                                                      <Badge 
+                                                        variant={payment.payment_status === 'completed' ? 'default' : 'secondary'}
+                                                        className="text-xs"
+                                                      >
+                                                        {payment.payment_status}
+                                                      </Badge>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
-                                    {selectedSubscription.stripe_customer_id && (
-                                      <div>
-                                        <label className="text-sm font-medium text-gray-300">ID Stripe Customer</label>
-                                        <p className="text-sm text-gray-400 font-mono">
-                                          {selectedSubscription.stripe_customer_id}
-                                        </p>
+
+                                    {/* Stripe Info */}
+                                    {(selectedSubscription.stripe_subscription_id || selectedSubscription.stripe_customer_id) && (
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {selectedSubscription.stripe_subscription_id && (
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">ID Stripe Subscription</label>
+                                            <p className="text-sm text-gray-400 font-mono">
+                                              {selectedSubscription.stripe_subscription_id}
+                                            </p>
+                                          </div>
+                                        )}
+                                        {selectedSubscription.stripe_customer_id && (
+                                          <div>
+                                            <label className="text-sm font-medium text-gray-300">ID Stripe Customer</label>
+                                            <p className="text-sm text-gray-400 font-mono">
+                                              {selectedSubscription.stripe_customer_id}
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
+
+                                    {/* Dates */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Data de Criação</label>
+                                        <p className="text-sm text-gray-400">
+                                          {format(new Date(selectedSubscription.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium text-gray-300">Última Atualização</label>
+                                        <p className="text-sm text-gray-400">
+                                          {format(new Date(selectedSubscription.updated_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
                                 )}
-
-                                {/* Dates */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700">
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Data de Criação</label>
-                                    <p className="text-sm text-gray-400">
-                                      {format(new Date(selectedSubscription.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium text-gray-300">Última Atualização</label>
-                                    <p className="text-sm text-gray-400">
-                                      {format(new Date(selectedSubscription.updated_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </>
+                ))}
               </TableBody>
             </Table>
           </div>

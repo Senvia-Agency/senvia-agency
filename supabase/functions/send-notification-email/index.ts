@@ -156,7 +156,9 @@ serve(async (req) => {
 
     const settings = emailSettings?.reduce((acc: any, setting) => {
       try {
-        acc[setting.setting_key] = JSON.parse(setting.setting_value);
+        const value = typeof setting.setting_value === 'string' ? 
+          JSON.parse(setting.setting_value) : setting.setting_value;
+        acc[setting.setting_key] = value;
       } catch {
         acc[setting.setting_key] = setting.setting_value;
       }

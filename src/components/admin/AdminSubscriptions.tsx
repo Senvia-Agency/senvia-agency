@@ -71,12 +71,14 @@ interface CustomerSubscription {
 
 type UnifiedSubscription = {
   id: string;
-  user_id: string;
+  user_id?: string;
+  customer_id?: string;
   email?: string;
+  customer_name?: string;
   product_name: string;
   plan_name: string;
   status: string;
-  subscription_type: 'senvia_assistant' | 'general';
+  subscription_type: 'senvia_assistant' | 'general' | 'recurring_service';
   billing_cycle: string;
   currency?: string;
   next_billing_date?: string;
@@ -88,9 +90,17 @@ type UnifiedSubscription = {
   trial_start_date?: string;
   trial_end_date?: string;
   monthly_price?: number;
+  total_value?: number;
+  is_overdue?: boolean;
   product_plans?: {
     name: string;
     price_monthly?: number;
+  };
+  customers?: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    company_name?: string;
   };
 };
 
@@ -175,28 +185,86 @@ const AdminSubscriptions = () => {
     },
   });
 
+  // Buscar vendas com serviços recorrentes (assinaturas)
+  const { data: recurringServices } = useQuery({
+    queryKey: ['admin-recurring-sales'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sales')
+        .select(`
+          *,
+          customers(full_name, email, phone, company_name)
+        `)
+        .eq('service_type', 'recurring')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Combinar todas as assinaturas
   const allSubscriptions: UnifiedSubscription[] = [
     ...(subscriptions?.map(sub => ({
       ...sub,
       subscription_type: 'senvia_assistant' as const,
       product_name: 'Senvia Assistant',
-      plan_name: sub.plan_type
+      plan_name: sub.plan_type,
+      customer_name: sub.email
     })) || []),
     ...(customerSubscriptions?.map(sub => ({
       ...sub,
       subscription_type: 'general' as const,
       product_name: sub.products?.name || 'Produto Desconhecido',
       plan_name: sub.product_plans?.name || 'Plano Desconhecido'
-    })) || [])
+    })) || []),
+    ...(recurringServices?.map(service => {
+      const today = new Date();
+      const createdDate = new Date(service.created_at);
+      const daysFromCreation = Math.floor((today.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Estimar próxima cobrança (30 dias após criação + múltiplos de 30)
+      const monthsElapsed = Math.floor(daysFromCreation / 30);
+      const nextBilling = new Date(createdDate);
+      nextBilling.setDate(nextBilling.getDate() + ((monthsElapsed + 1) * 30));
+      
+      // Determinar status baseado no payment_status e data
+      let status = 'active';
+      if (service.payment_status === 'overdue') status = 'overdue';
+      else if (service.payment_status === 'cancelled' || service.sale_status === 'cancelled') status = 'cancelled';
+      else if (nextBilling < today && service.payment_status === 'pending') status = 'overdue';
+      
+      return {
+        id: service.id,
+        customer_id: service.customer_id,
+        email: service.customers?.email,
+        customer_name: service.customers?.full_name || service.customers?.company_name,
+        product_name: service.service_name,
+        plan_name: 'Serviço Recorrente',
+        status: status,
+        subscription_type: 'recurring_service' as const,
+        billing_cycle: 'monthly',
+        currency: 'EUR',
+        next_billing_date: nextBilling.toISOString(),
+        created_at: service.created_at,
+        updated_at: service.updated_at,
+        total_value: service.total_value,
+        monthly_price: service.total_value,
+        is_overdue: status === 'overdue',
+        customers: service.customers
+      };
+    }) || [])
   ];
 
   // Filtrar assinaturas
   const filteredSubscriptions = allSubscriptions.filter(subscription => {
-    const searchableEmail = subscription.subscription_type === 'senvia_assistant' ? subscription.email : '';
+    const searchableEmail = subscription.email || '';
+    const searchableCustomerName = subscription.customer_name || '';
     const matchesSearch = 
-      searchableEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      searchableEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      searchableCustomerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subscription.user_id?.includes(searchTerm) ||
+      subscription.customer_id?.includes(searchTerm) ||
       subscription.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === "all" || subscription.status === statusFilter;
@@ -211,11 +279,14 @@ const AdminSubscriptions = () => {
     trial: allSubscriptions.filter(s => s.status === 'trial').length,
     cancelled: allSubscriptions.filter(s => s.status === 'cancelled').length,
     expired: allSubscriptions.filter(s => s.status === 'expired').length,
+    overdue: allSubscriptions.filter(s => s.status === 'overdue').length,
     monthlyRevenue: allSubscriptions
       .filter(s => s.status === 'active')
       .reduce((sum, s) => {
         if (s.subscription_type === 'senvia_assistant') {
           return sum + (s.monthly_price || 20);
+        } else if (s.subscription_type === 'recurring_service') {
+          return sum + (s.monthly_price || 0);
         }
         return sum + (s.product_plans?.price_monthly || 0);
       }, 0)
@@ -227,7 +298,8 @@ const AdminSubscriptions = () => {
       'trial': 'Período de Teste',
       'cancelled': 'Cancelado',
       'expired': 'Expirado',
-      'suspended': 'Suspenso'
+      'suspended': 'Suspenso',
+      'overdue': 'Em Atraso'
     };
     return statusMap[status] || status;
   };
@@ -238,7 +310,8 @@ const AdminSubscriptions = () => {
       'trial': 'bg-blue-500',
       'cancelled': 'bg-red-500',
       'expired': 'bg-gray-500',
-      'suspended': 'bg-yellow-500'
+      'suspended': 'bg-yellow-500',
+      'overdue': 'bg-orange-500'
     };
     return colorMap[status] || 'bg-gray-500';
   };
@@ -269,6 +342,8 @@ const AdminSubscriptions = () => {
   const getSubscriptionPrice = (subscription: UnifiedSubscription) => {
     if (subscription.subscription_type === 'senvia_assistant') {
       return subscription.monthly_price || 20;
+    } else if (subscription.subscription_type === 'recurring_service') {
+      return subscription.monthly_price || 0;
     }
     return subscription.product_plans?.price_monthly || 0;
   };
@@ -276,6 +351,8 @@ const AdminSubscriptions = () => {
   const getSubscriptionEmail = (subscription: UnifiedSubscription) => {
     if (subscription.subscription_type === 'senvia_assistant') {
       return subscription.email || 'Email não disponível';
+    } else if (subscription.subscription_type === 'recurring_service') {
+      return subscription.customer_name || subscription.email || 'Cliente não identificado';
     }
     return subscription.user_id?.slice(0, 8) + '...';
   };
@@ -304,64 +381,75 @@ const AdminSubscriptions = () => {
       </div>
 
       {/* Stats Dashboard */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Total de Assinaturas</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <UserCheck className="h-4 w-4 text-blue-500" />
-              <span className="text-2xl font-bold">{stats.total}</span>
+              <div>
+                <div className="text-sm text-gray-400">Total</div>
+                <div className="text-xl font-bold">{stats.total}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Assinaturas Ativas</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <span className="text-2xl font-bold">{stats.active}</span>
+              <div>
+                <div className="text-sm text-gray-400">Ativas</div>
+                <div className="text-xl font-bold">{stats.active}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Em Período de Teste</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-blue-500" />
-              <span className="text-2xl font-bold">{stats.trial}</span>
+              <div>
+                <div className="text-sm text-gray-400">Teste</div>
+                <div className="text-xl font-bold">{stats.trial}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Canceladas</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              <div>
+                <div className="text-sm text-gray-400">Em Atraso</div>
+                <div className="text-xl font-bold">{stats.overdue}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
-              <span className="text-2xl font-bold">{stats.cancelled}</span>
+              <div>
+                <div className="text-sm text-gray-400">Canceladas</div>
+                <div className="text-xl font-bold">{stats.cancelled}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Receita Mensal</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Euro className="h-4 w-4 text-green-500" />
-              <span className="text-2xl font-bold">€{stats.monthlyRevenue.toFixed(2)}</span>
+              <div>
+                <div className="text-sm text-gray-400">Receita/mês</div>
+                <div className="text-xl font-bold">€{stats.monthlyRevenue.toFixed(0)}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -389,6 +477,7 @@ const AdminSubscriptions = () => {
                 <SelectItem value="all">Todos os Status</SelectItem>
                 <SelectItem value="active">Ativo</SelectItem>
                 <SelectItem value="trial">Período de Teste</SelectItem>
+                <SelectItem value="overdue">Em Atraso</SelectItem>
                 <SelectItem value="cancelled">Cancelado</SelectItem>
                 <SelectItem value="expired">Expirado</SelectItem>
                 <SelectItem value="suspended">Suspenso</SelectItem>
@@ -629,72 +718,6 @@ const AdminSubscriptions = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Summary Cards */}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-senvia-500" />
-              Performance de Assinaturas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="font-medium">Taxa de Retenção</div>
-              <div className="font-bold text-green-500">
-                {stats.total > 0 ? (((stats.active + stats.trial) / stats.total) * 100).toFixed(1) : 0}%
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="font-medium">Taxa de Cancelamento</div>
-              <div className="font-bold text-red-500">
-                {stats.total > 0 ? ((stats.cancelled / stats.total) * 100).toFixed(1) : 0}%
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="font-medium">Receita Média por Usuário</div>
-              <div className="font-bold text-blue-500">
-                €{stats.active > 0 ? (stats.monthlyRevenue / stats.active).toFixed(2) : '0.00'}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-senvia-500" />
-              Distribuição por Produto
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="font-medium">Senvia Assistant</div>
-              <div className="font-bold text-purple-500">
-                {allSubscriptions.filter(s => s.subscription_type === 'senvia_assistant').length}
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="font-medium">Outros Produtos</div>
-              <div className="font-bold text-blue-500">
-                {allSubscriptions.filter(s => s.subscription_type === 'general').length}
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-              <div className="font-medium">Total de Receita Mensal</div>
-              <div className="font-bold text-green-500">
-                €{stats.monthlyRevenue.toFixed(2)}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

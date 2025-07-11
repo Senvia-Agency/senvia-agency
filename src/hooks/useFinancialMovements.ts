@@ -50,13 +50,12 @@ export const useFinancialMovements = (dateRange: number = 30) => {
 
       if (manualError) throw manualError;
 
-      // Buscar transações de clientes (receitas) - apenas transações que correspondem a vendas pagas
+      // Buscar transações de clientes (receitas)
       const { data: customerTransactions, error: transactionsError } = await supabase
         .from('customer_transactions')
         .select(`
           *,
-          customers(full_name, email),
-          sales!customer_transactions_customer_id_fkey(payment_status, paid_amount)
+          customers(full_name, email)
         `)
         .eq('status', 'completed')
         .gt('amount', 0)
@@ -97,18 +96,9 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         })));
       }
 
-      // Adicionar transações de clientes como receitas - apenas se não houver venda correspondente ou se a venda estiver paga
+      // Adicionar transações de clientes como receitas
       if (customerTransactions) {
-        const validTransactions = customerTransactions.filter(t => {
-          // Se não há venda relacionada, incluir a transação
-          if (!t.sales || t.sales.length === 0) return true;
-          
-          // Se há venda relacionada, só incluir se o paid_amount corresponder ao valor da transação
-          const relatedSale = t.sales[0];
-          return relatedSale.payment_status === 'paid' && Number(relatedSale.paid_amount) > 0;
-        });
-        
-        allMovements.push(...validTransactions.map(t => ({
+        allMovements.push(...customerTransactions.map(t => ({
           id: t.id,
           movement_type: 'receita' as const,
           amount: t.amount,
@@ -163,12 +153,28 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         })));
       }
 
-      // Filtrar movimentos com valor 0 e ordenar por data (mais recente primeiro)
-      return allMovements
-        .filter(movement => movement.amount > 0)
-        .sort((a, b) => 
-          new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
-        );
+      // Filtrar movimentos duplicados (evitar contar a mesma receita duas vezes)
+      // Se uma venda tem valor pago > 0, remover transações correspondentes para evitar duplicação
+      const salesCustomerIds = new Set(
+        (sales || [])
+          .filter(s => s.paid_amount > 0)
+          .map(s => s.customer_id)
+      );
+      
+      const filteredMovements = allMovements.filter(movement => {
+        // Se é uma transação de cliente e há uma venda paga para o mesmo cliente, filtrar
+        if (movement.category?.includes('landing_page') && 
+            movement.customer_id && 
+            salesCustomerIds.has(movement.customer_id)) {
+          return false;
+        }
+        return movement.amount > 0;
+      });
+
+      // Ordenar por data (mais recente primeiro)
+      return filteredMovements.sort((a, b) => 
+        new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
+      );
     },
     refetchInterval: 10000,
   });

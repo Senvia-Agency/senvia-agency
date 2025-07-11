@@ -70,86 +70,57 @@ const getPaymentStatusLabel = (status: PaymentStatus) => {
 export const ProjectCard = ({ sale, onStatusUpdate, onAssigneeUpdate }: ProjectCardProps) => {
   return (
     <Card className="bg-gray-700 border-gray-600">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-white text-base truncate">{sale.service_name}</CardTitle>
-            <p className="text-xs text-gray-400 mt-1">#{sale.sale_number}</p>
-          </div>
-          <ProjectStatusBadge 
-            status={sale.sale_status}
-            saleId={sale.id}
-            onStatusUpdate={onStatusUpdate}
-          />
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-3 pt-0">
-        <ProjectAssigneeField
-          saleId={sale.id}
-          assignedTo={sale.assigned_to}
-          onAssigneeUpdate={onAssigneeUpdate}
-        />
-
-        {/* Progresso compacto */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-gray-300">Projeto</span>
-              <span className="text-xs text-gray-300">{calculateProgress(sale)}%</span>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          {/* Informações principais */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-white text-sm truncate">{sale.service_name}</div>
+              <div className="text-xs text-gray-400">#{sale.sale_number}</div>
             </div>
-            <Progress value={calculateProgress(sale)} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-gray-300">Pagamento</span>
-              <span className="text-xs text-gray-300">{calculatePaymentProgress(sale)}%</span>
-            </div>
-            <Progress value={calculatePaymentProgress(sale)} className="h-1.5" />
-          </div>
-        </div>
-
-        {/* Informações compactas */}
-        <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-1">
-            <Euro className="h-3 w-3 text-gray-400" />
-            <div>
-              <span className="text-gray-400">Total: </span>
-              <span className="text-white font-medium">€{Number(sale.total_value).toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1">
-            <Euro className="h-3 w-3 text-green-400" />
-            <div>
-              <span className="text-gray-400">Pago: </span>
-              <span className="text-green-400 font-medium">€{Number(sale.paid_amount).toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Datas compactas */}
-        <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3 text-blue-400" />
-            <div>
-              <span className="text-gray-400">Início: </span>
-              <span className="text-white">
-                {format(new Date(sale.sale_date), 'dd/MM/yy', { locale: ptBR })}
-              </span>
-            </div>
-          </div>
-          
-          {sale.expected_delivery_date && (
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3 text-orange-400" />
-              <div>
-                <span className="text-gray-400">Entrega: </span>
+            
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1">
+                <Euro className="h-3 w-3 text-gray-400" />
+                <span className="text-white">€{Number(sale.total_value).toFixed(2)}</span>
+              </div>
+              <span className="text-gray-500">|</span>
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3 text-blue-400" />
                 <span className="text-white">
-                  {format(new Date(sale.expected_delivery_date), 'dd/MM/yy', { locale: ptBR })}
+                  {format(new Date(sale.sale_date), 'dd/MM/yy', { locale: ptBR })}
                 </span>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Progresso compacto */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-1 min-w-[60px]">
+              <div className="text-xs text-gray-300">Projeto</div>
+              <Progress value={calculateProgress(sale)} className="h-1.5 w-12" />
+              <span className="text-xs text-gray-300">{calculateProgress(sale)}%</span>
+            </div>
+            <div className="flex flex-col items-center gap-1 min-w-[60px]">
+              <div className="text-xs text-gray-300">Pagamento</div>
+              <Progress value={calculatePaymentProgress(sale)} className="h-1.5 w-12" />
+              <span className="text-xs text-gray-300">{calculatePaymentProgress(sale)}%</span>
+            </div>
+          </div>
+
+          {/* Status e responsável */}
+          <div className="flex items-center gap-2">
+            <ProjectAssigneeField
+              saleId={sale.id}
+              assignedTo={sale.assigned_to}
+              onAssigneeUpdate={onAssigneeUpdate}
+            />
+            <ProjectStatusBadge 
+              status={sale.sale_status}
+              saleId={sale.id}
+              onStatusUpdate={onStatusUpdate}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -1,13 +1,14 @@
 
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 interface LeadBadgesProps {
   lead: any;
-  editingStatus?: string | null;
-  onStatusEdit?: (leadId: string) => void;
+  onStatusUpdate?: (leadId: string, status: string) => void;
 }
 
-const LeadBadges = ({ lead, editingStatus, onStatusEdit }: LeadBadgesProps) => {
+const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-blue-500';
@@ -50,15 +51,41 @@ const LeadBadges = ({ lead, editingStatus, onStatusEdit }: LeadBadgesProps) => {
     }
   };
 
+  const statusOptions = [
+    { value: 'new', label: 'Novo' },
+    { value: 'contacted', label: 'Contactado' },
+    { value: 'qualified', label: 'Qualificado' },
+    { value: 'converted', label: 'Convertido' },
+    { value: 'lost', label: 'Perdido' }
+  ];
+
   return (
     <div className="flex flex-wrap gap-1">
-      <Badge 
-        className={`${getStatusColor(lead.lead_status)} text-white text-xs cursor-pointer hover:opacity-80 transition-opacity`}
-        onClick={() => onStatusEdit?.(lead.id)}
-        title="Clique para alterar o status"
-      >
-        {getStatusLabel(lead.lead_status)}
-      </Badge>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Badge 
+            className={`${getStatusColor(lead.lead_status)} text-white text-xs cursor-pointer hover:opacity-80 transition-opacity`}
+            title="Clique para alterar o status"
+          >
+            {getStatusLabel(lead.lead_status)}
+          </Badge>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-1">
+          <div className="flex flex-col gap-1">
+            {statusOptions.map((option) => (
+              <Button
+                key={option.value}
+                variant="ghost"
+                size="sm"
+                className="justify-start text-xs h-8"
+                onClick={() => onStatusUpdate?.(lead.id, option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
       
       {lead.payment_status && (
         <Badge className={`${getPaymentStatusColor(lead.payment_status)} text-white text-xs`}>

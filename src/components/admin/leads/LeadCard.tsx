@@ -39,8 +39,7 @@ const LeadCard = ({
             
             <LeadBadges 
               lead={lead} 
-              editingStatus={editingStatus}
-              onStatusEdit={onStatusEdit}
+              onStatusUpdate={onStatusUpdate}
             />
           </div>
 

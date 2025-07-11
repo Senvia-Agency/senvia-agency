@@ -24,9 +24,7 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
     phone: client.phone || '',
     company_name: client.company_name || '',
     website: client.website || '',
-    customer_status: client.customer_status || 'active',
-    customer_tier: client.customer_tier || 'bronze',
-    project_status: client.project_status || 'planning'
+    customer_status: client.customer_status || 'active'
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -49,8 +47,6 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
       if (formData.company_name !== client.company_name) changes.push(`Empresa: ${client.company_name || 'vazio'} → ${formData.company_name || 'vazio'}`);
       if (formData.website !== client.website) changes.push(`Website: ${client.website || 'vazio'} → ${formData.website || 'vazio'}`);
       if (formData.customer_status !== client.customer_status) changes.push(`Status: ${client.customer_status} → ${formData.customer_status}`);
-      if (formData.customer_tier !== client.customer_tier) changes.push(`Nível: ${client.customer_tier} → ${formData.customer_tier}`);
-      if (formData.project_status !== client.project_status) changes.push(`Status do Projeto: ${client.project_status} → ${formData.project_status}`);
 
       const { error } = await supabase
         .from('customers')
@@ -167,36 +163,6 @@ export const ClientDetailsForm = ({ client, onClose }: ClientDetailsFormProps) =
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="customer_tier">Nível do Cliente</Label>
-          <Select value={formData.customer_tier} onValueChange={(value) => handleInputChange('customer_tier', value)}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-700 border-gray-600">
-              <SelectItem value="bronze">Bronze</SelectItem>
-              <SelectItem value="silver">Prata</SelectItem>
-              <SelectItem value="gold">Ouro</SelectItem>
-              <SelectItem value="platinum">Platina</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="project_status">Status do Projeto</Label>
-          <Select value={formData.project_status} onValueChange={(value) => handleInputChange('project_status', value)}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-700 border-gray-600">
-              <SelectItem value="planning">Planejamento</SelectItem>
-              <SelectItem value="in_progress">Em Progresso</SelectItem>
-              <SelectItem value="review">Em Revisão</SelectItem>
-              <SelectItem value="completed">Concluído</SelectItem>
-              <SelectItem value="on_hold">Em Espera</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
     </div>
   );

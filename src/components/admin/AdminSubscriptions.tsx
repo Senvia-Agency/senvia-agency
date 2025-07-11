@@ -321,6 +321,73 @@ const AdminSubscriptions = () => {
     }) || [])
   ];
 
+  // Helper functions (moved up to avoid hoisting issues)
+  const getStatusLabel = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'active': 'Ativo',
+      'trial': 'Período de Teste',
+      'pending': 'Pendente',
+      'cancelled': 'Cancelado',
+      'expired': 'Expirado',
+      'suspended': 'Suspenso',
+      'overdue': 'Em Atraso'
+    };
+    return statusMap[status] || status;
+  };
+
+  const getStatusColor = (status: string) => {
+    const colorMap: { [key: string]: string } = {
+      'active': 'bg-green-500',
+      'trial': 'bg-blue-500',
+      'cancelled': 'bg-red-500',
+      'expired': 'bg-gray-500',
+      'suspended': 'bg-yellow-500',
+      'overdue': 'bg-orange-500'
+    };
+    return colorMap[status] || 'bg-gray-500';
+  };
+
+  const getStatusIcon = (status: string) => {
+    const iconMap: { [key: string]: any } = {
+      'active': CheckCircle,
+      'trial': Clock,
+      'cancelled': AlertTriangle,
+      'expired': AlertTriangle,
+      'suspended': AlertTriangle
+    };
+    const Icon = iconMap[status] || Clock;
+    return <Icon className="h-4 w-4" />;
+  };
+
+  const getDaysRemaining = (subscription: UnifiedSubscription) => {
+    if (subscription.subscription_type === 'senvia_assistant' && subscription.trial_end_date) {
+      const trialEnd = new Date(subscription.trial_end_date);
+      const today = new Date();
+      const diffTime = trialEnd.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 0;
+    }
+    return null;
+  };
+
+  const getSubscriptionPrice = (subscription: UnifiedSubscription) => {
+    if (subscription.subscription_type === 'senvia_assistant') {
+      return subscription.monthly_price || 20;
+    } else if (subscription.subscription_type === 'recurring_service') {
+      return subscription.monthly_price || 0;
+    }
+    return subscription.product_plans?.price_monthly || 0;
+  };
+
+  const getSubscriptionEmail = (subscription: UnifiedSubscription) => {
+    if (subscription.subscription_type === 'senvia_assistant') {
+      return subscription.email || 'Email não disponível';
+    } else if (subscription.subscription_type === 'recurring_service') {
+      return subscription.customer_name || subscription.email || 'Cliente não identificado';
+    }
+    return subscription.user_id?.slice(0, 8) + '...';
+  };
+
   // Filtrar assinaturas
   const filteredSubscriptions = allSubscriptions.filter(subscription => {
     const searchableEmail = subscription.email || '';
@@ -397,72 +464,6 @@ const AdminSubscriptions = () => {
         }
         return sum + (s.product_plans?.price_monthly || 0);
       }, 0)
-  };
-
-  const getStatusLabel = (status: string) => {
-    const statusMap: { [key: string]: string } = {
-      'active': 'Ativo',
-      'trial': 'Período de Teste',
-      'pending': 'Pendente',
-      'cancelled': 'Cancelado',
-      'expired': 'Expirado',
-      'suspended': 'Suspenso',
-      'overdue': 'Em Atraso'
-    };
-    return statusMap[status] || status;
-  };
-
-  const getStatusColor = (status: string) => {
-    const colorMap: { [key: string]: string } = {
-      'active': 'bg-green-500',
-      'trial': 'bg-blue-500',
-      'cancelled': 'bg-red-500',
-      'expired': 'bg-gray-500',
-      'suspended': 'bg-yellow-500',
-      'overdue': 'bg-orange-500'
-    };
-    return colorMap[status] || 'bg-gray-500';
-  };
-
-  const getStatusIcon = (status: string) => {
-    const iconMap: { [key: string]: any } = {
-      'active': CheckCircle,
-      'trial': Clock,
-      'cancelled': AlertTriangle,
-      'expired': AlertTriangle,
-      'suspended': AlertTriangle
-    };
-    const Icon = iconMap[status] || Clock;
-    return <Icon className="h-4 w-4" />;
-  };
-
-  const getDaysRemaining = (subscription: UnifiedSubscription) => {
-    if (subscription.subscription_type === 'senvia_assistant' && subscription.trial_end_date) {
-      const trialEnd = new Date(subscription.trial_end_date);
-      const today = new Date();
-      const diffTime = trialEnd.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays > 0 ? diffDays : 0;
-    }
-    return null;
-  };
-
-  const getSubscriptionPrice = (subscription: UnifiedSubscription) => {
-    if (subscription.subscription_type === 'senvia_assistant') {
-      return subscription.monthly_price || 20;
-    } else if (subscription.subscription_type === 'recurring_service') {
-      return subscription.monthly_price || 0;
-    }
-    return subscription.product_plans?.price_monthly || 0;
-  };
-
-  const getSubscriptionEmail = (subscription: UnifiedSubscription) => {
-    if (subscription.subscription_type === 'senvia_assistant') {
-      return subscription.email || 'Email não disponível';
-    } else if (subscription.subscription_type === 'recurring_service') {
-      return subscription.customer_name || subscription.email || 'Cliente não identificado';
-    }
-    return subscription.user_id?.slice(0, 8) + '...';
   };
 
   if (isLoading) {

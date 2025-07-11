@@ -25,45 +25,30 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
       <CardContent className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm sm:text-base">Landing Pages</div>
-            <div className="text-xs sm:text-sm text-gray-400">Pagamentos confirmados</div>
+            <div className="font-medium text-sm sm:text-base">Vendas Realizadas</div>
+            <div className="text-xs sm:text-sm text-gray-400">Total de vendas confirmadas</div>
           </div>
           <div className="text-left sm:text-right">
             <div className="font-bold text-green-500 text-sm sm:text-base">
-              €{landingPageRevenue.toFixed(2)}
+              €{salesRevenue.toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
-              {revenueMetrics?.landing_page_sales || 0} vendas
+              {revenueMetrics?.sales_count || 0} vendas
             </div>
           </div>
         </div>
         
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm sm:text-base">Senvia Assistant</div>
-            <div className="text-xs sm:text-sm text-gray-400">€20.00 por mês</div>
+            <div className="font-medium text-sm sm:text-base">Receita de Assinaturas</div>
+            <div className="text-xs sm:text-sm text-gray-400">Senvia Assistant + Landing Pages</div>
           </div>
           <div className="text-left sm:text-right">
             <div className="font-bold text-purple-500 text-sm sm:text-base">
-              €{assistantRevenue.toFixed(2)}
+              €{(assistantRevenue + landingPageRevenue).toFixed(2)}
             </div>
             <div className="text-xs text-gray-400">
-              {revenueMetrics?.active_subscriptions || 0} assinaturas
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-          <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm sm:text-base">Módulo de Vendas</div>
-            <div className="text-xs sm:text-sm text-gray-400">Valores recebidos</div>
-          </div>
-          <div className="text-left sm:text-right">
-            <div className="font-bold text-blue-500 text-sm sm:text-base">
-              €{salesRevenue.toFixed(2)}
-            </div>
-            <div className="text-xs text-gray-400">
-              {revenueMetrics?.sales_count || 0} vendas
+              {(revenueMetrics?.active_subscriptions || 0) + (revenueMetrics?.landing_page_sales || 0)} assinaturas/vendas
             </div>
           </div>
         </div>

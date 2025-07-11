@@ -1,19 +1,15 @@
 
 import AdminKPICards from './AdminKPICards';
 import AdminRevenueBreakdown from './AdminRevenueBreakdown';
-import AdminLeadsBreakdown from './AdminLeadsBreakdown';
-import AdminRecentLeads from './AdminRecentLeads';
-import AdminRecentPayments from './AdminRecentPayments';
+import AdminExpiringSubscriptions from './AdminExpiringSubscriptions';
 import { useAdminRevenue } from '@/hooks/useAdminRevenue';
 import { useAdminLeads } from '@/hooks/useAdminLeads';
 import { useAdminSubscriptions } from '@/hooks/useAdminSubscriptions';
-import { useAdminActivity } from '@/hooks/useAdminActivity';
 
 const AdminOverview = () => {
   const { data: revenueMetrics } = useAdminRevenue(30);
   const { data: leadsStats } = useAdminLeads(30);
   const { data: subscriptions } = useAdminSubscriptions();
-  const { data: recentActivity } = useAdminActivity();
 
   return (
     <div className="space-y-8 p-8">
@@ -32,14 +28,8 @@ const AdminOverview = () => {
       {/* Revenue Breakdown */}
       <AdminRevenueBreakdown revenueMetrics={revenueMetrics} />
 
-      {/* Leads Breakdown */}
-      <AdminLeadsBreakdown leadsStats={leadsStats} />
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AdminRecentLeads recentActivity={recentActivity} />
-        <AdminRecentPayments recentActivity={recentActivity} />
-      </div>
+      {/* Expiring Subscriptions */}
+      <AdminExpiringSubscriptions subscriptions={subscriptions || []} />
     </div>
   );
 };

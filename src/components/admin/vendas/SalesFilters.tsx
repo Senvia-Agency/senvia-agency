@@ -2,7 +2,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Search } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 interface SalesFiltersProps {
   searchTerm: string;
@@ -11,8 +13,8 @@ interface SalesFiltersProps {
   setStatusFilter: (value: string) => void;
   paymentFilter: string;
   setPaymentFilter: (value: string) => void;
-  selectedPeriod: number;
-  setSelectedPeriod: (value: number) => void;
+  dateRange?: DateRange;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
 }
 
 const SalesFilters = ({
@@ -22,8 +24,8 @@ const SalesFilters = ({
   setStatusFilter,
   paymentFilter,
   setPaymentFilter,
-  selectedPeriod,
-  setSelectedPeriod
+  dateRange,
+  onDateRangeChange
 }: SalesFiltersProps) => {
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -68,17 +70,11 @@ const SalesFilters = ({
             </SelectContent>
           </Select>
 
-          <Select value={selectedPeriod.toString()} onValueChange={(value) => setSelectedPeriod(Number(value))}>
-            <SelectTrigger className="w-full sm:w-32 bg-gray-700 border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">7 dias</SelectItem>
-              <SelectItem value="30">30 dias</SelectItem>
-              <SelectItem value="90">90 dias</SelectItem>
-              <SelectItem value="365">1 ano</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          <DateRangePicker
+            value={dateRange}
+            onChange={onDateRangeChange}
+          />
         </div>
       </CardContent>
     </Card>

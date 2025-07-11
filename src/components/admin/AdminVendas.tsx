@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSales } from "@/hooks/useSales";
 import { useSalesStats } from "@/hooks/useSalesStats";
 import { useSalesFilters } from "@/hooks/useSalesFilters";
+import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import CreateSaleModal from "./vendas/CreateSaleModal";
 import SaleDetailModal from "./vendas/SaleDetailModal";
 import ConvertToRecurringModal from "./vendas/ConvertToRecurringModal";
@@ -17,7 +18,6 @@ import EditSaleModal from "./vendas/EditSaleModal";
 import { useQueryClient } from "@tanstack/react-query";
 
 const AdminVendas = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(30);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
@@ -29,7 +29,12 @@ const AdminVendas = () => {
   const [saleToEdit, setSaleToEdit] = useState<any>(null);
 
   const queryClient = useQueryClient();
-  const { data: sales, isLoading, error } = useSales(selectedPeriod);
+  const { dateRange, setDateRange } = useDateRangeFilter({ 
+    defaultDays: 30, 
+    storageKey: 'admin-sales-date-range' 
+  });
+  
+  const { data: sales, isLoading, error } = useSales(dateRange);
   const stats = useSalesStats(sales);
   const filteredSales = useSalesFilters(sales, searchTerm, statusFilter, paymentFilter);
 
@@ -130,8 +135,8 @@ const AdminVendas = () => {
           setStatusFilter={setStatusFilter}
           paymentFilter={paymentFilter}
           setPaymentFilter={setPaymentFilter}
-          selectedPeriod={selectedPeriod}
-          setSelectedPeriod={setSelectedPeriod}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
         />
       </div>
 

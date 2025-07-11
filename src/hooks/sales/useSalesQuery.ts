@@ -1,26 +1,34 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DateRange } from "react-day-picker";
 import { Sale } from "./types";
 
-export const useSales = (dateRange: number = 30) => {
+export const useSales = (dateRange?: DateRange) => {
   return useQuery({
     queryKey: ['sales', dateRange],
     queryFn: async () => {
-      console.log('Buscando vendas para os últimos', dateRange, 'dias');
+      console.log('Buscando vendas para o período:', dateRange);
       
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
-      
-      const { data, error } = await supabase
+      let query = supabase
         .from('sales')
         .select(`
           *,
           customers(full_name, email),
           unified_leads(full_name, email)
-        `)
-        .gte('created_at', startDate.toISOString())
-        .order('created_at', { ascending: false });
+        `);
+
+      if (dateRange?.from) {
+        query = query.gte('created_at', dateRange.from.toISOString());
+      }
+      
+      if (dateRange?.to) {
+        const endDate = new Date(dateRange.to);
+        endDate.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', endDate.toISOString());
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) {
         console.error('Erro ao buscar vendas:', error);

@@ -18,15 +18,16 @@ interface NewCustomerData {
 
 interface NewCustomerDialogProps {
   onCustomerCreated: (customer: any) => void;
+  leadData?: any; // Dados do lead para preencher automaticamente
 }
 
-const NewCustomerDialog = ({ onCustomerCreated }: NewCustomerDialogProps) => {
+const NewCustomerDialog = ({ onCustomerCreated, leadData }: NewCustomerDialogProps) => {
   const [showDialog, setShowDialog] = useState(false);
   const [customerData, setCustomerData] = useState<NewCustomerData>({
-    full_name: '',
-    email: '',
-    phone: '',
-    company_name: ''
+    full_name: leadData?.full_name || '',
+    email: leadData?.email || '',
+    phone: leadData?.phone || '',
+    company_name: leadData?.company_name || ''
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();

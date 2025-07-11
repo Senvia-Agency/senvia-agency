@@ -24,6 +24,7 @@ const AdminLeads = () => {
   const { user } = useAuth();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [isCreateSaleModalOpen, setIsCreateSaleModalOpen] = useState(false);
+  const [selectedLeadForSale, setSelectedLeadForSale] = useState<any>(null);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const createActivity = useCreateActivity();
 
@@ -95,6 +96,7 @@ const AdminLeads = () => {
 
       // Se o status foi alterado para "converted", abrir modal de vendas
       if (newStatus === 'converted') {
+        setSelectedLeadForSale(lead);
         setIsCreateSaleModalOpen(true);
       }
 
@@ -188,6 +190,7 @@ const AdminLeads = () => {
   const handleSaleCreated = () => {
     refetch();
     setIsCreateSaleModalOpen(false);
+    setSelectedLeadForSale(null);
   };
 
   if (isLoading) {
@@ -258,7 +261,11 @@ const AdminLeads = () => {
       {/* Modal de Vendas */}
       <CreateSaleModal
         isOpen={isCreateSaleModalOpen}
-        onClose={() => setIsCreateSaleModalOpen(false)}
+        onClose={() => {
+          setIsCreateSaleModalOpen(false);
+          setSelectedLeadForSale(null);
+        }}
+        leadData={selectedLeadForSale}
       />
     </div>
   );

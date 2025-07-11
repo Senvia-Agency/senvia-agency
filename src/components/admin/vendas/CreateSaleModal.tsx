@@ -21,9 +21,10 @@ import { useToast } from "@/hooks/use-toast";
 interface CreateSaleModalProps {
   isOpen: boolean;
   onClose: () => void;
+  leadData?: any; // Dados do lead para preencher automaticamente
 }
 
-const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
+const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) => {
   const [recurringData, setRecurringData] = useState({
     billing_day: '1',
     start_date: new Date().toISOString().split('T')[0]
@@ -148,6 +149,7 @@ const CreateSaleModal = ({ isOpen, onClose }: CreateSaleModalProps) => {
             <CustomerSearchField
               value={formData.customer_id}
               onChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
+              leadData={leadData}
             />
 
             {/* Busca de Serviços */}

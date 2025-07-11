@@ -8,11 +8,13 @@ import { useState, useEffect } from "react";
 interface CustomerSearchFieldProps {
   value: string;
   onChange: (value: string) => void;
+  leadData?: any; // Dados do lead para preencher automaticamente
 }
 
 const CustomerSearchField = ({ 
   value, 
-  onChange
+  onChange,
+  leadData
 }: CustomerSearchFieldProps) => {
   const { data: customers, isLoading, error } = useCustomers();
 
@@ -37,6 +39,7 @@ const CustomerSearchField = ({
         
         <NewCustomerDialog
           onCustomerCreated={handleNewCustomer}
+          leadData={leadData}
         />
       </div>
       

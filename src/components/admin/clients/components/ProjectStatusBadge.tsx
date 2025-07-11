@@ -57,7 +57,7 @@ export const ProjectStatusBadge = ({ status, saleId, onStatusUpdate }: ProjectSt
           </Badge>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-1 bg-gray-700 border-gray-600 z-50" align="start" side="bottom">
+      <PopoverContent className="w-auto p-1 bg-gray-700 border-gray-600 z-[9999]" align="start" side="bottom" sideOffset={5}>
         <div className="flex flex-col gap-1">
           {statusOptions.map((option) => (
             <Button

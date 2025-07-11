@@ -151,13 +151,6 @@ export const ProjectCard = ({ sale, onStatusUpdate, onAssigneeUpdate }: ProjectC
             </div>
           )}
         </div>
-
-        {/* Status de pagamento */}
-        <div className="flex justify-end">
-          <Badge className={`${getPaymentStatusColor(sale.payment_status)} text-white text-xs px-2 py-1`}>
-            {getPaymentStatusLabel(sale.payment_status)}
-          </Badge>
-        </div>
       </CardContent>
     </Card>
   );

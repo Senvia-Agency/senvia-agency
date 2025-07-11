@@ -58,19 +58,25 @@ export const ProjectStatusBadge = ({ status, saleId, onStatusUpdate }: ProjectSt
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-1 bg-gray-700 border-gray-600 z-[9999]" align="start" side="bottom" sideOffset={5}>
-        <div className="flex flex-col gap-1">
-          {statusOptions.map((option) => (
-            <Button
-              key={option.value}
-              variant="ghost"
-              size="sm"
-              className="justify-start text-xs h-8 text-white hover:bg-gray-600"
-              onClick={() => {
-                console.log('ProjectStatusBadge: Clicando para atualizar status', { saleId, newStatus: option.value });
-                onStatusUpdate(saleId, option.value as SaleStatus);
-                setIsOpen(false);
-              }}
-            >
+         <div className="flex flex-col gap-1">
+           {statusOptions.map((option) => (
+             <Button
+               key={option.value}
+               variant="ghost"
+               size="sm"
+               className="justify-start text-xs h-8 text-white hover:bg-gray-600"
+               onPointerDown={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 console.log('ProjectStatusBadge: Clicando para atualizar status', { saleId, newStatus: option.value });
+                 onStatusUpdate(saleId, option.value as SaleStatus);
+                 setIsOpen(false);
+               }}
+               onMouseDown={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+               }}
+             >
               {option.label}
             </Button>
           ))}

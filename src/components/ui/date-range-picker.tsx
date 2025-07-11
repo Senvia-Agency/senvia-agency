@@ -124,7 +124,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
           {formatDateRange(value)}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="start">
+      <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700" align="center" side="bottom" sideOffset={4}>
         <div className="flex">
           {/* Presets sidebar */}
           <div className="w-40 border-r border-gray-700 p-3">

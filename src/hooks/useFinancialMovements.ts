@@ -50,12 +50,13 @@ export const useFinancialMovements = (dateRange: number = 30) => {
 
       if (manualError) throw manualError;
 
-      // Buscar transações de clientes (receitas)
+      // Buscar transações de clientes (receitas) - apenas transações que correspondem a vendas pagas
       const { data: customerTransactions, error: transactionsError } = await supabase
         .from('customer_transactions')
         .select(`
           *,
-          customers(full_name, email)
+          customers(full_name, email),
+          sales!customer_transactions_customer_id_fkey(payment_status, paid_amount)
         `)
         .eq('status', 'completed')
         .gt('amount', 0)
@@ -96,9 +97,18 @@ export const useFinancialMovements = (dateRange: number = 30) => {
         })));
       }
 
-      // Adicionar transações de clientes como receitas
+      // Adicionar transações de clientes como receitas - apenas se não houver venda correspondente ou se a venda estiver paga
       if (customerTransactions) {
-        allMovements.push(...customerTransactions.map(t => ({
+        const validTransactions = customerTransactions.filter(t => {
+          // Se não há venda relacionada, incluir a transação
+          if (!t.sales || t.sales.length === 0) return true;
+          
+          // Se há venda relacionada, só incluir se o paid_amount corresponder ao valor da transação
+          const relatedSale = t.sales[0];
+          return relatedSale.payment_status === 'paid' && Number(relatedSale.paid_amount) > 0;
+        });
+        
+        allMovements.push(...validTransactions.map(t => ({
           id: t.id,
           movement_type: 'receita' as const,
           amount: t.amount,

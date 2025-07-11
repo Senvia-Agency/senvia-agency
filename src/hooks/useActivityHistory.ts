@@ -22,15 +22,62 @@ export const useActivityHistory = (entityType: 'lead' | 'customer', entityId: st
   return useQuery({
     queryKey: ['activity-history', entityType, entityId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('activity_history')
-        .select('*')
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
-        .order('created_at', { ascending: false });
+      if (entityType === 'customer') {
+        // Para clientes, buscar atividades do cliente E do lead original
+        const { data: customer, error: customerError } = await supabase
+          .from('customers')
+          .select('original_lead_id')
+          .eq('id', entityId)
+          .single();
 
-      if (error) throw error;
-      return data as ActivityHistory[];
+        if (customerError && customerError.code !== 'PGRST116') {
+          throw customerError;
+        }
+
+        // Buscar atividades do cliente
+        const customerQuery = supabase
+          .from('activity_history')
+          .select('*')
+          .eq('entity_type', 'customer')
+          .eq('entity_id', entityId);
+
+        // Buscar atividades do lead original se existir
+        let leadQuery = null;
+        if (customer?.original_lead_id) {
+          leadQuery = supabase
+            .from('activity_history')
+            .select('*')
+            .eq('entity_type', 'lead')
+            .eq('entity_id', customer.original_lead_id);
+        }
+
+        const [customerResult, leadResult] = await Promise.all([
+          customerQuery,
+          leadQuery
+        ]);
+
+        if (customerResult.error) throw customerResult.error;
+        if (leadResult && leadResult.error) throw leadResult.error;
+
+        // Combinar e ordenar atividades
+        const allActivities = [
+          ...(customerResult.data || []),
+          ...(leadResult?.data || [])
+        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        return allActivities as ActivityHistory[];
+      } else {
+        // Para leads, buscar apenas atividades do lead
+        const { data, error } = await supabase
+          .from('activity_history')
+          .select('*')
+          .eq('entity_type', entityType)
+          .eq('entity_id', entityId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data as ActivityHistory[];
+      }
     },
     enabled: !!entityId
   });

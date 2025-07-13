@@ -27,7 +27,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
   const queryClient = useQueryClient();
 
   const handlePayment = async () => {
-    if (!account || !paymentAmount) return;
+    if (!account || !paymentAmount || isLoading) return;
 
     const amount = parseFloat(paymentAmount);
     if (isNaN(amount) || amount <= 0) {
@@ -330,7 +330,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
             <Button
               onClick={handlePayment}
               disabled={!paymentAmount || isLoading || parseFloat(paymentAmount) <= 0}
-              className="flex-1 bg-senvia-500 hover:bg-senvia-600 text-white"
+              className="flex-1 bg-senvia-500 hover:bg-senvia-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>

@@ -38,14 +38,20 @@ export const useAdminRevenue = (dateRange: number) => {
         .select('*')
         .gte('created_at', startDate.toISOString());
 
+      // Buscar movimentos financeiros
+      const { data: financialMovements, error: movementsError } = await supabase
+        .from('financial_movements')
+        .select('*')
+        .gte('movement_date', startDate.toISOString().split('T')[0]);
+
       // Buscar todos os custom_services para fazer o join manualmente
       const { data: customServices, error: servicesError } = await supabase
         .from('custom_services')
         .select('id, service_type, pricing_model');
 
-      if (transactionsError || paymentsError || subsError || salesError || servicesError) {
-        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError || salesError || servicesError);
-        throw transactionsError || paymentsError || subsError || salesError || servicesError;
+      if (transactionsError || paymentsError || subsError || salesError || movementsError || servicesError) {
+        console.error('Erro ao buscar dados de receita:', transactionsError || paymentsError || subsError || salesError || movementsError || servicesError);
+        throw transactionsError || paymentsError || subsError || salesError || movementsError || servicesError;
       }
 
       console.log('Dados encontrados:', {
@@ -98,11 +104,16 @@ export const useAdminRevenue = (dateRange: number) => {
       const recurringSalesRevenue = recurringSales
         .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
       
+      // Receitas dos movimentos financeiros
+      const movementsRevenue = (financialMovements || [])
+        .filter(m => m.movement_type === 'receita')
+        .reduce((sum, movement) => sum + Number(movement.amount), 0);
+      
       // Total de receitas de assinaturas (Senvia Assistant + vendas recorrentes)
       const totalSubscriptionRevenue = subscriptionsRevenue + recurringSalesRevenue;
       
-      // Total de vendas não-recorrentes (Landing Pages + vendas únicas)
-      const totalOneTimeRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + oneTimeSalesRevenue;
+      // Total de vendas não-recorrentes (Landing Pages + vendas únicas + movimentos financeiros)
+      const totalOneTimeRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + oneTimeSalesRevenue + movementsRevenue;
       
       const totalRevenue = totalOneTimeRevenue + totalSubscriptionRevenue;
       const totalTransactions = (customerTransactions?.length || 0) + (legacyPayments?.length || 0) + (activeSubscriptions?.length || 0) + (salesData?.length || 0);
@@ -113,6 +124,7 @@ export const useAdminRevenue = (dateRange: number) => {
         subscriptionsRevenue,
         oneTimeSalesRevenue,
         recurringSalesRevenue,
+        movementsRevenue,
         totalOneTimeRevenue,
         totalSubscriptionRevenue,
         totalRevenue,

@@ -237,11 +237,12 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
               className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-white"
             >
               <option value="bank_transfer">Transferência Bancária</option>
+              <option value="mbway">MB WAY</option>
+              <option value="multibanco">Multibanco</option>
               <option value="credit_card">Cartão de Crédito</option>
               <option value="debit_card">Cartão de Débito</option>
               <option value="cash">Dinheiro</option>
-              <option value="check">Cheque</option>
-              <option value="pix">PIX</option>
+              <option value="paypal">PayPal</option>
               <option value="other">Outro</option>
             </select>
           </div>

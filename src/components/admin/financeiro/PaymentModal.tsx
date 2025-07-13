@@ -90,9 +90,9 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       const { error: activityError } = await supabase
         .from('activity_history')
         .insert({
-          entity_type: 'sale',
-          entity_id: account.id,
-          activity_type: 'payment',
+          entity_type: 'customer',
+          entity_id: account.customer_id || account.id,
+          activity_type: 'payment_update',
           title: activityTitle,
           description: activityDescription,
           metadata: {

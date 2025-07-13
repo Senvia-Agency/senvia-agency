@@ -39,20 +39,12 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       return;
     }
 
-    if (amount > account.remaining_amount) {
-      toast({
-        title: "⚠️ Valor superior ao pendente",
-        description: `O valor inserido (€${amount.toFixed(2)}) é superior ao valor pendente (€${account.remaining_amount.toFixed(2)}).`,
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const newPaidAmount = account.paid_amount + amount;
       const newRemainingAmount = account.total_value - newPaidAmount;
-      const isFullyPaid = newRemainingAmount <= 0.01; // Considera pago se restante <= 1 centavo
+      const isFullyPaid = newRemainingAmount <= 0;
+      const overpayment = Math.max(0, amount - account.remaining_amount); // Valor pago a mais (gorjeta/prenda)
 
       // 1. Atualizar a venda
       const { error: updateError } = await supabase
@@ -68,32 +60,45 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       if (updateError) throw updateError;
 
       // 2. Criar movimento financeiro (receita)
+      const movementDescription = overpayment > 0 
+        ? `Recebimento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number} + gorjeta de €${overpayment.toFixed(2)} - ${account.service_name}`
+        : `Recebimento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number} - ${account.service_name}`;
+        
       const { error: movementError } = await supabase
         .from('financial_movements')
         .insert({
           movement_type: 'receita',
           category: 'vendas',
-          description: `Recebimento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number} - ${account.service_name}`,
+          description: movementDescription,
           amount,
           currency: 'EUR',
           customer_id: account.customer_id,
           movement_date: new Date().toISOString().split('T')[0],
-          notes: notes || `Pagamento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number}. Cliente: ${account.customer_name}. Método: ${paymentMethod}`
+          notes: notes || `Pagamento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number}. Cliente: ${account.customer_name}. Método: ${paymentMethod}${overpayment > 0 ? `. Gorjeta: €${overpayment.toFixed(2)}` : ''}`
         });
 
       if (movementError) throw movementError;
 
       // 3. Registrar no histórico de atividades
+      const activityTitle = overpayment > 0 
+        ? `Pagamento ${isFullyPaid ? 'Total' : 'Parcial'} + Gorjeta Recebido`
+        : `Pagamento ${isFullyPaid ? 'Total' : 'Parcial'} Recebido`;
+        
+      const activityDescription = overpayment > 0
+        ? `Pagamento de €${amount.toFixed(2)} recebido de ${account.customer_name} (inclui gorjeta de €${overpayment.toFixed(2)})`
+        : `Pagamento de €${amount.toFixed(2)} recebido de ${account.customer_name}`;
+        
       const { error: activityError } = await supabase
         .from('activity_history')
         .insert({
           entity_type: 'sale',
           entity_id: account.id,
           activity_type: 'payment',
-          title: `Pagamento ${isFullyPaid ? 'Total' : 'Parcial'} Recebido`,
-          description: `Pagamento de €${amount.toFixed(2)} recebido de ${account.customer_name}`,
+          title: activityTitle,
+          description: activityDescription,
           metadata: {
             payment_amount: amount,
+            overpayment: overpayment,
             payment_method: paymentMethod,
             remaining_amount: Math.max(0, newRemainingAmount),
             is_fully_paid: isFullyPaid,
@@ -109,9 +114,11 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
       toast({
         title: isFullyPaid ? "✅ Conta liquidada!" : "✅ Pagamento parcial registrado",
-        description: isFullyPaid 
-          ? `Venda ${account.sale_number} totalmente paga. Receita de €${amount.toFixed(2)} adicionada.`
-          : `Pagamento de €${amount.toFixed(2)} registrado. Restante: €${Math.max(0, newRemainingAmount).toFixed(2)}`,
+        description: overpayment > 0
+          ? `Venda ${account.sale_number} ${isFullyPaid ? 'totalmente paga' : 'parcialmente paga'} + gorjeta de €${overpayment.toFixed(2)}. Receita total: €${amount.toFixed(2)}`
+          : isFullyPaid 
+            ? `Venda ${account.sale_number} totalmente paga. Receita de €${amount.toFixed(2)} adicionada.`
+            : `Pagamento de €${amount.toFixed(2)} registrado. Restante: €${Math.max(0, newRemainingAmount).toFixed(2)}`,
       });
 
       // Reset form and close
@@ -138,10 +145,22 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
     return Math.max(0, account.remaining_amount - amount);
   };
 
+  const calculateOverpayment = () => {
+    if (!account || !paymentAmount) return 0;
+    const amount = parseFloat(paymentAmount) || 0;
+    return Math.max(0, amount - account.remaining_amount);
+  };
+
   const isFullPayment = () => {
     if (!account || !paymentAmount) return false;
     const amount = parseFloat(paymentAmount) || 0;
     return amount >= account.remaining_amount;
+  };
+
+  const isOverpayment = () => {
+    if (!account || !paymentAmount) return false;
+    const amount = parseFloat(paymentAmount) || 0;
+    return amount > account.remaining_amount;
   };
 
   if (!account) return null;
@@ -192,11 +211,10 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
             <div className="relative">
               <Input
                 id="payment-amount"
-                type="number"
-                step="0.01"
-                min="0"
-                max={account.remaining_amount}
-                value={paymentAmount}
+              type="number"
+              step="0.01"
+              min="0"
+              value={paymentAmount}
                 onChange={(e) => setPaymentAmount(e.target.value)}
                 placeholder="0.00"
                 className="bg-gray-700 border-gray-600 text-white pl-8"
@@ -263,7 +281,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
           {/* Resumo do Pagamento */}
           {paymentAmount && (
-            <div className="bg-gray-700 p-4 rounded-lg border-l-4 border-senvia-500">
+            <div className={`p-4 rounded-lg border-l-4 ${isOverpayment() ? 'bg-blue-900/20 border-blue-500' : 'bg-gray-700 border-senvia-500'}`}>
               <div className="flex items-center gap-2 mb-2">
                 {isFullPayment() ? (
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -271,7 +289,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
                   <AlertCircle className="h-5 w-5 text-yellow-500" />
                 )}
                 <span className="font-medium text-white">
-                  {isFullPayment() ? "Pagamento Total" : "Pagamento Parcial"}
+                  {isOverpayment() ? "Pagamento com Gorjeta" : isFullPayment() ? "Pagamento Total" : "Pagamento Parcial"}
                 </span>
               </div>
               <div className="space-y-1 text-sm">
@@ -285,9 +303,15 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
                     €{calculateRemaining().toFixed(2)}
                   </span>
                 </div>
+                {isOverpayment() && (
+                  <div className="flex justify-between border-t border-gray-600 pt-2 mt-2">
+                    <span className="text-blue-400">Gorjeta/Prenda:</span>
+                    <span className="text-blue-400 font-medium">€{calculateOverpayment().toFixed(2)}</span>
+                  </div>
+                )}
                 {isFullPayment() && (
                   <div className="text-green-400 text-sm font-medium mt-2">
-                    ✅ Esta conta será totalmente liquidada
+                    ✅ Esta conta será totalmente liquidada{isOverpayment() ? " (com gorjeta)" : ""}
                   </div>
                 )}
               </div>

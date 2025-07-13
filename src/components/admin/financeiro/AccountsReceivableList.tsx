@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Mail, Phone, CheckCircle, Calendar, Edit } from "lucide-react";
+import { Eye, Mail, Phone, CheckCircle, Calendar, Edit, CreditCard } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AccountReceivable } from "@/hooks/useAccountsReceivable";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import EditDueDateModal from "./EditDueDateModal";
+import PaymentModal from "./PaymentModal";
 
 interface AccountsReceivableListProps {
   accounts: AccountReceivable[];
@@ -20,6 +21,7 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
   const { toast } = useToast();
   const [selectedAccount, setSelectedAccount] = useState<AccountReceivable | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -111,14 +113,9 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
     }
   };
 
-  const handleMarkAsPaid = (account: AccountReceivable) => {
-    if (onMarkAsPaid) {
-      onMarkAsPaid(account.id);
-    }
-    toast({
-      title: "Pagamento registrado",
-      description: `Pagamento de ${account.customer_name} marcado como pago`,
-    });
+  const handleOpenPaymentModal = (account: AccountReceivable) => {
+    setSelectedAccount(account);
+    setIsPaymentModalOpen(true);
   };
 
   const handleEditDueDate = (account: AccountReceivable) => {
@@ -243,10 +240,10 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleMarkAsPaid(account)}
+                        onClick={() => handleOpenPaymentModal(account)}
                         className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
                       >
-                        <CheckCircle className="h-4 w-4 mr-1" />
+                        <CreditCard className="h-4 w-4 mr-1" />
                         Pago
                       </Button>
                     </div>
@@ -263,6 +260,15 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
+          setSelectedAccount(null);
+        }}
+      />
+
+      <PaymentModal
+        account={selectedAccount}
+        isOpen={isPaymentModalOpen}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
           setSelectedAccount(null);
         }}
       />

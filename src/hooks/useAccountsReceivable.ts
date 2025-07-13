@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface AccountReceivable {
   id: string;
+  customer_id: string | null;
   customer_name: string;
   customer_email: string;
   sale_number: string;
@@ -59,6 +60,7 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
 
         return {
           id: sale.id,
+          customer_id: sale.customer_id,
           customer_name: customerName,
           customer_email: customerEmail,
           sale_number: sale.sale_number,

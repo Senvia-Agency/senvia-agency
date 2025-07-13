@@ -46,12 +46,11 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       const isFullyPaid = newRemainingAmount <= 0;
       const overpayment = Math.max(0, amount - account.remaining_amount); // Valor pago a mais (gorjeta/prenda)
 
-      // 1. Atualizar a venda
+      // 1. Atualizar a venda (remaining_amount é calculado automaticamente)
       const { error: updateError } = await supabase
         .from('sales')
         .update({
           paid_amount: newPaidAmount,
-          remaining_amount: Math.max(0, newRemainingAmount),
           payment_status: isFullyPaid ? 'paid' : 'partial',
           updated_at: new Date().toISOString()
         })

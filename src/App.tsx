@@ -1,6 +1,5 @@
 
 import { Suspense, lazy } from "react";
-import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -44,10 +43,9 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
           <Toaster />
           <BrowserRouter>
             <ScrollToTopOnRouteChange />
@@ -139,7 +137,6 @@ function App() {
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
-    </HelmetProvider>
   );
 };
 

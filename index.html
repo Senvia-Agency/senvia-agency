@@ -102,8 +102,8 @@
       </div>
     </noscript>
     
-    <!-- Static content for bots (always visible) -->
-    <div id="static-content" style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; display: block;">
+    <!-- Static content for bots (hidden when JS loads) -->
+    <div id="static-content" style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px;">
       <h1>SENVIA - Landing Pages Inteligentes</h1>
       <h2>Criamos Landing Pages Profissionais que Convertem Visitantes em Clientes</h2>
       
@@ -156,6 +156,11 @@
     </div>
     
     <div id="root"></div>
+    
+    <!-- Hide static content when JavaScript loads -->
+    <script>
+      document.getElementById('static-content').style.display = 'none';
+    </script>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>

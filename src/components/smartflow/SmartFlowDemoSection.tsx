@@ -37,7 +37,7 @@ const SmartFlowDemoSection = () => {
                 <Gauge className="w-6 h-6 text-primary" />
                 <div>
                   <CardTitle>Performance Lightning</CardTitle>
-                  <p className="text-sm text-muted-foreground">Core Web Vitals > 90</p>
+                  <p className="text-sm text-muted-foreground">Core Web Vitals &gt; 90</p>
                 </div>
               </div>
             </CardHeader>

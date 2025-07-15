@@ -11,6 +11,14 @@ export const useDateRangeFilter = ({
   defaultDays = 30, 
   storageKey 
 }: UseDateRangeFilterProps = {}) => {
+  const getTodayRange = (): DateRange => {
+    const today = new Date();
+    return {
+      from: today,
+      to: today
+    };
+  };
+
   const getDefaultRange = (): DateRange => {
     const today = new Date();
     return {
@@ -34,7 +42,7 @@ export const useDateRangeFilter = ({
         console.error('Error loading saved date range:', error);
       }
     }
-    return undefined; // Não definir range padrão
+    return getTodayRange(); // Definir range padrão para hoje
   });
 
   // Save to localStorage when range changes

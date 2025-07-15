@@ -19,7 +19,10 @@ interface LeadFiltersProps {
 
 const LeadFilters = ({ filters, dateRange, onFiltersChange, onDateRangeChange }: LeadFiltersProps) => {
   const updateFilter = (key: string, value: string) => {
-    onFiltersChange({ ...filters, [key]: value });
+    console.log('Updating filter:', key, value);
+    const newFilters = { ...filters, [key]: value };
+    console.log('New filters:', newFilters);
+    onFiltersChange(newFilters);
   };
 
   return (
@@ -42,24 +45,26 @@ const LeadFilters = ({ filters, dateRange, onFiltersChange, onDateRangeChange }:
           {/* Filtros em grid responsivo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {/* Filtro Status */}
-            <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
+            <Select value={filters.status || "all"} onValueChange={(value) => updateFilter('status', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-9 text-sm">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700 z-50">
                 <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="new">Novo</SelectItem>
-                <SelectItem value="contacted">Contatado</SelectItem>
+                <SelectItem value="contacted">Contactado</SelectItem>
                 <SelectItem value="qualified">Qualificado</SelectItem>
+                <SelectItem value="proposal">Proposta Enviada</SelectItem>
+                <SelectItem value="negotiation">Negociação</SelectItem>
                 <SelectItem value="converted">Convertido</SelectItem>
                 <SelectItem value="lost">Perdido</SelectItem>
               </SelectContent>
             </Select>
 
             {/* Filtro Fonte */}
-            <Select value={filters.source} onValueChange={(value) => updateFilter('source', value)}>
+            <Select value={filters.source || "all"} onValueChange={(value) => updateFilter('source', value)}>
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white h-9 text-sm">
-                <SelectValue placeholder="Fonte" />
+                <SelectValue placeholder="Selecione a fonte" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700 z-50">
                 <SelectItem value="all">Todas as fontes</SelectItem>

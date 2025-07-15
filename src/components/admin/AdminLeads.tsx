@@ -41,9 +41,8 @@ const AdminLeads = () => {
     return user?.email || 'Usuário';
   };
 
-  // Date range filter
+  // Date range filter - sem range padrão para mostrar todos os leads
   const { dateRange, setDateRange } = useDateRangeFilter({
-    defaultDays: 30,
     storageKey: 'admin-leads-date-range'
   });
 
@@ -163,34 +162,44 @@ const AdminLeads = () => {
 
   // Filtrar leads
   const filteredLeads = leads?.filter(lead => {
-    const matchesSearch = 
-      lead.full_name?.toLowerCase().includes(filters.search.toLowerCase()) ||
-      lead.email?.toLowerCase().includes(filters.search.toLowerCase()) ||
-      lead.phone?.includes(filters.search) ||
-      lead.company_name?.toLowerCase().includes(filters.search.toLowerCase());
+    if (!lead) return false;
     
+    // Filtro de busca - mais robusto
+    const matchesSearch = !filters.search || filters.search.trim() === "" || 
+      (lead.full_name && lead.full_name.toLowerCase().includes(filters.search.toLowerCase())) ||
+      (lead.email && lead.email.toLowerCase().includes(filters.search.toLowerCase())) ||
+      (lead.phone && lead.phone.includes(filters.search)) ||
+      (lead.company_name && lead.company_name.toLowerCase().includes(filters.search.toLowerCase()));
+    
+    // Filtro de status
     const matchesStatus = filters.status === "all" || lead.lead_status === filters.status;
+    
+    // Filtro de fonte - corrigido
     const matchesSource = filters.source === "all" || 
       (filters.source === "basic" && lead.source_page === "landing_page_basic") ||
       (filters.source === "premium" && lead.source_page === "landing_page_premium");
     
-    // Filtro de data usando o dateRange
+    // Filtro de data - só aplica se houver dateRange configurado manualmente
     let matchesDate = true;
     if (dateRange?.from && dateRange?.to) {
       const leadDate = new Date(lead.created_at);
       const startDate = new Date(dateRange.from);
       const endDate = new Date(dateRange.to);
       
-      // Normalizar as datas para comparação apenas do dia (ignorar horas)
-      const leadDateNormalized = new Date(leadDate.getFullYear(), leadDate.getMonth(), leadDate.getDate());
-      const startDateNormalized = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const endDateNormalized = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
       
-      matchesDate = leadDateNormalized >= startDateNormalized && leadDateNormalized <= endDateNormalized;
+      matchesDate = leadDate >= startDate && leadDate <= endDate;
     }
     
     return matchesSearch && matchesStatus && matchesSource && matchesDate;
-  });
+  }) || [];
+
+  // Debug dos filtros
+  console.log('Filtros aplicados:', filters);
+  console.log('Date range:', dateRange);
+  console.log('Total leads:', leads?.length);
+  console.log('Leads filtrados:', filteredLeads.length);
 
   const handleLeadClick = (lead: any) => {
     console.log('Lead clicked:', lead);

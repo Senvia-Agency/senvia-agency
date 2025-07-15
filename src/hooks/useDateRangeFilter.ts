@@ -19,7 +19,7 @@ export const useDateRangeFilter = ({
     };
   };
 
-  const [dateRange, setDateRange] = useState<DateRange>(() => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     if (storageKey) {
       try {
         const saved = localStorage.getItem(storageKey);
@@ -34,17 +34,21 @@ export const useDateRangeFilter = ({
         console.error('Error loading saved date range:', error);
       }
     }
-    return getDefaultRange();
+    return undefined; // Não definir range padrão
   });
 
   // Save to localStorage when range changes
   useEffect(() => {
-    if (storageKey && dateRange?.from && dateRange?.to) {
+    if (storageKey) {
       try {
-        localStorage.setItem(storageKey, JSON.stringify({
-          from: dateRange.from.toISOString(),
-          to: dateRange.to.toISOString()
-        }));
+        if (dateRange?.from && dateRange?.to) {
+          localStorage.setItem(storageKey, JSON.stringify({
+            from: dateRange.from.toISOString(),
+            to: dateRange.to.toISOString()
+          }));
+        } else if (dateRange === undefined) {
+          localStorage.removeItem(storageKey);
+        }
       } catch (error) {
         console.error('Error saving date range:', error);
       }
@@ -80,6 +84,7 @@ export const useDateRangeFilter = ({
     setDateRange,
     getDateRangeForAPI,
     getDaysInRange,
-    resetToDefault: () => setDateRange(getDefaultRange())
+    resetToDefault: () => setDateRange(getDefaultRange()),
+    clearDateRange: () => setDateRange(undefined)
   };
 };

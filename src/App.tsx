@@ -16,7 +16,7 @@ const Ferramentas = lazy(() => import("./pages/Ferramentas"));
 const AgentesIA = lazy(() => import("./pages/AgentesIA"));
 const SenviaAssistant = lazy(() => import("./pages/SenviaAssistant"));
 const LandingPages = lazy(() => import("./pages/LandingPages"));
-
+const NeoFlow = lazy(() => import("./pages/NeoFlow"));
 const Websites = lazy(() => import("./pages/Websites"));
 const Ecommerce = lazy(() => import("./pages/Ecommerce"));
 const SocialMedia = lazy(() => import("./pages/SocialMedia"));
@@ -65,7 +65,7 @@ function App() {
                 <Route path="/agentes-ia" element={<AgentesIA />} />
                 <Route path="/senvia-assistant" element={<SenviaAssistant />} />
                 <Route path="/landing-pages" element={<LandingPages />} />
-                
+                <Route path="/neoflow" element={<NeoFlow />} />
                 <Route path="/websites" element={<Websites />} />
                 <Route path="/ecommerce" element={<Ecommerce />} />
                 <Route path="/social-media" element={<SocialMedia />} />

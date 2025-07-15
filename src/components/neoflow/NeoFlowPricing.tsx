@@ -27,7 +27,7 @@ const NeoFlowPricing = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-white">
+    <section id="pricing" className="py-20 px-4 bg-white">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">

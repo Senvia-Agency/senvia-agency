@@ -29,8 +29,8 @@ const NeoFlowCTA = () => {
             <span className="text-primary glow">piloto-automático</span>?
           </h2>
           
-          <p className="text-xl lg:text-2xl text-gray-300 mb-8">
-            Junte-se aos negócios que já automatizaram o seu crescimento
+          <p className="text-xl lg:text-2xl text-white mb-8">
+            Junte-se aos negócios que já automatizaram os seus processos
           </p>
         </div>
         
@@ -40,30 +40,33 @@ const NeoFlowCTA = () => {
               <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Go-Live Garantido</h3>
-              <p className="text-gray-300">Em 15 dias ou reembolso total</p>
+              <h3 className="font-bold text-lg mb-2">Entrega Garantida</h3>
+              <p className="text-white">Sistema completo em 15 dias</p>
             </div>
             
             <div className="text-center">
               <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-8 h-8 text-accent" />
               </div>
-              <h3 className="font-bold text-lg mb-2">ROI Rápido</h3>
-              <p className="text-gray-300">Pay-back típico em &lt;30 dias</p>
+              <h3 className="font-bold text-lg mb-2">Sistema Completo</h3>
+              <p className="text-white">Tudo integrado e funcional</p>
             </div>
             
             <div className="text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="font-bold text-lg mb-2">Suporte Total</h3>
-              <p className="text-gray-300">Manutenção e monitorização 24/7</p>
+              <h3 className="font-bold text-lg mb-2">Suporte Completo</h3>
+              <p className="text-white">Manutenção e suporte técnico</p>
             </div>
           </div>
           
           <Button 
             size="lg" 
-            className="bg-primary hover:bg-primary/90 text-white text-xl px-12 py-8 rounded-2xl font-bold shadow-2xl hover:scale-105 transition-all duration-300 glow"
+            className="bg-primary hover:bg-primary/90 text-black text-xl px-12 py-8 rounded-2xl font-bold shadow-2xl hover:scale-105 transition-all duration-300 glow"
+            onClick={() => {
+              window.open('https://calendly.com/senvia', '_blank');
+            }}
           >
             <Rocket className="w-6 h-6 mr-3" />
             Quero reservar a minha vaga
@@ -98,7 +101,7 @@ const NeoFlowCTA = () => {
               <li>• Entrega em 15 dias ou reembolso</li>
               <li>• Suporte técnico prioritário</li>
               <li>• Monitorização 24/7</li>
-              <li>• ROI positivo em 30 dias</li>
+              <li>• Funcionamento garantido</li>
             </ul>
           </div>
         </div>

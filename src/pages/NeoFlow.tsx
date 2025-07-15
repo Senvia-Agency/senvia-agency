@@ -12,6 +12,7 @@ import NeoFlowROI from "@/components/neoflow/NeoFlowROI";
 import NeoFlowFAQ from "@/components/neoflow/NeoFlowFAQ";
 import NeoFlowCTA from "@/components/neoflow/NeoFlowCTA";
 import NeoFlowFooter from "@/components/neoflow/NeoFlowFooter";
+import NeoFlowCookieBanner from "@/components/neoflow/NeoFlowCookieBanner";
 
 const NeoFlow = () => {
   return (
@@ -34,6 +35,7 @@ const NeoFlow = () => {
       <NeoFlowFAQ />
       <NeoFlowCTA />
       <NeoFlowFooter />
+      <NeoFlowCookieBanner />
     </div>
   );
 };

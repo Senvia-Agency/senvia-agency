@@ -76,20 +76,6 @@ const NeoFlowFooter = () => {
           </div>
         </div>
         
-        {/* Cookie Banner placeholder */}
-        <div className="fixed bottom-4 left-4 right-4 bg-gray-900/95 backdrop-blur border border-gray-700 rounded-xl p-4 text-sm z-50 max-w-md mx-auto md:left-4 md:right-auto">
-          <p className="text-gray-300 mb-3">
-            Utilizamos cookies para melhorar a sua experiência. Ao continuar, aceita a nossa política de cookies.
-          </p>
-          <div className="flex gap-2">
-            <button className="bg-primary text-white px-4 py-2 rounded-lg text-xs font-semibold">
-              Aceitar
-            </button>
-            <button className="bg-gray-700 text-white px-4 py-2 rounded-lg text-xs">
-              Configurar
-            </button>
-          </div>
-        </div>
       </div>
     </footer>
   );

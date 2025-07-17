@@ -38,6 +38,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
+const Produtos = lazy(() => import("./pages/Produtos"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -76,6 +77,7 @@ function App() {
                 <Route path="/obrigado" element={<ThankYou />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/termos-servico" element={<TermosServico />} />
+                <Route path="/produtos" element={<Produtos />} />
                 <Route path="/auth" element={<Auth />} />
                 
                 {/* Protected Routes for Customers */}

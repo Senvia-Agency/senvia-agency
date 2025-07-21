@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminRoute from "@/components/AdminRoute";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
+import CookieConsent from "@/components/CookieConsent";
 
 // Lazy load crítico primeiro
 const Index = lazy(() => import("./pages/Index"));
@@ -143,6 +144,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <CookieConsent />
           <Toaster />
         </Router>
       </AuthProvider>

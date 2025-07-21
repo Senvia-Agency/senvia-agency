@@ -1,192 +1,110 @@
-import { useState } from "react";
-import { Play, Pause, RotateCcw, ArrowRight, Check } from "lucide-react";
-import { Button } from "../ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Users, Mail, Target, BarChart } from "lucide-react";
 
 const AutomationShowcase = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  const scrollToPricing = () => {
+    const pricingSection = document.getElementById('pricing-section');
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
-  const automationSteps = [
+  const benefits = [
     {
-      id: 1,
-      title: "Lead Entra na Página",
-      description: "Visitante acede à sua landing page otimizada",
-      color: "from-blue-500 to-blue-600",
-      icon: "👤"
+      title: "Captação Automática",
+      description: "Página + formulário que converte 24/7",
+      icon: Users,
+      result: "Mais leads qualificados"
     },
     {
-      id: 2,
-      title: "Formulário Inteligente",
-      description: "Sistema capta dados automaticamente",
-      color: "from-purple-500 to-purple-600",
-      icon: "📝"
+      title: "CRM Integrado", 
+      description: "Organiza todos os contatos automaticamente",
+      icon: Target,
+      result: "Zero leads perdidos"
     },
     {
-      id: 3,
-      title: "CRM Organiza Tudo",
-      description: "Lead classificado e armazenado instantaneamente",
-      color: "from-green-500 to-green-600",
-      icon: "🗂️"
+      title: "E-mails Automáticos",
+      description: "Sequência de nutrição sem trabalho manual",
+      icon: Mail,
+      result: "Relacionamento escalável"
     },
     {
-      id: 4,
-      title: "E-mail Automático",
-      description: "Resposta profissional enviada em segundos",
-      color: "from-orange-500 to-orange-600",
-      icon: "📧"
-    },
-    {
-      id: 5,
-      title: "Integrações Ativas",
-      description: "Dados sincronizados com todas as ferramentas",
-      color: "from-pink-500 to-pink-600",
-      icon: "🔗"
-    },
-    {
-      id: 6,
-      title: "Vendas Automáticas",
-      description: "Pipeline de vendas funciona 24/7",
-      color: "from-indigo-500 to-indigo-600",
-      icon: "💰"
+      title: "Relatórios Claros",
+      description: "Veja exatamente o que está funcionando",
+      icon: BarChart,
+      result: "Decisões baseadas em dados"
     }
   ];
 
-  const startAnimation = () => {
-    setIsPlaying(true);
-    setCurrentStep(0);
-    
-    const interval = setInterval(() => {
-      setCurrentStep(prev => {
-        if (prev >= automationSteps.length - 1) {
-          clearInterval(interval);
-          setIsPlaying(false);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 1500);
-  };
-
-  const resetAnimation = () => {
-    setIsPlaying(false);
-    setCurrentStep(0);
-  };
-
   return (
-    <section id="automation" className="py-24 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:40px_40px]" />
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-full px-6 py-3 mb-6">
-              <span className="text-blue-400 font-medium">🤖 Automação Inteligente</span>
-            </div>
-            
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Veja a <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Mágica</span> Acontecer
-            </h2>
-            
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
-              Em <strong>6 passos automáticos</strong>, transformamos visitantes em clientes. 
-              Sem esforço manual. Sem perder tempo. Sem perder vendas.
-            </p>
+    <section className="py-16 bg-gradient-to-br from-secondary via-card to-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <Badge className="mb-4 bg-primary/10 text-primary px-4 py-2 border border-primary/20">
+            Como Funciona
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Automação Que
+            <span className="text-gradient glow"> Realmente Funciona</span>
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+            Enquanto você dorme, nossa automação capta leads, organiza no CRM e nutre automaticamente.
+          </p>
+          
+          <Button 
+            onClick={scrollToPricing}
+            size="lg"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 glow-box"
+          >
+            Quero Isso Agora
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
 
-            {/* Control Buttons */}
-            <div className="flex justify-center gap-4 mb-16">
-              <Button
-                onClick={startAnimation}
-                disabled={isPlaying}
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-8 py-4 text-lg"
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {benefits.map((benefit, index) => {
+            const IconComponent = benefit.icon;
+            return (
+              <Card 
+                key={index}
+                className="glass-effect border-border hover:border-primary/50 transition-all duration-300 card-hover"
               >
-                {isPlaying ? <Pause className="w-5 h-5 mr-2" /> : <Play className="w-5 h-5 mr-2" />}
-                {isPlaying ? "A Processar..." : "Ver Automação"}
-              </Button>
-              
-              <Button
-                onClick={resetAnimation}
-                variant="outline"
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 px-8 py-4 text-lg"
-              >
-                <RotateCcw className="w-5 h-5 mr-2" />
-                Reiniciar
-              </Button>
-            </div>
-          </div>
-
-          {/* Automation Flow */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {automationSteps.map((step, index) => (
-              <div
-                key={step.id}
-                className={`relative transition-all duration-1000 transform ${
-                  currentStep >= index 
-                    ? 'scale-105 opacity-100' 
-                    : 'scale-95 opacity-60'
-                } ${
-                  currentStep === index ? 'ring-2 ring-blue-400 ring-opacity-60' : ''
-                }`}
-              >
-                {/* Connection Line */}
-                {index < automationSteps.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-gray-600 to-gray-800 z-0">
-                    <ArrowRight className="absolute -top-2 -right-2 w-4 h-4 text-gray-600" />
+                <CardContent className="p-6 text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto">
+                    <IconComponent className="h-6 w-6 text-primary" />
                   </div>
-                )}
-
-                <div className={`relative bg-gradient-to-br ${step.color} p-8 rounded-2xl shadow-2xl h-full`}>
-                  {/* Step Number */}
-                  <div className="absolute -top-4 -left-4 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center font-bold text-sm">
-                    {currentStep >= index ? (
-                      <Check className="w-4 h-4" />
-                    ) : (
-                      step.id
-                    )}
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
+                    <p className="text-muted-foreground text-sm mb-3">{benefit.description}</p>
+                    <div className="inline-block bg-accent/20 text-accent px-3 py-1 rounded-full text-xs font-medium">
+                      {benefit.result}
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-                  {/* Icon */}
-                  <div className="text-4xl mb-4">{step.icon}</div>
-
-                  {/* Content */}
-                  <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                  <p className="text-white/90 leading-relaxed">{step.description}</p>
-
-                  {/* Active Indicator */}
-                  {currentStep === index && (
-                    <div className="absolute inset-0 bg-white/10 rounded-2xl animate-pulse" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Results Section */}
-          <div className="mt-20 text-center">
-            <div className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-500/30 rounded-2xl p-8 max-w-4xl mx-auto">
-              <h3 className="text-3xl font-bold mb-6 text-green-400">Resultado Final</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                  <div className="text-4xl font-bold text-white mb-2">85%</div>
-                  <div className="text-green-300">Menos Trabalho Manual</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-white mb-2">3x</div>
-                  <div className="text-green-300">Mais Conversões</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold text-white mb-2">24/7</div>
-                  <div className="text-green-300">Vendas Automáticas</div>
-                </div>
-              </div>
-              
-              <p className="text-lg text-gray-300 mt-6">
-                <strong>Enquanto você dorme, o sistema trabalha.</strong> Enquanto você atende clientes, o sistema vende. 
-                Enquanto você cresce, o sistema escala junto.
+        <div className="text-center mt-12">
+          <Card className="glass-effect border-primary/30 max-w-2xl mx-auto">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-foreground mb-3">
+                Resultado: <span className="text-primary">Mais tempo para vender</span>
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Pare de perder tempo com tarefas manuais. Nossa automação cuida de tudo enquanto você foca no que importa: fechar negócios.
               </p>
-            </div>
-          </div>
+              <Button 
+                onClick={scrollToPricing}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                Ver Planos Disponíveis
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>

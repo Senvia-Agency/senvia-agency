@@ -2,7 +2,9 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
+import AboutSection from "../components/AboutSection";
 import ServicesSection from "../components/ServicesSection";
+import BenefitsSection from "../components/BenefitsSection";
 import ToolsCarousel from "../components/ToolsCarousel";
 import PortfolioSection from "../components/PortfolioSection";
 import ContactSection from "../components/ContactSection";
@@ -22,7 +24,9 @@ const Index = () => {
       <MetaPixel />
       <Navbar />
       <HeroSection />
+      <AboutSection />
       <ServicesSection />
+      <BenefitsSection />
       <PortfolioSection />
       <ToolsCarousel />
       <ContactSection />

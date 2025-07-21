@@ -1,20 +1,12 @@
-
 import { useState, memo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Menu, X, ChevronDown, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOptimizedScroll } from "@/hooks/useOptimizedScroll";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 
 const Navbar = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showClientMenu, setShowClientMenu] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const isScrolled = useOptimizedScroll(10);
@@ -23,17 +15,27 @@ const Navbar = memo(() => {
     e.preventDefault();
     await signOut();
     navigate("/");
-    setShowClientMenu(false);
   }, [signOut, navigate]);
 
   const handleLinkClick = useCallback(() => {
     setIsOpen(false);
-    setShowClientMenu(false);
   }, []);
+
+  const scrollToSection = useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
+  }, []);
+
+  const handleScheduleConsultation = useCallback(() => {
+    scrollToSection('contacto');
+  }, [scrollToSection]);
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : "bg-transparent"
+      isScrolled ? "bg-background/95 backdrop-blur-md border-b border-border" : "bg-background/90 backdrop-blur-sm"
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -44,69 +46,79 @@ const Navbar = memo(() => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-senvia-500 transition-colors cursor-pointer">
-                Produtos
-                <ChevronDown className="w-4 h-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background border border-border">
-                <DropdownMenuItem asChild>
-                  <Link to="/senvia-assistant" className="cursor-pointer hover:bg-muted">
-                    Senvia Assistant
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/landing-pages" className="cursor-pointer hover:bg-muted">
-                    Senvia Landing Page
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <button 
+              onClick={() => scrollToSection('sobre')}
+              className="text-foreground hover:text-senvia-500 transition-colors cursor-pointer"
+            >
+              Sobre
+            </button>
+            <button 
+              onClick={() => scrollToSection('servicos')}
+              className="text-foreground hover:text-senvia-500 transition-colors cursor-pointer"
+            >
+              Serviços
+            </button>
+            <button 
+              onClick={() => scrollToSection('beneficios')}
+              className="text-foreground hover:text-senvia-500 transition-colors cursor-pointer"
+            >
+              Benefícios
+            </button>
+            <button 
+              onClick={() => scrollToSection('portfolio')}
+              className="text-foreground hover:text-senvia-500 transition-colors cursor-pointer"
+            >
+              Depoimentos
+            </button>
+            <Link 
+              to="/faq" 
+              className="text-foreground hover:text-senvia-500 transition-colors"
+              onClick={handleLinkClick}
+            >
+              FAQ
+            </Link>
+            <button 
+              onClick={() => scrollToSection('contacto')}
+              className="text-foreground hover:text-senvia-500 transition-colors cursor-pointer"
+            >
+              Contacto
+            </button>
             
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setShowClientMenu(!showClientMenu)}
-                  className="flex items-center gap-2 text-foreground hover:text-senvia-500 transition-colors"
-                >
-                  Área do Cliente ({user.email})
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                
-                {showClientMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-background border border-border rounded-md shadow-lg py-1 z-50">
-                    <Link
-                      to="/dashboard"
-                      className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
-                      onClick={handleLinkClick}
-                    >
-                      Dashboard
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        to="/crm"
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-muted"
-                        onClick={handleLinkClick}
-                      >
-                        CRM
-                      </Link>
-                    )}
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sair
-                    </button>
-                  </div>
+            {/* Consultation Button */}
+            <Button 
+              onClick={handleScheduleConsultation}
+              className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-medium px-6 py-2 rounded-full"
+            >
+              Agendar Consultoria
+            </Button>
+
+            {/* User Area (only show if logged in) */}
+            {user && (
+              <div className="relative ml-4 pl-4 border-l border-border">
+                {isAdmin ? (
+                  <Link
+                    to="/admin"
+                    className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    Admin ({user.email})
+                  </Link>
+                ) : (
+                  <Link
+                    to="/dashboard"
+                    className="text-sm text-muted-foreground hover:text-senvia-500 transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    Dashboard ({user.email})
+                  </Link>
                 )}
+                <button
+                  onClick={handleSignOut}
+                  className="ml-2 text-sm text-muted-foreground hover:text-senvia-500 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
-            ) : (
-              <Link to="/auth" onClick={handleLinkClick}>
-                <Button className="bg-senvia-500 hover:bg-senvia-400 text-black">
-                  Área do Cliente
-                </Button>
-              </Link>
             )}
           </div>
 
@@ -125,45 +137,74 @@ const Navbar = memo(() => {
         {isOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border">
-              <div className="px-3 py-2">
-                <span className="text-foreground font-medium">Produtos</span>
-                <div className="ml-4 mt-2 space-y-1">
-                  <Link
-                    to="/senvia-assistant"
-                    onClick={handleLinkClick}
-                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                  >
-                    Senvia Assistant
-                  </Link>
-                  <Link
-                    to="/landing-pages"
-                    onClick={handleLinkClick}
-                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                  >
-                    Senvia Landing Page
-                  </Link>
-                </div>
-              </div>
+              <button
+                onClick={() => scrollToSection('sobre')}
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors w-full text-left"
+              >
+                Sobre
+              </button>
+              <button
+                onClick={() => scrollToSection('servicos')}
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors w-full text-left"
+              >
+                Serviços
+              </button>
+              <button
+                onClick={() => scrollToSection('beneficios')}
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors w-full text-left"
+              >
+                Benefícios
+              </button>
+              <button
+                onClick={() => scrollToSection('portfolio')}
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors w-full text-left"
+              >
+                Depoimentos
+              </button>
+              <Link
+                to="/faq"
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                onClick={handleLinkClick}
+              >
+                FAQ
+              </Link>
+              <button
+                onClick={() => scrollToSection('contacto')}
+                className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors w-full text-left"
+              >
+                Contacto
+              </button>
               
-              {user ? (
-                <div className="border-t border-border pt-2">
+              <div className="px-3 py-2">
+                <Button 
+                  onClick={handleScheduleConsultation}
+                  className="w-full bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-medium"
+                >
+                  Agendar Consultoria
+                </Button>
+              </div>
+
+              {/* User Area Mobile */}
+              {user && (
+                <div className="border-t border-border pt-2 mt-2">
                   <div className="px-3 py-2 text-sm text-muted-foreground">
                     {user.email}
                   </div>
-                  <Link
-                    to="/dashboard"
-                    className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
-                    onClick={handleLinkClick}
-                  >
-                    Dashboard
-                  </Link>
-                  {isAdmin && (
+                  {isAdmin ? (
                     <Link
-                      to="/crm"
+                      to="/admin"
                       className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
                       onClick={handleLinkClick}
                     >
-                      CRM
+                      Admin Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/dashboard"
+                      className="block px-3 py-2 text-foreground hover:text-senvia-500 transition-colors"
+                      onClick={handleLinkClick}
+                    >
+                      Dashboard
                     </Link>
                   )}
                   <button
@@ -173,18 +214,6 @@ const Navbar = memo(() => {
                     <LogOut className="w-4 h-4" />
                     Sair
                   </button>
-                </div>
-              ) : (
-                <div className="border-t border-border pt-2">
-                  <Link
-                    to="/auth"
-                    className="block px-3 py-2"
-                    onClick={handleLinkClick}
-                  >
-                    <Button className="w-full bg-senvia-500 hover:bg-senvia-400 text-black">
-                      Área do Cliente
-                    </Button>
-                  </Link>
                 </div>
               )}
             </div>

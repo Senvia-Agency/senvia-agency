@@ -27,6 +27,11 @@ const Navbar = memo(() => {
       <div className="bg-gradient-to-r from-senvia-600 to-senvia-500 rounded-full px-8 py-3 shadow-lg backdrop-blur-md">
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center space-x-8">
+          {/* Logo */}
+          <Link to="/" className="text-xl font-bold text-white" onClick={handleLinkClick}>
+            SENVIA
+          </Link>
+          
           <button 
             onClick={() => scrollToSection('sobre')}
             className="text-white hover:text-senvia-100 transition-colors cursor-pointer font-medium"
@@ -64,6 +69,14 @@ const Navbar = memo(() => {
           >
             Contacto
           </button>
+          
+          {/* Consultation Button */}
+          <Button 
+            onClick={handleScheduleConsultation}
+            className="bg-white text-senvia-600 hover:bg-senvia-50 font-medium px-6 py-2 rounded-full"
+          >
+            Agendar Consultoria
+          </Button>
         </div>
 
         {/* Mobile menu button */}

@@ -40,6 +40,9 @@ const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
 const Produtos = lazy(() => import("./pages/Produtos"));
+const Starter = lazy(() => import("./pages/Starter"));
+const Pro = lazy(() => import("./pages/Pro"));
+const Premium = lazy(() => import("./pages/Premium"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -79,6 +82,9 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/termos-servico" element={<TermosServico />} />
                 <Route path="/produtos" element={<Produtos />} />
+                <Route path="/starter" element={<Starter />} />
+                <Route path="/pro" element={<Pro />} />
+                <Route path="/premium" element={<Premium />} />
                 <Route path="/auth" element={<Auth />} />
                 
                 {/* Protected Routes for Customers */}

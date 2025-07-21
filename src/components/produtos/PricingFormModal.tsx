@@ -35,6 +35,16 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
     setIsSubmitting(true);
 
     try {
+      // Track GTM form_submit event
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'form_submit', {
+          event_category: 'pricing_form',
+          event_label: `${planName.toLowerCase()}_plan_interest`,
+          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 697 : 1197,
+          currency: 'EUR'
+        });
+      }
+
       // Track Facebook Pixel event
       if (typeof window !== 'undefined' && (window as any).fbq) {
         (window as any).fbq('track', 'Lead', {

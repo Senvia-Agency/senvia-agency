@@ -18,12 +18,9 @@ const CTASection = () => {
         >
           <span className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center leading-tight">
             <span className="text-xs sm:text-sm md:text-base font-medium">
-              Solicitar minha estrutura
+              Falar com especialista
             </span>
-            <span className="flex items-center gap-1">
-              <span className="text-xs sm:text-sm md:text-base font-medium">personalizada</span>
-              <ArrowRight className="h-4 w-4 flex-shrink-0" />
-            </span>
+            <ArrowRight className="h-4 w-4 flex-shrink-0" />
           </span>
         </Button>
       </div>

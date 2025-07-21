@@ -171,7 +171,7 @@ const PacPackagesSection = () => {
                         : 'bg-background hover:bg-muted border border-border text-foreground'
                     }`}
                   >
-                    {showPricing ? 'Escolher Este Plano' : 'Saber Mais'}
+                    {showPricing ? 'Falar com especialista' : 'Ver Detalhes'}
                   </Button>
                 </CardContent>
               </Card>

@@ -23,7 +23,7 @@ const Websites = () => {
               to="/#contacto" 
               className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 text-white font-medium rounded-xl hover:from-senvia-400 hover:to-senvia-300 transition-all duration-300"
             >
-              Solicitar Orçamento
+              Falar com especialista
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

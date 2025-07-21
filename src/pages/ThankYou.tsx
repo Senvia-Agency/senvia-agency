@@ -90,7 +90,7 @@ const ThankYou = () => {
                 variant="outline"
                 className="px-8 py-3 border-senvia-500 text-senvia-500 hover:bg-senvia-500/10"
               >
-                Saber mais sobre o serviço
+                Ver Detalhes do serviço
               </Button>
             </div>
           </div>

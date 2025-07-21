@@ -135,7 +135,7 @@ const PricingSection = () => {
                           : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                       }`}
                     >
-                      Saber Mais
+                      Ver Detalhes
                     </Button>
                     
                     <Button 
@@ -143,7 +143,7 @@ const PricingSection = () => {
                       variant="outline"
                       className="w-full py-2 border-senvia-500 text-senvia-500 hover:bg-senvia-500 hover:text-black"
                     >
-                      Tenho Interesse
+                      Falar com especialista
                     </Button>
                   </div>
                 </CardContent>

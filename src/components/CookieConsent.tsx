@@ -18,10 +18,17 @@ const CookieConsent = () => {
     if (!consent) {
       setIsVisible(true);
     } else {
-      // Carregar preferências salvas
-      const savedPreferences = JSON.parse(consent);
-      setPreferences(savedPreferences);
-      applyCookieSettings(savedPreferences);
+      try {
+        // Carregar preferências salvas
+        const savedPreferences = JSON.parse(consent);
+        setPreferences(savedPreferences);
+        applyCookieSettings(savedPreferences);
+      } catch (error) {
+        // Se não conseguir fazer parse, limpar localStorage e mostrar banner novamente
+        console.warn('Invalid cookie consent data found, resetting:', error);
+        localStorage.removeItem('cookie-consent');
+        setIsVisible(true);
+      }
     }
   }, []);
 

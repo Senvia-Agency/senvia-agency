@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin } from "lucide-react";
 const ContactInfo = () => {
   return (
     <div>
-      <h3 className="text-2xl font-semibold mb-6 text-senvia-800">Informações de Contacto</h3>
+      <h3 className="text-2xl font-semibold mb-6 text-foreground">Informações de Contacto</h3>
       
       <div className="space-y-6">
         <div className="flex items-start space-x-4">
@@ -12,7 +12,7 @@ const ContactInfo = () => {
             <Phone className="h-5 w-5" />
           </div>
           <div>
-            <h4 className="font-medium text-senvia-800">Telefone</h4>
+            <h4 className="font-medium text-foreground">Telefone</h4>
             <a href="tel:+351939135114" className="text-muted-foreground hover:text-senvia-500 transition-colors">
               +351 939 135 114
             </a>
@@ -24,7 +24,7 @@ const ContactInfo = () => {
             <Mail className="h-5 w-5" />
           </div>
           <div>
-            <h4 className="font-medium text-senvia-800">Email</h4>
+            <h4 className="font-medium text-foreground">Email</h4>
             <a href="mailto:geral@senvia.pt" className="text-muted-foreground hover:text-senvia-500 transition-colors">
               geral@senvia.pt
             </a>
@@ -36,7 +36,7 @@ const ContactInfo = () => {
             <MapPin className="h-5 w-5" />
           </div>
           <div>
-            <h4 className="font-medium text-senvia-800">Localização</h4>
+            <h4 className="font-medium text-foreground">Localização</h4>
             <p className="text-muted-foreground">Portugal</p>
           </div>
         </div>

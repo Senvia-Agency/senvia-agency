@@ -15,12 +15,24 @@ const CookieConsent = () => {
   useEffect(() => {
     // Verificar se o usuário já deu consentimento
     const consent = localStorage.getItem('cookie-consent');
+    console.log('Cookie consent value from localStorage:', consent);
+    
     if (!consent) {
       setIsVisible(true);
     } else {
       try {
+        // Verificar se é um valor JSON válido
+        if (consent === 'accepted' || consent === 'rejected') {
+          // Valores legados - limpar e mostrar banner
+          console.warn('Legacy cookie consent value found, clearing:', consent);
+          localStorage.removeItem('cookie-consent');
+          setIsVisible(true);
+          return;
+        }
+        
         // Carregar preferências salvas
         const savedPreferences = JSON.parse(consent);
+        console.log('Parsed preferences:', savedPreferences);
         setPreferences(savedPreferences);
         applyCookieSettings(savedPreferences);
       } catch (error) {

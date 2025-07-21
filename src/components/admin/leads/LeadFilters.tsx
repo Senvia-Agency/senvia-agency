@@ -70,6 +70,7 @@ const LeadFilters = ({ filters, dateRange, onFiltersChange, onDateRangeChange }:
                 <SelectItem value="all">Todas as fontes</SelectItem>
                 <SelectItem value="basic">Landing Page €4.99</SelectItem>
                 <SelectItem value="premium">Landing Page Premium</SelectItem>
+                <SelectItem value="consultoria">Agendar Consultoria</SelectItem>
               </SelectContent>
             </Select>
 

@@ -177,7 +177,8 @@ const AdminLeads = () => {
     // Filtro de fonte - corrigido
     const matchesSource = filters.source === "all" || 
       (filters.source === "basic" && lead.source_page === "landing_page_basic") ||
-      (filters.source === "premium" && lead.source_page === "landing_page_premium");
+      (filters.source === "premium" && lead.source_page === "landing_page_premium") ||
+      (filters.source === "consultoria" && lead.source_page === "contact_form_consultoria");
     
     // Filtro de data - só aplica se houver dateRange configurado manualmente
     let matchesDate = true;

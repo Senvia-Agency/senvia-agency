@@ -23,7 +23,7 @@ const ContactSection = () => {
           </div>
           
           <div className="bg-card p-8 rounded-2xl shadow-lg border border-border animate-on-scroll">
-            <h3 className="text-2xl font-semibold mb-6 text-foreground">Envie-nos uma Mensagem</h3>
+            <h3 className="text-2xl font-semibold mb-6 text-foreground">Agendar Consultoria Gratuita</h3>
             <ContactForm />
           </div>
         </div>

@@ -73,16 +73,17 @@ const ContactForm = () => {
           full_name: formState.name,
           email: formState.email,
           phone: formState.phone,
-          source_page: 'contact_form',
-          interest_type: 'general_contact',
-          plan: 'Contacto Geral',
+          source_page: 'contact_form_consultoria',
+          interest_type: 'agendar_consultoria',
+          plan: 'Agendar Consultoria',
+          objective: 'Agendar uma consultoria gratuita com a SENVIA',
           notes: formState.message,
           lead_status: 'new',
           priority: 1,
           data_consent: formState.gdprConsent,
           utm_source: 'contact_form',
           utm_medium: 'website',
-          utm_campaign: 'general_contact'
+          utm_campaign: 'agendar_consultoria'
         });
 
       if (error) {
@@ -195,7 +196,7 @@ const ContactForm = () => {
           required
           rows={4}
           className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all resize-none text-foreground"
-          placeholder="Como podemos ajudar?"
+          placeholder="Conte-nos sobre o teu projeto ou que tipo de consultoria precisas..."
           ></textarea>
         </div>
         

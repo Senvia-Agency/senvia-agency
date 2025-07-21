@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Crown, ArrowLeft, Workflow, Zap, Shield, Globe, Settings, Clock } from "lucide-react";
 import MetaPixel from "../components/MetaPixel";
 import ImportantNotes from "../components/produtos/ImportantNotes";
+import PricingFormModal from "../components/produtos/PricingFormModal";
 
 const PremiumPage = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Plano Premium - SENVIA | Automação Empresarial Completa";
@@ -128,7 +130,7 @@ const PremiumPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
-              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Premium (1.197€). Podem entrar em contacto comigo?', '_blank')}
+              onClick={() => setIsModalOpen(true)}
             >
               Escolher Premium
             </Button>
@@ -250,7 +252,7 @@ const PremiumPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
-              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Premium (1.197€). Podem entrar em contacto comigo?', '_blank')}
+              onClick={() => setIsModalOpen(true)}
             >
               Solicitar Plano Premium - 1.197€
             </Button>
@@ -262,6 +264,13 @@ const PremiumPage = () => {
       </section>
 
       <ImportantNotes />
+
+      
+      <PricingFormModal 
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        planName="Premium"
+      />
 
       {/* CTA Section */}
     </div>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Zap, ArrowLeft, Clock, Euro, Globe, Shield } from "lucide-react";
 import MetaPixel from "../components/MetaPixel";
 import ImportantNotes from "../components/produtos/ImportantNotes";
+import PricingFormModal from "../components/produtos/PricingFormModal";
 
 const StarterPage = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Plano Starter - SENVIA | Página Profissional + Captação";
@@ -100,7 +102,7 @@ const StarterPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
-              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Starter (397€). Podem entrar em contacto comigo?', '_blank')}
+              onClick={() => setIsModalOpen(true)}
             >
               Começar Agora
             </Button>
@@ -168,7 +170,7 @@ const StarterPage = () => {
           <Button 
             size="lg"
             className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
-            onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Starter (397€). Podem entrar em contacto comigo?', '_blank')}
+            onClick={() => setIsModalOpen(true)}
           >
             Solicitar Plano Starter - 397€
           </Button>
@@ -177,7 +179,14 @@ const StarterPage = () => {
 
       <ImportantNotes />
 
-      {/* CTA Section */}
+      
+      <PricingFormModal 
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        planName="Starter"
+      />
+
+      <Footer />
     </div>
   );
 };

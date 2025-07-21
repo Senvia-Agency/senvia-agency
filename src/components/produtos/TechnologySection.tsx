@@ -18,7 +18,7 @@ const TechnologySection = () => {
       icon: Shield,
       title: "RGPD Compliant",
       description: "100% conforme com leis europeias",
-      color: "from-purple-500 to-violet-500"
+      color: "from-senvia-500 to-senvia-400"
     },
     {
       icon: Zap,
@@ -50,14 +50,14 @@ const TechnologySection = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-full px-6 py-3 mb-6">
-              <Cpu className="w-5 h-5 text-purple-400" />
-              <span className="text-purple-400 font-medium">Tecnologia de Ponta</span>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-senvia-500/20 to-senvia-400/20 border border-senvia-500/30 rounded-full px-6 py-3 mb-6">
+              <Cpu className="w-5 h-5 text-senvia-400" />
+              <span className="text-senvia-400 font-medium">Tecnologia de Ponta</span>
             </div>
             
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
               Construído com
-              <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent block">
+              <span className="bg-gradient-to-r from-senvia-400 to-senvia-500 bg-clip-text text-transparent block">
                 Tecnologia do Futuro
               </span>
             </h2>
@@ -73,7 +73,7 @@ const TechnologySection = () => {
             {technologies.map((tech, index) => (
               <div
                 key={index}
-                className="group bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-500 hover:transform hover:scale-105"
+                className="group bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 hover:border-senvia-500/50 transition-all duration-500 hover:transform hover:scale-105"
               >
                 <div className={`w-16 h-16 bg-gradient-to-r ${tech.color} rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-2xl transition-all duration-500`}>
                   <tech.icon className="w-8 h-8 text-white" />
@@ -86,7 +86,7 @@ const TechnologySection = () => {
           </div>
 
           {/* Performance Stats */}
-          <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 border border-purple-500/30 rounded-3xl p-12">
+          <div className="bg-gradient-to-r from-senvia-900/50 to-senvia-800/50 border border-senvia-500/30 rounded-3xl p-12">
             <div className="text-center mb-12">
               <h3 className="text-3xl font-bold mb-4">Performance Garantida</h3>
               <p className="text-gray-300 text-lg">Métricas que comprovam a excelência técnica</p>
@@ -110,7 +110,7 @@ const TechnologySection = () => {
               </div>
               
               <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-senvia-400 to-senvia-500 bg-clip-text text-transparent mb-2">
                   256-bit
                 </div>
                 <div className="text-gray-300">Encriptação SSL</div>
@@ -147,9 +147,9 @@ const TechnologySection = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-senvia-400 rounded-full mt-2"></div>
                     <div>
-                      <strong className="text-purple-400">Segurança:</strong> Proteção contra ataques e vazamentos
+                      <strong className="text-senvia-400">Segurança:</strong> Proteção contra ataques e vazamentos
                     </div>
                   </div>
                 </div>

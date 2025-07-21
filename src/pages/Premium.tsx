@@ -130,7 +130,7 @@ const PremiumPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => document.getElementById('cta-final')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Escolher Premium
             </Button>
@@ -239,7 +239,7 @@ const PremiumPage = () => {
       </section>
 
       {/* CTA Final */}
-      <section className="py-16 bg-gradient-to-r from-senvia-500/10 to-senvia-400/10">
+      <section id="cta-final" className="py-16 bg-gradient-to-r from-senvia-500/10 to-senvia-400/10">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Pronto Para Dominar o Mercado?
@@ -254,7 +254,7 @@ const PremiumPage = () => {
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
               onClick={() => setIsModalOpen(true)}
             >
-              Solicitar Plano Premium - 1.197€
+              Falar com especialista - 1.197€
             </Button>
             <div className="text-sm text-muted-foreground">
               Consultoria gratuita incluída • Suporte VIP 24h • Garantia de resultados

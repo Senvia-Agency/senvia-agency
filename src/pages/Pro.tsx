@@ -127,7 +127,7 @@ const ProPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => document.getElementById('cta-final')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Escolher Pro
             </Button>
@@ -203,7 +203,7 @@ const ProPage = () => {
       </section>
 
       {/* CTA Final */}
-      <section className="py-16 bg-gradient-to-r from-senvia-500/10 to-senvia-400/10">
+      <section id="cta-final" className="py-16 bg-gradient-to-r from-senvia-500/10 to-senvia-400/10">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Transforme o Seu Negócio Hoje
@@ -217,7 +217,7 @@ const ProPage = () => {
             className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
             onClick={() => setIsModalOpen(true)}
           >
-            Começar com Pro - 697€
+            Falar com especialista - 697€
           </Button>
         </div>
       </section>

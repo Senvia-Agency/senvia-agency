@@ -64,7 +64,7 @@ const PricingSection = () => {
   ];
 
   return (
-    <section id="pricing-section" className="py-16 bg-gradient-to-br from-background via-secondary to-card">
+    <section id="pricing-section" className="py-16 bg-gradient-to-br from-senvia-500/5 via-background to-senvia-400/5">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -83,23 +83,23 @@ const PricingSection = () => {
                 key={plan.name} 
                 className={`relative overflow-hidden ${
                   plan.popular 
-                    ? 'border-primary bg-card scale-105 glow-box' 
+                    ? 'border-senvia-500 bg-card scale-105 shadow-lg shadow-senvia-500/20' 
                     : 'border-border bg-card/50'
-                } backdrop-blur-xl hover:scale-105 transition-all duration-300 card-hover`}
+                } backdrop-blur-xl hover:scale-105 transition-all duration-300`}
               >
                 {plan.popular && (
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1">
+                  <Badge className="absolute top-4 right-4 bg-senvia-500 text-black px-3 py-1">
                     Recomendado
                   </Badge>
                 )}
                 
                 <CardHeader className="text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center mx-auto">
-                    <IconComponent className="h-6 w-6 text-primary-foreground" />
+                  <div className="w-12 h-12 rounded-full bg-senvia-500 flex items-center justify-center mx-auto">
+                    <IconComponent className="h-6 w-6 text-black" />
                   </div>
                   <CardTitle className="text-xl font-bold text-foreground">{plan.name}</CardTitle>
                   <div className="space-y-1">
-                    <div className="text-3xl font-bold text-primary">
+                    <div className="text-3xl font-bold text-senvia-500">
                       {plan.price}€
                     </div>
                     <p className="text-muted-foreground text-sm">{plan.period}</p>
@@ -111,7 +111,7 @@ const PricingSection = () => {
                   <ul className="space-y-2">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+                        <Check className="h-4 w-4 text-senvia-400 mt-0.5 flex-shrink-0" />
                         <span className="text-muted-foreground text-sm">{feature}</span>
                       </li>
                     ))}
@@ -121,7 +121,7 @@ const PricingSection = () => {
                     onClick={() => navigate(plan.route)}
                     className={`w-full py-2 ${
                       plan.popular
-                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                        ? 'bg-senvia-500 hover:bg-senvia-400 text-black'
                         : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                     }`}
                   >

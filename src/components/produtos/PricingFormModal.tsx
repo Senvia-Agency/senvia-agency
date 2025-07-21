@@ -253,6 +253,7 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
             </Button>
             <Button
               type="submit"
+              id="pricing-form-submit-button"
               disabled={isSubmitting || !formData.gdpr_consent}
               className="flex-1 bg-senvia-500 hover:bg-senvia-600 disabled:opacity-50"
             >

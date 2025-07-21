@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -17,7 +19,9 @@ const formSchema = z.object({
   phone: z.string().min(9, "Telefone inválido"),
   businessName: z.string().optional(),
   website: z.string().optional(),
-  objective: z.string().min(1, "Selecione um objetivo")
+  objective: z.string().min(1, "Selecione um objetivo"),
+  gdprConsent: z.boolean().refine(val => val === true, "Deve aceitar o tratamento de dados"),
+  marketingConsent: z.boolean().optional()
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -43,7 +47,9 @@ const LandingPageForm = () => {
       phone: "",
       businessName: "",
       website: "",
-      objective: ""
+      objective: "",
+      gdprConsent: false,
+      marketingConsent: false
     }
   });
 
@@ -71,9 +77,14 @@ const LandingPageForm = () => {
           website: data.website,
           source_page: 'landing_page_premium',
           interest_type: 'premium_landing_page',
+          plan: 'Landing Page Premium',
           objective: data.objective,
           lead_status: 'new',
-          priority: 1
+          priority: 1,
+          data_consent: data.gdprConsent,
+          utm_source: 'landing_form',
+          utm_medium: 'website',
+          utm_campaign: 'premium_landing_conversion'
         });
 
       if (error) throw error;
@@ -248,12 +259,70 @@ const LandingPageForm = () => {
             />
           </div>
 
+          {/* RGPD Compliance Section */}
+          <div className="space-y-4 border-t border-muted pt-6">
+            <FormField
+              control={form.control}
+              name="gdprConsent"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="text-sm font-medium">
+                      Aceito o tratamento dos meus dados pessoais *
+                    </FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Os seus dados serão utilizados para processar este pedido e entrar em contacto consigo. 
+                      Consulte a nossa{" "}
+                      <Link 
+                        to="/privacy-policy" 
+                        className="text-senvia-500 hover:underline"
+                        target="_blank"
+                      >
+                        Política de Privacidade
+                      </Link>{" "}
+                      para mais informações.
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="marketingConsent"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="text-sm font-medium">
+                      Aceito receber comunicações de marketing (opcional)
+                    </FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Pode cancelar a subscrição a qualquer momento.
+                    </p>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
+
           <div className="pt-3 sm:pt-4 md:pt-6">
             <Button 
               type="submit" 
-              className="w-full h-auto py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-8 text-sm sm:text-base md:text-lg font-semibold bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 min-h-[48px] sm:min-h-[56px] md:min-h-[64px] rounded-xl"
+              className="w-full h-auto py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-8 text-sm sm:text-base md:text-lg font-semibold bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 min-h-[48px] sm:min-h-[56px] md:min-h-[64px] rounded-xl disabled:opacity-50"
               style={{ color: '#000000' }}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !form.watch('gdprConsent')}
             >
               <span className="flex items-center justify-center gap-2 sm:gap-3">
                 <span className="text-sm sm:text-base md:text-lg font-semibold">

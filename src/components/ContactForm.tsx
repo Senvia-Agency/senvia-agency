@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { Send, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "react-router-dom";
 
 interface FormState {
   name: string;
   email: string;
   phone: string;
   message: string;
+  gdprConsent: boolean;
+  marketingConsent: boolean;
 }
 
 const ContactForm = () => {
@@ -14,7 +19,9 @@ const ContactForm = () => {
     name: "",
     email: "",
     phone: "",
-    message: ""
+    message: "",
+    gdprConsent: false,
+    marketingConsent: false
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,74 +29,88 @@ const ContactForm = () => {
   const { toast } = useToast();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormState(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
+  };
+
+  const handleCheckboxChange = (name: string, value: boolean) => {
     setFormState(prev => ({ ...prev, [name]: value }));
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formState.gdprConsent) {
+      toast({
+        title: "Consentimento obrigatório",
+        description: "Deve aceitar o tratamento dos seus dados pessoais para continuar.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    const formData = {
-      name: formState.name,
-      email: formState.email,
-      phone: formState.phone,
-      message: formState.message,
-      timestamp: new Date().toISOString(),
-      source: "website_contact_form"
-    };
-    
-    console.log("Dados do formulário a serem enviados:", formData);
-    
     try {
-      console.log("Enviando para webhook:", "https://n8n.senvia.pt/webhook/lovable-lead");
-      
-      const response = await fetch("https://n8n.senvia.pt/webhook/lovable-lead", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(formData),
-      });
+      // Track Facebook Pixel event
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', {
+          content_name: 'Contact Form Submission',
+          content_category: 'Contact',
+          value: 1.00,
+          currency: 'EUR'
+        });
+      }
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-      
-      try {
-        const responseText = await response.text();
-        console.log("Response body:", responseText);
-      } catch (readError) {
-        console.log("Não foi possível ler o body da resposta:", readError);
+      // Insert lead into unified_leads table
+      const { error } = await supabase
+        .from('unified_leads')
+        .insert({
+          full_name: formState.name,
+          email: formState.email,
+          phone: formState.phone,
+          source_page: 'contact_form',
+          interest_type: 'general_contact',
+          plan: 'Contacto Geral',
+          notes: formState.message,
+          lead_status: 'new',
+          priority: 1,
+          data_consent: formState.gdprConsent,
+          utm_source: 'contact_form',
+          utm_medium: 'website',
+          utm_campaign: 'general_contact'
+        });
+
+      if (error) {
+        console.error('Error inserting lead:', error);
+        throw error;
       }
       
-      if (response.ok || response.status === 0) {
-        console.log("Webhook chamado com sucesso");
-        
-        setIsSubmitted(true);
-        setFormState({
-          name: "",
-          email: "",
-          phone: "",
-          message: ""
-        });
-        
-        toast({
-          title: "Mensagem enviada com sucesso!",
-          description: "Obrigado pelo seu contacto. Responderemos o mais breve possível.",
-        });
-        
-        setTimeout(() => {
-          setIsSubmitted(false);
-        }, 5000);
-      } else {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      setIsSubmitted(true);
+      setFormState({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        gdprConsent: false,
+        marketingConsent: false
+      });
+      
+      toast({
+        title: "✅ Mensagem enviada com sucesso!",
+        description: "Obrigado pelo seu contacto. Responderemos nas próximas 24h.",
+      });
+      
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
       
     } catch (error) {
-      console.error("Erro detalhado ao enviar form:", error);
-      console.error("Tipo do erro:", typeof error);
-      console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace');
+      console.error("Error submitting contact form:", error);
       
       toast({
         title: "Erro ao enviar mensagem",
@@ -175,15 +196,67 @@ const ContactForm = () => {
           rows={4}
           className="w-full px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-all resize-none text-foreground"
           placeholder="Como podemos ajudar?"
-        ></textarea>
-      </div>
+          ></textarea>
+        </div>
+        
+        {/* RGPD Compliance Section */}
+        <div className="space-y-4 border-t border-muted pt-6">
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="gdpr_consent"
+              checked={formState.gdprConsent}
+              onCheckedChange={(checked) => handleCheckboxChange("gdprConsent", checked as boolean)}
+              className="mt-1"
+            />
+            <div className="space-y-1 leading-none">
+              <label 
+                htmlFor="gdpr_consent" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Aceito o tratamento dos meus dados pessoais *
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Os seus dados serão utilizados para processar este pedido e entrar em contacto consigo. 
+                Consulte a nossa{" "}
+                <Link 
+                  to="/privacy-policy" 
+                  className="text-senvia-500 hover:underline"
+                  target="_blank"
+                >
+                  Política de Privacidade
+                </Link>{" "}
+                para mais informações.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="marketing_consent"
+              checked={formState.marketingConsent}
+              onCheckedChange={(checked) => handleCheckboxChange("marketingConsent", checked as boolean)}
+              className="mt-1"
+            />
+            <div className="space-y-1 leading-none">
+              <label 
+                htmlFor="marketing_consent" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Aceito receber comunicações de marketing (opcional)
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Pode cancelar a subscrição a qualquer momento.
+              </p>
+            </div>
+          </div>
+        </div>
       
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`w-full px-6 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 ${
-          isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-        }`}
+        <button
+          type="submit"
+          disabled={isSubmitting || !formState.gdprConsent}
+          className={`w-full px-6 py-3 bg-senvia-500 hover:bg-senvia-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 ${
+            isSubmitting || !formState.gdprConsent ? "opacity-70 cursor-not-allowed" : ""
+          }`}
       >
         {isSubmitting ? (
           <>

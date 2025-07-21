@@ -1479,6 +1479,7 @@ export type Database = {
           objective: string | null
           payment_status: string | null
           phone: string | null
+          plan: string | null
           priority: number | null
           social_networks: string | null
           source_page: string
@@ -1521,6 +1522,7 @@ export type Database = {
           objective?: string | null
           payment_status?: string | null
           phone?: string | null
+          plan?: string | null
           priority?: number | null
           social_networks?: string | null
           source_page: string
@@ -1563,6 +1565,7 @@ export type Database = {
           objective?: string | null
           payment_status?: string | null
           phone?: string | null
+          plan?: string | null
           priority?: number | null
           social_networks?: string | null
           source_page?: string

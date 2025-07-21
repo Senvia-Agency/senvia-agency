@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 interface PricingFormModalProps {
   open: boolean;
@@ -22,7 +25,9 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
     instagram_site: "",
     company_name: "",
     message: "",
-    plan: planName
+    plan: planName,
+    gdpr_consent: false,
+    marketing_consent: false
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,15 +35,50 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
     setIsSubmitting(true);
 
     try {
-      // Aqui você implementará a lógica para salvar no banco
-      console.log("Form data:", formData);
-      
+      // Track Facebook Pixel event
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', {
+          content_name: `${planName} Plan Interest`,
+          content_category: 'Plan Interest',
+          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 697 : 1197,
+          currency: 'EUR'
+        });
+      }
+
+      // Inserir lead na tabela unified_leads
+      const { error } = await supabase
+        .from('unified_leads')
+        .insert({
+          full_name: formData.name,
+          email: formData.email,
+          phone: formData.whatsapp,
+          company_name: formData.company_name,
+          website: formData.instagram_site,
+          source_page: `${planName.toLowerCase()}_plan_interest`,
+          interest_type: `${planName.toLowerCase()}_plan`,
+          plan: planName, // Nova coluna para identificar o plano
+          notes: formData.message,
+          lead_status: 'new',
+          priority: planName === 'Premium' ? 3 : planName === 'Pro' ? 2 : 1,
+          data_consent: formData.gdpr_consent,
+          utm_source: 'pricing_form',
+          utm_medium: 'website',
+          utm_campaign: `${planName.toLowerCase()}_plan_interest`
+        });
+
+      if (error) {
+        console.error('Error inserting lead:', error);
+        throw error;
+      }
+
       toast({
-        title: "Interesse registrado!",
-        description: `Recebemos seu interesse no plano ${planName}. Entraremos em contato em breve.`,
+        title: "✅ Interesse registado com sucesso!",
+        description: `Recebemos o seu interesse no plano ${planName}. Entraremos em contacto nas próximas 24h.`,
       });
       
       onOpenChange(false);
+      
+      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -46,12 +86,15 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
         instagram_site: "",
         company_name: "",
         message: "",
-        plan: planName
+        plan: planName,
+        gdpr_consent: false,
+        marketing_consent: false
       });
+      
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title: "Erro",
+        title: "Erro ao enviar",
         description: "Ocorreu um erro ao enviar o formulário. Tente novamente.",
         variant: "destructive",
       });
@@ -60,7 +103,7 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -146,6 +189,58 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
             />
           </div>
 
+          {/* RGPD Compliance Section */}
+          <div className="space-y-4 border-t border-muted pt-4">
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="gdpr_consent"
+                checked={formData.gdpr_consent}
+                onCheckedChange={(checked) => handleInputChange("gdpr_consent", checked as boolean)}
+                required
+              />
+              <div className="space-y-1 leading-none">
+                <Label 
+                  htmlFor="gdpr_consent" 
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Aceito a recolha e processamento dos meus dados pessoais *
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Os seus dados serão utilizados para processar o seu pedido e entrar em contacto consigo. 
+                  Consulte a nossa{" "}
+                  <Link 
+                    to="/privacy-policy" 
+                    className="text-senvia-500 hover:underline"
+                    target="_blank"
+                  >
+                    Política de Privacidade
+                  </Link>{" "}
+                  para mais informações.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="marketing_consent"
+                checked={formData.marketing_consent}
+                onCheckedChange={(checked) => handleInputChange("marketing_consent", checked as boolean)}
+              />
+              <div className="space-y-1 leading-none">
+                <Label 
+                  htmlFor="marketing_consent" 
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Aceito receber comunicações de marketing (opcional)
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Pode cancelar a subscrição a qualquer momento através dos links de cancelamento 
+                  ou entrando em contacto connosco.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
@@ -158,8 +253,8 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-senvia-500 hover:bg-senvia-600"
+              disabled={isSubmitting || !formData.gdpr_consent}
+              className="flex-1 bg-senvia-500 hover:bg-senvia-600 disabled:opacity-50"
             >
               {isSubmitting ? "Enviando..." : "Enviar Interesse"}
             </Button>

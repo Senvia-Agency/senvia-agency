@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from "react";
+import { useState, memo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOptimizedScroll } from "@/hooks/useOptimizedScroll";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,32 +12,24 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const Navbar = () => {
+const Navbar = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [showClientMenu, setShowClientMenu] = useState(false);
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const isScrolled = useOptimizedScroll(10);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleSignOut = async (e: React.MouseEvent) => {
+  const handleSignOut = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     await signOut();
     navigate("/");
     setShowClientMenu(false);
-  };
+  }, [signOut, navigate]);
 
-  const handleLinkClick = () => {
+  const handleLinkClick = useCallback(() => {
     setIsOpen(false);
     setShowClientMenu(false);
-  };
+  }, []);
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -200,6 +193,8 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
+});
+
+Navbar.displayName = 'Navbar';
 
 export default Navbar;

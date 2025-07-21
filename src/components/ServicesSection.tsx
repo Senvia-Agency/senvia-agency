@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from "react";
+import { memo } from "react";
 import { 
   Globe, 
   ShoppingCart, 
@@ -12,37 +12,10 @@ import {
   MessageCircle
 } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-const ServicesSection = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const elements = entry.target.querySelectorAll(".animate-on-scroll");
-            elements.forEach((el, index) => {
-              setTimeout(() => {
-                el.classList.add("visible");
-              }, index * 100);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+const ServicesSection = memo(() => {
+  const sectionRef = useScrollAnimation(100);
 
   const services = [
     {
@@ -129,6 +102,8 @@ const ServicesSection = () => {
       </div>
     </section>
   );
-};
+});
+
+ServicesSection.displayName = 'ServicesSection';
 
 export default ServicesSection;

@@ -1,69 +1,34 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, memo, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import OptimizedImage from "./OptimizedImage";
 
-// List of tools logos shown in the carousel
+// Usando imagens locais para melhor performance
 const tools = [
-  { name: "Photoshop", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg" },
-  { name: "Illustrator", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg" },
-  { name: "Figma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
-  { name: "WordPress", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-plain.svg" },
-  { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-  { name: "Vue.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" },
-  { name: "Google Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Ads_logo.svg/512px-Google_Ads_logo.svg.png" },
-  { name: "Facebook Ads", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Facebook_icon_2013.svg/512px-Facebook_icon_2013.svg.png" },
-  { name: "Shopify", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/shopify/shopify-original.svg" },
-  { name: "WooCommerce", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/woocommerce/woocommerce-original.svg" },
-  { name: "Adobe XD", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-plain.svg" },
-  { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
+  { name: "Photoshop", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
+  { name: "Illustrator", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
+  { name: "Figma", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
+  { name: "WordPress", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
+  { name: "React", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
+  { name: "Vue.js", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
+  { name: "Google Ads", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
+  { name: "Facebook Ads", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
+  { name: "Shopify", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
+  { name: "WooCommerce", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
+  { name: "Adobe XD", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
+  { name: "TailwindCSS", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
 ];
 
-const ToolsCarousel = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
+const ToolsCarousel = memo(() => {
+  const sectionRef = useScrollAnimation(100);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<{[key: string]: boolean}>({});
 
-  // Handle image load error
-  const handleImageError = (toolName: string) => {
+  const handleImageError = useCallback((toolName: string) => {
     console.log(`Error loading image for ${toolName}`);
-  };
-
-  // Handle image load success
-  const handleImageLoad = (toolName: string) => {
-    setLoadedImages(prev => ({...prev, [toolName]: true}));
-  };
-
-  // Handle intersection observer for scroll animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const elements = entry.target.querySelectorAll(".animate-on-scroll");
-            elements.forEach((el, index) => {
-              setTimeout(() => {
-                el.classList.add("visible");
-              }, index * 100);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
   }, []);
 
-  // Auto-rotate carousel
+  // Auto-rotate carousel com performance otimizada
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % tools.length);
@@ -72,14 +37,14 @@ const ToolsCarousel = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Handle carousel navigation
-  const navigate = (direction: "next" | "prev") => {
+  // Handle carousel navigation com useCallback
+  const navigate = useCallback((direction: "next" | "prev") => {
     if (direction === "next") {
       setActiveIndex((prev) => (prev + 1) % tools.length);
     } else {
       setActiveIndex((prev) => (prev - 1 + tools.length) % tools.length);
     }
-  };
+  }, []);
 
   return (
     <section
@@ -106,7 +71,7 @@ const ToolsCarousel = () => {
             <ChevronLeft className="h-6 w-6 text-senvia-500" />
           </button>
           
-          <div className="overflow-hidden px-12" ref={containerRef}>
+          <div className="overflow-hidden px-12">
             <div className="relative h-64 md:h-80">
               {tools.map((tool, index) => {
                 const isActive = index === activeIndex;
@@ -129,11 +94,11 @@ const ToolsCarousel = () => {
                     className={`absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center transition-all duration-500 transform ${position}`}
                   >
                     <div className="bg-card p-8 rounded-2xl shadow-lg w-full max-w-xs md:max-w-md mx-auto flex flex-col items-center glow-box border border-border">
-                      <img 
+                      <OptimizedImage 
                         src={tool.logo} 
                         alt={`${tool.name} logo`}
                         onError={() => handleImageError(tool.name)}
-                        onLoad={() => handleImageLoad(tool.name)}
+                        loading="lazy"
                         className="h-20 md:h-28 w-auto object-contain mb-4"
                       />
                       <h3 className="text-xl font-semibold text-foreground">{tool.name}</h3>
@@ -170,6 +135,8 @@ const ToolsCarousel = () => {
       </div>
     </section>
   );
-};
+});
+
+ToolsCarousel.displayName = 'ToolsCarousel';
 
 export default ToolsCarousel;

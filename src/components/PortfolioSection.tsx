@@ -1,6 +1,8 @@
 
-import { useEffect, useRef, useState } from "react";
-import { ExternalLink, ArrowRight } from "lucide-react";
+import { useEffect, useState, memo, useMemo } from "react";
+import { ExternalLink } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import OptimizedImage from "./OptimizedImage";
 
 const portfolioItems = [
   {
@@ -37,52 +39,20 @@ const portfolioItems = [
   }
 ];
 
-const PortfolioSection = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+const PortfolioSection = memo(() => {
+  const sectionRef = useScrollAnimation(150);
   const [filter, setFilter] = useState("Todos");
-  const [filteredItems, setFilteredItems] = useState(portfolioItems);
 
-  useEffect(() => {
-    // Extract unique categories
+  const { categories, filteredItems } = useMemo(() => {
     const uniqueCategories = ["Todos", ...new Set(portfolioItems.map(item => item.category))];
-    setCategories(uniqueCategories);
+    const filtered = filter === "Todos" 
+      ? portfolioItems 
+      : portfolioItems.filter(item => item.category === filter);
     
-    // Setup intersection observer for animations
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const elements = entry.target.querySelectorAll(".animate-on-scroll");
-            elements.forEach((el, index) => {
-              setTimeout(() => {
-                el.classList.add("visible");
-              }, index * 150);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+    return { 
+      categories: uniqueCategories, 
+      filteredItems: filtered 
     };
-  }, []);
-
-  // Handle filter change
-  useEffect(() => {
-    if (filter === "Todos") {
-      setFilteredItems(portfolioItems);
-    } else {
-      setFilteredItems(portfolioItems.filter(item => item.category === filter));
-    }
   }, [filter]);
 
   return (
@@ -130,10 +100,11 @@ const PortfolioSection = () => {
                 {/* Image Section */}
                 <div className="relative h-64 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10" />
-                  <img
+                  <OptimizedImage
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
                   />
                   
                   {/* Category Badge */}
@@ -193,6 +164,8 @@ const PortfolioSection = () => {
       </div>
     </section>
   );
-};
+});
+
+PortfolioSection.displayName = 'PortfolioSection';
 
 export default PortfolioSection;

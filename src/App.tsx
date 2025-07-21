@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminRoute from "@/components/AdminRoute";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // Lazy load pages
 const Index = lazy(() => import("./pages/Index"));
@@ -41,7 +42,14 @@ const TermosServico = lazy(() => import("./pages/TermosServico"));
 const Produtos = lazy(() => import("./pages/Produtos"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutos
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
@@ -51,14 +59,7 @@ function App() {
           <Toaster />
           <BrowserRouter>
             <ScrollToTopOnRouteChange />
-            <Suspense fallback={
-              <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-senvia-500 glow mb-4">SENVIA</div>
-                  <p className="text-muted-foreground">Carregando...</p>
-                </div>
-              </div>
-            }>
+            <Suspense fallback={<LoadingSpinner />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/projetos" element={<Projetos />} />

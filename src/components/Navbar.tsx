@@ -53,7 +53,7 @@ const Navbar = memo(() => {
             Benefícios
           </button>
           <button 
-            onClick={() => scrollToSection('portfolio')}
+            onClick={() => scrollToSection('depoimentos')}
             className="text-white hover:text-senvia-100 transition-colors cursor-pointer font-medium"
           >
             Depoimentos
@@ -114,7 +114,7 @@ const Navbar = memo(() => {
                 Benefícios
               </button>
               <button
-                onClick={() => scrollToSection('portfolio')}
+                onClick={() => scrollToSection('depoimentos')}
                 className="block w-full text-left px-3 py-2 text-white hover:text-senvia-100 transition-colors rounded-lg hover:bg-white/10"
               >
                 Depoimentos

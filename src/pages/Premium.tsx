@@ -261,7 +261,7 @@ const PremiumPage = () => {
 
       <ImportantNotes />
 
-      <Footer />
+      {/* CTA Section */}
     </div>
   );
 };

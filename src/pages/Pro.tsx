@@ -220,7 +220,7 @@ const ProPage = () => {
 
       <ImportantNotes />
 
-      <Footer />
+      {/* CTA Section */}
     </div>
   );
 };

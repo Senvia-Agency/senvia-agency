@@ -175,7 +175,7 @@ const StarterPage = () => {
 
       <ImportantNotes />
 
-      <Footer />
+      {/* CTA Section */}
     </div>
   );
 };

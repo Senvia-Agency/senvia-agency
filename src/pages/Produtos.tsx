@@ -39,8 +39,8 @@ const Produtos = () => {
       <TechnologySection />
       <ValueProposition />
       <PricingSection />
-      <CTASection />
       <ImportantNotes />
+      <CTASection />
       <Footer />
     </div>
   );

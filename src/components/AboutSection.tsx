@@ -66,15 +66,15 @@ const AboutSection = memo(() => {
             <h3 className="text-2xl md:text-3xl font-bold mb-6">
               A Nossa <span className="text-gradient">Missão</span>
             </h3>
-            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+            <p className="text-base text-muted-foreground mb-6 leading-relaxed">
               Somos uma equipa apaixonada por marketing digital, automação e performance, focada em ajudar 
               empreendedores como tu a atrair mais clientes, vender com consistência e ganhar tempo através da tecnologia.
             </p>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed">
               Trabalhamos com soluções simples e eficazes, como Landing Pages de Alta Conversão, sistemas de CRM personalizados, 
               campanhas de tráfego pago e integrações inteligentes que ligam todos os pontos do teu negócio.
             </p>
-            <p className="text-muted-foreground leading-relaxed mt-4">
+            <p className="text-base text-muted-foreground leading-relaxed mt-4">
               Aqui, não vendemos promessas. Criamos estratégias reais, com base em dados e experiência, sempre com um 
               atendimento próximo e transparente. Se procuras alguém que fale a tua linguagem, compreenda os teus desafios 
               e te ajude a escalar com inteligência, então estás no lugar certo.

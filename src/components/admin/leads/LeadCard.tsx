@@ -50,6 +50,15 @@ const LeadCard = ({
 
           <LeadPaymentInfo lead={lead} />
 
+          {/* Plano escolhido */}
+          {lead.plan && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="px-2 py-1 bg-senvia-500/20 text-senvia-400 rounded text-xs font-medium">
+                Plano: {lead.plan}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
             <Calendar className="h-3 w-3" />
             <span>Criado em {format(new Date(lead.created_at), 'dd/MM/yyyy', { locale: ptBR })}</span>

@@ -128,6 +128,7 @@ const PremiumPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
+              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Premium (1.197€). Podem entrar em contacto comigo?', '_blank')}
             >
               Escolher Premium
             </Button>
@@ -249,6 +250,7 @@ const PremiumPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-lg px-8 py-4"
+              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Premium (1.197€). Podem entrar em contacto comigo?', '_blank')}
             >
               Solicitar Plano Premium - 1.197€
             </Button>

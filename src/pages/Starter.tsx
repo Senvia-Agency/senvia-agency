@@ -100,6 +100,7 @@ const StarterPage = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
+              onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Starter (397€). Podem entrar em contacto comigo?', '_blank')}
             >
               Começar Agora
             </Button>
@@ -167,6 +168,7 @@ const StarterPage = () => {
           <Button 
             size="lg"
             className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
+            onClick={() => window.open('https://wa.me/351920888333?text=Olá! Gostaria de solicitar o Plano Starter (397€). Podem entrar em contacto comigo?', '_blank')}
           >
             Solicitar Plano Starter - 397€
           </Button>

@@ -36,17 +36,23 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
 
     try {
       // Track GTM event
+      console.log('GTM gtag available:', typeof (window as any)?.gtag);
       if (typeof window !== 'undefined' && (window as any).gtag) {
+        console.log('Sending gtag form_submit event');
         (window as any).gtag('event', 'form_submit', {
           event_category: 'pricing_form',
           event_label: `${planName.toLowerCase()}_plan_interest`,
           value: planName === 'Starter' ? 397 : planName === 'Pro' ? 697 : 1197,
           currency: 'EUR'
         });
+      } else {
+        console.log('gtag not available');
       }
 
       // Send event to dataLayer for GTM
+      console.log('GTM dataLayer available:', typeof (window as any)?.dataLayer);
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        console.log('Sending dataLayer pricing_form_submit event');
         (window as any).dataLayer.push({
           'event': 'pricing_form_submit',
           'form_name': 'pricing_interest_form',
@@ -55,6 +61,8 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
           'user_email': formData.email,
           'user_name': formData.name
         });
+      } else {
+        console.log('dataLayer not available');
       }
 
       // Track Facebook Pixel event

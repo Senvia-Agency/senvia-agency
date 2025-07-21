@@ -28,7 +28,9 @@ const Navbar = memo(() => {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center space-x-8">
           {/* Logo */}
-          <Link to="/" className="text-xl font-bold text-white" onClick={handleLinkClick}>
+          <Link to="/" className="text-xl font-bold text-senvia-400 glow" onClick={handleLinkClick} style={{
+            textShadow: '0 0 10px #00bcd4, 0 0 20px #00bcd4, 0 0 30px #00bcd4'
+          }}>
             SENVIA
           </Link>
           

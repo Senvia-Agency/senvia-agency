@@ -40,8 +40,7 @@ const AboutSection = memo(() => {
             <span className="text-gradient">Sobre a SENVIA</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto animate-on-scroll">
-            Somos uma agência de marketing digital e tecnologia que transforma ideias em experiências digitais impactantes. 
-            Com foco em resultados e inovação, ajudamos empresas a crescer no mundo digital.
+            Na SENVIA, acreditamos que o sucesso online não precisa ser complicado — e estamos aqui para provar isso todos os dias.
           </p>
         </div>
 
@@ -68,13 +67,17 @@ const AboutSection = memo(() => {
               A Nossa <span className="text-gradient">Missão</span>
             </h3>
             <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-              Democratizar o acesso a tecnologias digitais avançadas, permitindo que empresas de todos os tamanhos 
-              possam competir no mercado digital com ferramentas profissionais e estratégias eficazes.
+              Somos uma equipa apaixonada por marketing digital, automação e performance, focada em ajudar 
+              empreendedores como tu a atrair mais clientes, vender com consistência e ganhar tempo através da tecnologia.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Acreditamos que cada negócio tem potencial único e merece soluções personalizadas que reflitam 
-              a sua identidade e objetivos. É por isso que trabalhamos lado a lado com os nossos clientes, 
-              entendendo as suas necessidades específicas e criando estratégias sob medida.
+              Trabalhamos com soluções simples e eficazes, como Landing Pages de Alta Conversão, sistemas de CRM personalizados, 
+              campanhas de tráfego pago e integrações inteligentes que ligam todos os pontos do teu negócio.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              Aqui, não vendemos promessas. Criamos estratégias reais, com base em dados e experiência, sempre com um 
+              atendimento próximo e transparente. Se procuras alguém que fale a tua linguagem, compreenda os teus desafios 
+              e te ajude a escalar com inteligência, então estás no lugar certo.
             </p>
           </div>
 

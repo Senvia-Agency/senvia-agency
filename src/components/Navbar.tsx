@@ -10,6 +10,11 @@ const Navbar = memo(() => {
     setIsOpen(false);
   }, []);
 
+  const handleLogoClick = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsOpen(false);
+  }, []);
+
   const scrollToSection = useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -29,7 +34,7 @@ const Navbar = memo(() => {
         <div className="bg-gradient-to-r from-senvia-600 to-senvia-500 rounded-full px-8 py-3 shadow-lg backdrop-blur-md">
           <div className="flex items-center space-x-8">
             {/* Logo */}
-            <Link to="/" className="text-xl font-bold text-senvia-400 glow" onClick={handleLinkClick} style={{
+            <Link to="/" className="text-xl font-bold text-senvia-400 glow" onClick={handleLogoClick} style={{
               textShadow: '0 0 10px #00bcd4, 0 0 20px #00bcd4, 0 0 30px #00bcd4'
             }}>
               SENVIA
@@ -89,7 +94,7 @@ const Navbar = memo(() => {
         <div className="bg-gradient-to-r from-senvia-600 to-senvia-500 rounded-full px-6 py-3 shadow-lg backdrop-blur-md">
           <div className="flex items-center justify-between w-full">
             {/* Logo Mobile */}
-            <Link to="/" className="text-xl font-bold text-senvia-400 glow" onClick={handleLinkClick} style={{
+            <Link to="/" className="text-xl font-bold text-senvia-400 glow" onClick={handleLogoClick} style={{
               textShadow: '0 0 10px #00bcd4, 0 0 20px #00bcd4, 0 0 30px #00bcd4'
             }}>
               SENVIA

@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -54,6 +54,24 @@ const QuickLoader = () => (
 );
 
 function App() {
+  useEffect(() => {
+    // Initialize dataLayer if not present
+    if (typeof window !== 'undefined') {
+      if (!(window as any).dataLayer) {
+        (window as any).dataLayer = [];
+      }
+      
+      // Push initial event to ensure GTM is working
+      (window as any).dataLayer.push({
+        'event': 'gtm_initialized',
+        'gtm_container_id': 'GTM-KL72LGGS'
+      });
+      
+      console.log('GTM Debug - dataLayer exists:', !!(window as any).dataLayer);
+      console.log('GTM Debug - script loaded:', !!document.querySelector('script[src*="gtm.js"]'));
+    }
+  }, []);
+
   return (
     <TooltipProvider>
       <AuthProvider>

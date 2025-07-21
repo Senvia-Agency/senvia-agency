@@ -7,28 +7,40 @@ const TestimonialsSection = memo(() => {
 
   const testimonials = [
     {
-      quote: "A SENVIA transformou completamente a nossa presença online. Em apenas 3 meses, aumentámos as vendas em 150% e reduzimos o tempo gasto em tarefas administrativas.",
+      quote: "A SENVIA transformou completamente a nossa presença online. Em apenas 3 meses, aumentámos as vendas em 150% e reduzimos o tempo gasto em tarefas administrativas. Recomendo vivamente!",
       name: "Miguel Santos",
-      designation: "CEO, Distância Arrojada",
-      src: "/lovable-uploads/1eb268ed-2dd6-49ab-8eff-d6bc955a2223.png",
+      designation: "",
+      src: "",
     },
     {
-      quote: "Profissionais excepcionais! Criaram uma landing page que converte muito bem e automatizaram todo o nosso processo de geração de leads. Recomendo vivamente.",
+      quote: "Profissionais excepcionais! Criaram uma landing page que converte muito bem e automatizaram todo o nosso processo de geração de leads. O suporte é sempre rápido e eficiente.",
       name: "Ana Silva",
-      designation: "Directora de Marketing, DASP Rent",
-      src: "/lovable-uploads/040f5578-af33-41a8-9271-e8cfeda9dbac.png",
+      designation: "",
+      src: "",
     },
     {
-      quote: "O trabalho da SENVIA superou todas as nossas expectativas. O site ficou lindo e funcional, e o suporte é sempre rápido e eficiente.",
+      quote: "O trabalho da SENVIA superou todas as nossas expectativas. O site ficou lindo e funcional, e conseguimos finalmente digitalizar o nosso negócio de forma eficaz.",
       name: "Thais Lorrayne",
-      designation: "Maquiadora Profissional",
-      src: "/lovable-uploads/3424b149-f302-4d53-89c7-332d69bfcf98.png",
+      designation: "",
+      src: "",
     },
     {
-      quote: "Graças à SENVIA, consegui digitalizar o meu negócio de consultoria de viagens. As ferramentas de automação poupam-me horas todos os dias.",
+      quote: "Graças à SENVIA, consegui automatizar processos que me poupam horas todos os dias. A equipa é muito profissional e entende realmente as necessidades dos clientes.",
       name: "Daniel Freitas",
-      designation: "Consultor de Viagens",
-      src: "/lovable-uploads/a2455a7c-3f41-4cd3-aabf-a79473014089.png",
+      designation: "",
+      src: "",
+    },
+    {
+      quote: "Excelente trabalho! A nossa nova estratégia digital resultou num aumento significativo de leads qualificados. A SENVIA sabe mesmo o que faz.",
+      name: "Sofia Costa",
+      designation: "",
+      src: "",
+    },
+    {
+      quote: "Trabalhar com a SENVIA foi uma das melhores decisões que tomámos. Eles não só entregaram o que prometeram, como superaram as nossas expectativas.",
+      name: "João Pereira",
+      designation: "",
+      src: "",
     },
   ];
 

@@ -55,9 +55,9 @@ const TechnologySection = () => {
               <span className="text-senvia-400 font-medium">Tecnologia de Ponta</span>
             </div>
             
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Construído com
-              <span className="bg-gradient-to-r from-senvia-400 to-senvia-500 bg-clip-text text-transparent block">
+              <span className="bg-gradient-to-r from-senvia-400 to-senvia-500 bg-clip-text text-transparent block leading-tight">
                 Tecnologia do Futuro
               </span>
             </h2>

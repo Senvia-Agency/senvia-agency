@@ -15,7 +15,7 @@ const ProductsHero = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-foreground">
             Automação Profissional
-            <span className="block text-gradient glow">
+            <span className="block text-gradient glow leading-tight">
               Que Gera Resultados
             </span>
           </h1>

@@ -45,9 +45,9 @@ const ValueProposition = () => {
           <Badge className="mb-4 bg-destructive/10 text-destructive px-4 py-2 border border-destructive/20">
             Compare Você Mesmo
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
             Fazer Interno vs
-            <span className="text-gradient glow"> SENVIA</span>
+            <span className="text-gradient glow leading-tight"> SENVIA</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Por que criar do zero quando você pode ter tudo funcionando em dias?

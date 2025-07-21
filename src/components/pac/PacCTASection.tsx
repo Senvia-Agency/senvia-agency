@@ -33,15 +33,6 @@ const PacCTASection = () => {
     setIsSubmitting(true);
 
     try {
-      // Track Facebook Pixel event
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', {
-          content_name: 'PAC Growth Lead',
-          content_category: 'Landing Page Premium',
-          value: 1200,
-          currency: 'EUR'
-        });
-      }
 
       // Insert lead into database
       const { error } = await supabase
@@ -61,14 +52,6 @@ const PacCTASection = () => {
 
       if (error) throw error;
 
-      // Track success event
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'CompleteRegistration', {
-          content_name: 'PAC Growth Qualified Lead',
-          value: 1200,
-          currency: 'EUR'
-        });
-      }
 
       toast({
         title: "✅ Pedido enviado com sucesso!",

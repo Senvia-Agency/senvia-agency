@@ -52,10 +52,6 @@ const CookieConsent = () => {
       });
     }
 
-    if (settings.marketing && typeof window !== 'undefined' && (window as any).fbq) {
-      // Facebook Pixel já está carregado, apenas ativar se consentimento dado
-      (window as any).fbq('consent', 'grant');
-    }
   };
 
   const acceptAll = () => {

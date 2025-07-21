@@ -56,15 +56,6 @@ const ContactForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Track Facebook Pixel event
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', {
-          content_name: 'Contact Form Submission',
-          content_category: 'Contact',
-          value: 1.00,
-          currency: 'EUR'
-        });
-      }
 
       // Insert lead into unified_leads table
       const { error } = await supabase

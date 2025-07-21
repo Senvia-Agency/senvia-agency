@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ToolsCarousel from "../components/ToolsCarousel";
-import MetaPixel from "../components/MetaPixel";
+
 
 const Ferramentas = () => {
   return (
     <div className="min-h-screen">
-      <MetaPixel />
+      
       <Navbar />
       
       {/* Hero Section */}

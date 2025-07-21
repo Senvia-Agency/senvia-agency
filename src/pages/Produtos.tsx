@@ -8,7 +8,7 @@ import ValueProposition from "../components/produtos/ValueProposition";
 import PricingSection from "../components/produtos/PricingSection";
 import CTASection from "../components/produtos/CTASection";
 import ImportantNotes from "../components/produtos/ImportantNotes";
-import MetaPixel from "../components/MetaPixel";
+
 
 const Produtos = () => {
   useEffect(() => {
@@ -32,7 +32,7 @@ const Produtos = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <MetaPixel />
+      
       <Navbar />
       <ProductsHero />
       <AutomationShowcase />

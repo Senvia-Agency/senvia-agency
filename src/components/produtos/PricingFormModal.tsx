@@ -45,15 +45,6 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
         });
       }
 
-      // Track Facebook Pixel event
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', {
-          content_name: `${planName} Plan Interest`,
-          content_category: 'Plan Interest',
-          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 697 : 1197,
-          currency: 'EUR'
-        });
-      }
 
       // Inserir lead na tabela unified_leads
       const { error } = await supabase

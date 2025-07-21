@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import MetaPixel from "@/components/MetaPixel";
+
 
 const ThankYou = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ThankYou = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <MetaPixel />
+      
       <Navbar />
       
       <section className="pt-32 pb-20 px-4">

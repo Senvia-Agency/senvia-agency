@@ -11,7 +11,7 @@ import ContactSection from "../components/ContactSection";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import ScrollAnimator from "../components/ScrollAnimator";
-import MetaPixel from "../components/MetaPixel";
+
 
 const Index = () => {
   useEffect(() => {
@@ -21,7 +21,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <MetaPixel />
+      
       <Navbar />
       <HeroSection />
       <AboutSection />

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, ArrowLeft, Workflow, Zap, Shield, Globe, Settings, Clock } from "lucide-react";
-import MetaPixel from "../components/MetaPixel";
+
 import ImportantNotes from "../components/produtos/ImportantNotes";
 import PricingFormModal from "../components/produtos/PricingFormModal";
 
@@ -82,7 +82,7 @@ const PremiumPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <MetaPixel />
+      
       <Navbar />
       
       {/* Hero Section */}

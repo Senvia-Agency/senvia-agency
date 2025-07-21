@@ -135,7 +135,7 @@ const PricingSection = () => {
                           : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                       }`}
                     >
-                      Contactar Agora
+                      Saber Mais
                     </Button>
                     
                     <Button 

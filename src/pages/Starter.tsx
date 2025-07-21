@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Zap, ArrowLeft, Clock, Euro, Globe, Shield } from "lucide-react";
 import MetaPixel from "../components/MetaPixel";
+import ImportantNotes from "../components/produtos/ImportantNotes";
 
 const StarterPage = () => {
   const navigate = useNavigate();
@@ -171,6 +172,8 @@ const StarterPage = () => {
           </Button>
         </div>
       </section>
+
+      <ImportantNotes />
 
       <Footer />
     </div>

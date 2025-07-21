@@ -7,6 +7,7 @@ import TechnologySection from "../components/produtos/TechnologySection";
 import ValueProposition from "../components/produtos/ValueProposition";
 import PricingSection from "../components/produtos/PricingSection";
 import CTASection from "../components/produtos/CTASection";
+import ImportantNotes from "../components/produtos/ImportantNotes";
 import MetaPixel from "../components/MetaPixel";
 
 const Produtos = () => {
@@ -39,6 +40,7 @@ const Produtos = () => {
       <ValueProposition />
       <PricingSection />
       <CTASection />
+      <ImportantNotes />
       <Footer />
     </div>
   );

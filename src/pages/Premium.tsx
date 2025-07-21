@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, ArrowLeft, Workflow, Zap, Shield, Globe, Settings, Clock } from "lucide-react";
 import MetaPixel from "../components/MetaPixel";
+import ImportantNotes from "../components/produtos/ImportantNotes";
 
 const PremiumPage = () => {
   const navigate = useNavigate();
@@ -257,6 +258,8 @@ const PremiumPage = () => {
           </div>
         </div>
       </section>
+
+      <ImportantNotes />
 
       <Footer />
     </div>

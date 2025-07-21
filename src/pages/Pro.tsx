@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, ArrowLeft, Zap, Database, Mail, Target, Users, Headphones } from "lucide-react";
 import MetaPixel from "../components/MetaPixel";
+import ImportantNotes from "../components/produtos/ImportantNotes";
 
 const ProPage = () => {
   const navigate = useNavigate();
@@ -216,6 +217,8 @@ const ProPage = () => {
           </Button>
         </div>
       </section>
+
+      <ImportantNotes />
 
       <Footer />
     </div>

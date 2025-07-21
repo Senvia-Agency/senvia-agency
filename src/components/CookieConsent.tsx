@@ -194,7 +194,7 @@ const CookieConsent = () => {
                 <div className="flex-1">
                   <h4 className="font-medium mb-1">Cookies de Marketing</h4>
                   <p className="text-sm text-muted-foreground">
-                    Meta Pixel - Utilizados para personalizar anúncios e medir a eficácia das campanhas.
+                    Google Analytics - Utilizados para personalizar anúncios e medir a eficácia das campanhas.
                   </p>
                 </div>
                 <label className="flex items-center space-x-2 ml-4">

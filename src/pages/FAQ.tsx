@@ -43,7 +43,7 @@ const faqData = [
     questions: [
       {
         question: "Como funciona o tráfego pago?",
-        answer: "Criamos e gerimos campanhas no Google Ads, Meta Ads e outras plataformas. Definimos orçamentos, segmentamos audiências e otimizamos continuamente para maximizar o retorno sobre investimento."
+        answer: "Criamos e gerimos campanhas no Google Ads e outras plataformas. Definimos orçamentos, segmentamos audiências e otimizamos continuamente para maximizar o retorno sobre investimento."
       },
       {
         question: "Quanto devo investir em publicidade?",

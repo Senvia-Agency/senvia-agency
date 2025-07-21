@@ -35,7 +35,7 @@ const ServicesSection = memo(() => {
     },
     {
       title: "Tráfego Pago",
-      description: "Somos especialistas em Meta Ads para aumentar a visibilidade da sua marca.",
+      description: "Somos especialistas em Google Ads para aumentar a visibilidade da sua marca.",
       icon: <TrendingUp className="h-10 w-10 text-senvia-500" />
     },
     {

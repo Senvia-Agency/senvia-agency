@@ -61,7 +61,7 @@ const Ferramentas = () => {
               <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50">
                 <h3 className="text-xl font-bold mb-4">Marketing</h3>
                 <div className="space-y-2 text-muted-foreground">
-                  <p>Google Analytics, Meta Pixel</p>
+                  <p>Google Analytics</p>
                   <p>SEO Tools, Keyword Research</p>
                   <p>Email Marketing Platforms</p>
                   <p>Social Media Management</p>

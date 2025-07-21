@@ -116,7 +116,7 @@ const AdminRelatoriosMarketing = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Relatórios de Marketing</h1>
-          <p className="text-gray-400 mt-2">Gerencie relatórios de campanhas do Meta Ads</p>
+          <p className="text-gray-400 mt-2">Gerencie relatórios de campanhas do Google Ads</p>
         </div>
         <Button
           onClick={() => setCreateModalOpen(true)}

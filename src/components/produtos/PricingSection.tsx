@@ -26,7 +26,7 @@ const PricingSection = () => {
         "Página de alta conversão",
         "Formulário → E-mail direto", 
         "Botão WhatsApp integrado",
-        "GA4 + Pixel configurados",
+        "GA4 configurado",
         "Hospedagem SSL incluída",
         "Entrega em 7 dias"
       ],

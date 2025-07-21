@@ -13,7 +13,7 @@ const tools = [
   { name: "React", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
   { name: "Vue.js", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
   { name: "Google Ads", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
-  { name: "Facebook Ads", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
+  { name: "Google Ads", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },
   { name: "Shopify", logo: "/lovable-uploads/e29257f0-dc8b-4672-accb-c98d9b83e84e.png" },
   { name: "WooCommerce", logo: "/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" },
   { name: "Adobe XD", logo: "/lovable-uploads/d810e16f-1ebf-4288-9a52-9bf0fa5586c2.png" },

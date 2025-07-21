@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminRoute from "@/components/AdminRoute";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
+import GTMPageView from "@/components/GTMPageView";
 import CookieConsent from "@/components/CookieConsent";
 
 // Lazy load crítico primeiro
@@ -58,6 +59,7 @@ function App() {
       <AuthProvider>
         <Router>
           <ScrollToTopOnRouteChange />
+          <GTMPageView />
           <Suspense fallback={<QuickLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />

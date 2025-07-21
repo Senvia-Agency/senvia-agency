@@ -88,7 +88,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const checkAdminStatus = async (userId: string) => {
-    console.log('AuthProvider: Checking admin status for user:', userId);
+    // Cache admin status in localStorage to avoid repeated queries
+    const cachedStatus = localStorage.getItem(`admin_status_${userId}`);
+    const cacheExpiry = localStorage.getItem(`admin_status_expiry_${userId}`);
+    
+    if (cachedStatus && cacheExpiry && Date.now() < parseInt(cacheExpiry)) {
+      setIsAdmin(cachedStatus === 'true');
+      setAdminLoading(false);
+      return;
+    }
+    
     setAdminLoading(true);
     
     try {
@@ -96,15 +105,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .from('profiles')
         .select('role')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Admin check error:', error);
-        setIsAdmin(false);
-      } else {
-        console.log('Admin check result:', data?.role);
-        setIsAdmin(data?.role === 'admin');
-      }
+      const isAdminUser = data?.role === 'admin';
+      setIsAdmin(isAdminUser);
+      
+      // Cache for 1 hour
+      localStorage.setItem(`admin_status_${userId}`, isAdminUser.toString());
+      localStorage.setItem(`admin_status_expiry_${userId}`, (Date.now() + 3600000).toString());
+      
     } catch (error) {
       console.error('Admin check exception:', error);
       setIsAdmin(false);

@@ -34,6 +34,8 @@ export default defineConfig(({ mode }) => ({
       },
     },
     chunkSizeWarningLimit: 1000,
+    target: 'esnext',
+    minify: 'esbuild',
   },
   esbuild: {
     drop: mode === 'production' ? ['console', 'debugger'] : [],

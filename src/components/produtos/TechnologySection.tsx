@@ -85,47 +85,6 @@ const TechnologySection = () => {
             ))}
           </div>
 
-          {/* Performance Stats */}
-          <div className="bg-gradient-to-r from-senvia-900/50 to-senvia-800/50 border border-senvia-500/30 rounded-3xl p-12">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4">Performance Garantida</h3>
-              <p className="text-gray-300 text-lg">Métricas que comprovam a excelência técnica</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2">
-                  98%
-                </div>
-                <div className="text-gray-300">Uptime Garantido</div>
-                <div className="text-sm text-gray-500 mt-1">SLA Enterprise</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-                  &lt;2s
-                </div>
-                <div className="text-gray-300">Tempo de Carregamento</div>
-                <div className="text-sm text-gray-500 mt-1">Core Web Vitals</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-senvia-400 to-senvia-500 bg-clip-text text-transparent mb-2">
-                  256-bit
-                </div>
-                <div className="text-gray-300">Encriptação SSL</div>
-                <div className="text-sm text-gray-500 mt-1">Segurança Bancária</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-2">
-                  100%
-                </div>
-                <div className="text-gray-300">RGPD Compliant</div>
-                <div className="text-sm text-gray-500 mt-1">Auditoria Certificada</div>
-              </div>
-            </div>
-          </div>
 
           {/* Trust Section */}
           <div className="mt-16 text-center">

@@ -1,11 +1,20 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Zap, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PricingFormModal from "./PricingFormModal";
 
 const PricingSection = () => {
   const navigate = useNavigate();
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handlePlanInterest = (planName: string) => {
+    setSelectedPlan(planName);
+    setIsModalOpen(true);
+  };
 
   const plans = [
     {
@@ -117,16 +126,26 @@ const PricingSection = () => {
                     ))}
                   </ul>
 
-                  <Button 
-                    onClick={() => navigate(plan.route)}
-                    className={`w-full py-2 ${
-                      plan.popular
-                        ? 'bg-senvia-500 hover:bg-senvia-400 text-black'
-                        : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
-                    }`}
-                  >
-                    Contactar Agora
-                  </Button>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={() => navigate(plan.route)}
+                      className={`w-full py-2 ${
+                        plan.popular
+                          ? 'bg-senvia-500 hover:bg-senvia-400 text-black'
+                          : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                      }`}
+                    >
+                      Contactar Agora
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => handlePlanInterest(plan.name)}
+                      variant="outline"
+                      className="w-full py-2 border-senvia-500 text-senvia-500 hover:bg-senvia-500 hover:text-black"
+                    >
+                      Tenho Interesse
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );
@@ -139,6 +158,12 @@ const PricingSection = () => {
           </p>
         </div>
       </div>
+      
+      <PricingFormModal 
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        planName={selectedPlan}
+      />
     </section>
   );
 };

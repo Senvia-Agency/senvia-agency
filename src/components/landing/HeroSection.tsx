@@ -8,12 +8,12 @@ const HeroSection = () => {
       <div className="container mx-auto text-center max-w-6xl">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Transforme sua presença digital em uma{" "}
-            <span className="text-gradient">máquina de captação de clientes</span>
+            Landing Pages de alta conversão{" "}
+            <span className="text-gradient">+ CRM profissional</span>
           </h1>
           <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-            A estrutura completa, profissional e automatizada para quem quer atrair, 
-            nutrir e converter clientes — sem depender de plataformas complicadas.
+            A estrutura completa para captar e gerir leads: Landing page estratégica + CRM integrado + 
+            automação de e-mails para o seu negócio crescer com previsibilidade.
           </p>
           
           <Button 
@@ -42,7 +42,7 @@ const HeroSection = () => {
               <Star className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 fill-current" />
             </div>
             <p className="text-xs md:text-sm text-muted-foreground">
-              "Empreendedores em Portugal e no Brasil já estão usando nossas estruturas para captar leads todos os dias com previsibilidade."
+              "Mais de 200 empresas já usam nossas landing pages + CRM para captar e gerir leads profissionalmente todos os dias."
             </p>
           </div>
         </div>

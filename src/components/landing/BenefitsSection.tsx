@@ -1,30 +1,34 @@
-
 const BenefitsSection = () => {
   const benefits = [
     {
       icon: "📈",
-      title: "Mais leads organizados e convertidos",
-      description: "Sistema completo de captação e conversão"
+      title: "Captação de leads profissional",
+      description: "Landing page otimizada + CRM para organizar e acompanhar cada oportunidade"
     },
     {
-      icon: "⏱",
-      title: "Economia de tempo com automações",
-      description: "Fluxos automáticos que trabalham 24/7"
+      icon: "✉️",
+      title: "E-mails automáticos inteligentes",
+      description: "Notificações para você + boas-vindas personalizadas para cada novo lead"
     },
     {
       icon: "💬",
-      title: "Comunicação inteligente via WhatsApp",
-      description: "Conexão direta e imediata com clientes"
+      title: "WhatsApp integrado ao CRM",
+      description: "Atendimento direto com histórico completo do lead na palma da mão"
     },
     {
-      icon: "✅",
-      title: "Conformidade legal com páginas obrigatórias",
-      description: "RGPD, termos e políticas incluídos"
+      icon: "⚖️",
+      title: "100% em conformidade legal",
+      description: "Páginas de termos, privacidade e cookies que protegem seu negócio"
     },
     {
-      icon: "💡",
-      title: "Profissionalismo que gera confiança",
-      description: "Design e copy que transmitem credibilidade"
+      icon: "🎯",
+      title: "Foco total em conversão",
+      description: "Cada elemento pensado para transformar visitantes em clientes reais"
+    },
+    {
+      icon: "📊",
+      title: "Relatórios e métricas detalhadas",
+      description: "Acompanhe performance, origem dos leads e taxa de conversão em tempo real"
     }
   ];
 
@@ -33,7 +37,7 @@ const BenefitsSection = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 leading-tight">
-            Seu negócio com presença, <span className="text-gradient">performance e previsibilidade</span>
+            Resultados que você vai ver <span className="text-gradient">desde o primeiro dia</span>
           </h2>
         </div>
 

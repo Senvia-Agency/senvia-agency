@@ -4,24 +4,28 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const FAQSection = () => {
   const faqItems = [
     {
-      question: "Este serviço serve para qualquer tipo de negócio?",
-      answer: "Sim! Criamos estruturas personalizadas para consultores, coaches, clínicas, e-commerce, serviços locais e qualquer negócio que precise captar leads online."
+      question: "A landing page funciona para qualquer tipo de negócio?",
+      answer: "Sim! Criamos landing pages + CRM personalizados para consultores, coaches, clínicas, advogados, arquitetos, e-commerce e qualquer negócio que precise captar leads qualificados."
     },
     {
-      question: "Eu preciso saber programar ou usar ferramentas complicadas?",
-      answer: "Não! Criamos tudo para você e fornecemos treinamento simples. A gestão é feita através de painéis intuitivos que qualquer pessoa consegue usar."
+      question: "Preciso saber usar sistemas complicados?",
+      answer: "Não! O CRM é super intuitivo e fornecemos treinamento completo. Você vai conseguir gerir leads, enviar e-mails e acompanhar conversões facilmente."
     },
     {
-      question: "Quanto tempo leva para entregar?",
-      answer: "O projeto completo fica pronto em até 7 dias úteis, incluindo todas as integrações, automações e testes."
+      question: "Em quanto tempo fica pronto?",
+      answer: "Landing page + CRM completo fica pronto em até 7 dias úteis, incluindo todas as integrações, automação de e-mails e testes de funcionamento."
     },
     {
-      question: "Posso conectar com o WhatsApp do meu negócio?",
-      answer: "Sim! Integramos com o seu número de WhatsApp Business e configuramos botão flutuante + automações inteligentes."
+      question: "Os e-mails são enviados automaticamente?",
+      answer: "Sim! Configuramos e-mails automáticos: você recebe notificação de cada novo lead e o lead recebe boas-vindas personalizadas instantaneamente."
     },
     {
-      question: "Tenho suporte caso precise de ajuda depois?",
-      answer: "Claro! Incluímos 30 dias de suporte gratuito e depois disso oferecemos planos de manutenção acessíveis."
+      question: "Posso integrar com meu WhatsApp Business?",
+      answer: "Claro! Colocamos botão flutuante conectado ao seu WhatsApp e integramos com o CRM para ter histórico completo de cada conversa."
+    },
+    {
+      question: "Tenho suporte após a entrega?",
+      answer: "Sim! Incluímos 30 dias de suporte total e treinamento para você dominar o sistema. Depois oferecemos manutenção mensal opcional."
     }
   ];
 

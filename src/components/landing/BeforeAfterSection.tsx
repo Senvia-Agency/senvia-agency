@@ -16,44 +16,52 @@ const BeforeAfterSection = () => {
             <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-red-600">Antes</h3>
               <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm md:text-base">Página simples e genérica</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm md:text-base">Leads soltos no WhatsApp</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm md:text-base">Atendimento manual</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
-                  <span className="text-sm md:text-base">Nenhum e-mail enviado</span>
-                </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                   <span className="text-sm md:text-base">Site genérico sem foco</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                   <span className="text-sm md:text-base">Leads perdidos ou esquecidos</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                   <span className="text-sm md:text-base">Sem sistema de gestão</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                   <span className="text-sm md:text-base">Zero automação de e-mails</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                   <span className="text-sm md:text-base">Oportunidades desperdiçadas</span>
+                 </div>
               </div>
             </div>
 
             <div className="bg-senvia-500/10 border border-senvia-500/20 rounded-2xl p-6 md:p-8">
               <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-senvia-400">Depois</h3>
               <div className="space-y-3 md:space-y-4">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
-                  <span className="text-sm md:text-base">Landing com copy estratégica</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
-                  <span className="text-sm md:text-base">Leads centralizados no CRM</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
-                  <span className="text-sm md:text-base">Botão flutuante com IA</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
-                  <span className="text-sm md:text-base">Fluxo de e-mails automáticos</span>
-                </div>
+                 <div className="flex items-center gap-3">
+                   <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
+                   <span className="text-sm md:text-base">Landing page de alta conversão</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
+                   <span className="text-sm md:text-base">CRM profissional integrado</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
+                   <span className="text-sm md:text-base">WhatsApp conectado ao sistema</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
+                   <span className="text-sm md:text-base">E-mails automáticos para leads</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-senvia-400 flex-shrink-0" />
+                   <span className="text-sm md:text-base">Gestão organizada de oportunidades</span>
+                 </div>
               </div>
             </div>
           </div>

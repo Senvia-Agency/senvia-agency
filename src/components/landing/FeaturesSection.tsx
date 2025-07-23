@@ -6,33 +6,33 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: Target,
-      title: "Estrutura pensada para conversão real",
-      description: "Copy estratégica e design focado em resultados, não apenas beleza."
+      title: "Landing Page de alta conversão",
+      description: "Design estratégico, copy persuasiva e estrutura focada 100% em resultados e captação de leads."
     },
     {
       icon: Users,
-      title: "CRM de gestão de leads incluso",
-      description: "Todos os contactos organizados e centralizados numa única plataforma."
+      title: "CRM completo para gestão de leads",
+      description: "Sistema profissional para organizar, segmentar e acompanhar todos os seus contactos e oportunidades."
     },
     {
       icon: Zap,
-      title: "E-mails automáticos e nutrição de contactos",
-      description: "Fluxos inteligentes que educam e convertem automaticamente."
+      title: "Automação de e-mails inteligente",
+      description: "E-mails automáticos para administrador (notificação de lead) e boas-vindas personalizadas para o lead."
     },
     {
       icon: MessageSquare,
-      title: "Botão flutuante de WhatsApp com integração",
-      description: "Conexão direta com seus clientes, disponível 24/7."
+      title: "Integração WhatsApp profissional",
+      description: "Botão flutuante conectado ao CRM para atendimento direto e conversão imediata."
     },
     {
       icon: Shield,
-      title: "Páginas legais (termos, políticas, cookies)",
-      description: "Conformidade total com RGPD e legislação europeia."
+      title: "Conformidade legal completa",
+      description: "Páginas de termos, políticas de privacidade e cookies em conformidade com o RGPD."
     },
     {
       icon: Clock,
-      title: "Acompanhamento e suporte personalizado",
-      description: "Não entregamos e desaparecemos. Estamos aqui para ajudar."
+      title: "Suporte contínuo e treinamento",
+      description: "Não apenas entregamos: ensinamos você a usar e otimizar sua estrutura para máximos resultados."
     }
   ];
 
@@ -41,12 +41,12 @@ const FeaturesSection = () => {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 leading-tight">
-            Não criamos apenas páginas. Entregamos uma{" "}
-            <span className="text-gradient">estrutura de vendas inteligente.</span>
+            Landing Page + CRM:{" "}
+            <span className="text-gradient">a dupla perfeita para seu negócio</span>
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Enquanto outros vendem landing pages genéricas, nós desenhamos estruturas sob medida, 
-            com copy estratégica, CRM, automações e integrações que trabalham para você.
+            Não vendemos apenas páginas bonitas. Criamos um sistema completo: landing page de alta conversão 
+            integrada com CRM profissional e automação de e-mails para captar, organizar e nutrir seus leads.
           </p>
         </div>
 

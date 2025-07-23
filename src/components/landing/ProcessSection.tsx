@@ -3,23 +3,23 @@ const ProcessSection = () => {
   const processSteps = [
     {
       number: "01",
-      title: "Análise gratuita",
-      description: "Você preenche o formulário ou fala com a nossa equipa"
+      title: "Briefing detalhado",
+      description: "Analisamos seu negócio e definimos a estratégia da landing page + CRM"
     },
     {
       number: "02",
-      title: "Estratégia personalizada",
-      description: "Planejamos a melhor estrutura para seu objetivo"
+      title: "Criação da landing page",
+      description: "Desenvolvemos página com copy estratégica e design de alta conversão"
     },
     {
       number: "03",
-      title: "Execução completa",
-      description: "Criamos e ativamos a sua estrutura inteligente"
+      title: "Configuração do CRM",
+      description: "Criamos e integramos o sistema completo de gestão de leads e automação"
     },
     {
       number: "04",
-      title: "Entrega e acompanhamento",
-      description: "Entregamos tudo e ajudamos você a usar"
+      title: "Entrega e treinamento",
+      description: "Ativamos tudo e ensinamos você a gerir leads como um profissional"
     }
   ];
 

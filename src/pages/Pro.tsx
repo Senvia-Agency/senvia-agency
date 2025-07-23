@@ -114,9 +114,9 @@ const ProPage = () => {
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
               <div className="text-center">
-                <div className="text-2xl text-muted-foreground line-through mb-1">697€</div>
-                <div className="text-4xl font-bold text-senvia-500 flex items-center justify-center gap-2">
-                  349€
+                <div className="text-lg text-muted-foreground line-through mb-1">697€</div>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-4xl font-bold text-senvia-500">349€</span>
                   <Badge className="bg-red-500 text-white text-sm px-3 py-1">
                     -50%
                   </Badge>

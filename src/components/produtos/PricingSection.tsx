@@ -111,11 +111,13 @@ const PricingSection = () => {
                    <div className="space-y-1">
                      {plan.originalPrice ? (
                        <div className="space-y-1">
-                         <div className="text-lg text-muted-foreground line-through">
+                         <div className="text-lg text-muted-foreground line-through text-center">
                            {plan.originalPrice}€
                          </div>
-                         <div className="text-3xl font-bold text-senvia-500 flex items-center gap-2">
-                           {plan.price}€
+                         <div className="flex items-center justify-center gap-2">
+                           <span className="text-3xl font-bold text-senvia-500">
+                             {plan.price}€
+                           </span>
                            <Badge className="bg-red-500 text-white text-xs px-2 py-1">
                              -50%
                            </Badge>

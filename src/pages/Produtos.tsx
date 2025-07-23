@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductsHero from "../components/produtos/ProductsHero";
 import AutomationShowcase from "../components/produtos/AutomationShowcase";
@@ -32,8 +31,6 @@ const Produtos = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      
-      <Navbar />
       <ProductsHero />
       <AutomationShowcase />
       <TechnologySection />

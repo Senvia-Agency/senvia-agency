@@ -1,6 +1,5 @@
 
 import { useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import HeroSection from "../components/landing/HeroSection";
 import FeaturesSection from "../components/landing/FeaturesSection";
@@ -42,8 +41,6 @@ const LandingPages = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      
-      <Navbar />
       <HeroSection />
       <FeaturesSection />
       <BenefitsSection />

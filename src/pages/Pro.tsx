@@ -114,7 +114,7 @@ const ProPage = () => {
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-senvia-500">697€</div>
+                <div className="text-4xl font-bold text-senvia-500">349€</div>
                 <div className="text-muted-foreground">Setup + 50€/mês</div>
               </div>
               <div className="hidden md:block w-px h-12 bg-border"></div>
@@ -217,7 +217,7 @@ const ProPage = () => {
             className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black text-lg px-8 py-4"
             onClick={() => setIsModalOpen(true)}
           >
-            Falar com especialista - 697€
+            Falar com especialista - 349€
           </Button>
         </div>
       </section>

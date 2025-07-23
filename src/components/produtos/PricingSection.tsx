@@ -36,7 +36,7 @@ const PricingSection = () => {
     },
     {
       name: "Pro", 
-      price: "697",
+      price: "349",
       period: "Setup + 50€/mês",
       description: "Página + CRM + E-mail automático",
       features: [

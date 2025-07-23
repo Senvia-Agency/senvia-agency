@@ -40,7 +40,7 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
         (window as any).gtag('event', 'form_submit', {
           event_category: 'pricing_form',
           event_label: `${planName.toLowerCase()}_plan_interest`,
-          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 697 : 1197,
+          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 349 : 1197,
           currency: 'EUR'
         });
       }

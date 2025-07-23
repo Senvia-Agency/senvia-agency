@@ -37,6 +37,7 @@ const PricingSection = () => {
     {
       name: "Pro", 
       price: "349",
+      originalPrice: "697",
       period: "Setup + 50€/mês",
       description: "Página + CRM + E-mail automático",
       features: [
@@ -107,12 +108,26 @@ const PricingSection = () => {
                     <IconComponent className="h-6 w-6 text-black" />
                   </div>
                   <CardTitle className="text-xl font-bold text-foreground">{plan.name}</CardTitle>
-                  <div className="space-y-1">
-                    <div className="text-3xl font-bold text-senvia-500">
-                      {plan.price}€
-                    </div>
-                    <p className="text-muted-foreground text-sm">{plan.period}</p>
-                  </div>
+                   <div className="space-y-1">
+                     {plan.originalPrice ? (
+                       <div className="space-y-1">
+                         <div className="text-lg text-muted-foreground line-through">
+                           {plan.originalPrice}€
+                         </div>
+                         <div className="text-3xl font-bold text-senvia-500 flex items-center gap-2">
+                           {plan.price}€
+                           <Badge className="bg-red-500 text-white text-xs px-2 py-1">
+                             -50%
+                           </Badge>
+                         </div>
+                       </div>
+                     ) : (
+                       <div className="text-3xl font-bold text-senvia-500">
+                         {plan.price}€
+                       </div>
+                     )}
+                     <p className="text-muted-foreground text-sm">{plan.period}</p>
+                   </div>
                   <p className="text-foreground text-sm">{plan.description}</p>
                 </CardHeader>
 

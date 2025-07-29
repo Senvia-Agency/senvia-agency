@@ -90,6 +90,17 @@ const LandingPageForm = () => {
           business_name: data.businessName || 'N/A'
         });
       }
+
+      // Disparar evento Meta Ads (Facebook Pixel) após sucesso
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', {
+          content_name: 'Premium Landing Page Form',
+          content_category: 'Landing Page',
+          lead_event_source: 'website',
+          objective: data.objective,
+          business_name: data.businessName || 'N/A'
+        });
+      }
       
       navigate('/obrigado');
     } catch (error) {

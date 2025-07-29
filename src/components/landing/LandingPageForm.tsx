@@ -80,6 +80,16 @@ const LandingPageForm = () => {
 
       if (error) throw error;
       
+      // Disparar evento GTM após sucesso
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'lead_generated', {
+          event_category: 'Landing Page',
+          event_label: 'Premium Landing Page Form',
+          lead_source: 'landing_page_premium',
+          objective: data.objective,
+          business_name: data.businessName || 'N/A'
+        });
+      }
       
       navigate('/obrigado');
     } catch (error) {

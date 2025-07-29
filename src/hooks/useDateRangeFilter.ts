@@ -42,7 +42,7 @@ export const useDateRangeFilter = ({
         console.error('Error loading saved date range:', error);
       }
     }
-    return getTodayRange(); // Definir range padrão para hoje
+    return undefined; // Sem filtro de data por padrão
   });
 
   // Save to localStorage when range changes

@@ -153,4 +153,35 @@
       rgba(51, 65, 85, 0.95) 100%
     );
   }
+
+  /* Modern grid pattern */
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(0, 195, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 195, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--accent));
+  }
 }

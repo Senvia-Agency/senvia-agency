@@ -1,14 +1,12 @@
 
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
-import HeroSection from "../components/HeroSection";
-import AboutSection from "../components/AboutSection";
-import ServicesSection from "../components/ServicesSection";
-import BenefitsSection from "../components/BenefitsSection";
-import TestimonialsSection from "../components/TestimonialsSection";
-import PortfolioSection from "../components/PortfolioSection";
-import ContactSection from "../components/ContactSection";
-import Footer from "../components/Footer";
+import ModernHeroSection from "../components/modern/ModernHeroSection";
+import TechStackSection from "../components/modern/TechStackSection";
+import ModernServicesSection from "../components/modern/ModernServicesSection";
+import InnovationSection from "../components/modern/InnovationSection";
+import ContactSection from "../components/modern/ContactSection";
+import ModernFooter from "../components/modern/ModernFooter";
 import ScrollToTop from "../components/ScrollToTop";
 import ScrollAnimator from "../components/ScrollAnimator";
 
@@ -20,17 +18,14 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <ServicesSection />
-      <BenefitsSection />
-      <TestimonialsSection />
-      <PortfolioSection />
+      <ModernHeroSection />
+      <TechStackSection />
+      <ModernServicesSection />
+      <InnovationSection />
       <ContactSection />
-      <Footer />
+      <ModernFooter />
       <ScrollToTop />
       <ScrollAnimator />
     </div>

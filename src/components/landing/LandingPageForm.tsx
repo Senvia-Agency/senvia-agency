@@ -3,15 +3,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Select from "react-select";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -36,8 +36,8 @@ const objectiveOptions = [
 
 const LandingPageForm = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -91,7 +91,7 @@ const LandingPageForm = () => {
         });
       }
       
-      navigate('/obrigado');
+      setShowThankYou(true);
     } catch (error) {
       console.error('Erro ao salvar lead:', error);
       toast({
@@ -331,6 +331,34 @@ const LandingPageForm = () => {
           </div>
         </form>
       </Form>
+
+      {/* Modal de Agradecimento */}
+      <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-center mb-4">
+              <CheckCircle className="h-16 w-16 text-green-500" />
+            </div>
+            <DialogTitle className="text-center text-xl font-bold">
+              Obrigado pelo seu interesse!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              Recebemos o seu pedido e entraremos em contacto consigo brevemente para discutir como podemos ajudar com a sua landing page premium.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Tempo de resposta: <strong>24-48 horas</strong>
+            </p>
+            <Button 
+              onClick={() => setShowThankYou(false)}
+              className="w-full bg-senvia-500 hover:bg-senvia-400 text-black font-semibold"
+            >
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

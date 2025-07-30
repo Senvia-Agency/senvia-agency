@@ -91,6 +91,13 @@ const LandingPageForm = () => {
         });
       }
       
+      // Disparar evento para Google Tag Manager
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'lead_confirmado'
+        });
+      }
+      
       setShowThankYou(true);
     } catch (error) {
       console.error('Erro ao salvar lead:', error);

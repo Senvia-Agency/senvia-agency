@@ -328,6 +328,8 @@ const LandingPageForm = () => {
               className="w-full h-auto py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-8 text-sm sm:text-base md:text-lg font-semibold bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 min-h-[48px] sm:min-h-[56px] md:min-h-[64px] rounded-xl disabled:opacity-50"
               style={{ color: '#000000' }}
               disabled={isSubmitting || !form.watch('gdprConsent')}
+              data-gtm-track="false"
+              data-fb-no-track="true"
             >
               <span className="flex items-center justify-center gap-2 sm:gap-3">
                 <span className="text-sm sm:text-base md:text-lg font-semibold">

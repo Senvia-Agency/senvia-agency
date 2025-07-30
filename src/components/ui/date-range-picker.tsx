@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { addDays, format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths } from "date-fns";
 import { pt } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
@@ -99,6 +99,13 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
     setIsOpen(false);
   };
 
+  const handleClear = () => {
+    setSelectedRange(undefined);
+    setSelectedPreset(null);
+    onChange?.(undefined);
+    setIsOpen(false);
+  };
+
   const formatDateRange = (range: DateRange | undefined) => {
     if (!range?.from) return "Selecionar período";
     
@@ -151,6 +158,13 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 )}
               >
                 Personalizado
+              </button>
+              <button
+                onClick={handleClear}
+                className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-red-600 transition-colors text-red-400 hover:text-white flex items-center gap-2"
+              >
+                <X className="h-3 w-3" />
+                Limpar filtro
               </button>
             </div>
           </div>

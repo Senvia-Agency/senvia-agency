@@ -5,6 +5,7 @@ import { useFinancialMovements } from "@/hooks/useFinancialMovements";
 import { useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { Button } from "@/components/ui/button";
 import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
 import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
@@ -12,12 +13,13 @@ import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
 
 const AdminFinanceiro = () => {
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
-  const { dateRange, setDateRange, getDaysInRange } = useDateRangeFilter({
+  const [showAllData, setShowAllData] = useState(false);
+  const { dateRange, setDateRange, getDaysInRange, clearDateRange } = useDateRangeFilter({
     defaultDays: 30,
     storageKey: 'admin-financeiro-date-range'
   });
 
-  const selectedPeriod = getDaysInRange();
+  const selectedPeriod = showAllData ? null : getDaysInRange();
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
   const { movements, addMovement, isAddingMovement, updateMovement, isUpdatingMovement } = useFinancialMovements(selectedPeriod);
 
@@ -32,6 +34,16 @@ const AdminFinanceiro = () => {
 
   const handleUpdateMovement = (id: string, updates: any) => {
     updateMovement({ id, updates });
+  };
+
+  const handleShowAllData = () => {
+    setShowAllData(true);
+    clearDateRange();
+  };
+
+  const handleDateRangeChange = (range: any) => {
+    setShowAllData(false);
+    setDateRange(range);
   };
 
   if (isLoadingFinancial) {
@@ -55,10 +67,17 @@ const AdminFinanceiro = () => {
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 whitespace-nowrap">Módulo Financeiro</h1>
           <p className="text-gray-400 text-sm sm:text-base">Controle completo das finanças da SENVIA</p>
         </div>
-        <div className="flex justify-end items-center">
+        <div className="flex justify-end items-center gap-2">
+          <Button
+            variant={showAllData ? "default" : "outline"}
+            onClick={handleShowAllData}
+            className="text-xs sm:text-sm px-3 py-2 h-9"
+          >
+            Todos os dados
+          </Button>
           <DateRangePicker
-            value={dateRange}
-            onChange={setDateRange}
+            value={showAllData ? undefined : dateRange}
+            onChange={handleDateRangeChange}
           />
         </div>
       </div>
@@ -69,7 +88,7 @@ const AdminFinanceiro = () => {
         totalExpenses={totalExpenses}
         netProfit={netProfit}
         profitMargin={profitMargin}
-        selectedPeriod={selectedPeriod}
+        selectedPeriod={selectedPeriod || 0}
       />
 
       {/* KPI Cards Contas a Receber */}

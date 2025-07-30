@@ -28,60 +28,83 @@ export interface NewFinancialMovement {
   notes?: string;
 }
 
-export const useFinancialMovements = (dateRange: number = 30) => {
+export const useFinancialMovements = (dateRange: number | null = 30) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: movements, isLoading } = useQuery({
     queryKey: ['financial-movements', dateRange],
     queryFn: async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
+      let startDate = null;
+      if (dateRange) {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - dateRange);
+      }
       
       // Buscar movimentos manuais da tabela financial_movements
-      const { data: manualMovements, error: manualError } = await supabase
+      let manualMovementsQuery = supabase
         .from('financial_movements')
         .select(`
           *,
           customers(full_name, email)
-        `)
-        .gte('movement_date', startDate.toISOString().split('T')[0])
+        `);
+        
+      if (startDate) {
+        manualMovementsQuery = manualMovementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      }
+      
+      const { data: manualMovements, error: manualError } = await manualMovementsQuery
         .order('movement_date', { ascending: false });
 
       if (manualError) throw manualError;
 
       // Buscar transações de clientes (receitas)
-      const { data: customerTransactions, error: transactionsError } = await supabase
+      let customerTransactionsQuery = supabase
         .from('customer_transactions')
         .select(`
           *,
           customers(full_name, email)
         `)
         .eq('status', 'completed')
-        .gt('amount', 0)
-        .gte('created_at', startDate.toISOString());
+        .gt('amount', 0);
+        
+      if (startDate) {
+        customerTransactionsQuery = customerTransactionsQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: customerTransactions, error: transactionsError } = await customerTransactionsQuery;
 
       if (transactionsError) throw transactionsError;
 
       // Buscar vendas (receitas) - apenas vendas com valor pago > 0
-      const { data: sales, error: salesError } = await supabase
+      let salesQuery = supabase
         .from('sales')
         .select(`
           *,
           customers(full_name, email)
         `)
-        .gt('paid_amount', 0)
-        .gte('created_at', startDate.toISOString());
+        .gt('paid_amount', 0);
+        
+      if (startDate) {
+        salesQuery = salesQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: sales, error: salesError } = await salesQuery;
 
       if (salesError) throw salesError;
 
       // Buscar pagamentos legacy (receitas)
-      const { data: legacyPayments, error: paymentsError } = await supabase
+      let legacyPaymentsQuery = supabase
         .from('payments')
         .select('*')
         .eq('status', 'paid')
-        .gt('amount', 0)
-        .gte('created_at', startDate.toISOString());
+        .gt('amount', 0);
+        
+      if (startDate) {
+        legacyPaymentsQuery = legacyPaymentsQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: legacyPayments, error: paymentsError } = await legacyPaymentsQuery;
 
       if (paymentsError) throw paymentsError;
 

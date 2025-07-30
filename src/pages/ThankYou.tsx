@@ -12,6 +12,15 @@ const ThankYou = () => {
 
   useEffect(() => {
     document.title = "Obrigado - SENVIA";
+    
+    // Disparar evento GTM form_submit quando a página carregar
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'form_submit', {
+        event_category: 'thank_you_page',
+        event_label: 'form_submission_completed',
+        page_path: window.location.pathname
+      });
+    }
   }, []);
 
   return (

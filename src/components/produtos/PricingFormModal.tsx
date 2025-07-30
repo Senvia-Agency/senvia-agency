@@ -35,17 +35,6 @@ const PricingFormModal = ({ open, onOpenChange, planName }: PricingFormModalProp
     setIsSubmitting(true);
 
     try {
-      // Track GTM form_submit event
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', 'form_submit', {
-          event_category: 'pricing_form',
-          event_label: `${planName.toLowerCase()}_plan_interest`,
-          value: planName === 'Starter' ? 397 : planName === 'Pro' ? 349 : 1197,
-          currency: 'EUR'
-        });
-      }
-
-
       // Inserir lead na tabela unified_leads
       const { error } = await supabase
         .from('unified_leads')

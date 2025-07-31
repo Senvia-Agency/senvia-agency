@@ -42,13 +42,13 @@ const ModernHeroSection = () => {
           >
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-none">
               <span className="block text-foreground">
-                SISTEMAS
+                CLONE DIGITAL
               </span>
               <span className="block text-gradient">
-                DE CONVERSÃO
+                QUE VENDE 24/7
               </span>
               <span className="block text-muted-foreground text-3xl md:text-5xl lg:text-6xl font-light mt-4">
-                EM 24 HORAS
+                ENQUANTO VOCÊ DORME
               </span>
             </h1>
           </motion.div>

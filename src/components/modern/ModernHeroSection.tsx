@@ -1,4 +1,4 @@
-import { ArrowRight, Globe, Zap, TrendingUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -59,10 +59,9 @@ const ModernHeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-16 max-w-4xl mx-auto leading-relaxed font-light"
+            className="text-xl md:text-2xl text-muted-foreground mb-16 max-w-3xl mx-auto leading-relaxed font-light"
           >
-            Landing Pages de alta conversão, Funis de Vendas otimizados e Automações Empresariais 
-            que transformam visitantes em clientes e processos em resultados.
+            Transformamos o seu negócio através de tecnologia premium e estratégias de conversão comprovadas.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -70,64 +69,18 @@ const ModernHeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20"
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
           >
             <Button
               size="lg"
               onClick={scrollToContact}
-              className="group relative px-10 py-4 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-medium text-lg border border-senvia-400/20 shadow-lg hover:shadow-senvia-400/20"
+              className="group relative px-12 py-5 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-medium text-lg border border-senvia-400/20 shadow-xl hover:shadow-senvia-400/30 transition-all duration-300"
             >
               <span className="relative z-10 flex items-center gap-3">
-                Iniciar Projeto
+                Começar Agora
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </span>
             </Button>
-            
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-10 py-4 border-senvia-400/20 text-senvia-400 hover:bg-senvia-400/5 text-lg font-light backdrop-blur-sm"
-            >
-              Ver Portfolio
-            </Button>
-          </motion.div>
-
-          {/* Core Services Preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-          >
-            {[
-              { 
-                icon: Globe, 
-                title: "Landing Pages", 
-                desc: "Design premium focado em conversão"
-              },
-              { 
-                icon: TrendingUp, 
-                title: "Funis de Vendas", 
-                desc: "Estratégias otimizadas para resultados"
-              },
-              { 
-                icon: Zap, 
-                title: "Automações", 
-                desc: "Processos inteligentes e eficientes"
-              }
-            ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 + index * 0.1, duration: 0.6 }}
-                className="group p-8 rounded-3xl bg-card/20 border border-senvia-500/10 backdrop-blur-sm hover:border-senvia-400/30 transition-all duration-500"
-              >
-                <service.icon className="w-10 h-10 text-senvia-400 mb-6 mx-auto group-hover:scale-110 transition-transform duration-300" />
-                <h3 className="font-medium text-xl mb-3 text-foreground">{service.title}</h3>
-                <p className="text-muted-foreground text-sm font-light leading-relaxed">{service.desc}</p>
-              </motion.div>
-            ))}
           </motion.div>
         </motion.div>
       </div>

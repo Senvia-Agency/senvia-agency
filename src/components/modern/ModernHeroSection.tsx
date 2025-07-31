@@ -1,4 +1,4 @@
-import { ArrowRight, Zap, Shield, TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -8,109 +8,103 @@ const ModernHeroSection = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Futuristic background with animated elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950 to-senvia-950">
-        {/* Animated grid */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-black via-gray-950 to-blue-950">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        {/* Grid Pattern */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}></div>
         
-        {/* Floating geometric shapes */}
-        <div className="absolute inset-0">
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 0.1, scale: 1 }}
-            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-            className="absolute top-1/4 left-1/4 w-64 h-64 border border-senvia-400/30 rounded-full"
-          />
-          <motion.div
-            initial={{ opacity: 0, rotate: 0 }}
-            animate={{ opacity: 0.15, rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/3 right-1/4 w-32 h-32 border border-senvia-500/40"
-            style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}
-          />
-          <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 0.2, x: 100 }}
-            transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-            className="absolute bottom-1/3 left-1/6 w-48 h-1 bg-gradient-to-r from-transparent via-senvia-400 to-transparent"
-          />
-        </div>
-
-        {/* Glowing orbs */}
-        <div className="absolute top-20 right-20 w-4 h-4 bg-senvia-400 rounded-full blur-sm animate-pulse"></div>
-        <div className="absolute bottom-32 left-32 w-6 h-6 bg-accent rounded-full blur-md animate-pulse"></div>
-        <div className="absolute top-1/2 left-20 w-2 h-2 bg-primary rounded-full blur-sm animate-pulse"></div>
+        {/* Floating Elements */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 0.3, scale: 1 }}
+          transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 border border-cyan-400/30 rounded-full"
+        />
+        <motion.div
+          initial={{ opacity: 0, rotate: 0 }}
+          animate={{ opacity: 0.2, rotate: 360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/3 right-1/4 w-48 h-48 border border-blue-400/30"
+          style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}
+        />
+        
+        {/* Glowing Orbs */}
+        <div className="absolute top-20 right-20 w-4 h-4 bg-cyan-400 rounded-full blur-sm animate-pulse"></div>
+        <div className="absolute bottom-32 left-32 w-6 h-6 bg-blue-500 rounded-full blur-md animate-pulse"></div>
+        <div className="absolute top-1/2 left-20 w-2 h-2 bg-cyan-300 rounded-full blur-sm animate-pulse"></div>
       </div>
       
-      <div className="container mx-auto px-4 text-center z-10 relative">
+      <div className="container mx-auto px-6 text-center z-10 relative">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
-          {/* Futuristic status badge */}
+          {/* Status Badge */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-black/40 border border-senvia-400/30 backdrop-blur-xl mb-16 shadow-2xl"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl mb-12"
           >
             <div className="relative">
-              <div className="w-3 h-3 bg-senvia-400 rounded-full animate-pulse"></div>
-              <div className="absolute inset-0 w-3 h-3 bg-senvia-400 rounded-full animate-ping"></div>
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+              <div className="absolute inset-0 w-2 h-2 bg-cyan-400 rounded-full animate-ping"></div>
             </div>
-            <span className="text-senvia-300 font-mono text-sm tracking-wider">SYSTEM ONLINE • LEIRIA, PORTUGAL</span>
+            <span className="text-cyan-300 font-mono text-sm tracking-wider">SISTEMA ATIVO • LEIRIA, PORTUGAL</span>
           </motion.div>
 
-          {/* Main title with futuristic effect */}
+          {/* Main Title */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="mb-12"
+            className="mb-8"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-8xl font-thin mb-6 leading-none tracking-tighter">
-              <span className="block text-gray-400 font-extralight">CONVERSÕES</span>
-              <span className="block bg-gradient-to-r from-senvia-400 via-senvia-300 to-white bg-clip-text text-transparent font-light">
-                AUTOMATIZADAS
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-none">
+              <span className="block bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent">
+                SISTEMAS
               </span>
-              <span className="block text-gray-500 font-ultralight text-2xl md:text-4xl lg:text-5xl mt-4">
-                EM 24H
+              <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-300 bg-clip-text text-transparent">
+                DE CONVERSÃO
+              </span>
+              <span className="block text-gray-400 text-3xl md:text-5xl lg:text-6xl font-light mt-4">
+                EM 24 HORAS
               </span>
             </h1>
-            
-            {/* Tech-style subtitle */}
-            <div className="text-senvia-300 font-mono text-sm md:text-base tracking-widest opacity-80 mb-8">
-              [LANDING_PAGES] • [SALES_FUNNELS] • [AUTOMATION]
-            </div>
           </motion.div>
 
-          {/* Value proposition with metrics */}
+          {/* Value Proposition */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="mb-16"
+            className="mb-12"
           >
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Sistemas premium que convertem <span className="text-senvia-400 font-semibold">3x mais visitantes</span> em clientes pagantes
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
+              Transformamos visitantes em clientes com <span className="text-cyan-400 font-bold">Landing Pages</span>, 
+              <span className="text-blue-400 font-bold"> Funis de Vendas</span> e 
+              <span className="text-cyan-300 font-bold"> Automações</span> que convertem 300% mais
             </p>
             
-            {/* Performance metrics */}
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-12">
+            {/* Performance Metrics */}
+            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-senvia-400 mb-2">300%</div>
-                <div className="text-sm text-gray-400 font-mono">AUMENTO CONVERSÃO</div>
+                <div className="text-4xl md:text-5xl font-black text-cyan-400 mb-2">300%</div>
+                <div className="text-sm text-gray-400 font-mono uppercase tracking-wide">Mais Conversões</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-senvia-400 mb-2">24H</div>
-                <div className="text-sm text-gray-400 font-mono">ENTREGA</div>
+                <div className="text-4xl md:text-5xl font-black text-blue-400 mb-2">24h</div>
+                <div className="text-sm text-gray-400 font-mono uppercase tracking-wide">Implementação</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-senvia-400 mb-2">ROI</div>
-                <div className="text-sm text-gray-400 font-mono">GARANTIDO</div>
+                <div className="text-4xl md:text-5xl font-black text-cyan-300 mb-2">ROI</div>
+                <div className="text-sm text-gray-400 font-mono uppercase tracking-wide">Garantido</div>
               </div>
             </div>
           </motion.div>
@@ -120,45 +114,45 @@ const ModernHeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-6"
           >
             <Button
               size="lg"
               onClick={scrollToContact}
-              className="group relative px-16 py-6 bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-bold text-xl border-2 border-senvia-300 shadow-2xl hover:shadow-senvia-400/50 transition-all duration-300 transform hover:scale-105"
+              className="group relative px-12 py-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xl rounded-xl border-2 border-cyan-300 shadow-2xl hover:shadow-cyan-400/50 transition-all duration-300 transform hover:scale-105"
             >
-              <span className="relative z-10 flex items-center gap-4">
-                INICIAR AGORA • GRÁTIS
+              <span className="relative z-10 flex items-center gap-3">
+                INICIAR AGORA - GRÁTIS
                 <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-2" />
               </span>
             </Button>
             
-            <div className="text-sm text-gray-400 font-mono">
-              CONSULTORIA GRATUITA • SEM COMPROMISSO • RESULTADOS GARANTIDOS
+            <div className="text-sm text-gray-400 font-mono uppercase tracking-widest">
+              CONSULTORIA GRATUITA • RESULTADOS GARANTIDOS • SEM COMPROMISSO
             </div>
           </motion.div>
 
-          {/* Quick benefits */}
+          {/* Quick Benefits */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 max-w-4xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto"
           >
             {[
-              { icon: Zap, text: "Setup em 24h", desc: "Implementação imediata" },
-              { icon: TrendingUp, text: "ROI Garantido", desc: "Ou devolvemos o dinheiro" },
-              { icon: Shield, text: "Suporte Premium", desc: "Acompanhamento contínuo" }
+              { icon: Zap, text: "Setup Imediato", desc: "Sistema online em 24h" },
+              { icon: TrendingUp, text: "ROI Comprovado", desc: "300% mais conversões" },
+              { icon: Shield, text: "Garantia Total", desc: "Ou devolvemos o dinheiro" }
             ].map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4 + index * 0.1 }}
-                className="p-6 rounded-xl bg-black/30 border border-senvia-500/20 backdrop-blur-sm hover:border-senvia-400/40 transition-all duration-300"
+                className="p-6 rounded-xl bg-black/40 border border-cyan-500/30 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300"
               >
-                <item.icon className="w-8 h-8 text-senvia-400 mb-4 mx-auto" />
-                <div className="text-white font-semibold mb-2">{item.text}</div>
+                <item.icon className="w-8 h-8 text-cyan-400 mb-4 mx-auto" />
+                <div className="text-white font-bold mb-2 text-lg">{item.text}</div>
                 <div className="text-gray-400 text-sm">{item.desc}</div>
               </motion.div>
             ))}
@@ -166,7 +160,7 @@ const ModernHeroSection = () => {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -174,13 +168,13 @@ const ModernHeroSection = () => {
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
       >
         <div className="flex flex-col items-center space-y-2">
-          <div className="text-senvia-400 font-mono text-xs tracking-widest">SCROLL</div>
-          <div className="w-px h-16 bg-gradient-to-b from-senvia-400 to-transparent">
+          <div className="text-cyan-400 font-mono text-xs tracking-widest uppercase">Scroll</div>
+          <div className="w-px h-16 bg-gradient-to-b from-cyan-400 to-transparent">
             <motion.div
               initial={{ y: 0 }}
               animate={{ y: 32 }}
               transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-              className="w-px h-4 bg-senvia-400"
+              className="w-px h-4 bg-cyan-400"
             />
           </div>
         </div>

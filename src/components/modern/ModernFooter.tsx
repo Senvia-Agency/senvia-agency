@@ -38,13 +38,10 @@ const ModernFooter = () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-b from-background to-muted/20 border-t border-muted/20">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      
+    <footer className="relative bg-gradient-to-b from-background to-muted/10 border-t border-senvia-500/10">
       <div className="container mx-auto px-4 relative z-10">
         {/* Main footer content */}
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Company info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -53,31 +50,31 @@ const ModernFooter = () => {
             viewport={{ once: true }}
             className="lg:col-span-2"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-xl bg-gradient-to-r from-senvia-400 to-primary">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold">SENVIA</h3>
+            <div className="mb-8">
+              <img 
+                src="/lovable-uploads/060d279c-2d0e-4502-8e2d-32d806f8f902.png" 
+                alt="SENVIA Logo" 
+                className="h-12 w-auto mb-6"
+              />
             </div>
             
-            <p className="text-muted-foreground mb-6 leading-relaxed max-w-md">
-              Transformamos ideias em soluções digitais inovadoras. Nossa missão é impulsionar 
-              o crescimento dos nossos clientes através de tecnologia de ponta e estratégias 
-              digitais eficazes.
+            <p className="text-muted-foreground mb-8 leading-relaxed max-w-md font-light text-lg">
+              Especialistas em Landing Pages de alta conversão, Funis de Vendas otimizados 
+              e Automações Empresariais que transformam visitantes em clientes.
             </p>
             
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-muted-foreground">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 text-muted-foreground">
                 <Mail className="w-5 h-5 text-senvia-400" />
-                <span>contato@senvia.com.br</span>
+                <span className="font-light">geral@senvia.pt</span>
               </div>
-              <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="flex items-center gap-4 text-muted-foreground">
                 <Phone className="w-5 h-5 text-senvia-400" />
-                <span>+55 (11) 99999-9999</span>
+                <span className="font-light">+351 939 135 114</span>
               </div>
-              <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="flex items-center gap-4 text-muted-foreground">
                 <MapPin className="w-5 h-5 text-senvia-400" />
-                <span>São Paulo, Brasil</span>
+                <span className="font-light">Lisboa, Portugal</span>
               </div>
             </div>
           </motion.div>
@@ -89,13 +86,45 @@ const ModernFooter = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h4 className="text-lg font-semibold mb-6">Links Rápidos</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
+            <h4 className="text-lg font-medium mb-8">Serviços</h4>
+            <ul className="space-y-4">
+              {[
+                "Landing Pages",
+                "Funis de Vendas", 
+                "Automações",
+                "Consultoria Digital"
+              ].map((link, index) => (
+                <li key={index}>
+                  <a 
+                    href="#services"
+                    className="text-muted-foreground hover:text-senvia-400 transition-colors duration-200 block font-light"
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <h4 className="text-lg font-medium mb-8">Links</h4>
+            <ul className="space-y-4">
+              {[
+                { label: "Sobre", href: "#about" },
+                { label: "Tecnologia", href: "#tech" },
+                { label: "Contato", href: "#contact" },
+                { label: "Portfolio", href: "#portfolio" }
+              ].map((link, index) => (
                 <li key={index}>
                   <a 
                     href={link.href}
-                    className="text-muted-foreground hover:text-senvia-400 transition-colors duration-200 block"
+                    className="text-muted-foreground hover:text-senvia-400 transition-colors duration-200 block font-light"
                   >
                     {link.label}
                   </a>
@@ -103,58 +132,7 @@ const ModernFooter = () => {
               ))}
             </ul>
           </motion.div>
-
-          {/* Services */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <h4 className="text-lg font-semibold mb-6">Serviços</h4>
-            <ul className="space-y-3">
-              {services.map((service, index) => (
-                <li key={index}>
-                  <a 
-                    href={service.href}
-                    className="text-muted-foreground hover:text-senvia-400 transition-colors duration-200 block"
-                  >
-                    {service.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
         </div>
-
-        {/* Newsletter section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          className="py-8 border-t border-muted/20"
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h4 className="text-lg font-semibold mb-2">Fique por dentro das novidades</h4>
-              <p className="text-muted-foreground">
-                Receba insights sobre tecnologia e tendências digitais
-              </p>
-            </div>
-            
-            <div className="flex gap-2 w-full md:w-auto">
-              <input
-                type="email"
-                placeholder="Seu email"
-                className="flex-1 md:w-64 px-4 py-2 rounded-lg bg-muted/50 border border-muted/20 focus:border-senvia-400/50 focus:outline-none focus:ring-2 focus:ring-senvia-400/20 transition-colors"
-              />
-              <Button className="bg-gradient-to-r from-senvia-500 to-senvia-400 hover:from-senvia-400 hover:to-senvia-300 text-black font-semibold">
-                Inscrever
-              </Button>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Bottom section */}
         <motion.div
@@ -162,24 +140,25 @@ const ModernFooter = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="py-8 border-t border-muted/20"
+          className="py-8 border-t border-senvia-500/10"
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <span>© 2024 SENVIA. Feito com</span>
-              <Heart className="w-4 h-4 text-red-400 fill-current" />
-              <span>em São Paulo</span>
+            <div className="flex items-center gap-2 text-muted-foreground font-light">
+              <span>© 2024 SENVIA. Desenvolvido em Lisboa, Portugal</span>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               {/* Social links */}
-              <div className="flex items-center gap-3">
-                {socialLinks.map((social, index) => (
+              <div className="flex items-center gap-4">
+                {[
+                  { icon: Linkedin, href: "#", label: "LinkedIn" },
+                  { icon: Instagram, href: "#", label: "Instagram" }
+                ].map((social, index) => (
                   <a
                     key={index}
                     href={social.href}
                     aria-label={social.label}
-                    className="p-2 rounded-lg bg-muted/30 hover:bg-senvia-400/20 text-muted-foreground hover:text-senvia-400 transition-all duration-200 hover:scale-110"
+                    className="p-2 rounded-lg bg-card/30 hover:bg-senvia-400/10 text-muted-foreground hover:text-senvia-400 transition-all duration-200 hover:scale-110 border border-senvia-500/10"
                   >
                     <social.icon className="w-5 h-5" />
                   </a>
@@ -191,7 +170,7 @@ const ModernFooter = () => {
                 variant="outline"
                 size="sm"
                 onClick={scrollToTop}
-                className="border-senvia-400/30 text-senvia-400 hover:bg-senvia-400/10 group"
+                className="border-senvia-400/20 text-senvia-400 hover:bg-senvia-400/5 group font-light"
               >
                 <ArrowUp className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
               </Button>
@@ -200,8 +179,8 @@ const ModernFooter = () => {
         </motion.div>
       </div>
       
-      {/* Gradient overlay */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-senvia-400/20 to-transparent"></div>
+      {/* Gradient line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-senvia-400/30 to-transparent"></div>
     </footer>
   );
 };

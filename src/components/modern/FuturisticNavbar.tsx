@@ -45,13 +45,12 @@ const FuturisticNavbar = () => {
             className="cursor-pointer"
             onClick={() => scrollToSection('hero')}
           >
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-senvia-400 to-primary rounded-lg flex items-center justify-center">
-                <div className="w-6 h-6 bg-background rounded-sm"></div>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-senvia-400 to-primary bg-clip-text text-transparent">
-                SENVIA
-              </span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/060d279c-2d0e-4502-8e2d-32d806f8f902.png" 
+                alt="SENVIA Logo" 
+                className="h-10 w-auto"
+              />
             </div>
           </motion.div>
 

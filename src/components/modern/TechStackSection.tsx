@@ -42,64 +42,73 @@ const TechStackSection = () => {
   ];
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/20">
+    <section id="tech" className="py-32 px-4 bg-gradient-to-b from-muted/10 to-background">
       <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Stack Tecnológico{" "}
-            <span className="bg-gradient-to-r from-senvia-400 to-primary bg-clip-text text-transparent">
-              Moderno
+          <h2 className="text-4xl md:text-6xl font-light mb-8 tracking-tight">
+            <span className="text-muted-foreground font-extralight">Tecnologia</span>{" "}
+            <span className="bg-gradient-to-r from-senvia-400 to-primary bg-clip-text text-transparent font-medium">
+              de Ponta
             </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Utilizamos as tecnologias mais avançadas e confiáveis do mercado para 
-            entregar soluções robustas, escaláveis e de alta performance.
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto font-light leading-relaxed">
+            Utilizamos as ferramentas mais avançadas do mercado para criar Landing Pages,
+            Funis de Vendas e Automações que entregam resultados excepcionais.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {technologies.map((tech, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+          {[
+            {
+              title: "Landing Pages",
+              description: "Design e desenvolvimento de páginas de alta conversão",
+              techs: ["React/Next.js", "Tailwind CSS", "Framer Motion", "Analytics Avançado"]
+            },
+            {
+              title: "Funis de Vendas",
+              description: "Estratégias e automações para maximizar conversões",
+              techs: ["CRM Integrado", "Email Marketing", "Tracking Avançado", "A/B Testing"]
+            },
+            {
+              title: "Automações",
+              description: "Sistemas inteligentes para otimizar processos empresariais",
+              techs: ["Zapier/Make", "API Integrations", "Webhooks", "Cloud Functions"]
+            }
+          ].map((tech, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.8, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group relative p-8 rounded-2xl bg-card/50 border border-muted/20 backdrop-blur-sm hover:border-senvia-400/30 transition-all duration-300"
+              className="group relative"
             >
-              {/* Gradient background on hover */}
-              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tech.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-              
-              <div className="relative z-10">
-                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${tech.color} mb-6`}>
-                  <tech.icon className="w-6 h-6 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-bold mb-4 group-hover:text-foreground transition-colors">
-                  {tech.category}
+              <div className="p-10 rounded-3xl bg-card/30 border border-senvia-500/10 backdrop-blur-sm hover:border-senvia-400/30 transition-all duration-700 h-full">
+                <h3 className="text-2xl font-medium mb-6 text-foreground">
+                  {tech.title}
                 </h3>
-                
-                <div className="space-y-2">
+                <p className="text-muted-foreground mb-8 leading-relaxed font-light text-lg">
+                  {tech.description}
+                </p>
+                <div className="space-y-4">
                   {tech.techs.map((techName, techIndex) => (
                     <div
                       key={techIndex}
-                      className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors"
+                      className="flex items-center gap-4"
                     >
-                      <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${tech.color}`}></div>
-                      <span className="text-sm">{techName}</span>
+                      <div className="w-1.5 h-1.5 bg-senvia-400 rounded-full"></div>
+                      <span className="text-muted-foreground font-light">{techName}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
-              {/* Glow effect */}
-              <div className={`absolute -inset-0.5 rounded-2xl bg-gradient-to-r ${tech.color} opacity-0 group-hover:opacity-20 blur transition-opacity duration-300 -z-10`}></div>
+              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-senvia-400/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 -z-10"></div>
             </motion.div>
           ))}
         </div>
@@ -110,19 +119,19 @@ const TechStackSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           viewport={{ once: true }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
+          className="mt-32 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
         >
           {[
-            { number: "200+", label: "Projetos entregues" },
-            { number: "50+", label: "Clientes satisfeitos" },
-            { number: "99.9%", label: "Uptime garantido" },
+            { number: "150+", label: "Projetos entregues" },
+            { number: "98%", label: "Taxa de satisfação" },
+            { number: "3x", label: "Aumento médio em conversões" },
             { number: "24/7", label: "Suporte técnico" }
           ].map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-senvia-400 mb-2">
+              <div className="text-3xl md:text-4xl font-light text-senvia-400 mb-2">
                 {stat.number}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground font-light">
                 {stat.label}
               </div>
             </div>

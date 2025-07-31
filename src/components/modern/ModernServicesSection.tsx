@@ -3,8 +3,7 @@ import {
   Globe, 
   TrendingUp, 
   Zap,
-  ArrowRight,
-  CheckCircle2
+  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -66,12 +65,10 @@ const ModernServicesSection = () => {
               className="group relative"
             >
               <div className="p-10 rounded-3xl bg-card/30 border border-senvia-500/10 backdrop-blur-sm hover:border-senvia-400/30 transition-all duration-700 h-full">
-                {/* Icon */}
                 <div className="inline-flex p-4 rounded-2xl bg-gradient-to-r from-senvia-400/20 to-primary/20 mb-8 group-hover:scale-110 transition-transform duration-300">
                   <service.icon className="w-10 h-10 text-senvia-400" />
                 </div>
                 
-                {/* Content */}
                 <h3 className="text-2xl font-medium mb-6 text-foreground">
                   {service.title}
                 </h3>
@@ -79,7 +76,6 @@ const ModernServicesSection = () => {
                   {service.description}
                 </p>
                 
-                {/* Features */}
                 <div className="space-y-4 mb-8">
                   {service.features.map((feature, featureIndex) => (
                     <div
@@ -94,7 +90,6 @@ const ModernServicesSection = () => {
                   ))}
                 </div>
                 
-                {/* CTA */}
                 <Button 
                   variant="ghost" 
                   className="group/btn w-full justify-between text-senvia-400 hover:text-senvia-300 hover:bg-senvia-400/5 border border-senvia-400/20 hover:border-senvia-400/40 font-light"
@@ -104,7 +99,6 @@ const ModernServicesSection = () => {
                 </Button>
               </div>
               
-              {/* Subtle glow */}
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-senvia-400/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 -z-10"></div>
             </motion.div>
           ))}

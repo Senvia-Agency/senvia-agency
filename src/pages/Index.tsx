@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import Navbar from "../components/Navbar";
+import FuturisticNavbar from "../components/modern/FuturisticNavbar";
 import ModernHeroSection from "../components/modern/ModernHeroSection";
 import TechStackSection from "../components/modern/TechStackSection";
 import ModernServicesSection from "../components/modern/ModernServicesSection";
@@ -19,10 +19,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
+      <FuturisticNavbar />
       <ModernHeroSection />
-      <TechStackSection />
       <ModernServicesSection />
+      <TechStackSection />
       <InnovationSection />
       <ContactSection />
       <ModernFooter />

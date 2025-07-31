@@ -43,19 +43,19 @@ const ContactSection = () => {
     {
       icon: Phone,
       title: "Telefone",
-      value: "+55 (11) 99999-9999",
+      value: "+351 912 345 678",
       description: "Seg - Sex, 9h às 18h"
     },
     {
       icon: Mail,
       title: "Email",
-      value: "contato@senvia.com.br",
+      value: "admin@senvia.pt",
       description: "Resposta em até 2h"
     },
     {
       icon: MapPin,
-      title: "Endereço",
-      value: "São Paulo, SP",
+      title: "Localização",
+      value: "Lisboa, Portugal",
       description: "Atendimento presencial"
     },
     {
@@ -246,7 +246,7 @@ const ContactSection = () => {
                 variant="outline" 
                 className="border-orange-400/30 text-orange-400 hover:bg-orange-400/10 w-full"
               >
-                +55 (11) 99999-9999
+                +351 912 345 678
               </Button>
             </div>
           </motion.div>

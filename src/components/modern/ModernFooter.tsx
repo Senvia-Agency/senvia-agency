@@ -74,7 +74,7 @@ const ModernFooter = () => {
               </div>
               <div className="flex items-center gap-4 text-muted-foreground">
                 <MapPin className="w-5 h-5 text-senvia-400" />
-                <span className="font-light">Lisboa, Portugal</span>
+                <span className="font-light">Leiria, Portugal</span>
               </div>
             </div>
           </motion.div>
@@ -144,7 +144,7 @@ const ModernFooter = () => {
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2 text-muted-foreground font-light">
-              <span>© 2024 SENVIA. Desenvolvido em Lisboa, Portugal</span>
+              <span>© 2024 SENVIA. Desenvolvido em Leiria, Portugal</span>
             </div>
             
             <div className="flex items-center gap-6">

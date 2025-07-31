@@ -43,19 +43,19 @@ const ContactSection = () => {
     {
       icon: Phone,
       title: "Telefone",
-      value: "+351 912 345 678",
+      value: "+351 939 135 114",
       description: "Seg - Sex, 9h às 18h"
     },
     {
       icon: Mail,
       title: "Email",
-      value: "admin@senvia.pt",
+      value: "geral@senvia.pt",
       description: "Resposta em até 2h"
     },
     {
       icon: MapPin,
       title: "Localização",
-      value: "Lisboa, Portugal",
+      value: "Leiria, Portugal",
       description: "Atendimento presencial"
     },
     {
@@ -246,7 +246,7 @@ const ContactSection = () => {
                 variant="outline" 
                 className="border-orange-400/30 text-orange-400 hover:bg-orange-400/10 w-full"
               >
-                +351 912 345 678
+                +351 939 135 114
               </Button>
             </div>
           </motion.div>

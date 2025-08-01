@@ -45,22 +45,22 @@ const AIPricingSection = () => {
                 </div>
                 
                 {/* Features List */}
-                <ul className="space-y-2 mb-8 max-w-md mx-auto">
+                <ul className="space-y-2 mb-8 max-w-lg mx-auto">
                   <li className="flex items-center text-slate-300">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#00C3FF] mr-2 sm:mr-3 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Personalizado para a sua empresa</span>
+                    <span className="text-sm sm:text-base whitespace-nowrap">Personalizado para a sua empresa</span>
                   </li>
                   <li className="flex items-center text-slate-300">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#00C3FF] mr-2 sm:mr-3 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Integrado aos seus sistemas internos</span>
+                    <span className="text-sm sm:text-base whitespace-nowrap">Integrado aos seus sistemas internos</span>
                   </li>
                   <li className="flex items-center text-slate-300">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#00C3FF] mr-2 sm:mr-3 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Treinamento de IA avançado</span>
+                    <span className="text-sm sm:text-base whitespace-nowrap">Treinamento de IA avançado</span>
                   </li>
                   <li className="flex items-center text-slate-300">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#00C3FF] mr-2 sm:mr-3 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Aprendizado contínuo e melhoria</span>
+                    <span className="text-sm sm:text-base whitespace-nowrap">Aprendizado contínuo e melhoria</span>
                   </li>
                 </ul>
               </div>

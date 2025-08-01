@@ -95,7 +95,7 @@ const AIOffersSection = () => {
 
         {/* Bottom CTA */}
         <div className="text-center">
-          <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
+          <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
             Agendar Consultoria
             <ArrowRight className="ml-2 w-6 h-6" />
           </Button>

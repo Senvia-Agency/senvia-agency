@@ -129,16 +129,27 @@ const AIHeroSection = () => {
           </div>
         </div>
         
-        {/* CTA Button */}
-        <Button 
-          onClick={scrollToOffers}
-          size="lg" 
-          className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
-          style={{ backgroundColor: '#00C3FF' }}
-        >
-          Agendar Consultoria
-          <ArrowRight className="ml-2 w-6 h-6" />
-        </Button>
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button 
+            onClick={scrollToOffers}
+            size="lg" 
+            className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
+            style={{ backgroundColor: '#00C3FF' }}
+          >
+            Agendar Consultoria
+            <ArrowRight className="ml-2 w-6 h-6" />
+          </Button>
+          
+          <Button 
+            onClick={scrollToOffers}
+            size="lg" 
+            variant="outline"
+            className="px-8 py-4 text-xl font-semibold rounded-3xl border-2 border-[#00C3FF] text-[#00C3FF] hover:bg-[#00C3FF] hover:text-white transform hover:scale-105 transition-all duration-300"
+          >
+            Ver Serviços
+          </Button>
+        </div>
         
         {/* Trust Indicator */}
         <p className="text-slate-400 mt-6 text-sm">

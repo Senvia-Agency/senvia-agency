@@ -28,38 +28,6 @@ const AIAboutSection = () => {
               e integramos sistemas para maximizar a eficiência e os resultados do seu negócio.
             </p>
 
-            {/* Key Points */}
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#00C3FF] flex items-center justify-center">
-                  <Rocket className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">Inovação Constante</h3>
-                  <p className="text-slate-400 text-sm">Sempre à frente das tendências tecnológicas</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#00C3FF] flex items-center justify-center">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">Foco em Resultados</h3>
-                  <p className="text-slate-400 text-sm">ROI mensurável em cada implementação</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-[#00C3FF] flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">Entrega Rápida</h3>
-                  <p className="text-slate-400 text-sm">Soluções eficientes do conceito à produção</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Visual Side */}

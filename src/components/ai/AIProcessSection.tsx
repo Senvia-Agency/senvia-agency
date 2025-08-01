@@ -41,13 +41,7 @@ const AIProcessSection = () => {
               delay: index * 0.2
             }} viewport={{
               once: true
-            }} className="flex items-start space-x-6">
-                  {/* Step Circle */}
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#00C3FF]">
-                    </div>
-                  </div>
-
+            }} className="flex items-start">
                   {/* Step Content */}
                   <div className="flex-1">
                     <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
@@ -61,14 +55,15 @@ const AIProcessSection = () => {
           })}
           </div>
 
-          {/* Visual Simulation */}
+          {/* Visual Simulation - Simplified */}
           <div className="relative">
             {/* Main Container */}
             <div className="bg-slate-800/50 rounded-2xl p-8 border border-slate-600/30 backdrop-blur-sm relative overflow-hidden">
               {/* Dynamic Process Flow */}
               <div className="relative z-10">
                 <h4 className="text-xl font-bold text-white mb-8 text-center">
-              </h4>
+                  Processo Inteligente
+                </h4>
 
                 {/* Central Hub */}
                 <div className="relative flex items-center justify-center">
@@ -82,41 +77,6 @@ const AIProcessSection = () => {
                 }}>
                     <div className="text-white font-bold text-sm">IA</div>
                   </motion.div>
-
-                  {/* Orbiting Step Circles */}
-                  {processSteps.map((step, index) => {
-                  const angle = index * 120 - 90; // 120 degrees apart, starting from top
-                  const radius = 80;
-                  const x = Math.cos(angle * Math.PI / 180) * radius;
-                  const y = Math.sin(angle * Math.PI / 180) * radius;
-                  return <motion.div key={index} className="absolute w-12 h-12 bg-slate-700 rounded-full border-2 border-[#00C3FF]" style={{
-                    left: `calc(50% + ${x}px - 24px)`,
-                    top: `calc(50% + ${y}px - 24px)`
-                  }} animate={{
-                    rotate: [0, 360]
-                  }} transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: index * 0.5
-                  }}>
-                        
-                        {/* Connecting Lines */}
-                        <motion.div className="absolute w-0.5 bg-gradient-to-r from-[#00C3FF] to-transparent" style={{
-                      height: `${radius - 10}px`,
-                      transformOrigin: 'bottom',
-                      transform: `rotate(${angle + 180}deg)`,
-                      bottom: '50%',
-                      left: '50%'
-                    }} animate={{
-                      opacity: [0.3, 0.8, 0.3]
-                    }} transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: index * 0.3
-                    }} />
-                      </motion.div>;
-                })}
                 </div>
 
                 {/* Process Status */}

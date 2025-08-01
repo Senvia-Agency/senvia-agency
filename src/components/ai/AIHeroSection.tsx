@@ -135,11 +135,6 @@ const AIHeroSection = () => {
             Ver Serviços
           </Button>
         </div>
-        
-        {/* Trust Indicator */}
-        <p className="text-slate-400 mt-6 text-sm">
-          Implementação em 48h • Suporte 24/7 • Garantia de Resultados
-        </p>
       </div>
       
       {/* Futuristic Glowing Elements */}

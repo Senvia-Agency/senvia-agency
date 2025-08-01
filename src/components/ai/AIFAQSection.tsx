@@ -67,18 +67,6 @@ const AIFAQSection = () => {
           ))}
         </Accordion>
 
-        {/* Contact CTA */}
-        <div className="text-center mt-12">
-          <p className="text-slate-400 mb-4">
-            Ainda tem dúvidas?
-          </p>
-          <a 
-            href="#contact" 
-            className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
-          >
-            Fale Connosco Agora
-          </a>
-        </div>
       </div>
     </section>
   );

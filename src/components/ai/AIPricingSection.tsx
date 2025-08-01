@@ -24,13 +24,13 @@ const AIPricingSection = () => {
               {/* Pricing Info */}
               <div className="mb-8">
                 <h3 className="text-3xl font-bold text-white mb-4">
-                  IA para atendimento
+                  IA para Atendimento ou Automação de Fluxos
                 </h3>
                 <div className="text-5xl font-bold text-[#00C3FF] mb-2">
-                  desde 800€
+                  desde 800€ + 200€
                 </div>
                 <p className="text-xl text-slate-300 mb-8">
-                  de taxa de desenvolvimento
+                  manutenção
                 </p>
                 
                 {/* Features List */}

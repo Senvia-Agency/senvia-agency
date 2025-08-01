@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MapPin, ArrowUp } from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook, Twitter } from 'lucide-react';
 
 const AIFooter = () => {
   const scrollToTop = () => {
@@ -43,6 +43,40 @@ const AIFooter = () => {
               <div className="flex items-center text-slate-300">
                 <MapPin className="w-4 h-4 mr-3 text-cyan-400" />
                 <span className="text-sm">Portugal</span>
+              </div>
+            </div>
+            
+            {/* Social Media */}
+            <div className="mt-6">
+              <h4 className="text-white font-medium text-sm mb-4">Siga-nos</h4>
+              <div className="flex space-x-4">
+                <a 
+                  href="https://www.instagram.com/senvia_agency/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 p-2 rounded-full transition-all duration-300 transform hover:scale-110"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+                <a 
+                  href="https://www.facebook.com/senvia.agency" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 p-2 rounded-full transition-all duration-300 transform hover:scale-110"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+                <a 
+                  href="https://x.com/Senvia_Agency" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 p-2 rounded-full transition-all duration-300 transform hover:scale-110"
+                  aria-label="Twitter/X"
+                >
+                  <Twitter className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>

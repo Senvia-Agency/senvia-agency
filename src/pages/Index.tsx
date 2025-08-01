@@ -28,14 +28,14 @@ const Index = () => {
       <div id="benefits">
         <AIBenefitsSection />
       </div>
-      <div id="testimonials">
-        <AITestimonialsSection />
+      <div id="about">
+        <AIAboutSection />
       </div>
       <div id="faq">
         <AIFAQSection />
       </div>
-      <div id="about">
-        <AIAboutSection />
+      <div id="testimonials">
+        <AITestimonialsSection />
       </div>
       <AIContactSection />
       <AIFooter />

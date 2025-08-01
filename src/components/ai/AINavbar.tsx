@@ -26,9 +26,9 @@ const AINavbar = () => {
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50' 
+        ? 'backdrop-blur-md border-b border-gray-600/30' 
         : 'bg-transparent'
-    }`}>
+    }`} style={{ backgroundColor: isScrolled ? '#11161F' : 'transparent' }}>
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -44,7 +44,7 @@ const AINavbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <button 
               onClick={() => scrollToSection('ai-offers')}
-              className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium"
+              className="text-slate-300 hover:text-[#00C3FF] transition-colors duration-300 font-medium"
             >
               Soluções
             </button>
@@ -78,7 +78,7 @@ const AINavbar = () => {
           <div className="hidden md:block">
             <Button 
               onClick={() => scrollToSection('contact')}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 border-0"
+              className="px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}
             >
               Começar Agora
             </Button>

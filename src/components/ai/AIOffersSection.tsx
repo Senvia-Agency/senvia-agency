@@ -52,10 +52,10 @@ const AIOffersSection = () => {
           {offers.map((offer, index) => {
             const IconComponent = offer.icon;
             return (
-              <Card key={index} className="bg-slate-800/50 border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/70 transition-all duration-300 transform hover:scale-105 group">
+              <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group" style={{ backgroundColor: '#1A1F28' }}>
                 <CardContent className="p-8">
                   {/* Icon with gradient background */}
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${offer.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#00C3FF' }}>
                     <IconComponent className="w-8 h-8 text-white" />
                   </div>
                   
@@ -70,7 +70,7 @@ const AIOffersSection = () => {
                   </p>
                   
                   {/* Result Highlight */}
-                  <div className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${offer.gradient} text-white font-semibold text-sm mb-6`}>
+                  <div className="inline-block px-4 py-2 rounded-full text-white font-semibold text-sm mb-6" style={{ backgroundColor: '#00C3FF' }}>
                     {offer.result}
                   </div>
                   
@@ -78,14 +78,14 @@ const AIOffersSection = () => {
                   <ul className="space-y-2 mb-6">
                     {offer.features.map((feature, idx) => (
                       <li key={idx} className="flex items-center text-slate-300">
-                        <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-[#00C3FF] mr-2 flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   
                   {/* CTA Button */}
-                  <Button className={`w-full bg-gradient-to-r ${offer.gradient} hover:opacity-90 text-white border-0 group-hover:shadow-lg transition-all duration-300`}>
+                  <Button className="w-full text-white border-0 group-hover:shadow-lg transition-all duration-300" style={{ backgroundColor: '#00C3FF' }}>
                     Implementar Agora
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -97,7 +97,7 @@ const AIOffersSection = () => {
 
         {/* Bottom CTA */}
         <div className="text-center">
-          <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0">
+          <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
             Solicitar Implementação Completa
             <ArrowRight className="ml-2 w-6 h-6" />
           </Button>

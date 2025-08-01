@@ -37,13 +37,13 @@ const AIBenefitsSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800">
+    <section className="py-20" style={{ backgroundColor: '#11161F' }}>
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Porquê Escolher
-            <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="block text-[#00C3FF]">
               a Nossa IA?
             </span>
           </h2>
@@ -57,12 +57,12 @@ const AIBenefitsSection = () => {
           {benefits.map((benefit, index) => {
             const IconComponent = benefit.icon;
             return (
-              <Card key={index} className="bg-slate-800/30 border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/50 transition-all duration-300 transform hover:scale-105 group">
+              <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group" style={{ backgroundColor: '#1A1F28' }}>
                 <CardContent className="p-8 text-center">
                   {/* Icon */}
                   <div className="mb-6 flex justify-center">
-                    <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center group-hover:bg-slate-700/70 transition-colors duration-300">
-                      <IconComponent className={`w-8 h-8 ${benefit.color}`} />
+                    <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center group-hover:bg-gray-700/70 transition-colors duration-300">
+                      <IconComponent className="w-8 h-8 text-[#00C3FF]" />
                     </div>
                   </div>
                   
@@ -84,25 +84,25 @@ const AIBenefitsSection = () => {
         {/* Stats Section */}
         <div className="mt-20 grid md:grid-cols-4 gap-8 text-center">
           <div className="group">
-            <div className="text-4xl font-bold text-cyan-400 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl font-bold text-[#00C3FF] mb-2 group-hover:scale-110 transition-transform duration-300">
               98%
             </div>
             <p className="text-slate-300">Taxa de Disponibilidade</p>
           </div>
           <div className="group">
-            <div className="text-4xl font-bold text-blue-400 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl font-bold text-[#00C3FF] mb-2 group-hover:scale-110 transition-transform duration-300">
               &lt;3s
             </div>
             <p className="text-slate-300">Tempo de Resposta</p>
           </div>
           <div className="group">
-            <div className="text-4xl font-bold text-purple-400 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl font-bold text-[#00C3FF] mb-2 group-hover:scale-110 transition-transform duration-300">
               250+
             </div>
             <p className="text-slate-300">Empresas Transformadas</p>
           </div>
           <div className="group">
-            <div className="text-4xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="text-4xl font-bold text-[#00C3FF] mb-2 group-hover:scale-110 transition-transform duration-300">
               500%
             </div>
             <p className="text-slate-300">ROI Médio</p>

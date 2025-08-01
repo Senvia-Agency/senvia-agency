@@ -106,7 +106,7 @@ const AIHeroSection = () => {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
         
         {/* Main Headline */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
           <span className="text-[#00C3FF]">Inteligência Artificial</span>
           <br />
           sob medida para a sua empresa

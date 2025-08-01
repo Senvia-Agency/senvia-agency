@@ -12,9 +12,9 @@ const AIPricingSection = () => {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             Soluções inteligentes
-            <span className="block text-[#00C3FF]">
+            <span className="block text-[#00C3FF] mt-1 sm:mt-2">
               sob medida para a sua empresa
             </span>
           </h2>

@@ -7,7 +7,7 @@ const AIAboutSection = () => {
       <div className="container mx-auto px-6">
         {/* Centered Title */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
             Sobre a <span className="text-[#00C3FF]">SENVIA</span>
           </h2>
           <p className="text-lg text-[#00C3FF] mb-2 font-medium">

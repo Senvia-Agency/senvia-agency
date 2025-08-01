@@ -53,13 +53,6 @@ const AITransformSection = () => {
             return (
               <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group" style={{ backgroundColor: '#1A1F28' }}>
                 <CardContent className="p-8">
-                  {/* Icon */}
-                  <div className="mb-6 flex justify-start">
-                    <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center group-hover:bg-gray-700/70 transition-colors duration-300">
-                      <IconComponent className="w-8 h-8 text-[#00C3FF]" />
-                    </div>
-                  </div>
-                  
                   {/* Title */}
                   <h3 className="text-2xl font-bold text-white mb-4">
                     {benefit.title}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bot, Zap, ArrowRight, CheckCircle, MessageCircle, Settings, Users, Workflow } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import AIModal from './AIModal';
 
 const AIOffersSection = () => {
@@ -9,18 +9,14 @@ const AIOffersSection = () => {
   
   const offers = [
     {
-      icon: Bot,
       title: "IA para Atendimento 24/7",
       description: "Automação inteligente para atendimento, suporte, vendas, agendamento e muito mais! Reduzindo custos e aumentando a eficiência, nossos agentes de IA interagem com clientes, captam leads e integram-se aos seus sistemas internos para otimizar cada contato.",
-      features: ["WhatsApp Business integrado", "Qualificação automática de leads", "Atendimento multicanal", "Integração com sistemas internos"],
-      decorativeIcons: [MessageCircle, Users, Bot]
+      features: ["WhatsApp Business integrado", "Qualificação automática de leads", "Atendimento multicanal", "Integração com sistemas internos"]
     },
     {
-      icon: Zap,
       title: "Automação de Fluxos",
       description: "Elimine tarefas manuais e ganhe agilidade operacional. Integramos seus sistemas, como CRM e ERP, garantindo processos fluidos, precisos e totalmente automatizados, permitindo que sua equipa foque no que realmente importa.",
-      features: ["Integração CRM e ERP", "Processos automatizados", "Redução de tarefas manuais", "Otimização operacional"],
-      decorativeIcons: [Workflow, Settings, Zap]
+      features: ["Integração CRM e ERP", "Processos automatizados", "Redução de tarefas manuais", "Otimização operacional"]
     }
   ];
 
@@ -47,26 +43,6 @@ const AIOffersSection = () => {
               key={index}
               className="group relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-600/30 hover:border-[#00C3FF]/50 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#00C3FF]/20"
             >
-              {/* Icon */}
-              <div className="relative mb-4 sm:mb-6">
-                <offer.icon className="w-12 h-12 sm:w-16 sm:h-16 text-[#00C3FF] group-hover:text-white transition-colors duration-300" />
-              </div>
-              
-              {/* Decorative Background Elements */}
-              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-10">
-                {offer.decorativeIcons.map((DecorIcon, idx) => (
-                  <DecorIcon 
-                    key={idx} 
-                    className="w-6 h-6 sm:w-8 sm:h-8 text-[#00C3FF] absolute" 
-                    style={{ 
-                      top: `${idx * 12}px`, 
-                      right: `${idx * 10}px`,
-                      transform: `rotate(${idx * 15}deg)`
-                    }} 
-                  />
-                ))}
-              </div>
-              
               {/* Title */}
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4 lg:mb-6 leading-tight">
                 {offer.title}

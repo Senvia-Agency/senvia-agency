@@ -59,12 +59,6 @@ const AIOffersSection = () => {
                     ))}
                   </div>
                   
-                  {/* Main Icon */}
-                  <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 relative" style={{ backgroundColor: '#00C3FF' }}>
-                    <IconComponent className="w-10 h-10 text-white" />
-                    <div className="absolute inset-0 rounded-3xl bg-[#00C3FF] opacity-50 blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                  </div>
-                  
                   {/* Title */}
                   <h3 className="text-3xl font-bold text-white mb-6 leading-tight">
                     {offer.title}

@@ -17,12 +17,12 @@ const AIAboutSection = () => {
         
         {/* Centered Content */}
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-xl text-slate-300 mb-6 sm:mb-8 leading-relaxed">
             A SENVIA é uma agência especializada em Inteligência Artificial e automações empresariais. 
             Desenvolvemos soluções personalizadas que transformam a forma como as empresas operam, vendem e se relacionam com clientes.
           </p>
           
-          <p className="text-lg text-slate-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
             Com expertise em tecnologias de IA de última geração, criamos agentes inteligentes, automatizamos processos complexos 
             e integramos sistemas para maximizar a eficiência e os resultados do seu negócio.
           </p>

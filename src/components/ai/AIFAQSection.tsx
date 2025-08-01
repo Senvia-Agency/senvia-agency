@@ -44,7 +44,7 @@ const AIFAQSection = () => {
               Frequentes
             </span>
           </h2>
-          <p className="text-xl text-slate-300">
+          <p className="text-sm sm:text-base lg:text-xl text-slate-300">
             Tudo o que precisa de saber sobre as nossas soluções de IA
           </p>
         </div>
@@ -57,10 +57,10 @@ const AIFAQSection = () => {
               value={`item-${index}`}
               className="bg-slate-800/30 border-slate-700/50 backdrop-blur-sm rounded-lg px-6"
             >
-              <AccordionTrigger className="text-left text-white hover:text-cyan-400 transition-colors duration-300 py-6 text-lg font-semibold">
+              <AccordionTrigger className="text-left text-white hover:text-cyan-400 transition-colors duration-300 py-4 sm:py-6 text-base sm:text-lg font-semibold">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-slate-300 pb-6 text-base leading-relaxed">
+              <AccordionContent className="text-slate-300 pb-4 sm:pb-6 text-sm sm:text-base leading-relaxed">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

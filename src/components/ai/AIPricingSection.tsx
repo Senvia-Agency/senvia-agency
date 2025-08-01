@@ -69,11 +69,11 @@ const AIPricingSection = () => {
               <Button 
                 onClick={() => setIsModalOpen(true)}
                 size="lg" 
-                className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 text-base sm:text-lg lg:text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
                 style={{ backgroundColor: '#00C3FF' }}
               >
                 Agendar Consultoria
-                <ArrowRight className="ml-2 w-6 h-6" />
+                <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
               </Button>
               
               {/* Glow Effect */}

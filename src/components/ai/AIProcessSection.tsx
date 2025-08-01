@@ -1,25 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Code, RefreshCw, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 const AIProcessSection = () => {
   const processSteps = [{
     number: "01",
-    icon: Search,
     title: "Análise Completa",
-    description: "Investigamos profundamente seus processos operacionais para descobrir oportunidades onde a IA pode revolucionar e otimizar tarefas",
-    color: "from-cyan-400 to-blue-500"
+    description: "Investigamos profundamente seus processos operacionais para descobrir oportunidades onde a IA pode revolucionar e otimizar tarefas"
   }, {
-    number: "02",
-    icon: Code,
+    number: "02", 
     title: "Desenvolvimento & Implementação",
-    description: "Criamos e incorporamos tecnologias de inteligência artificial diretamente em seus sistemas existentes",
-    color: "from-blue-500 to-cyan-400"
+    description: "Criamos e incorporamos tecnologias de inteligência artificial diretamente em seus sistemas existentes"
   }, {
     number: "03",
-    icon: RefreshCw,
     title: "Aperfeiçoamento Contínuo",
-    description: "Monitoramos, ajustamos e evoluímos constantemente suas soluções de IA para máxima performance",
-    color: "from-cyan-400 to-blue-600"
+    description: "Monitoramos, ajustamos e evoluímos constantemente suas soluções de IA para máxima performance"
   }];
   return <section className="py-20" style={{
     backgroundColor: '#11161F'
@@ -39,7 +33,6 @@ const AIProcessSection = () => {
           {/* Process Steps */}
           <div className="space-y-8">
             {processSteps.map((step, index) => {
-            const IconComponent = step.icon;
             return <motion.div key={index} initial={{
               opacity: 0,
               x: -50
@@ -52,13 +45,12 @@ const AIProcessSection = () => {
             }} viewport={{
               once: true
             }} className="flex items-start space-x-6">
-                  {/* Step Number & Icon */}
+                  {/* Step Number */}
                   <div className="flex-shrink-0">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center relative`}>
-                      <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                      <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-[#00C3FF] rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#00C3FF] flex items-center justify-center">
+                      <span className="text-xs font-bold text-white">
                         {step.number}
-                      </div>
+                      </span>
                     </div>
                   </div>
 
@@ -99,7 +91,6 @@ const AIProcessSection = () => {
 
                   {/* Orbiting Step Circles */}
                   {processSteps.map((step, index) => {
-                  const IconComponent = step.icon;
                   const angle = index * 120 - 90; // 120 degrees apart, starting from top
                   const radius = 80;
                   const x = Math.cos(angle * Math.PI / 180) * radius;
@@ -115,7 +106,7 @@ const AIProcessSection = () => {
                     ease: "linear",
                     delay: index * 0.5
                   }}>
-                        <IconComponent className="w-6 h-6 text-[#00C3FF]" />
+                        <span className="text-xs font-bold text-[#00C3FF]">{step.number}</span>
                         
                         {/* Connecting Lines */}
                         <motion.div className="absolute w-0.5 bg-gradient-to-r from-[#00C3FF] to-transparent" style={{

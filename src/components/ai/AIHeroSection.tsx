@@ -87,7 +87,7 @@ const AIHeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
       {/* Animated Background */}
       <canvas 
         ref={canvasRef} 
@@ -96,18 +96,10 @@ const AIHeroSection = () => {
       />
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-slate-900/60" style={{ zIndex: 2 }} />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/70" style={{ zIndex: 2 }} />
       
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
-        {/* SENVIA Logo */}
-        <div className="mb-8 flex justify-center">
-          <img 
-            src="/lovable-uploads/30e628f9-6630-4c7b-83e9-1171c7f1c7f7.png" 
-            alt="SENVIA" 
-            className="h-16 w-auto filter drop-shadow-lg"
-          />
-        </div>
         
         {/* Main Headline */}
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
@@ -154,10 +146,12 @@ const AIHeroSection = () => {
         </p>
       </div>
       
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-10 w-4 h-4 bg-cyan-400 rounded-full animate-pulse opacity-60" style={{ zIndex: 3 }} />
-      <div className="absolute top-40 right-16 w-6 h-6 bg-blue-400 rounded-full animate-pulse opacity-40" style={{ zIndex: 3 }} />
-      <div className="absolute bottom-32 left-20 w-3 h-3 bg-purple-400 rounded-full animate-pulse opacity-50" style={{ zIndex: 3 }} />
+      {/* Futuristic Glowing Elements */}
+      <div className="absolute top-20 left-10 w-8 h-8 bg-cyan-400 rounded-full animate-pulse opacity-80 blur-sm" style={{ zIndex: 3 }} />
+      <div className="absolute top-40 right-16 w-12 h-12 bg-blue-400 rounded-full animate-pulse opacity-60 blur-md" style={{ zIndex: 3 }} />
+      <div className="absolute bottom-32 left-20 w-6 h-6 bg-purple-400 rounded-full animate-pulse opacity-70 blur-sm" style={{ zIndex: 3 }} />
+      <div className="absolute top-1/3 right-1/4 w-4 h-4 bg-cyan-300 rounded-full animate-pulse opacity-90" style={{ zIndex: 3 }} />
+      <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-blue-500 rounded-full animate-pulse opacity-50 blur-lg" style={{ zIndex: 3 }} />
     </section>
   );
 };

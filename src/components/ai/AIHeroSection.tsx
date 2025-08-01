@@ -82,7 +82,9 @@ const AIHeroSection = () => {
   const scrollToOffers = () => {
     const offersSection = document.getElementById('ai-offers');
     if (offersSection) {
-      offersSection.scrollIntoView({ behavior: 'smooth' });
+      const yOffset = -100; // Offset para compensar navbar fixa
+      const y = offersSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 

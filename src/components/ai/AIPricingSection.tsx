@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 
 const AIPricingSection = () => {
   return (
@@ -29,9 +29,29 @@ const AIPricingSection = () => {
                 <div className="text-5xl font-bold text-[#00C3FF] mb-2">
                   desde 800€
                 </div>
-                <p className="text-xl text-slate-300">
+                <p className="text-xl text-slate-300 mb-8">
                   de taxa de desenvolvimento
                 </p>
+                
+                {/* Features List */}
+                <ul className="space-y-4 mb-8 max-w-md mx-auto">
+                  <li className="flex items-center text-slate-300">
+                    <CheckCircle className="w-5 h-5 text-[#00C3FF] mr-3 flex-shrink-0" />
+                    <span className="text-base">Personalizado para a sua empresa</span>
+                  </li>
+                  <li className="flex items-center text-slate-300">
+                    <CheckCircle className="w-5 h-5 text-[#00C3FF] mr-3 flex-shrink-0" />
+                    <span className="text-base">Integrado aos seus sistemas internos</span>
+                  </li>
+                  <li className="flex items-center text-slate-300">
+                    <CheckCircle className="w-5 h-5 text-[#00C3FF] mr-3 flex-shrink-0" />
+                    <span className="text-base">Treinamento de IA avançado</span>
+                  </li>
+                  <li className="flex items-center text-slate-300">
+                    <CheckCircle className="w-5 h-5 text-[#00C3FF] mr-3 flex-shrink-0" />
+                    <span className="text-base">Aprendizado contínuo e melhoria</span>
+                  </li>
+                </ul>
               </div>
               
               {/* CTA Button */}

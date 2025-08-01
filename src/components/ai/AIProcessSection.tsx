@@ -3,15 +3,12 @@ import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 const AIProcessSection = () => {
   const processSteps = [{
-    number: "01",
     title: "Análise Completa",
     description: "Investigamos profundamente seus processos operacionais para descobrir oportunidades onde a IA pode revolucionar e otimizar tarefas"
   }, {
-    number: "02", 
     title: "Desenvolvimento & Implementação",
     description: "Criamos e incorporamos tecnologias de inteligência artificial diretamente em seus sistemas existentes"
   }, {
-    number: "03",
     title: "Aperfeiçoamento Contínuo",
     description: "Monitoramos, ajustamos e evoluímos constantemente suas soluções de IA para máxima performance"
   }];
@@ -45,12 +42,9 @@ const AIProcessSection = () => {
             }} viewport={{
               once: true
             }} className="flex items-start space-x-6">
-                  {/* Step Number */}
+                  {/* Step Circle */}
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#00C3FF] flex items-center justify-center">
-                      <span className="text-xs font-bold text-white">
-                        {step.number}
-                      </span>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#00C3FF]">
                     </div>
                   </div>
 
@@ -95,7 +89,7 @@ const AIProcessSection = () => {
                   const radius = 80;
                   const x = Math.cos(angle * Math.PI / 180) * radius;
                   const y = Math.sin(angle * Math.PI / 180) * radius;
-                  return <motion.div key={index} className="absolute w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center border-2 border-[#00C3FF]" style={{
+                  return <motion.div key={index} className="absolute w-12 h-12 bg-slate-700 rounded-full border-2 border-[#00C3FF]" style={{
                     left: `calc(50% + ${x}px - 24px)`,
                     top: `calc(50% + ${y}px - 24px)`
                   }} animate={{
@@ -106,7 +100,6 @@ const AIProcessSection = () => {
                     ease: "linear",
                     delay: index * 0.5
                   }}>
-                        <span className="text-xs font-bold text-[#00C3FF]">{step.number}</span>
                         
                         {/* Connecting Lines */}
                         <motion.div className="absolute w-0.5 bg-gradient-to-r from-[#00C3FF] to-transparent" style={{

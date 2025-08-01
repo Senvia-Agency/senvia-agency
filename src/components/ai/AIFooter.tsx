@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook, X } from 'lucide-react';
 
 const AIFooter = () => {
   const scrollToTop = () => {
@@ -75,9 +75,9 @@ const AIFooter = () => {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-cyan-400 p-2 rounded-full transition-all duration-300 transform hover:scale-110"
-                  aria-label="Twitter/X"
+                  aria-label="X"
                 >
-                  <Twitter className="w-4 h-4" />
+                  <X className="w-4 h-4" />
                 </a>
               </div>
             </div>

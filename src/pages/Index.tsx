@@ -6,10 +6,10 @@ import AIOffersSection from '@/components/ai/AIOffersSection';
 import AIProcessSection from '@/components/ai/AIProcessSection';
 import AITransformSection from '@/components/ai/AITransformSection';
 import AIPricingSection from '@/components/ai/AIPricingSection';
-import AITestimonialsSection from '@/components/ai/AITestimonialsSection';
+
 import AIFAQSection from '@/components/ai/AIFAQSection';
 import AIAboutSection from '@/components/ai/AIAboutSection';
-import AIContactSection from '@/components/ai/AIContactSection';
+
 import AIFooter from '@/components/ai/AIFooter';
 import ScrollToTop from "../components/ScrollToTop";
 import ScrollAnimator from "../components/ScrollAnimator";
@@ -42,10 +42,6 @@ const Index = () => {
       <div id="faq">
         <AIFAQSection />
       </div>
-      <div id="testimonials">
-        <AITestimonialsSection />
-      </div>
-      <AIContactSection />
       <AIFooter />
       <ScrollToTop />
       <ScrollAnimator />

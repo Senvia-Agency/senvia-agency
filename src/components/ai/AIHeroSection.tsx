@@ -113,21 +113,6 @@ const AIHeroSection = () => {
           Soluções personalizadas de IA que automatizam processos, potencializam vendas e transformam a eficiência do seu negócio
         </p>
         
-        {/* Key Stats */}
-        <div className="flex flex-wrap justify-center gap-8 mb-10">
-          <div className="flex items-center gap-2 text-[#00C3FF]">
-            <Bot className="w-6 h-6" />
-            <span className="text-lg font-semibold">+300% Conversões</span>
-          </div>
-          <div className="flex items-center gap-2 text-[#00C3FF]">
-            <Zap className="w-6 h-6" />
-            <span className="text-lg font-semibold">24/7 Automatizado</span>
-          </div>
-          <div className="flex items-center gap-2 text-[#00C3FF]">
-            <TrendingUp className="w-6 h-6" />
-            <span className="text-lg font-semibold">ROI Garantido</span>
-          </div>
-        </div>
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

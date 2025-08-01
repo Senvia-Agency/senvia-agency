@@ -28,10 +28,6 @@ const AIFAQSection = () => {
       answer: "Integramos com as suas ferramentas existentes (WhatsApp, e-mail, website, CRM). O processo é simples e não interfere com as suas operações actuais."
     },
     {
-      question: "Há garantias?",
-      answer: "Sim! Oferecemos garantia de resultados nos primeiros 90 dias. Se não ficar satisfeito com o desempenho, devolvemos o investimento inicial."
-    },
-    {
       question: "Preciso de conhecimentos técnicos?",
       answer: "Absolutamente não. Tratamos de toda a parte técnica. Só precisa de focar no seu negócio enquanto a nossa IA trabalha para si 24/7."
     }

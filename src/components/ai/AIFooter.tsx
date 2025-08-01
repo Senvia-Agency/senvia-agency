@@ -10,7 +10,9 @@ const AIFooter = () => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const yOffset = -80; // Offset para compensar navbar fixa
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
@@ -81,16 +83,16 @@ const AIFooter = () => {
             </div>
           </div>
 
-          {/* Services */}
+          {/* Navigation */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-6">Soluções de IA</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">Navegação</h3>
             <ul className="space-y-3">
               <li>
                 <button 
-                  onClick={() => scrollToSection('ai-offers')}
+                  onClick={() => scrollToSection('about')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  IA para Atendimento 24/7
+                  Sobre
                 </button>
               </li>
               <li>
@@ -98,7 +100,7 @@ const AIFooter = () => {
                   onClick={() => scrollToSection('ai-offers')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Automação de Fluxos
+                  Serviços
                 </button>
               </li>
               <li>
@@ -106,38 +108,7 @@ const AIFooter = () => {
                   onClick={() => scrollToSection('transform')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Benefícios da IA
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => scrollToSection('pricing')}
-                  className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
-                >
-                  Preços
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Navigation */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-6">Navegação</h3>
-            <ul className="space-y-3">
-              <li>
-                <button 
-                  onClick={() => scrollToSection('process')}
-                  className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
-                >
-                  Como Funciona
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => scrollToSection('about')}
-                  className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
-                >
-                  Sobre Nós
+                  Benefícios
                 </button>
               </li>
               <li>
@@ -145,16 +116,16 @@ const AIFooter = () => {
                   onClick={() => scrollToSection('faq')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Perguntas Frequentes
+                  FAQ
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => scrollToSection('pricing')}
+                <a 
+                  href="mailto:geral@senvia.pt"
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Preços
-                </button>
+                  Contacto
+                </a>
               </li>
             </ul>
           </div>
@@ -162,18 +133,15 @@ const AIFooter = () => {
           {/* CTA */}
           <div>
             <h3 className="text-white font-semibold text-lg mb-6">Começar Agora</h3>
-            <p className="text-slate-300 mb-6 text-sm leading-relaxed">
-              Pronto para revolucionar o seu negócio? Fale connosco hoje mesmo.
+            <p className="text-slate-300 mb-8 text-sm leading-relaxed">
+              Transforme o seu negócio com IA personalizada. Agende uma consultoria gratuita.
             </p>
             <Button 
               onClick={() => scrollToSection('pricing')}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-3 rounded-3xl font-semibold transition-all duration-300 transform hover:scale-105 border-0 mb-4"
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-3xl font-bold text-lg shadow-2xl transition-all duration-300 transform hover:scale-105 border-0"
             >
-              Agendar Consultoria
+              Agendar Consultoria Gratuita
             </Button>
-            <p className="text-slate-400 text-xs">
-              Resposta garantida em 2 horas
-            </p>
           </div>
         </div>
       </div>

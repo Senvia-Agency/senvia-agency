@@ -16,14 +16,14 @@ const AIProcessSection = () => {
       icon: Code,
       title: "Desenvolvimento & Implementação",
       description: "Criamos e incorporamos tecnologias de inteligência artificial diretamente em seus sistemas existentes",
-      color: "from-blue-500 to-purple-500"
+      color: "from-blue-500 to-cyan-400"
     },
     {
       number: "03",
       icon: RefreshCw,
       title: "Aperfeiçoamento Contínuo",
       description: "Monitoramos, ajustamos e evoluímos constantemente suas soluções de IA para máxima performance",
-      color: "from-purple-500 to-pink-500"
+      color: "from-cyan-400 to-blue-600"
     }
   ];
 
@@ -38,9 +38,6 @@ const AIProcessSection = () => {
               Processo
             </span>
           </h2>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Uma metodologia comprovada para transformar seu negócio com inteligência artificial
-          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -85,67 +82,133 @@ const AIProcessSection = () => {
           <div className="relative">
             {/* Main Container */}
             <div className="bg-slate-800/50 rounded-2xl p-8 border border-slate-600/30 backdrop-blur-sm relative overflow-hidden">
-              {/* Animated Background */}
-              <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-500 via-purple-500 to-pink-500">
-                  <motion.div
-                    className="h-full bg-white/30"
-                    initial={{ width: "0%" }}
-                    whileInView={{ width: "100%" }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    viewport={{ once: true }}
-                  />
-                </div>
-              </div>
-
-              {/* Process Visualization */}
+              {/* Dynamic Process Flow */}
               <div className="relative z-10">
-                <h4 className="text-xl font-bold text-white mb-6 text-center">
-                  Processo em Ação
+                <h4 className="text-xl font-bold text-white mb-8 text-center">
+                  Fluxo Inteligente
                 </h4>
 
-                {/* Step Indicators */}
-                <div className="space-y-6">
+                {/* Central Hub */}
+                <div className="relative flex items-center justify-center">
+                  {/* Main Central Circle */}
+                  <motion.div
+                    className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center relative z-10"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      boxShadow: [
+                        "0 0 20px rgba(0, 195, 255, 0.3)",
+                        "0 0 30px rgba(0, 195, 255, 0.6)",
+                        "0 0 20px rgba(0, 195, 255, 0.3)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <div className="text-white font-bold text-sm">IA</div>
+                  </motion.div>
+
+                  {/* Orbiting Step Circles */}
+                  {processSteps.map((step, index) => {
+                    const IconComponent = step.icon;
+                    const angle = (index * 120) - 90; // 120 degrees apart, starting from top
+                    const radius = 80;
+                    const x = Math.cos(angle * Math.PI / 180) * radius;
+                    const y = Math.sin(angle * Math.PI / 180) * radius;
+                    
+                    return (
+                      <motion.div
+                        key={index}
+                        className="absolute w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center border-2 border-[#00C3FF]"
+                        style={{
+                          left: `calc(50% + ${x}px - 24px)`,
+                          top: `calc(50% + ${y}px - 24px)`,
+                        }}
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 8,
+                          repeat: Infinity,
+                          ease: "linear",
+                          delay: index * 0.5
+                        }}
+                      >
+                        <IconComponent className="w-6 h-6 text-[#00C3FF]" />
+                        
+                        {/* Connecting Lines */}
+                        <motion.div
+                          className="absolute w-0.5 bg-gradient-to-r from-[#00C3FF] to-transparent"
+                          style={{
+                            height: `${radius - 10}px`,
+                            transformOrigin: 'bottom',
+                            transform: `rotate(${angle + 180}deg)`,
+                            bottom: '50%',
+                            left: '50%',
+                          }}
+                          animate={{
+                            opacity: [0.3, 0.8, 0.3],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: index * 0.3
+                          }}
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Process Status */}
+                <div className="mt-12 space-y-3">
                   {processSteps.map((step, index) => (
                     <motion.div
                       key={index}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: index * 0.3 }}
+                      className="flex items-center space-x-3"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.2 }}
                       viewport={{ once: true }}
-                      className="flex items-center space-x-4"
                     >
-                      <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${step.color}`} />
-                      <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <motion.div
+                        className="w-2 h-2 bg-[#00C3FF] rounded-full"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: index * 0.5
+                        }}
+                      />
+                      <span className="text-slate-300 text-sm">{step.title}</span>
+                      <motion.div
+                        className="flex-1 h-0.5 bg-slate-700 rounded-full overflow-hidden"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "100%" }}
+                        transition={{ duration: 1, delay: index * 0.3 }}
+                        viewport={{ once: true }}
+                      >
                         <motion.div
-                          className={`h-full bg-gradient-to-r ${step.color}`}
-                          initial={{ width: "0%" }}
-                          whileInView={{ width: "100%" }}
-                          transition={{ duration: 1, delay: index * 0.4 }}
-                          viewport={{ once: true }}
+                          className="h-full bg-[#00C3FF]"
+                          animate={{
+                            width: ["0%", "100%", "0%"]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            delay: index * 0.5
+                          }}
                         />
-                      </div>
-                      <CheckCircle className="w-5 h-5 text-[#00C3FF]" />
+                      </motion.div>
                     </motion.div>
                   ))}
-                </div>
-
-                {/* Stats */}
-                <div className="mt-8 grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-[#00C3FF] mb-1">2-4</div>
-                    <p className="text-slate-300 text-sm">Semanas</p>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-[#00C3FF] mb-1">24/7</div>
-                    <p className="text-slate-300 text-sm">Suporte</p>
-                  </div>
                 </div>
               </div>
 
               {/* Floating Elements */}
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#00C3FF] rounded-full opacity-20 blur-xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full opacity-10 blur-xl" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-500 rounded-full opacity-10 blur-xl" />
             </div>
           </div>
         </div>

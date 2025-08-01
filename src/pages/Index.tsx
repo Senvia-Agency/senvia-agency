@@ -22,14 +22,14 @@ const Index = () => {
     <div className="min-h-screen" style={{ backgroundColor: '#11161F' }}>
       <AINavbar />
       <AIHeroSection />
+      <div id="about">
+        <AIAboutSection />
+      </div>
       <div id="ai-offers">
         <AIOffersSection />
       </div>
       <div id="benefits">
         <AIBenefitsSection />
-      </div>
-      <div id="about">
-        <AIAboutSection />
       </div>
       <div id="faq">
         <AIFAQSection />

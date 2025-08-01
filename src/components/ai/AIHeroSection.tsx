@@ -103,15 +103,14 @@ const AIHeroSection = () => {
         
         {/* Main Headline */}
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-          Transforme Seu Negócio
-          <span className="block text-[#00C3FF]">
-            com IA do Futuro
-          </span>
+          <span className="text-[#00C3FF]">Inteligência Artificial</span>
+          <br />
+          sob medida para a sua empresa
         </h1>
         
         {/* Subtitle */}
         <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-          Automações Inteligentes para Vendas e Atendimento que Funcionam 24/7
+          Soluções personalizadas de IA que automatizam processos, potencializam vendas e transformam a eficiência do seu negócio
         </p>
         
         {/* Key Stats */}
@@ -134,10 +133,10 @@ const AIHeroSection = () => {
         <Button 
           onClick={scrollToOffers}
           size="lg" 
-          className="px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
+          className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
           style={{ backgroundColor: '#00C3FF' }}
         >
-          Começar Agora
+          Agendar Consultoria
           <ArrowRight className="ml-2 w-6 h-6" />
         </Button>
         

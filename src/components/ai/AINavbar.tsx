@@ -108,35 +108,35 @@ const AINavbar = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 py-4">
-            <div className="space-y-4">
+          <div className="md:hidden bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 py-4 px-6">
+            <div className="space-y-3">
               <button 
                 onClick={() => scrollToSection('ai-offers')}
-                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-2"
+                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-800/50"
               >
                 Serviços
               </button>
               <button 
                 onClick={() => scrollToSection('transform')}
-                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-2"
+                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-800/50"
               >
                 Benefícios
               </button>
               <button 
                 onClick={() => scrollToSection('process')}
-                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-2"
+                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-800/50"
               >
                 Processo
               </button>
               <button 
                 onClick={() => scrollToSection('faq')}
-                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-2"
+                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-800/50"
               >
                 FAQ
               </button>
               <button 
                 onClick={() => scrollToSection('about')}
-                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-2"
+                className="block w-full text-left text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-medium py-3 px-4 rounded-lg hover:bg-slate-800/50"
               >
                 Sobre
               </button>

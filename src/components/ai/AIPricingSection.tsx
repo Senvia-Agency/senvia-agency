@@ -1,0 +1,53 @@
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
+
+const AIPricingSection = () => {
+  return (
+    <section className="py-20" style={{ backgroundColor: '#11161F' }}>
+      <div className="container mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Soluções inteligentes
+            <span className="block text-[#00C3FF]">
+              sob medida para a sua empresa
+            </span>
+          </h2>
+        </div>
+
+        {/* Pricing Card */}
+        <div className="max-w-4xl mx-auto">
+          <Card className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden" style={{ backgroundColor: '#1A1F28' }}>
+            <CardContent className="p-12 text-center">
+              {/* Pricing Info */}
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold text-white mb-4">
+                  IA para atendimento
+                </h3>
+                <div className="text-5xl font-bold text-[#00C3FF] mb-2">
+                  desde 800€
+                </div>
+                <p className="text-xl text-slate-300">
+                  de taxa de desenvolvimento
+                </p>
+              </div>
+              
+              {/* CTA Button */}
+              <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
+                Agendar Consultoria
+                <ArrowRight className="ml-2 w-6 h-6" />
+              </Button>
+              
+              {/* Glow Effect */}
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00C3FF] to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AIPricingSection;

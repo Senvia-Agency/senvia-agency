@@ -5,6 +5,7 @@ import AIHeroSection from '@/components/ai/AIHeroSection';
 import AIOffersSection from '@/components/ai/AIOffersSection';
 import AIProcessSection from '@/components/ai/AIProcessSection';
 import AITransformSection from '@/components/ai/AITransformSection';
+import AIPricingSection from '@/components/ai/AIPricingSection';
 import AITestimonialsSection from '@/components/ai/AITestimonialsSection';
 import AIFAQSection from '@/components/ai/AIFAQSection';
 import AIAboutSection from '@/components/ai/AIAboutSection';
@@ -34,6 +35,9 @@ const Index = () => {
       </div>
       <div id="transform">
         <AITransformSection />
+      </div>
+      <div id="pricing">
+        <AIPricingSection />
       </div>
       <div id="faq">
         <AIFAQSection />

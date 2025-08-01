@@ -78,34 +78,93 @@ const AIProcessSection = () => {
                     <div className="text-white font-bold text-sm">IA</div>
                   </motion.div>
 
-                  {/* Floating Particles */}
-                  {[...Array(6)].map((_, index) => {
-                    const angle = (index * 60) - 90;
-                    const radius = 60 + (index % 2) * 20;
+                  {/* Orbiting Empty Circles */}
+                  {processSteps.map((step, index) => {
+                  const angle = index * 120 - 90; // 120 degrees apart, starting from top
+                  const radius = 80;
+                  const x = Math.cos(angle * Math.PI / 180) * radius;
+                  const y = Math.sin(angle * Math.PI / 180) * radius;
+                  return <motion.div key={index} className="absolute w-12 h-12 bg-slate-700 rounded-full border-2 border-[#00C3FF]" style={{
+                    left: `calc(50% + ${x}px - 24px)`,
+                    top: `calc(50% + ${y}px - 24px)`
+                  }} animate={{
+                    rotate: [0, 360]
+                  }} transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear",
+                    delay: index * 0.5
+                  }}>
+                        
+                        {/* Connecting Lines */}
+                        <motion.div className="absolute w-0.5 bg-gradient-to-r from-[#00C3FF] to-transparent" style={{
+                      height: `${radius - 10}px`,
+                      transformOrigin: 'bottom',
+                      transform: `rotate(${angle + 180}deg)`,
+                      bottom: '50%',
+                      left: '50%'
+                    }} animate={{
+                      opacity: [0.3, 0.8, 0.3]
+                    }} transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.3
+                    }} />
+                      </motion.div>;
+                })}
+
+                  {/* Additional Floating Particles */}
+                  {[...Array(8)].map((_, index) => {
+                    const angle = (index * 45) - 90;
+                    const radius = 40 + (index % 3) * 15;
                     const x = Math.cos(angle * Math.PI / 180) * radius;
                     const y = Math.sin(angle * Math.PI / 180) * radius;
                     return (
                       <motion.div
-                        key={index}
-                        className="absolute w-2 h-2 bg-[#00C3FF] rounded-full opacity-60"
+                        key={`particle-${index}`}
+                        className="absolute w-1 h-1 bg-cyan-300 rounded-full opacity-60"
                         style={{
-                          left: `calc(50% + ${x}px - 4px)`,
-                          top: `calc(50% + ${y}px - 4px)`
+                          left: `calc(50% + ${x}px - 2px)`,
+                          top: `calc(50% + ${y}px - 2px)`
                         }}
                         animate={{
-                          scale: [0.5, 1.5, 0.5],
-                          opacity: [0.3, 0.8, 0.3],
+                          scale: [0.5, 2, 0.5],
+                          opacity: [0.2, 0.8, 0.2],
                           rotate: [0, 360]
                         }}
                         transition={{
-                          duration: 3,
+                          duration: 4,
                           repeat: Infinity,
-                          delay: index * 0.5,
+                          delay: index * 0.3,
                           ease: "easeInOut"
                         }}
                       />
                     );
                   })}
+
+                  {/* Pulsing Rings */}
+                  {[...Array(3)].map((_, index) => (
+                    <motion.div
+                      key={`ring-${index}`}
+                      className="absolute border border-[#00C3FF] rounded-full"
+                      style={{
+                        width: `${60 + index * 30}px`,
+                        height: `${60 + index * 30}px`,
+                        left: `calc(50% - ${30 + index * 15}px)`,
+                        top: `calc(50% - ${30 + index * 15}px)`
+                      }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.1, 0.3, 0.1]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: index * 0.7,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  ))}
                 </div>
 
                 {/* Process Status */}
@@ -123,7 +182,7 @@ const AIProcessSection = () => {
                   once: true
                 }}>
                       <motion.div className="w-3 h-3 bg-[#00C3FF] rounded-full" animate={{
-                    scale: [1, 1.3, 1],
+                    scale: [1, 1.5, 1],
                     opacity: [0.5, 1, 0.5]
                   }} transition={{
                     duration: 1.5,
@@ -156,6 +215,21 @@ const AIProcessSection = () => {
               {/* Floating Elements */}
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#00C3FF] rounded-full opacity-20 blur-xl" />
               <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-500 rounded-full opacity-10 blur-xl" />
+              
+              {/* Additional Glow Effects */}
+              <motion.div 
+                className="absolute top-1/2 left-1/2 w-32 h-32 bg-[#00C3FF] rounded-full opacity-10 blur-2xl"
+                style={{ transform: 'translate(-50%, -50%)' }}
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.1, 0.2, 0.1]
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
             </div>
           </div>
         </div>

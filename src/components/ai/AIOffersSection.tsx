@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Bot, Zap, ArrowRight, CheckCircle, MessageCircle, Settings, Users, Workflow } from 'lucide-react';
+import AIModal from './AIModal';
 
 const AIOffersSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const offers = [
     {
       icon: Bot,
@@ -89,12 +92,20 @@ const AIOffersSection = () => {
 
         {/* Bottom CTA */}
         <div className="text-center">
-          <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            size="lg" 
+            className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
+            style={{ backgroundColor: '#00C3FF' }}
+          >
             Agendar Consultoria
             <ArrowRight className="ml-2 w-6 h-6" />
           </Button>
         </div>
       </div>
+      
+      {/* AI Modal */}
+      <AIModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </section>
   );
 };

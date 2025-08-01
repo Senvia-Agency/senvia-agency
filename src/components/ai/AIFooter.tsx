@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, MapPin, ArrowUp, Instagram, Facebook } from 'lucide-react';
+import AIModal from './AIModal';
 
 // Logo oficial do X
 const XLogo = ({ className }: { className?: string }) => (
@@ -14,6 +15,8 @@ const XLogo = ({ className }: { className?: string }) => (
 );
 
 const AIFooter = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -148,7 +151,7 @@ const AIFooter = () => {
               Transforme o seu negócio com IA personalizada. Agende uma consultoria.
             </p>
             <Button 
-              onClick={() => scrollToSection('pricing')}
+              onClick={() => setIsModalOpen(true)}
               className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-3xl font-bold text-lg shadow-2xl transition-all duration-300 transform hover:scale-105 border-0"
             >
               Agendar Consultoria
@@ -184,6 +187,9 @@ const AIFooter = () => {
           </div>
         </div>
       </div>
+      
+      {/* AI Modal */}
+      <AIModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </footer>
   );
 };

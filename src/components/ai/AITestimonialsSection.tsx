@@ -89,16 +89,6 @@ const AITestimonialsSection = () => {
           ))}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="mt-16 text-center">
-          <p className="text-slate-400 mb-8">Empresas que confiam na nossa tecnologia:</p>
-          <div className="flex flex-wrap justify-center gap-8 opacity-60">
-            <div className="text-2xl font-bold text-slate-500">TECH•CORP</div>
-            <div className="text-2xl font-bold text-slate-500">DIGITAL•PRO</div>
-            <div className="text-2xl font-bold text-slate-500">INNOVATE•NOW</div>
-            <div className="text-2xl font-bold text-slate-500">FUTURE•TECH</div>
-          </div>
-        </div>
       </div>
     </section>
   );

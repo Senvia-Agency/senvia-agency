@@ -15,59 +15,17 @@ const AIAboutSection = () => {
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Content Side */}
-          <div>
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              A SENVIA é uma agência especializada em Inteligência Artificial e automações empresariais. 
-              Desenvolvemos soluções personalizadas que transformam a forma como as empresas operam, vendem e se relacionam com clientes.
-            </p>
-            
-            <p className="text-lg text-slate-400 mb-8">
-              Com expertise em tecnologias de IA de última geração, criamos agentes inteligentes, automatizamos processos complexos 
-              e integramos sistemas para maximizar a eficiência e os resultados do seu negócio.
-            </p>
-
-          </div>
-
-          {/* Visual Side */}
-          <div className="relative">
-            {/* Main Card */}
-            <div className="bg-slate-800/50 rounded-2xl p-8 border border-slate-600/30 backdrop-blur-sm">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#00C3FF] mb-2">100+</div>
-                  <p className="text-slate-300 text-sm">Projectos Concluídos</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#00C3FF] mb-2">98%</div>
-                  <p className="text-slate-300 text-sm">Clientes Satisfeitos</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#00C3FF] mb-2">24/7</div>
-                  <p className="text-slate-300 text-sm">Suporte Disponível</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#00C3FF] mb-2">ROI</div>
-                  <p className="text-slate-300 text-sm">Garantido</p>
-                </div>
-              </div>
-
-              {/* Mission Statement */}
-              <div className="text-center bg-slate-700/50 rounded-xl p-6">
-                <h3 className="text-xl font-bold text-white mb-3">A Nossa Missão</h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Democratizar o acesso à inteligência artificial para empresas de todos os tamanhos, 
-                  transformando visões em realidade digital.
-                </p>
-              </div>
-            </div>
-
-            {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#00C3FF] rounded-full opacity-20 blur-xl" />
-            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#00C3FF] rounded-full opacity-10 blur-xl" />
-          </div>
+        {/* Centered Content */}
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+            A SENVIA é uma agência especializada em Inteligência Artificial e automações empresariais. 
+            Desenvolvemos soluções personalizadas que transformam a forma como as empresas operam, vendem e se relacionam com clientes.
+          </p>
+          
+          <p className="text-lg text-slate-400 leading-relaxed">
+            Com expertise em tecnologias de IA de última geração, criamos agentes inteligentes, automatizamos processos complexos 
+            e integramos sistemas para maximizar a eficiência e os resultados do seu negócio.
+          </p>
         </div>
       </div>
     </section>

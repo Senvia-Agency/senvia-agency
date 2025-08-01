@@ -9,10 +9,7 @@ const AIAboutSection = () => {
           {/* Content Side */}
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight">
-              Sobre a
-              <span className="block text-[#00C3FF]">
-                SENVIA
-              </span>
+              Sobre a <span className="text-[#00C3FF]">SENVIA</span>
             </h2>
             
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">

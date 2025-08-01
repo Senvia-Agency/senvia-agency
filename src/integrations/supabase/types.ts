@@ -710,6 +710,45 @@ export type Database = {
           },
         ]
       }
+      leads_ia: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          lead_status: string
+          notes: string | null
+          source_page: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          lead_status?: string
+          notes?: string | null
+          source_page?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          lead_status?: string
+          notes?: string | null
+          source_page?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       marketing_reports: {
         Row: {
           ad_sets_count: number | null

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import AIModal from './AIModal';
 
 const AINavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,7 +85,7 @@ const AINavbar = () => {
           {/* CTA Button com efeitos especiais */}
           <div className="hidden md:block">
             <Button 
-              onClick={() => scrollToSection('pricing')}
+              onClick={() => setIsModalOpen(true)}
               className="relative px-8 py-3 rounded-3xl font-semibold text-white overflow-hidden transition-all duration-300 transform hover:scale-105 border-0 group"
               style={{ backgroundColor: '#00C3FF' }}
             >
@@ -139,7 +141,7 @@ const AINavbar = () => {
                 Sobre
               </button>
               <Button 
-                onClick={() => scrollToSection('pricing')}
+                onClick={() => setIsModalOpen(true)}
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-3 rounded-3xl font-semibold transition-all duration-300 border-0 mt-4 transform hover:scale-105"
               >
                 Agendar Consultoria
@@ -148,6 +150,9 @@ const AINavbar = () => {
           </div>
         )}
       </div>
+      
+      {/* AI Modal */}
+      <AIModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </nav>
   );
 };

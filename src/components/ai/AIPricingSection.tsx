@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, CheckCircle } from 'lucide-react';
+import AIModal from './AIModal';
 
 const AIPricingSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   return (
     <section className="py-20" style={{ backgroundColor: '#11161F' }}>
       <div className="container mx-auto px-6">
@@ -63,7 +66,12 @@ const AIPricingSection = () => {
               </div>
               
               {/* CTA Button */}
-              <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
+              <Button 
+                onClick={() => setIsModalOpen(true)}
+                size="lg" 
+                className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
+                style={{ backgroundColor: '#00C3FF' }}
+              >
                 Agendar Consultoria
                 <ArrowRight className="ml-2 w-6 h-6" />
               </Button>
@@ -74,6 +82,9 @@ const AIPricingSection = () => {
           </Card>
         </div>
       </div>
+      
+      {/* AI Modal */}
+      <AIModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </section>
   );
 };

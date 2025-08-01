@@ -54,12 +54,12 @@ const AITransformSection = () => {
               <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group" style={{ backgroundColor: '#1A1F28' }}>
                 <CardContent className="p-8">
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">
                     {benefit.title}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-slate-300 leading-relaxed text-lg">
+                  <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
                     {benefit.description}
                   </p>
                 </CardContent>

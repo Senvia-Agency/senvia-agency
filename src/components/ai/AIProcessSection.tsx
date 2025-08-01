@@ -54,9 +54,9 @@ const AIProcessSection = () => {
             }} className="flex items-start space-x-6">
                   {/* Step Number & Icon */}
                   <div className="flex-shrink-0">
-                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center relative`}>
-                      <IconComponent className="w-8 h-8 text-white" />
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#00C3FF] rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center relative`}>
+                      <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                      <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-[#00C3FF] rounded-full flex items-center justify-center text-xs font-bold text-white">
                         {step.number}
                       </div>
                     </div>
@@ -64,10 +64,10 @@ const AIProcessSection = () => {
 
                   {/* Step Content */}
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-white mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">
                       {step.title}
                     </h3>
-                    <p className="text-slate-300 leading-relaxed text-lg">
+                    <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
                       {step.description}
                     </p>
                   </div>

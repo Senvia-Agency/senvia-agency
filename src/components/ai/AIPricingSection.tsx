@@ -23,20 +23,20 @@ const AIPricingSection = () => {
         {/* Pricing Card */}
         <div className="max-w-4xl mx-auto">
           <Card className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden" style={{ backgroundColor: '#1A1F28' }}>
-            <CardContent className="p-12 text-center">
+            <CardContent className="p-6 sm:p-8 lg:p-12 text-center">
               {/* Pricing Info */}
               <div className="mb-8">
-                <h3 className="text-3xl font-bold text-white mb-4">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4">
                   IA para Atendimento ou Automação de Fluxos
                 </h3>
                 <div className="mb-4">
-                  <div className="text-5xl font-bold text-[#00C3FF] mb-1">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#00C3FF] mb-1">
                     desde 800€
                   </div>
-                  <p className="text-lg text-slate-300 mb-3">
+                  <p className="text-sm sm:text-base lg:text-lg text-slate-300 mb-2 sm:mb-3">
                     taxa de desenvolvimento da IA
                   </p>
-                  <div className="text-2xl font-semibold text-slate-300">
+                  <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-300">
                     + 200€/mês
                   </div>
                   <p className="text-sm text-slate-400">

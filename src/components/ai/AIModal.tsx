@@ -31,7 +31,7 @@ const AIModal = ({ open, onOpenChange }: AIModalProps) => {
         source_page: 'ai_landing'
       });
       
-      // Reset form and close modal
+      // Reset form and close modal on success
       setFormData({
         full_name: '',
         whatsapp: '',
@@ -41,6 +41,7 @@ const AIModal = ({ open, onOpenChange }: AIModalProps) => {
       onOpenChange(false);
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
+      // O estado isPending é automaticamente resetado pelo React Query em caso de erro
     }
   };
 

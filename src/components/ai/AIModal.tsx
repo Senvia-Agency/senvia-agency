@@ -58,7 +58,7 @@ const AIModal = ({ open, onOpenChange }: AIModalProps) => {
           <DialogTitle className="text-xl sm:text-2xl font-bold text-white px-1">
             Diagnóstico de IA Empresarial
           </DialogTitle>
-          <p className="text-slate-300 text-sm sm:text-base px-2 leading-relaxed">
+          <p className="text-sm sm:text-base px-2 leading-relaxed">
             Descubra como a inteligência artificial pode automatizar processos, 
             reduzir custos e aumentar a eficiência do seu negócio.
           </p>

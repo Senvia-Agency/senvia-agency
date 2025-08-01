@@ -148,9 +148,10 @@ const AIModal = ({ open, onOpenChange }: AIModalProps) => {
           </div>
 
           <Button
+            id="button-ia"
             type="submit"
             disabled={createLead.isPending}
-            className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
+            className="w-full h-12 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
           >
             {createLead.isPending ? 'Enviando...' : 'Agendar Consultoria'}
           </Button>

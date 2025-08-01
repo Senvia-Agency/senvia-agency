@@ -5,21 +5,24 @@ const AIAboutSection = () => {
   return (
     <section className="py-20" style={{ backgroundColor: '#11161F' }}>
       <div className="container mx-auto px-6">
+        {/* Centered Title */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight">
+            Sobre a <span className="text-[#00C3FF]">SENVIA</span>
+          </h2>
+        </div>
+        
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Content Side */}
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight">
-              Sobre a <span className="text-[#00C3FF]">SENVIA</span>
-            </h2>
-            
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Na SENVIA, unimos a potência da inteligência artificial com automações personalizadas. 
-              O nosso objectivo? Fazer pequenos negócios decolarem como foguetes, sem complicações.
+              A SENVIA é uma agência especializada em Inteligência Artificial e automações empresariais. 
+              Desenvolvemos soluções personalizadas que transformam a forma como as empresas operam, vendem e se relacionam com clientes.
             </p>
             
             <p className="text-lg text-slate-400 mb-8">
-              Com tecnologia de ponta e foco em resultados, somos o parceiro que precisa para o futuro. 
-              Não vendemos apenas software - entregamos transformação digital completa.
+              Com expertise em tecnologias de IA de última geração, criamos agentes inteligentes, automatizamos processos complexos 
+              e integramos sistemas para maximizar a eficiência e os resultados do seu negócio.
             </p>
 
             {/* Key Points */}

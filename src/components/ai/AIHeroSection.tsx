@@ -103,38 +103,38 @@ const AIHeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/70" style={{ zIndex: 2 }} />
       
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
         
         {/* Main Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
           <span className="text-[#00C3FF]">Inteligência Artificial</span>
           <br />
           sob medida para a sua empresa
         </h1>
         
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-2">
           Soluções personalizadas de IA que automatizam processos, potencializam vendas e transformam a eficiência do seu negócio
         </p>
         
         
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-2">
           <Button 
             onClick={() => setIsModalOpen(true)}
             size="lg" 
-            className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg lg:text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
             style={{ backgroundColor: '#00C3FF' }}
           >
             Agendar Consultoria
-            <ArrowRight className="ml-2 w-6 h-6" />
+            <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Button>
           
           <Button 
             onClick={scrollToOffers}
             size="lg" 
             variant="outline"
-            className="px-8 py-4 text-xl font-semibold rounded-3xl border-2 border-[#00C3FF] text-[#00C3FF] hover:bg-[#00C3FF] hover:text-white transform hover:scale-105 transition-all duration-300"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg lg:text-xl font-semibold rounded-3xl border-2 border-[#00C3FF] text-[#00C3FF] hover:bg-[#00C3FF] hover:text-white transform hover:scale-105 transition-all duration-300"
           >
             Ver Serviços
           </Button>

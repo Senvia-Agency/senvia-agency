@@ -25,81 +25,81 @@ const AIOffersSection = () => {
   ];
 
   return (
-    <section id="ai-offers" className="py-20" style={{ backgroundColor: '#11161F' }}>
-      <div className="container mx-auto px-6">
+    <section id="ai-offers" className="py-12 sm:py-16 lg:py-20" style={{ backgroundColor: '#11161F' }}>
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             Soluções de IA que
-            <span className="block text-[#00C3FF]">
+            <span className="block text-[#00C3FF] mt-1 sm:mt-2">
               Revolucionam Negócios
             </span>
           </h2>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Transforme sua empresa com inteligência artificial que trabalha 24/7 para gerar mais vendas e otimizar processos
           </p>
         </div>
 
-        {/* Offers Grid */}
-        <div className="grid lg:grid-cols-2 gap-12 mb-16">
-          {offers.map((offer, index) => {
-            const IconComponent = offer.icon;
-            return (
-              <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-500 transform hover:scale-[1.02] group relative overflow-hidden" style={{ backgroundColor: '#1A1F28' }}>
-                <CardContent className="p-12 relative">
-                  {/* Decorative Background Elements */}
-                  <div className="absolute top-4 right-4 opacity-10">
-                    {offer.decorativeIcons.map((DecorIcon, idx) => (
-                      <DecorIcon 
-                        key={idx} 
-                        className="w-8 h-8 text-[#00C3FF] absolute" 
-                        style={{ 
-                          top: `${idx * 15}px`, 
-                          right: `${idx * 12}px`,
-                          transform: `rotate(${idx * 15}deg)`
-                        }} 
-                      />
-                    ))}
-                  </div>
-                  
-                  {/* Title */}
-                  <h3 className="text-3xl font-bold text-white mb-6 leading-tight">
-                    {offer.title}
-                  </h3>
-                  
-                  {/* Description */}
-                  <p className="text-slate-300 mb-8 leading-relaxed text-lg">
-                    {offer.description}
-                  </p>
-                  
-                  {/* Features */}
-                  <ul className="space-y-4">
-                    {offer.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center text-slate-300">
-                        <CheckCircle className="w-5 h-5 text-[#00C3FF] mr-3 flex-shrink-0" />
-                        <span className="text-base">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {/* Glow Effect */}
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00C3FF] to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12 lg:mb-16">
+          {offers.map((offer, index) => (
+            <div 
+              key={index}
+              className="group relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-600/30 hover:border-[#00C3FF]/50 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#00C3FF]/20"
+            >
+              {/* Icon */}
+              <div className="relative mb-4 sm:mb-6">
+                <offer.icon className="w-12 h-12 sm:w-16 sm:h-16 text-[#00C3FF] group-hover:text-white transition-colors duration-300" />
+              </div>
+              
+              {/* Decorative Background Elements */}
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-10">
+                {offer.decorativeIcons.map((DecorIcon, idx) => (
+                  <DecorIcon 
+                    key={idx} 
+                    className="w-6 h-6 sm:w-8 sm:h-8 text-[#00C3FF] absolute" 
+                    style={{ 
+                      top: `${idx * 12}px`, 
+                      right: `${idx * 10}px`,
+                      transform: `rotate(${idx * 15}deg)`
+                    }} 
+                  />
+                ))}
+              </div>
+              
+              {/* Title */}
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4 lg:mb-6 leading-tight">
+                {offer.title}
+              </h3>
+              
+              {/* Description */}
+              <p className="text-sm sm:text-base text-slate-300 mb-4 sm:mb-6 leading-relaxed">
+                {offer.description}
+              </p>
+              
+              {/* Features */}
+              <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                {offer.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-center text-slate-300">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#00C3FF] mr-2 sm:mr-3 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center">
+        <div className="text-center px-2">
           <Button 
             onClick={() => setIsModalOpen(true)}
             size="lg" 
-            className="px-8 py-4 text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg lg:text-xl font-semibold rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" 
             style={{ backgroundColor: '#00C3FF' }}
           >
             Agendar Consultoria
-            <ArrowRight className="ml-2 w-6 h-6" />
+            <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Button>
         </div>
       </div>

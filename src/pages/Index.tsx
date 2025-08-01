@@ -19,7 +19,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen" style={{ backgroundColor: '#11161F' }}>
       <AINavbar />
       <AIHeroSection />
       <div id="ai-offers">

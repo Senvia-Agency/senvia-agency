@@ -87,7 +87,7 @@ const AIHeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#11161F' }}>
       {/* Animated Background */}
       <canvas 
         ref={canvasRef} 
@@ -104,7 +104,7 @@ const AIHeroSection = () => {
         {/* Main Headline */}
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
           Transforme Seu Negócio
-          <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <span className="block text-[#00C3FF]">
             com IA do Futuro
           </span>
         </h1>
@@ -116,15 +116,15 @@ const AIHeroSection = () => {
         
         {/* Key Stats */}
         <div className="flex flex-wrap justify-center gap-8 mb-10">
-          <div className="flex items-center gap-2 text-cyan-400">
+          <div className="flex items-center gap-2 text-[#00C3FF]">
             <Bot className="w-6 h-6" />
             <span className="text-lg font-semibold">+300% Conversões</span>
           </div>
-          <div className="flex items-center gap-2 text-blue-400">
+          <div className="flex items-center gap-2 text-[#00C3FF]">
             <Zap className="w-6 h-6" />
             <span className="text-lg font-semibold">24/7 Automatizado</span>
           </div>
-          <div className="flex items-center gap-2 text-purple-400">
+          <div className="flex items-center gap-2 text-[#00C3FF]">
             <TrendingUp className="w-6 h-6" />
             <span className="text-lg font-semibold">ROI Garantido</span>
           </div>
@@ -134,7 +134,8 @@ const AIHeroSection = () => {
         <Button 
           onClick={scrollToOffers}
           size="lg" 
-          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0"
+          className="px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white"
+          style={{ backgroundColor: '#00C3FF' }}
         >
           Começar Agora
           <ArrowRight className="ml-2 w-6 h-6" />
@@ -147,11 +148,11 @@ const AIHeroSection = () => {
       </div>
       
       {/* Futuristic Glowing Elements */}
-      <div className="absolute top-20 left-10 w-8 h-8 bg-cyan-400 rounded-full animate-pulse opacity-80 blur-sm" style={{ zIndex: 3 }} />
-      <div className="absolute top-40 right-16 w-12 h-12 bg-blue-400 rounded-full animate-pulse opacity-60 blur-md" style={{ zIndex: 3 }} />
-      <div className="absolute bottom-32 left-20 w-6 h-6 bg-purple-400 rounded-full animate-pulse opacity-70 blur-sm" style={{ zIndex: 3 }} />
-      <div className="absolute top-1/3 right-1/4 w-4 h-4 bg-cyan-300 rounded-full animate-pulse opacity-90" style={{ zIndex: 3 }} />
-      <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-blue-500 rounded-full animate-pulse opacity-50 blur-lg" style={{ zIndex: 3 }} />
+      <div className="absolute top-20 left-10 w-8 h-8 rounded-full animate-pulse opacity-80 blur-sm" style={{ backgroundColor: '#00C3FF', zIndex: 3 }} />
+      <div className="absolute top-40 right-16 w-12 h-12 rounded-full animate-pulse opacity-60 blur-md" style={{ backgroundColor: '#00C3FF', zIndex: 3 }} />
+      <div className="absolute bottom-32 left-20 w-6 h-6 rounded-full animate-pulse opacity-70 blur-sm" style={{ backgroundColor: '#00C3FF', zIndex: 3 }} />
+      <div className="absolute top-1/3 right-1/4 w-4 h-4 rounded-full animate-pulse opacity-90" style={{ backgroundColor: '#00C3FF', zIndex: 3 }} />
+      <div className="absolute bottom-1/4 left-1/3 w-10 h-10 rounded-full animate-pulse opacity-50 blur-lg" style={{ backgroundColor: '#00C3FF', zIndex: 3 }} />
     </section>
   );
 };

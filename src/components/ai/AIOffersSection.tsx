@@ -32,13 +32,13 @@ const AIOffersSection = () => {
   ];
 
   return (
-    <section id="ai-offers" className="py-20 bg-slate-900">
+    <section id="ai-offers" className="py-20" style={{ backgroundColor: '#11161F' }}>
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Soluções de IA que
-            <span className="block bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="block text-[#00C3FF]">
               Revolucionam Negócios
             </span>
           </h2>

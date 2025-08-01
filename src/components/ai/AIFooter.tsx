@@ -134,13 +134,13 @@ const AIFooter = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-6">Começar Agora</h3>
             <p className="text-slate-300 mb-8 text-sm leading-relaxed">
-              Transforme o seu negócio com IA personalizada. Agende uma consultoria gratuita.
+              Transforme o seu negócio com IA personalizada. Agende uma consultoria.
             </p>
             <Button 
               onClick={() => scrollToSection('pricing')}
               className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-8 py-4 rounded-3xl font-bold text-lg shadow-2xl transition-all duration-300 transform hover:scale-105 border-0"
             >
-              Agendar Consultoria Gratuita
+              Agendar Consultoria
             </Button>
           </div>
         </div>

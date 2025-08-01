@@ -55,7 +55,7 @@ const AIProcessSection = () => {
           })}
           </div>
 
-          {/* Visual Simulation - Simplified */}
+          {/* Visual Simulation */}
           <div className="relative">
             {/* Main Container */}
             <div className="bg-slate-800/50 rounded-2xl p-8 border border-slate-600/30 backdrop-blur-sm relative overflow-hidden">
@@ -66,7 +66,7 @@ const AIProcessSection = () => {
                 </h4>
 
                 {/* Central Hub */}
-                <div className="relative flex items-center justify-center">
+                <div className="relative flex items-center justify-center mb-12">
                   {/* Main Central Circle */}
                   <motion.div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center relative z-10" animate={{
                   scale: [1, 1.1, 1],
@@ -77,10 +77,39 @@ const AIProcessSection = () => {
                 }}>
                     <div className="text-white font-bold text-sm">IA</div>
                   </motion.div>
+
+                  {/* Floating Particles */}
+                  {[...Array(6)].map((_, index) => {
+                    const angle = (index * 60) - 90;
+                    const radius = 60 + (index % 2) * 20;
+                    const x = Math.cos(angle * Math.PI / 180) * radius;
+                    const y = Math.sin(angle * Math.PI / 180) * radius;
+                    return (
+                      <motion.div
+                        key={index}
+                        className="absolute w-2 h-2 bg-[#00C3FF] rounded-full opacity-60"
+                        style={{
+                          left: `calc(50% + ${x}px - 4px)`,
+                          top: `calc(50% + ${y}px - 4px)`
+                        }}
+                        animate={{
+                          scale: [0.5, 1.5, 0.5],
+                          opacity: [0.3, 0.8, 0.3],
+                          rotate: [0, 360]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: index * 0.5,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    );
+                  })}
                 </div>
 
                 {/* Process Status */}
-                <div className="mt-12 space-y-3">
+                <div className="space-y-4">
                   {processSteps.map((step, index) => <motion.div key={index} className="flex items-center space-x-3" initial={{
                   opacity: 0,
                   x: 20
@@ -93,16 +122,16 @@ const AIProcessSection = () => {
                 }} viewport={{
                   once: true
                 }}>
-                      <motion.div className="w-2 h-2 bg-[#00C3FF] rounded-full" animate={{
-                    scale: [1, 1.5, 1],
+                      <motion.div className="w-3 h-3 bg-[#00C3FF] rounded-full" animate={{
+                    scale: [1, 1.3, 1],
                     opacity: [0.5, 1, 0.5]
                   }} transition={{
                     duration: 1.5,
                     repeat: Infinity,
                     delay: index * 0.5
                   }} />
-                      <span className="text-slate-300 text-sm">{step.title}</span>
-                      <motion.div className="flex-1 h-0.5 bg-slate-700 rounded-full overflow-hidden" initial={{
+                      <span className="text-slate-300 text-sm font-medium">{step.title}</span>
+                      <motion.div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden" initial={{
                     width: 0
                   }} whileInView={{
                     width: "100%"
@@ -112,7 +141,7 @@ const AIProcessSection = () => {
                   }} viewport={{
                     once: true
                   }}>
-                        <motion.div className="h-full bg-[#00C3FF]" animate={{
+                        <motion.div className="h-full bg-gradient-to-r from-[#00C3FF] to-blue-400 rounded-full" animate={{
                       width: ["0%", "100%", "0%"]
                     }} transition={{
                       duration: 3,

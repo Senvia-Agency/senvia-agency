@@ -34,15 +34,15 @@ const AIFooter = () => {
             <div className="space-y-3">
               <div className="flex items-center text-slate-300">
                 <Mail className="w-4 h-4 mr-3 text-cyan-400" />
-                <span className="text-sm">contacto@senvia.pt</span>
+                <span className="text-sm">geral@senvia.pt</span>
               </div>
               <div className="flex items-center text-slate-300">
                 <Phone className="w-4 h-4 mr-3 text-cyan-400" />
-                <span className="text-sm">+351 XXX XXX XXX</span>
+                <span className="text-sm">+351 939 135 114</span>
               </div>
               <div className="flex items-center text-slate-300">
                 <MapPin className="w-4 h-4 mr-3 text-cyan-400" />
-                <span className="text-sm">Lisboa, Portugal</span>
+                <span className="text-sm">Portugal</span>
               </div>
             </div>
           </div>
@@ -64,23 +64,23 @@ const AIFooter = () => {
                   onClick={() => scrollToSection('ai-offers')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Automações de Vendas
+                  Automação de Fluxos
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToSection('ai-offers')}
+                  onClick={() => scrollToSection('transform')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Previsões de Mercado
+                  Benefícios da IA
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToSection('ai-offers')}
+                  onClick={() => scrollToSection('pricing')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  CRM Inteligente
+                  Preços
                 </button>
               </li>
             </ul>
@@ -92,18 +92,18 @@ const AIFooter = () => {
             <ul className="space-y-3">
               <li>
                 <button 
-                  onClick={() => scrollToSection('benefits')}
+                  onClick={() => scrollToSection('process')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Benefícios
+                  Como Funciona
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToSection('testimonials')}
+                  onClick={() => scrollToSection('about')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Testemunhos
+                  Sobre Nós
                 </button>
               </li>
               <li>
@@ -116,10 +116,10 @@ const AIFooter = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToSection('about')}
+                  onClick={() => scrollToSection('pricing')}
                   className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                 >
-                  Sobre Nós
+                  Preços
                 </button>
               </li>
             </ul>
@@ -132,10 +132,10 @@ const AIFooter = () => {
               Pronto para revolucionar o seu negócio? Fale connosco hoje mesmo.
             </p>
             <Button 
-              onClick={() => scrollToSection('contact')}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 border-0 mb-4"
+              onClick={() => scrollToSection('pricing')}
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-3 rounded-3xl font-semibold transition-all duration-300 transform hover:scale-105 border-0 mb-4"
             >
-              Solicitar Consultoria
+              Agendar Consultoria
             </Button>
             <p className="text-slate-400 text-xs">
               Resposta garantida em 2 horas
@@ -148,7 +148,7 @@ const AIFooter = () => {
       <div className="border-t border-slate-700/50 py-6">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-slate-400 text-sm mb-4 md:mb-0">
-            © 2024 SENVIA. Todos os direitos reservados.
+            © 2025 SENVIA. Todos os direitos reservados.
           </p>
           
           <div className="flex items-center space-x-6">
@@ -157,6 +157,9 @@ const AIFooter = () => {
             </a>
             <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors duration-300 text-sm">
               Termos de Serviço
+            </a>
+            <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors duration-300 text-sm">
+              Livro de Reclamações
             </a>
             <button 
               onClick={scrollToTop}

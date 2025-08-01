@@ -1,29 +1,44 @@
 
 import { useEffect } from "react";
-import UltraModernNavbar from "../components/modern/UltraModernNavbar";
-import RevolutionHeroSection from "../components/modern/RevolutionHeroSection";
-import ProcessRevolutionSection from "../components/modern/ProcessRevolutionSection";
-import ProofSection from "../components/modern/ProofSection";
-import UltraModernContactSection from "../components/modern/UltraModernContactSection";
-import RevolutionFooter from "../components/modern/RevolutionFooter";
+import AINavbar from '@/components/ai/AINavbar';
+import AIHeroSection from '@/components/ai/AIHeroSection';
+import AIOffersSection from '@/components/ai/AIOffersSection';
+import AIBenefitsSection from '@/components/ai/AIBenefitsSection';
+import AITestimonialsSection from '@/components/ai/AITestimonialsSection';
+import AIFAQSection from '@/components/ai/AIFAQSection';
+import AIAboutSection from '@/components/ai/AIAboutSection';
+import AIContactSection from '@/components/ai/AIContactSection';
+import AIFooter from '@/components/ai/AIFooter';
 import ScrollToTop from "../components/ScrollToTop";
 import ScrollAnimator from "../components/ScrollAnimator";
-
 
 const Index = () => {
   useEffect(() => {
     // Update document title
-    document.title = "SENVIA Agency | Marketing & Tecnologia";
+    document.title = "SENVIA Agency | Inteligência Artificial para Negócios";
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <UltraModernNavbar />
-      <RevolutionHeroSection />
-      <ProcessRevolutionSection />
-      <ProofSection />
-      <UltraModernContactSection />
-      <RevolutionFooter />
+    <div className="min-h-screen bg-slate-900">
+      <AINavbar />
+      <AIHeroSection />
+      <div id="ai-offers">
+        <AIOffersSection />
+      </div>
+      <div id="benefits">
+        <AIBenefitsSection />
+      </div>
+      <div id="testimonials">
+        <AITestimonialsSection />
+      </div>
+      <div id="faq">
+        <AIFAQSection />
+      </div>
+      <div id="about">
+        <AIAboutSection />
+      </div>
+      <AIContactSection />
+      <AIFooter />
       <ScrollToTop />
       <ScrollAnimator />
     </div>

@@ -1,0 +1,110 @@
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Bot, Zap, TrendingUp, ArrowRight, CheckCircle } from 'lucide-react';
+
+const AIOffersSection = () => {
+  const offers = [
+    {
+      icon: Bot,
+      title: "IA para Atendimento 24/7",
+      description: "Chatbots inteligentes que atendem, qualificam e convertem leads automaticamente",
+      result: "Aumente 30% suas conversões",
+      features: ["WhatsApp Business integrado", "Qualificação automática de leads", "Transferência inteligente para humanos"],
+      gradient: "from-cyan-500 to-blue-600"
+    },
+    {
+      icon: Zap,
+      title: "Automações de Vendas com CRM",
+      description: "Pipeline de vendas automatizado com follow-ups inteligentes e nurturing",
+      result: "Reduza 70% do trabalho manual",
+      features: ["CRM integrado", "Follow-ups automáticos", "Pipelines personalizados"],
+      gradient: "from-blue-500 to-purple-600"
+    },
+    {
+      icon: TrendingUp,
+      title: "Previsões de Mercado com IA",
+      description: "Análise preditiva de tendências e comportamento de clientes",
+      result: "Antecipe 90% das oportunidades",
+      features: ["Análise preditiva", "Relatórios em tempo real", "Insights automatizados"],
+      gradient: "from-purple-500 to-pink-600"
+    }
+  ];
+
+  return (
+    <section id="ai-offers" className="py-20 bg-slate-900">
+      <div className="container mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Soluções de IA que
+            <span className="block bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              Revolucionam Negócios
+            </span>
+          </h2>
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+            Transforme sua empresa com inteligência artificial que trabalha 24/7 para gerar mais vendas e otimizar processos
+          </p>
+        </div>
+
+        {/* Offers Grid */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {offers.map((offer, index) => {
+            const IconComponent = offer.icon;
+            return (
+              <Card key={index} className="bg-slate-800/50 border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/70 transition-all duration-300 transform hover:scale-105 group">
+                <CardContent className="p-8">
+                  {/* Icon with gradient background */}
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${offer.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    {offer.title}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-slate-300 mb-4 leading-relaxed">
+                    {offer.description}
+                  </p>
+                  
+                  {/* Result Highlight */}
+                  <div className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${offer.gradient} text-white font-semibold text-sm mb-6`}>
+                    {offer.result}
+                  </div>
+                  
+                  {/* Features */}
+                  <ul className="space-y-2 mb-6">
+                    {offer.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-slate-300">
+                        <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {/* CTA Button */}
+                  <Button className={`w-full bg-gradient-to-r ${offer.gradient} hover:opacity-90 text-white border-0 group-hover:shadow-lg transition-all duration-300`}>
+                    Implementar Agora
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="text-center">
+          <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0">
+            Solicitar Implementação Completa
+            <ArrowRight className="ml-2 w-6 h-6" />
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AIOffersSection;

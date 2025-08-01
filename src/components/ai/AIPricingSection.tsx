@@ -26,12 +26,20 @@ const AIPricingSection = () => {
                 <h3 className="text-3xl font-bold text-white mb-4">
                   IA para Atendimento ou Automação de Fluxos
                 </h3>
-                <div className="text-5xl font-bold text-[#00C3FF] mb-2">
-                  desde 800€ + 200€
+                <div className="mb-4">
+                  <div className="text-5xl font-bold text-[#00C3FF] mb-1">
+                    desde 800€
+                  </div>
+                  <p className="text-lg text-slate-300 mb-3">
+                    taxa de desenvolvimento da IA
+                  </p>
+                  <div className="text-2xl font-semibold text-slate-300">
+                    + 200€/mês
+                  </div>
+                  <p className="text-sm text-slate-400">
+                    manutenção, actualização e melhoria
+                  </p>
                 </div>
-                <p className="text-xl text-slate-300 mb-8">
-                  manutenção
-                </p>
                 
                 {/* Features List */}
                 <ul className="space-y-4 mb-8 max-w-md mx-auto">

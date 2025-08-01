@@ -52,8 +52,8 @@ const AIOffersSection = () => {
           {offers.map((offer, index) => {
             const IconComponent = offer.icon;
             return (
-              <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group" style={{ backgroundColor: '#1A1F28' }}>
-                <CardContent className="p-8">
+              <Card key={index} className="border-gray-600/30 backdrop-blur-sm hover:bg-gray-700/20 transition-all duration-300 transform hover:scale-105 group h-full flex flex-col" style={{ backgroundColor: '#1A1F28' }}>
+                <CardContent className="p-8 flex flex-col h-full">
                   {/* Icon with gradient background */}
                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: '#00C3FF' }}>
                     <IconComponent className="w-8 h-8 text-white" />
@@ -75,7 +75,7 @@ const AIOffersSection = () => {
                   </div>
                   
                   {/* Features */}
-                  <ul className="space-y-2 mb-6">
+                  <ul className="space-y-2 mb-6 flex-grow">
                     {offer.features.map((feature, idx) => (
                       <li key={idx} className="flex items-center text-slate-300">
                         <CheckCircle className="w-4 h-4 text-[#00C3FF] mr-2 flex-shrink-0" />
@@ -85,8 +85,8 @@ const AIOffersSection = () => {
                   </ul>
                   
                   {/* CTA Button */}
-                  <Button className="w-full text-white border-0 group-hover:shadow-lg transition-all duration-300" style={{ backgroundColor: '#00C3FF' }}>
-                    Implementar Agora
+                  <Button className="w-full text-white border-0 group-hover:shadow-lg transition-all duration-300 mt-auto" style={{ backgroundColor: '#00C3FF' }}>
+                    Agendar Consultoria
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </CardContent>
@@ -98,7 +98,7 @@ const AIOffersSection = () => {
         {/* Bottom CTA */}
         <div className="text-center">
           <Button size="lg" className="px-8 py-4 text-xl font-semibold rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-white" style={{ backgroundColor: '#00C3FF' }}>
-            Solicitar Implementação Completa
+            Agendar Consultoria
             <ArrowRight className="ml-2 w-6 h-6" />
           </Button>
         </div>

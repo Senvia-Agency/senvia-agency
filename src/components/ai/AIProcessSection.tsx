@@ -59,13 +59,9 @@ const AIProcessSection = () => {
           <div className="relative">
             {/* Main Container */}
             <div className="bg-slate-800/50 rounded-2xl p-8 border border-slate-600/30 backdrop-blur-sm relative overflow-hidden">
-              {/* Dynamic Process Flow */}
-              <div className="relative z-10">
-                <h4 className="text-xl font-bold text-white mb-8 text-center">
-                  Processo Inteligente
-                </h4>
-
-                {/* Central Hub */}
+               {/* Dynamic Process Flow */}
+               <div className="relative z-10">
+                 {/* Central Hub */}
                 <div className="relative flex items-center justify-center mb-12">
                   {/* Main Central Circle */}
                   <motion.div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center relative z-10" animate={{

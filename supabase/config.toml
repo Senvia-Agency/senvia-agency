@@ -93,3 +93,6 @@ verify_jwt = true
 
 [functions.generate-recurring-bills]
 verify_jwt = true
+
+[functions.public-api]
+verify_jwt = false

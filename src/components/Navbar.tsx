@@ -64,13 +64,6 @@ const Navbar = memo(() => {
             >
               Depoimentos
             </button>
-            <Link 
-              to="/faq" 
-              className="text-white hover:text-senvia-100 transition-colors font-medium"
-              onClick={handleLinkClick}
-            >
-              FAQ
-            </Link>
             <button 
               onClick={() => scrollToSection('contacto')}
               className="text-white hover:text-senvia-100 transition-colors cursor-pointer font-medium"
@@ -137,13 +130,6 @@ const Navbar = memo(() => {
                 >
                   Depoimentos
                 </button>
-                <Link
-                  to="/faq"
-                  className="block px-3 py-2 text-white hover:text-senvia-100 transition-colors rounded-lg hover:bg-white/10"
-                  onClick={handleLinkClick}
-                >
-                  FAQ
-                </Link>
                 <button
                   onClick={() => scrollToSection('contacto')}
                   className="block w-full text-left px-3 py-2 text-white hover:text-senvia-100 transition-colors rounded-lg hover:bg-white/10"

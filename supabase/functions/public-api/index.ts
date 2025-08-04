@@ -187,70 +187,20 @@ async function getPageInfo() {
           description: "Landing page principal com foco em IA"
         },
         {
-          path: "/produtos",
-          name: "Produtos",
-          description: "Catálogo de produtos e serviços"
-        },
-        {
-          path: "/blog",
-          name: "Blog",
-          description: "Artigos sobre marketing digital e IA"
-        },
-        {
-          path: "/agentes-ia",
-          name: "Agentes IA",
-          description: "Página sobre agentes de inteligência artificial"
-        },
-        {
-          path: "/websites",
-          name: "Websites",
-          description: "Desenvolvimento de websites"
-        },
-        {
-          path: "/ecommerce",
-          name: "E-commerce",
-          description: "Soluções de e-commerce"
-        },
-        {
-          path: "/crm",
-          name: "CRM",
-          description: "Sistema de gestão de relacionamento"
-        },
-        {
-          path: "/trafego-pago",
-          name: "Tráfego Pago",
-          description: "Gestão de campanhas pagas"
-        },
-        {
-          path: "/social-media",
-          name: "Social Media",
-          description: "Gestão de redes sociais"
-        },
-        {
-          path: "/ferramentas",
-          name: "Ferramentas",
-          description: "Ferramentas digitais"
-        },
-        {
           path: "/landing-pages",
           name: "Landing Pages",
           description: "Desenvolvimento de landing pages"
         },
         {
-          path: "/senvia-assistant",
-          name: "SENVIA Assistant",
-          description: "Assistente virtual baseado em IA"
+          path: "/meus-projetos",
+          name: "Meus Projetos",
+          description: "Área de clientes para acompanhar projetos"
         }
       ],
       services: [
-        "Desenvolvimento de Websites",
-        "E-commerce Solutions", 
-        "CRM Systems",
-        "Tráfego Pago",
-        "Social Media Management",
-        "Landing Pages",
-        "Agentes de IA",
-        "SENVIA Assistant"
+        "Desenvolvimento de Landing Pages",
+        "Consultoria em IA",
+        "Agentes de IA Personalizados"
       ]
     };
 
@@ -338,27 +288,13 @@ async function getAllPublicData(supabase: any) {
       },
       pages: [
         { path: "/", name: "Página Inicial", description: "Landing page principal com foco em IA" },
-        { path: "/produtos", name: "Produtos", description: "Catálogo de produtos e serviços" },
-        { path: "/blog", name: "Blog", description: "Artigos sobre marketing digital e IA" },
-        { path: "/agentes-ia", name: "Agentes IA", description: "Página sobre agentes de inteligência artificial" },
-        { path: "/websites", name: "Websites", description: "Desenvolvimento de websites" },
-        { path: "/ecommerce", name: "E-commerce", description: "Soluções de e-commerce" },
-        { path: "/crm", name: "CRM", description: "Sistema de gestão de relacionamento" },
-        { path: "/trafego-pago", name: "Tráfego Pago", description: "Gestão de campanhas pagas" },
-        { path: "/social-media", name: "Social Media", description: "Gestão de redes sociais" },
-        { path: "/ferramentas", name: "Ferramentas", description: "Ferramentas digitais" },
         { path: "/landing-pages", name: "Landing Pages", description: "Desenvolvimento de landing pages" },
-        { path: "/senvia-assistant", name: "SENVIA Assistant", description: "Assistente virtual baseado em IA" }
+        { path: "/meus-projetos", name: "Meus Projetos", description: "Área de clientes para acompanhar projetos" }
       ],
       services: [
-        "Desenvolvimento de Websites",
-        "E-commerce Solutions", 
-        "CRM Systems",
-        "Tráfego Pago",
-        "Social Media Management",
-        "Landing Pages",
-        "Agentes de IA",
-        "SENVIA Assistant"
+        "Desenvolvimento de Landing Pages",
+        "Consultoria em IA",
+        "Agentes de IA Personalizados"
       ]
     };
 

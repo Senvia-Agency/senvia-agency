@@ -13,23 +13,10 @@ import CookieConsent from "@/components/CookieConsent";
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Starter = lazy(() => import("./pages/Starter"));
-const Pro = lazy(() => import("./pages/Pro"));
-const Premium = lazy(() => import("./pages/Premium"));
-const Produtos = lazy(() => import("./pages/Produtos"));
 
 // Lazy load demais páginas
-const Projetos = lazy(() => import("./pages/Projetos"));
 const MeusProjetos = lazy(() => import("./pages/MeusProjetos"));
-const Ferramentas = lazy(() => import("./pages/Ferramentas"));
-const AgentesIA = lazy(() => import("./pages/AgentesIA"));
-const SenviaAssistant = lazy(() => import("./pages/SenviaAssistant"));
 const LandingPages = lazy(() => import("./pages/LandingPages"));
-const Websites = lazy(() => import("./pages/Websites"));
-const Ecommerce = lazy(() => import("./pages/Ecommerce"));
-const SocialMedia = lazy(() => import("./pages/SocialMedia"));
-const TrafegoPago = lazy(() => import("./pages/TrafegoPago"));
-const CampaignPresentation = lazy(() => import("./pages/CampaignPresentation"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
@@ -39,8 +26,6 @@ const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
 const AdminReceitasTotal = lazy(() => import("./pages/AdminReceitasTotal"));
 const AdminDespesasTotal = lazy(() => import("./pages/AdminDespesasTotal"));
 const AdminContasAtraso = lazy(() => import("./pages/AdminContasAtraso"));
-const FAQ = lazy(() => import("./pages/FAQ"));
-const Blog = lazy(() => import("./pages/Blog"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
@@ -81,30 +66,15 @@ function App() {
           <Suspense fallback={<QuickLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/projetos" element={<Projetos />} />
               <Route path="/meus-projetos" element={
                 <ProtectedRoute>
                   <MeusProjetos />
                 </ProtectedRoute>
               } />
-              <Route path="/ferramentas" element={<Ferramentas />} />
-              <Route path="/agentes-ia" element={<AgentesIA />} />
-              <Route path="/senvia-assistant" element={<SenviaAssistant />} />
               <Route path="/landing-pages" element={<LandingPages />} />
-              <Route path="/websites" element={<Websites />} />
-              <Route path="/ecommerce" element={<Ecommerce />} />
-              <Route path="/social-media" element={<SocialMedia />} />
-              <Route path="/trafego-pago" element={<TrafegoPago />} />
-              <Route path="/campaign-presentation" element={<CampaignPresentation />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/blog" element={<Blog />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/termos-servico" element={<TermosServico />} />
-              <Route path="/produtos" element={<Produtos />} />
-              <Route path="/starter" element={<Starter />} />
-              <Route path="/pro" element={<Pro />} />
-              <Route path="/premium" element={<Premium />} />
               <Route path="/auth" element={<Auth />} />
               
               {/* Protected Routes for Customers */}

@@ -20,7 +20,7 @@ const LandingPages = lazy(() => import("./pages/LandingPages"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
-const CRM = lazy(() => import("./pages/CRM"));
+
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
 const AdminReceitasTotal = lazy(() => import("./pages/AdminReceitasTotal"));
@@ -100,11 +100,6 @@ function App() {
               } />
               
               {/* Admin Only Routes */}
-              <Route path="/crm" element={
-                <AdminRoute>
-                  <CRM />
-                </AdminRoute>
-              } />
               <Route path="/admin" element={
                 <AdminRoute>
                   <AdminDashboard />

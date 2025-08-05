@@ -1526,6 +1526,7 @@ export type Database = {
           stripe_payment_id: string | null
           stripe_session_id: string | null
           target_audience: string | null
+          temperature: string | null
           updated_at: string
           user_agent: string | null
           utm_campaign: string | null
@@ -1569,6 +1570,7 @@ export type Database = {
           stripe_payment_id?: string | null
           stripe_session_id?: string | null
           target_audience?: string | null
+          temperature?: string | null
           updated_at?: string
           user_agent?: string | null
           utm_campaign?: string | null
@@ -1612,6 +1614,7 @@ export type Database = {
           stripe_payment_id?: string | null
           stripe_session_id?: string | null
           target_audience?: string | null
+          temperature?: string | null
           updated_at?: string
           user_agent?: string | null
           utm_campaign?: string | null

@@ -57,3 +57,34 @@ export const useUpdateUnifiedLead = () => {
     }
   });
 };
+
+export const useUpdateLeadTemperature = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ leadId, temperature }: { leadId: string; temperature: string }) => {
+      console.log('Atualizando temperatura do lead:', leadId, temperature);
+      
+      const { data, error } = await supabase
+        .from('unified_leads')
+        .update({ temperature })
+        .eq('id', leadId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erro ao atualizar temperatura:', error);
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unified-leads'] });
+      console.log('Temperatura atualizada com sucesso!');
+    },
+    onError: (error) => {
+      console.error('Erro na atualização da temperatura:', error);
+    }
+  });
+};

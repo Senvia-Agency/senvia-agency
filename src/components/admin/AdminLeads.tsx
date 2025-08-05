@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Users } from "lucide-react";
-import { useUnifiedLeads, useUpdateUnifiedLead } from "@/hooks/useUnifiedLeads";
+import { useUnifiedLeads, useUpdateUnifiedLead, useUpdateLeadTemperature } from "@/hooks/useUnifiedLeads";
 import { useCreateActivity } from "@/hooks/useActivityHistory";
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import LeadFilters from "./leads/LeadFilters";
@@ -59,6 +59,7 @@ const AdminLeads = () => {
 
   const { data: leads, refetch, isLoading } = useUnifiedLeads();
   const updateLeadMutation = useUpdateUnifiedLead();
+  const updateTemperatureMutation = useUpdateLeadTemperature();
 
   // Save filters whenever they change
   useEffect(() => {
@@ -155,6 +156,29 @@ const AdminLeads = () => {
       toast({
         title: "Erro ao atualizar",
         description: "Não foi possível atualizar os dados do lead.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Atualizar temperatura do lead
+  const updateLeadTemperature = async (leadId: string, temperature: string) => {
+    try {
+      await updateTemperatureMutation.mutateAsync({
+        leadId,
+        temperature
+      });
+
+      toast({
+        title: "Temperatura atualizada",
+        description: "A temperatura do lead foi atualizada com sucesso."
+      });
+
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível atualizar a temperatura do lead.",
         variant: "destructive"
       });
     }
@@ -261,6 +285,7 @@ const AdminLeads = () => {
             onLeadClick={handleLeadClick}
             onStatusEdit={handleStatusEdit}
             onStatusUpdate={updateLeadStatus}
+            onTemperatureUpdate={updateLeadTemperature}
           />
         ))}
       </div>

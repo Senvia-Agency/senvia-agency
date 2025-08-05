@@ -3,13 +3,15 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { LeadTemperature } from "./LeadTemperature";
 
 interface LeadBadgesProps {
   lead: any;
   onStatusUpdate?: (leadId: string, status: string) => void;
+  onTemperatureUpdate?: (leadId: string, temperature: string) => void;
 }
 
-const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
+const LeadBadges = ({ lead, onStatusUpdate, onTemperatureUpdate }: LeadBadgesProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -95,6 +97,10 @@ const LeadBadges = ({ lead, onStatusUpdate }: LeadBadgesProps) => {
         </PopoverContent>
       </Popover>
       
+      <LeadTemperature 
+        temperature={lead.temperature || 'cold'} 
+        onTemperatureChange={(temperature) => onTemperatureUpdate?.(lead.id, temperature)}
+      />
       
       <Badge variant="outline" className="border-blue-500 text-blue-500 text-xs">
         {lead.source_page === 'landing_page_basic' ? 'LP Básica' : 'LP Premium'}

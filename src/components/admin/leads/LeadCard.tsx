@@ -13,6 +13,7 @@ interface LeadCardProps {
   onLeadClick: (lead: any) => void;
   onStatusEdit: (leadId: string) => void;
   onStatusUpdate: (leadId: string, status: string) => void;
+  onTemperatureUpdate?: (leadId: string, temperature: string) => void;
   onPaymentManage?: (lead: any) => void;
 }
 
@@ -22,6 +23,7 @@ const LeadCard = ({
   onLeadClick, 
   onStatusEdit, 
   onStatusUpdate,
+  onTemperatureUpdate,
   onPaymentManage
 }: LeadCardProps) => {
   return (
@@ -43,6 +45,7 @@ const LeadCard = ({
                 console.log('LeadCard passing status update:', { leadId, status });
                 onStatusUpdate(leadId, status);
               }}
+              onTemperatureUpdate={onTemperatureUpdate}
             />
           </div>
 

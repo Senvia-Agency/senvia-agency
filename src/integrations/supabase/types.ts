@@ -1663,6 +1663,10 @@ export type Database = {
           avg_transaction_value: number
         }[]
       }
+      clean_phone_number: {
+        Args: { phone_input: string }
+        Returns: string
+      }
       convert_lead_to_customer: {
         Args: { lead_id: string }
         Returns: string

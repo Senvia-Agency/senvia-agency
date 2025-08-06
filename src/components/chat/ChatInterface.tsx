@@ -30,9 +30,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -116,7 +119,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
       
       <CardContent className="flex-1 flex flex-col p-4">
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4 max-h-96">
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto space-y-4 mb-4 max-h-96">
           {messages.map((message) => (
             <div
               key={message.id}

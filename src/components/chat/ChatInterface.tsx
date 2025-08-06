@@ -80,7 +80,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
       
       try {
         const data = await response.json();
-        responseText = data.text || data.response || data.message || 'Resposta vazia do servidor.';
+        
+        // Se for um array, pega o primeiro item
+        if (Array.isArray(data) && data.length > 0) {
+          responseText = data[0].text || data[0].response || data[0].message || 'Resposta vazia do servidor.';
+        } else {
+          responseText = data.text || data.response || data.message || 'Resposta vazia do servidor.';
+        }
       } catch {
         // Se não for JSON, lê como texto simples
         responseText = await responseClone.text() || 'Resposta vazia do servidor.';

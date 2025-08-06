@@ -1,9 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, MessageCircle } from 'lucide-react';
+import { CheckCircle, MessageCircle, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import ChatInterface from '../../chat/ChatInterface';
 
 const AgenciaViagensExample = () => {
   const navigate = useNavigate();
@@ -51,23 +50,29 @@ const AgenciaViagensExample = () => {
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">{data.description}</p>
       </div>
 
-      {/* Chat Demo Section - Destacado */}
+      {/* WhatsApp Test Section - Destacado */}
       <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl text-foreground flex items-center justify-center">
-            <MessageCircle className="w-6 h-6 mr-3 text-primary" />
+            <Phone className="w-6 h-6 mr-3 text-primary" />
             Experimente a IA Agora
           </CardTitle>
           <p className="text-muted-foreground">
-            Teste uma conversa real com o assistente especializado em viagens
+            Teste o assistente especializado em viagens diretamente no WhatsApp
           </p>
         </CardHeader>
-        <CardContent>
-          <ChatInterface
-            webhookUrl="https://n8n-n8n.tx2a4o.easypanel.host/webhook-test/teste_viagens"
-            title="Assistente de Viagens"
-            description="Teste a inteligência artificial especializada em turismo"
-          />
+        <CardContent className="text-center">
+          <Button 
+            onClick={() => window.open('https://wa.me/351939135114?text=Quero%20testar%20o%20agente%20de%20IA%20para%20Ag%C3%AAncias%20de%20Viagem', '_blank')}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium text-lg px-8 py-4 h-auto"
+            size="lg"
+          >
+            <Phone className="w-5 h-5 mr-3" />
+            Testar Agente de IA Ao Vivo no WhatsApp
+          </Button>
+          <p className="text-sm text-muted-foreground mt-4">
+            Clique para iniciar uma conversa real com o assistente de viagens
+          </p>
         </CardContent>
       </Card>
 

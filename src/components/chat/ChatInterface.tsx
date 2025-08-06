@@ -43,6 +43,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
   }, [messages]);
 
   const sendMessage = async () => {
+    console.log('=== sendMessage called ===', { inputValue, isLoading });
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage: Message = {
@@ -57,6 +58,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
     setIsLoading(true);
 
     try {
+      console.log('=== Fazendo requisição ===', { webhookUrl, payload: { message: inputValue, timestamp: new Date().toISOString(), session_id: 'demo_session_' + Date.now() } });
+      
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -68,6 +71,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
           session_id: 'demo_session_' + Date.now()
         })
       });
+
+      console.log('=== Resposta recebida ===', { status: response.status, ok: response.ok });
 
       if (!response.ok) {
         throw new Error('Erro na resposta do servidor');
@@ -99,6 +104,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
         timestamp: new Date()
       };
 
+      console.log('=== Adicionando mensagem do bot ===', { responseText, botMessage });
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);

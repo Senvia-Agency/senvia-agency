@@ -29,6 +29,7 @@ const AdminContasAtraso = lazy(() => import("./pages/AdminContasAtraso"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
+const ExemplosIAAtendimento = lazy(() => import("./pages/ExemplosIAAtendimento"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading ultra-rápido
@@ -75,6 +76,7 @@ function App() {
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/termos-servico" element={<TermosServico />} />
+              <Route path="/exemplos-ia-atendimento" element={<ExemplosIAAtendimento />} />
               <Route path="/auth" element={<Auth />} />
               
               {/* Protected Routes for Customers */}

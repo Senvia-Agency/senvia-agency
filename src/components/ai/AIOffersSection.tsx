@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AIModal from './AIModal';
 
 const AIOffersSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   
   const offers = [
     {
@@ -62,6 +64,21 @@ const AIOffersSection = () => {
                   </li>
                 ))}
               </ul>
+              
+              {/* Ver Exemplos Button - only for IA para Atendimento */}
+              {offer.title === "IA para Atendimento 24/7" && (
+                <div className="mt-4">
+                  <Button
+                    onClick={() => navigate('/exemplos-ia-atendimento')}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs border-slate-600 text-slate-300 hover:text-white hover:border-[#00C3FF] transition-all duration-300"
+                  >
+                    <Eye className="w-3 h-3 mr-1" />
+                    Ver Exemplos
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>

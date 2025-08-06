@@ -74,7 +74,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || data.message || 'Desculpe, não consegui processar sua mensagem.',
+        text: data.text || data.response || data.message || 'Desculpe, não consegui processar sua mensagem.',
         sender: 'bot',
         timestamp: new Date()
       };

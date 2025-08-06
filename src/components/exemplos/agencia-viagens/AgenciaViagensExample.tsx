@@ -36,29 +36,33 @@ const AgenciaViagensExample = () => {
       }
     ],
     metrics: [
-      { label: 'Tempo médio de resposta', value: '< 10 segundos' },
-      { label: 'Disponibilidade', value: '24/7/365' },
-      { label: 'Taxa de conversão', value: '+45%' },
-      { label: 'Satisfação do cliente', value: '4.8/5' },
-      { label: 'Leads qualificados', value: '+80%' },
-      { label: 'Redução de custos', value: '60%' }
+      { label: 'Tempo de resposta', value: '< 10s', icon: '⚡' },
+      { label: 'Disponibilidade', value: '24/7', icon: '🕐' },
+      { label: 'Conversões', value: '+45%', icon: '📈' },
+      { label: 'Satisfação', value: '4.8/5', icon: '⭐' }
     ]
   };
 
   return (
-    <div className="space-y-8">
-      {/* Live Chat Test - Moved to top */}
-      <Card className="bg-slate-800/50 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center">
-            <MessageCircle className="w-5 h-5 mr-2 text-[#00C3FF]" />
-            Teste a IA ao Vivo
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
+      {/* Hero Section */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-foreground mb-4">{data.title}</h1>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">{data.description}</p>
+      </div>
+
+      {/* Chat Demo Section - Destacado */}
+      <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl text-foreground flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 mr-3 text-primary" />
+            Experimente a IA Agora
           </CardTitle>
+          <p className="text-muted-foreground">
+            Teste uma conversa real com o assistente especializado em viagens
+          </p>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-300 mb-4">
-            Experimente uma conversa real com o assistente de viagens. Esta é uma demonstração funcional do sistema.
-          </p>
           <ChatInterface
             webhookUrl="https://n8n-n8n.tx2a4o.easypanel.host/webhook-test/teste_viagens"
             title="Assistente de Viagens"
@@ -67,55 +71,83 @@ const AgenciaViagensExample = () => {
         </CardContent>
       </Card>
 
+      {/* Métricas em Cards Destacados */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {data.metrics.map((metric, index) => (
+          <Card key={index} className="bg-card border hover:shadow-md transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="text-3xl mb-2">{metric.icon}</div>
+              <div className="text-2xl font-bold text-primary mb-1">{metric.value}</div>
+              <div className="text-sm text-muted-foreground">{metric.label}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Grid Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-        {/* Overview */}
-        <Card className="bg-slate-800/50 border-slate-600">
-          <CardHeader>
-            <CardTitle className="text-white">{data.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-300 mb-6">{data.description}</p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              {data.metrics.map((metric, index) => (
-                <div key={index} className="text-center p-3 bg-slate-700/50 rounded-lg">
-                  <div className="text-[#00C3FF] font-bold text-lg">{metric.value}</div>
-                  <div className="text-xs text-slate-300">{metric.label}</div>
-                </div>
-              ))}
-            </div>
+        {/* Benefícios */}
+        <div className="lg:col-span-2">
+          <Card className="bg-card border h-fit">
+            <CardHeader>
+              <CardTitle className="text-xl text-foreground flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2 text-primary" />
+                Principais Benefícios
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {data.benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-start p-4 bg-muted/30 rounded-lg">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <span className="text-foreground">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            <h4 className="text-white font-semibold mb-3">Principais Benefícios:</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {data.benefits.map((benefit, index) => (
-                <div key={index} className="flex items-center text-slate-300">
-                  <CheckCircle className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                  <span className="text-sm">{benefit}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
+          {/* Funcionalidades */}
+          <Card className="bg-card border mt-6">
+            <CardHeader>
+              <CardTitle className="text-xl text-foreground">Como Funciona</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {data.features.map((feature, index) => (
+                  <div key={index} className="p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors">
+                    <h4 className="font-semibold text-foreground mb-2">{feature.title}</h4>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* CTA */}
-          <Card className="bg-gradient-to-br from-[#00C3FF]/20 to-slate-800/50 border-[#00C3FF]/50">
-            <CardContent className="p-6 text-center">
-              <h3 className="text-white font-semibold mb-2">Interessado nesta solução?</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Agende uma demonstração personalizada para o seu negócio
+        {/* Sidebar CTA */}
+        <div>
+          <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30 sticky top-6">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold text-foreground mb-3">
+                Pronto para implementar?
+              </h3>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+                Agende uma demonstração personalizada e veja como nossa IA pode transformar o atendimento da sua agência de viagens.
               </p>
               <Button 
                 onClick={() => navigate('/#contact')}
-                className="w-full bg-[#00C3FF] hover:bg-[#00A3D9] text-white"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                size="lg"
               >
                 Agendar Demonstração
               </Button>
+              <p className="text-xs text-muted-foreground mt-3">
+                Sem compromisso • Demonstração gratuita
+              </p>
             </CardContent>
           </Card>
         </div>

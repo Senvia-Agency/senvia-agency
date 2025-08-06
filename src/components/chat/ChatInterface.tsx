@@ -73,11 +73,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ webhookUrl, title, descri
         throw new Error('Erro na resposta do servidor');
       }
 
-      const data = await response.json();
+      let responseText: string;
+      
+      try {
+        const data = await response.json();
+        responseText = data.text || data.response || data.message || 'Resposta vazia do servidor.';
+      } catch {
+        // Se não for JSON, tenta ler como texto simples
+        responseText = await response.text() || 'Resposta vazia do servidor.';
+      }
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.text || data.response || data.message || 'Desculpe, não consegui processar sua mensagem.',
+        text: responseText,
         sender: 'bot',
         timestamp: new Date()
       };

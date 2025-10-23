@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface RecurringService {
   id: string;
-  customer_id: string;
+  customer_id?: string;
   sale_id?: string;
   service_name: string;
   service_description?: string;
@@ -15,6 +15,7 @@ export interface RecurringService {
   end_date?: string;
   status: 'active' | 'paused' | 'cancelled';
   next_billing_date?: string;
+  recurrence_type: 'receita' | 'despesa';
   created_at: string;
   updated_at: string;
   customers?: {
@@ -47,7 +48,11 @@ export interface RecurringReceivable {
 
 export interface RecurringStats {
   total_active_services: number;
+  total_active_revenue_services: number;
+  total_active_expense_services: number;
   total_monthly_revenue: number;
+  total_monthly_expenses: number;
+  net_monthly_balance: number;
   pending_receivables_count: number;
   pending_receivables_amount: number;
   overdue_receivables_count: number;

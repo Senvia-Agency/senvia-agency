@@ -1254,10 +1254,11 @@ export type Database = {
           amount: number
           billing_day: number
           created_at: string | null
-          customer_id: string
+          customer_id: string | null
           end_date: string | null
           id: string
           next_billing_date: string | null
+          recurrence_type: string
           sale_id: string | null
           service_description: string | null
           service_name: string
@@ -1269,10 +1270,11 @@ export type Database = {
           amount?: number
           billing_day: number
           created_at?: string | null
-          customer_id: string
+          customer_id?: string | null
           end_date?: string | null
           id?: string
           next_billing_date?: string | null
+          recurrence_type?: string
           sale_id?: string | null
           service_description?: string | null
           service_name: string
@@ -1284,10 +1286,11 @@ export type Database = {
           amount?: number
           billing_day?: number
           created_at?: string | null
-          customer_id?: string
+          customer_id?: string | null
           end_date?: string | null
           id?: string
           next_billing_date?: string | null
+          recurrence_type?: string
           sale_id?: string | null
           service_description?: string | null
           service_name?: string
@@ -1854,11 +1857,15 @@ export type Database = {
       get_recurring_stats: {
         Args: never
         Returns: {
+          net_monthly_balance: number
           overdue_receivables_amount: number
           overdue_receivables_count: number
           pending_receivables_amount: number
           pending_receivables_count: number
+          total_active_expense_services: number
+          total_active_revenue_services: number
           total_active_services: number
+          total_monthly_expenses: number
           total_monthly_revenue: number
         }[]
       }

@@ -30,6 +30,7 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
 
     try {
       await createRecurringService.mutateAsync({
+        recurrence_type: 'receita',
         customer_id: customerId || sale.customer_id || '',
         sale_id: sale.id,
         service_name: sale.service_name,

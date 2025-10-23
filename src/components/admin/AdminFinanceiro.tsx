@@ -9,6 +9,9 @@ import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
 import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
 import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
+import RecurringServicesKPICards from "./financeiro/RecurringServicesKPICards";
+import RecurringReceivablesList from "./financeiro/RecurringReceivablesList";
+import CreateRecurringItemModal from "./financeiro/CreateRecurringItemModal";
 
 const AdminFinanceiro = () => {
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
@@ -76,6 +79,19 @@ const AdminFinanceiro = () => {
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
         <AccountsReceivableKPICards stats={null} />
+      </div>
+
+      {/* Serviços Recorrentes */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-white">Serviços Recorrentes</h2>
+          <div className="flex gap-2">
+            <CreateRecurringItemModal type="receita" />
+            <CreateRecurringItemModal type="despesa" />
+          </div>
+        </div>
+        <RecurringServicesKPICards />
+        <RecurringReceivablesList />
       </div>
 
       {/* Financial Movements */}

@@ -29,6 +29,7 @@ const CreateRecurringServiceModal = () => {
 
     try {
       await createService.mutateAsync({
+        recurrence_type: 'receita',
         service_name: serviceName,
         service_description: serviceDescription,
         customer_id: customerId,

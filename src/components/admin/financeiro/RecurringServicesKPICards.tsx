@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Repeat, AlertTriangle, Calendar, TrendingUp } from "lucide-react";
+import { Repeat, AlertTriangle, Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { useRecurringStats } from "@/hooks/useRecurringServices";
 
 const RecurringServicesKPICards = () => {
@@ -25,29 +25,12 @@ const RecurringServicesKPICards = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-            <Repeat className="h-4 w-4 text-blue-500" />
-            Serviços Ativos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-blue-500">
-            {stats.total_active_services}
-          </div>
-          <div className="text-xs text-gray-400">
-            serviços recorrentes
-          </div>
-        </CardContent>
-      </Card>
-
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-green-500" />
-            Receita Mensal
+            Receitas Mensais
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -55,7 +38,41 @@ const RecurringServicesKPICards = () => {
             €{Number(stats.total_monthly_revenue).toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            receita recorrente
+            {stats.total_active_revenue_services} serviços
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+            <TrendingDown className="h-4 w-4 text-red-500" />
+            Despesas Mensais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-red-500">
+            €{Number(stats.total_monthly_expenses).toFixed(2)}
+          </div>
+          <div className="text-xs text-gray-400">
+            {stats.total_active_expense_services} despesas
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
+            <Repeat className="h-4 w-4 text-blue-500" />
+            Balanço Mensal
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className={`text-2xl font-bold ${Number(stats.net_monthly_balance) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            €{Number(stats.net_monthly_balance).toFixed(2)}
+          </div>
+          <div className="text-xs text-gray-400">
+            {stats.total_active_services} recorrentes
           </div>
         </CardContent>
       </Card>
@@ -72,7 +89,7 @@ const RecurringServicesKPICards = () => {
             €{Number(stats.overdue_receivables_amount || 0).toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            {stats.overdue_receivables_count || 0} contas atrasadas
+            {stats.overdue_receivables_count || 0} contas
           </div>
         </CardContent>
       </Card>
@@ -81,7 +98,7 @@ const RecurringServicesKPICards = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
             <Calendar className="h-4 w-4 text-yellow-500" />
-            Próxima Semana
+            Pendentes
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -89,7 +106,7 @@ const RecurringServicesKPICards = () => {
             €{Number(stats.pending_receivables_amount || 0).toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            {stats.pending_receivables_count || 0} contas pendentes
+            {stats.pending_receivables_count || 0} contas
           </div>
         </CardContent>
       </Card>

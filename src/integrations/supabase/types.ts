@@ -1809,6 +1809,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_next_billing_date: {
+        Args: { billing_day: number }
+        Returns: string
+      }
       calculate_revenue_metrics: {
         Args: { end_date?: string; start_date?: string }
         Returns: {
@@ -1886,6 +1890,7 @@ export type Database = {
         }[]
       }
       migrate_existing_leads: { Args: never; Returns: undefined }
+      migrate_missing_recurring_services: { Args: never; Returns: number }
       migrate_paid_leads_to_customers: { Args: never; Returns: undefined }
       send_notification: {
         Args: {

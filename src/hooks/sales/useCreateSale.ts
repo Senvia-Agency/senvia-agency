@@ -87,6 +87,14 @@ export const useCreateSale = () => {
           
           console.log('Serviço recorrente criado:', recurringService);
           
+          // Atualizar a venda para status 'recurring' (não aparece em contas a receber)
+          await supabase
+            .from('sales')
+            .update({ 
+              payment_status: 'recurring'
+            })
+            .eq('id', data.id);
+          
           // As cobranças serão criadas automaticamente pela edge function
           // quando a data de início chegar (generate-recurring-bills)
           

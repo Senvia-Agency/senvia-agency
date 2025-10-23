@@ -37,6 +37,7 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
           customers(full_name, email),
           unified_leads(full_name, email)
         `)
+        .eq('is_recurring', false) // Excluir vendas recorrentes (não são contas a receber)
         .in('payment_status', ['pending', 'partial', 'overdue'])
         .neq('sale_status', 'cancelled') // Filtrar projetos cancelados
         .gte('created_at', startDate.toISOString())

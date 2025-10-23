@@ -67,6 +67,18 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
         next_billing_date: nextBillingDate
       });
 
+      // Atualizar a venda para marcar como recorrente e não aparecer em contas a receber
+      const { supabase } = await import('@/integrations/supabase/client');
+      await supabase
+        .from('sales')
+        .update({ 
+          is_recurring: true,
+          recurring_billing_day: parseInt(billingDay),
+          recurring_start_date: startDate,
+          payment_status: 'recurring'
+        })
+        .eq('id', sale.id);
+
       onClose();
     } catch (error) {
       console.error('Erro ao converter para recorrente:', error);

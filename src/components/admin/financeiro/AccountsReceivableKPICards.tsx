@@ -4,7 +4,9 @@ import { Clock, AlertTriangle, Euro, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUnifiedReceivables, useUnifiedReceivablesStats } from "@/hooks/useUnifiedReceivables";
 import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
-
+import { DateRange } from "react-day-picker";
+import { useMemo } from "react";
+import { startOfDay } from "date-fns";
 
 interface AccountsReceivableKPICardsProps {
   stats: {
@@ -14,22 +16,51 @@ interface AccountsReceivableKPICardsProps {
     overdueCount: number;
     averageTicket: number;
   } | null;
+  dateRange?: DateRange | null;
 }
 
-const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPICardsProps) => {
-  // Unificada (vendas + recorrentes + previstos)
-  const { data: unifiedReceivables, isLoading: isLoadingUnified } = useUnifiedReceivables();
-  const unifiedStats = useUnifiedReceivablesStats(unifiedReceivables || []);
-
-  // Fallback: apenas vendas não recorrentes (Tudo)
-  const { data: salesAccounts, isLoading: isLoadingSales } = useAccountsReceivable(0);
-  const salesStats = useAccountsReceivableStats(salesAccounts || []);
-
-  const hasUnified = (unifiedReceivables?.length || 0) > 0;
-  const mergedStats = hasUnified ? unifiedStats : (salesStats || unifiedStats);
+const AccountsReceivableKPICards = ({ stats: propStats, dateRange }: AccountsReceivableKPICardsProps) => {
+  // Buscar dados unificados (vendas + recorrentes + previstos)
+  const { data: allUnifiedReceivables, isLoading: isLoadingUnified } = useUnifiedReceivables();
   
-  // Usar propStats se fornecido, senão tentar unificada e cair para vendas
-  const stats = propStats || mergedStats;
+  // Buscar dados legados (apenas vendas) como fallback
+  const { data: allSalesAccounts, isLoading: isLoadingSales } = useAccountsReceivable(0);
+  
+  // Filtrar por período se dateRange estiver definido
+  const unifiedReceivables = useMemo(() => {
+    if (!allUnifiedReceivables || !dateRange?.from || !dateRange?.to) {
+      return allUnifiedReceivables || [];
+    }
+    
+    const fromDate = startOfDay(dateRange.from);
+    const toDate = startOfDay(dateRange.to);
+    
+    return allUnifiedReceivables.filter(receivable => {
+      const dueDate = startOfDay(new Date(receivable.due_date));
+      return dueDate >= fromDate && dueDate <= toDate;
+    });
+  }, [allUnifiedReceivables, dateRange]);
+
+  const salesAccounts = useMemo(() => {
+    if (!allSalesAccounts || !dateRange?.from || !dateRange?.to) {
+      return allSalesAccounts || [];
+    }
+    
+    const fromDate = startOfDay(dateRange.from);
+    const toDate = startOfDay(dateRange.to);
+    
+    return allSalesAccounts.filter(account => {
+      const dueDate = startOfDay(new Date(account.expected_delivery_date));
+      return dueDate >= fromDate && dueDate <= toDate;
+    });
+  }, [allSalesAccounts, dateRange]);
+  
+  const unifiedStats = useUnifiedReceivablesStats(unifiedReceivables || []);
+  const salesStats = useAccountsReceivableStats(salesAccounts || []);
+  
+  // Decidir qual fonte usar (priorizar unified)
+  const hasUnified = unifiedReceivables && unifiedReceivables.length > 0;
+  const stats = propStats || (hasUnified ? unifiedStats : salesStats);
 
   // Log de diagnóstico
   console.log('[KPIs] propStats:', propStats, 'unifiedStats:', unifiedStats, 'salesStats:', salesStats, 'hasUnified:', hasUnified);
@@ -41,7 +72,8 @@ const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPIC
     pendingCount: stats?.pendingCount,
     overdueCount: stats?.overdueCount,
     source: propStats ? 'propStats' : (hasUnified ? 'unified' : 'sales'),
-    unifiedReceivablesCount: unifiedReceivables?.length || 0
+    unifiedReceivablesCount: unifiedReceivables?.length || 0,
+    dateRangeApplied: !!dateRange
   });
 
   // Só mostrar loading se não tiver propStats e estiver carregando a fonte selecionada

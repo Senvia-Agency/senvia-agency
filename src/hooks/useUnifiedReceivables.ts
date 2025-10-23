@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
+import { format, startOfDay } from "date-fns";
 
 export interface UnifiedReceivable {
   id: string;
@@ -78,6 +79,7 @@ export const useUnifiedReceivables = () => {
 
       // 3.1. Buscar vendas recorrentes ativas (fallback para vendas sem recurring_service)
       const today = new Date();
+      const todayStr = format(today, 'yyyy-MM-dd');
       const { data: recurringActiveSales, error: recurringActiveSalesError } = await supabase
         .from('sales')
         .select(`
@@ -89,7 +91,7 @@ export const useUnifiedReceivables = () => {
         .in('payment_status', ['recurring', 'pending'])
         .neq('sale_status', 'cancelled')
         .not('recurring_start_date', 'is', null)
-        .lte('recurring_start_date', today.toISOString().split('T')[0])
+        .lte('recurring_start_date', todayStr)
         .order('recurring_start_date', { ascending: false });
 
       if (recurringActiveSalesError) {
@@ -179,10 +181,10 @@ export const useUnifiedReceivables = () => {
         // Determinar data de vencimento candidata
         let candidateDate: Date;
         if (service.next_billing_date) {
-          // Parse da data como UTC para evitar problemas de timezone
+          // Parse da data como local para evitar problemas de timezone
           const [year, month, day] = service.next_billing_date.split('-').map(Number);
           candidateDate = new Date(year, month - 1, day);
-          console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, parsed = ${candidateDate.toISOString()}`);
+          console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, parsed = ${format(candidateDate, 'yyyy-MM-dd')}`);
         } else if (service.billing_day) {
           const currentMonth = today.getMonth();
           const currentYear = today.getFullYear();
@@ -197,17 +199,17 @@ export const useUnifiedReceivables = () => {
         }
 
         // Verificar se está dentro de 30 dias (usar início do dia para comparação)
-        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const candidateDateStart = new Date(candidateDate.getFullYear(), candidateDate.getMonth(), candidateDate.getDate());
-        const candidateDateStr = candidateDate.toISOString().split('T')[0];
+        const todayStart = startOfDay(today);
+        const candidateDateStart = startOfDay(candidateDate);
+        const candidateDateStr = format(candidateDate, 'yyyy-MM-dd');
         
         const thirtyDaysFromNow = new Date(todayStart);
         thirtyDaysFromNow.setDate(todayStart.getDate() + 30);
         
         console.log(`⏰ Comparação ${service.service_name}:`, {
-          today: todayStart.toISOString().split('T')[0],
+          today: format(todayStart, 'yyyy-MM-dd'),
           candidateDate: candidateDateStr,
-          thirtyDaysLimit: thirtyDaysFromNow.toISOString().split('T')[0],
+          thirtyDaysLimit: format(thirtyDaysFromNow, 'yyyy-MM-dd'),
           isWithin30Days: candidateDateStart <= thirtyDaysFromNow
         });
         
@@ -270,7 +272,7 @@ export const useUnifiedReceivables = () => {
           nextBillingDate = new Date(today.getFullYear(), today.getMonth() + 1, billingDay);
         }
 
-        const candidateDateStr = nextBillingDate.toISOString().split('T')[0];
+        const candidateDateStr = format(nextBillingDate, 'yyyy-MM-dd');
         const timeDiff = today.getTime() - nextBillingDate.getTime();
         const daysOverdue = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
 

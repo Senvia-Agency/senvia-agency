@@ -78,7 +78,7 @@ const AdminFinanceiro = () => {
       {/* KPI Cards Contas a Receber */}
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
-        <AccountsReceivableKPICards stats={null} />
+        <AccountsReceivableKPICards stats={null} dateRange={dateRange} />
       </div>
 
       {/* Serviços Recorrentes */}

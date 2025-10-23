@@ -15,7 +15,6 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Lazy load demais páginas
-const MeusProjetos = lazy(() => import("./pages/MeusProjetos"));
 const LandingPages = lazy(() => import("./pages/LandingPages"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
@@ -67,11 +66,6 @@ function App() {
           <Suspense fallback={<QuickLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/meus-projetos" element={
-                <ProtectedRoute>
-                  <MeusProjetos />
-                </ProtectedRoute>
-              } />
               <Route path="/landing-pages" element={<LandingPages />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

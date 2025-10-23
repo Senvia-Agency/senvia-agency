@@ -16,7 +16,6 @@ export const getInitialFormData = (lead: any) => ({
   phone: lead?.phone || '',
   company_name: lead?.company_name || '',
   website: lead?.website || '',
-  project_status: 'pending' as const,
   customer_tier: 'basic' as const,
   conversion_value: lead?.conversion_value || getValueBySource(lead?.source_page || ''),
   notes: lead?.notes || ''

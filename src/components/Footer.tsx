@@ -60,12 +60,6 @@ const Footer = () => {
             </ul>
           </div>
           
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Recursos</h3>
-            <ul className="space-y-2">
-              <li><Link to="/meus-projetos" className="text-muted-foreground hover:text-senvia-500 transition-colors">Meus Projetos</Link></li>
-            </ul>
-          </div>
           
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Contacto</h3>

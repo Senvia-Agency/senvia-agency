@@ -8,7 +8,6 @@ import AdminClientes from "@/components/admin/AdminClientes";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
 import AdminVendas from "@/components/admin/AdminVendas";
 import AdminSettings from "@/components/admin/AdminSettings";
-import AdminMeusProjetos from "@/components/admin/AdminMeusProjetos";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
@@ -27,8 +26,6 @@ const AdminDashboard = () => {
         return <AdminVendas />;
       case "clientes":
         return <AdminClientes />;
-      case "meus-projetos":
-        return <AdminMeusProjetos />;
       case "financeiro":
         return <AdminFinanceiro />;
       case "configuracoes":

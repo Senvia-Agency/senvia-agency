@@ -38,7 +38,6 @@ export interface ConvertLeadToCustomerData {
   phone?: string;
   company_name?: string;
   website?: string;
-  project_status: string;
   customer_tier: string;
   conversion_value: number;
   notes?: string;

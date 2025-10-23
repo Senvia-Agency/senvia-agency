@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import ActivityHistorySection from "./shared/ActivityHistorySection";
-import CustomerProjectsSection from "./clients/CustomerProjectsSection";
 import { ClientDetailsForm } from "./clients/components/ClientDetailsForm";
 import { ClientInfoDisplay } from "./clients/components/ClientInfoDisplay";
 
@@ -36,15 +35,12 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
           {/* Fixed Tabs Header */}
           <div className="px-6 py-4 border-b border-gray-600 flex-shrink-0">
             <Tabs defaultValue="details" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-700">
+              <TabsList className="grid w-full grid-cols-3 bg-gray-700">
                 <TabsTrigger value="details" className="data-[state=active]:bg-senvia-500">
                   Detalhes
                 </TabsTrigger>
                 <TabsTrigger value="contacts" className="data-[state=active]:bg-senvia-500">
                   Contatos
-                </TabsTrigger>
-                <TabsTrigger value="projects" className="data-[state=active]:bg-senvia-500">
-                  Projetos
                 </TabsTrigger>
                 <TabsTrigger value="activity" className="data-[state=active]:bg-senvia-500">
                   Histórico
@@ -63,10 +59,6 @@ const EditClientModal = ({ isOpen, onClose, client }: EditClientModalProps) => {
 
                 <TabsContent value="contacts" className="h-[calc(90vh-200px)] overflow-y-auto mt-6 px-1">
                   <EntityContactsSection entityType="customer" entityId={client.id} />
-                </TabsContent>
-
-                <TabsContent value="projects" className="h-[calc(90vh-200px)] overflow-y-auto mt-6 px-1">
-                  <CustomerProjectsSection customerId={client.id} />
                 </TabsContent>
 
                 <TabsContent value="activity" className="h-[calc(90vh-200px)] overflow-y-auto mt-6 px-1">

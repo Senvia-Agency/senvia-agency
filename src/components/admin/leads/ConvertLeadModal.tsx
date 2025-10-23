@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useConvertLeadToCustomer } from "@/hooks/useCustomers";
 import { getInitialFormData } from "./utils/convertLeadUtils";
 import BasicInfoFields from "./components/BasicInfoFields";
-import ProjectStatusField from "./components/ProjectStatusField";
 import CustomerTierValueFields from "./components/CustomerTierValueFields";
 import NotesField from "./components/NotesField";
 import OriginalLeadInfo from "./components/OriginalLeadInfo";
@@ -28,7 +27,6 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
     phone: '',
     company_name: '',
     website: '',
-    project_status: 'pending' as const,
     customer_tier: 'basic' as const,
     conversion_value: 0,
     notes: ''
@@ -131,12 +129,6 @@ const ConvertLeadModal = ({ lead, isOpen, onClose, onConvert }: ConvertLeadModal
           <BasicInfoFields
             formData={formData}
             onInputChange={handleInputChange}
-          />
-
-          {/* Status do Projeto */}
-          <ProjectStatusField
-            value={formData.project_status}
-            onChange={(value) => handleInputChange('project_status', value)}
           />
 
           {/* Categoria e Valor */}

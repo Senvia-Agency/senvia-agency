@@ -8,8 +8,7 @@ import {
   UserCheck,
   TrendingUp,
   User,
-  LogOut,
-  FolderOpen
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -43,7 +42,6 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
     { id: "leads", label: "Leads", icon: Users },
     { id: "vendas", label: "Vendas", icon: TrendingUp },
     { id: "clientes", label: "Clientes", icon: UserCheck },
-    { id: "meus-projetos", label: "Meus Projetos", icon: FolderOpen },
     { id: "financeiro", label: "Financeiro", icon: DollarSign },
     { id: "configuracoes", label: "Configurações", icon: Settings }
   ];

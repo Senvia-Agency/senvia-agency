@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, AlertTriangle, Euro, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+import { useUnifiedReceivables, useUnifiedReceivablesStats } from "@/hooks/useUnifiedReceivables";
 
 interface AccountsReceivableKPICardsProps {
   stats: {
@@ -15,8 +15,8 @@ interface AccountsReceivableKPICardsProps {
 }
 
 const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPICardsProps) => {
-  const { data: accountsReceivable, isLoading } = useAccountsReceivable(30);
-  const stats = useAccountsReceivableStats(accountsReceivable || []);
+  const { data: unifiedReceivables, isLoading } = useUnifiedReceivables(30);
+  const stats = useUnifiedReceivablesStats(unifiedReceivables || []);
 
   if (isLoading || !stats) {
     return (

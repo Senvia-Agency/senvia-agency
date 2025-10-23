@@ -51,7 +51,7 @@ const AdminFinanceiro = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 h-screen overflow-hidden">
+    <div className="space-y-6 p-6 overflow-y-auto pb-12">
       {/* Header */}
       <div className="space-y-3">
         <div>
@@ -95,7 +95,7 @@ const AdminFinanceiro = () => {
       </div>
 
       {/* Financial Movements */}
-      <div className="grid grid-cols-1 gap-4 flex-1 min-h-0">
+      <div className="grid grid-cols-1 gap-4">
         <FinancialMovementsCard
           movements={movements}
           onAddMovement={() => setIsMovementModalOpen(true)}

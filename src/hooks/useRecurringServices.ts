@@ -222,6 +222,7 @@ export const useMarkReceivableAsPaid = () => {
         payment_method: string;
         paid_date?: string;
         notes?: string;
+        amount?: number;
       } 
     }) => {
       console.log('Marcando conta como paga:', id, paymentData);
@@ -229,8 +230,9 @@ export const useMarkReceivableAsPaid = () => {
       const { data, error } = await supabase
         .from('recurring_receivables')
         .update({
-          status: 'paid',
-          paid_date: paymentData.paid_date || new Date().toISOString().split('T')[0],
+          payment_status: 'paid',
+          paid_at: paymentData.paid_date || new Date().toISOString(),
+          paid_amount: paymentData.amount || 0,
           payment_method: paymentData.payment_method,
           notes: paymentData.notes
         })

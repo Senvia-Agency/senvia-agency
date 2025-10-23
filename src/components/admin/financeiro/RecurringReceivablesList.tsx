@@ -43,7 +43,8 @@ const RecurringReceivablesList = () => {
       paymentData: {
         payment_method: paymentMethod,
         paid_date: paidDate,
-        notes: notes
+        notes: notes,
+        amount: selectedReceivable.amount
       }
     });
 

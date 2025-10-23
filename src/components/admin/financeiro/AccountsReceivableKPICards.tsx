@@ -16,7 +16,10 @@ interface AccountsReceivableKPICardsProps {
 
 const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPICardsProps) => {
   const { data: unifiedReceivables, isLoading } = useUnifiedReceivables();
-  const stats = useUnifiedReceivablesStats(unifiedReceivables || []);
+  const unifiedStats = useUnifiedReceivablesStats(unifiedReceivables || []);
+  
+  // Usar propStats se fornecido, senão usar unifiedStats
+  const stats = propStats || unifiedStats;
 
   if (isLoading || !stats) {
     return (

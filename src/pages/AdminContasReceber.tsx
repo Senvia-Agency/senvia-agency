@@ -14,7 +14,7 @@ import ReceivablesEvolutionChart from "@/components/admin/financeiro/Receivables
 import PeriodSelector from "@/components/admin/financeiro/PeriodSelector";
 
 const AdminContasReceber = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(30);
+  const [selectedPeriod, setSelectedPeriod] = useState(0);
   const [activeSection, setActiveSection] = useState("financeiro");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();

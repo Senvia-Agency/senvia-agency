@@ -38,7 +38,8 @@ export const useUnifiedReceivables = () => {
         .order('sale_date', { ascending: false });
 
       if (salesError) {
-        console.error('Erro ao buscar vendas:', salesError);
+        console.error('❌ ERRO CRÍTICO ao buscar vendas:', salesError);
+        console.error('Detalhes do erro:', JSON.stringify(salesError, null, 2));
         throw salesError;
       }
 
@@ -54,7 +55,8 @@ export const useUnifiedReceivables = () => {
         .order('due_date', { ascending: false });
 
       if (recurringError) {
-        console.error('Erro ao buscar contas recorrentes:', recurringError);
+        console.error('❌ ERRO CRÍTICO ao buscar contas recorrentes:', recurringError);
+        console.error('Detalhes do erro:', JSON.stringify(recurringError, null, 2));
         throw recurringError;
       }
 
@@ -69,7 +71,8 @@ export const useUnifiedReceivables = () => {
         .eq('recurrence_type', 'receita');
 
       if (servicesError) {
-        console.error('Erro ao buscar serviços recorrentes ativos:', servicesError);
+        console.error('❌ ERRO CRÍTICO ao buscar serviços recorrentes ativos:', servicesError);
+        console.error('Detalhes do erro:', JSON.stringify(servicesError, null, 2));
         throw servicesError;
       }
 
@@ -90,7 +93,8 @@ export const useUnifiedReceivables = () => {
         .order('recurring_start_date', { ascending: false });
 
       if (recurringActiveSalesError) {
-        console.error('Erro ao buscar vendas recorrentes:', recurringActiveSalesError);
+        console.error('❌ ERRO CRÍTICO ao buscar vendas recorrentes:', recurringActiveSalesError);
+        console.error('Detalhes do erro:', JSON.stringify(recurringActiveSalesError, null, 2));
         throw recurringActiveSalesError;
       }
 

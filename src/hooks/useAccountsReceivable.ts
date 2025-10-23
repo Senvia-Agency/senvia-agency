@@ -25,12 +25,10 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
   return useQuery({
     queryKey: ['accounts-receivable', dateRange],
     queryFn: async () => {
-      console.log('Buscando contas a receber...');
+      console.log('Buscando contas a receber...', { dateRange });
       
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
-      
-      const { data: sales, error } = await supabase
+      // Construir query base
+      let query = supabase
         .from('sales')
         .select(`
           *,
@@ -39,9 +37,16 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
         `)
         .eq('is_recurring', false) // Excluir vendas recorrentes (não são contas a receber)
         .in('payment_status', ['pending', 'partial', 'overdue'])
-        .neq('sale_status', 'cancelled') // Filtrar projetos cancelados
-        .gte('created_at', startDate.toISOString())
-        .order('sale_date', { ascending: false });
+        .neq('sale_status', 'cancelled'); // Filtrar projetos cancelados
+
+      // Aplicar filtro de data APENAS se dateRange > 0
+      if (dateRange > 0) {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - dateRange);
+        query = query.gte('created_at', startDate.toISOString());
+      }
+
+      const { data: sales, error } = await query.order('sale_date', { ascending: false });
 
       if (error) {
         console.error('Erro ao buscar contas a receber:', error);

@@ -164,7 +164,7 @@ const AdminContasReceber = () => {
             </div>
 
             {/* KPI Cards */}
-            <AccountsReceivableKPICards stats={accountsStats} />
+            <AccountsReceivableKPICards stats={null} />
 
             {/* Gráfico de Evolução */}
             <ReceivablesEvolutionChart accounts={accountsReceivable || []} />

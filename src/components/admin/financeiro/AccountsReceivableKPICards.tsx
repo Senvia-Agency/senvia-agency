@@ -21,7 +21,13 @@ const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPIC
   // Usar propStats se fornecido, senão usar unifiedStats
   const stats = propStats || unifiedStats;
 
-  if (isLoading || !stats) {
+  // Log de diagnóstico
+  console.log('[KPIs] propStats:', propStats, 'unifiedStats:', unifiedStats);
+
+  // Só mostrar loading se não tiver propStats e estiver carregando
+  const isLoadingEffective = propStats ? false : isLoading;
+
+  if (isLoadingEffective || !stats) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((i) => (

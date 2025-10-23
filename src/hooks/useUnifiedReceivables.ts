@@ -18,16 +18,13 @@ export interface UnifiedReceivable {
   type: 'sale' | 'recurring'; // Identificar origem
 }
 
-export const useUnifiedReceivables = (dateRange: number = 30) => {
+export const useUnifiedReceivables = () => {
   return useQuery({
-    queryKey: ['unified-receivables', dateRange],
+    queryKey: ['unified-receivables'],
     queryFn: async () => {
       console.log('Buscando todas as contas a receber (vendas + recorrentes)...');
       
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
-      
-      // 1. Buscar vendas não-recorrentes pendentes
+      // 1. Buscar vendas não-recorrentes pendentes (sem filtro de data)
       const { data: sales, error: salesError } = await supabase
         .from('sales')
         .select(`
@@ -38,7 +35,6 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
         .eq('is_recurring', false)
         .in('payment_status', ['pending', 'partial', 'overdue'])
         .neq('sale_status', 'cancelled')
-        .gte('created_at', startDate.toISOString())
         .order('sale_date', { ascending: false });
 
       if (salesError) {
@@ -46,7 +42,7 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
         throw salesError;
       }
 
-      // 2. Buscar contas recorrentes pendentes
+      // 2. Buscar contas recorrentes pendentes (sem filtro de data)
       const { data: recurring, error: recurringError } = await supabase
         .from('recurring_receivables')
         .select(`
@@ -55,7 +51,6 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
           recurring_services(service_name, id)
         `)
         .in('payment_status', ['pending', 'overdue'])
-        .gte('due_date', startDate.toISOString().split('T')[0])
         .order('due_date', { ascending: false });
 
       if (recurringError) {
@@ -76,6 +71,27 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
       if (servicesError) {
         console.error('Erro ao buscar serviços recorrentes ativos:', servicesError);
         throw servicesError;
+      }
+
+      // 3.1. Buscar vendas recorrentes ativas (fallback para vendas sem recurring_service)
+      const today = new Date();
+      const { data: recurringActiveSales, error: recurringActiveSalesError } = await supabase
+        .from('sales')
+        .select(`
+          *,
+          customers(full_name, email),
+          unified_leads(full_name, email)
+        `)
+        .eq('is_recurring', true)
+        .in('payment_status', ['recurring', 'pending'])
+        .neq('sale_status', 'cancelled')
+        .is('recurring_start_date', 'not.null')
+        .lte('recurring_start_date', today.toISOString().split('T')[0])
+        .order('recurring_start_date', { ascending: false });
+
+      if (recurringActiveSalesError) {
+        console.error('Erro ao buscar vendas recorrentes:', recurringActiveSalesError);
+        throw recurringActiveSalesError;
       }
 
       // 4. Criar Set de cobranças recorrentes existentes para evitar duplicatas
@@ -146,7 +162,6 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
       });
 
       // Adicionar serviços recorrentes previstos (que ainda não têm cobrança gerada)
-      const today = new Date();
       let projectedCount = 0;
       
       (activeServices || []).forEach((service: any) => {
@@ -167,10 +182,12 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
           return; // Sem data de cobrança definida
         }
 
-        // Verificar se está dentro do range de datas
+        // Verificar se está dentro de 30 dias
         const candidateDateStr = candidateDate.toISOString().split('T')[0];
-        if (candidateDate < startDate) {
-          return;
+        const thirtyDaysFromNow = new Date(today);
+        thirtyDaysFromNow.setDate(today.getDate() + 30);
+        if (candidateDate > thirtyDaysFromNow) {
+          return; // Muito distante no futuro
         }
 
         // Verificar se já existe uma cobrança para este serviço nesta data
@@ -205,6 +222,53 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
         projectedCount++;
       });
 
+      // Adicionar vendas recorrentes que não têm recurring_service (fallback)
+      let fallbackCount = 0;
+      const existingServiceSaleIds = new Set((activeServices || []).map((s: any) => s.sale_id).filter(Boolean));
+      
+      (recurringActiveSales || []).forEach((sale: any) => {
+        // Verificar se já existe recurring_service para esta venda
+        if (existingServiceSaleIds.has(sale.id)) {
+          return; // Já tem recurring_service, skip
+        }
+
+        if (!sale.recurring_billing_day) {
+          return; // Sem dia de cobrança definido
+        }
+
+        // Calcular próxima data de cobrança
+        const billingDay = sale.recurring_billing_day;
+        let nextBillingDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
+        if (nextBillingDate <= today) {
+          nextBillingDate = new Date(today.getFullYear(), today.getMonth() + 1, billingDay);
+        }
+
+        const candidateDateStr = nextBillingDate.toISOString().split('T')[0];
+        const timeDiff = today.getTime() - nextBillingDate.getTime();
+        const daysOverdue = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+
+        const customerName = sale.customers?.full_name || sale.unified_leads?.full_name || 'Cliente Direto';
+        const customerEmail = sale.customers?.email || sale.unified_leads?.email || '';
+
+        unifiedReceivables.push({
+          id: `sale-recurring-${sale.id}`,
+          customer_id: sale.customer_id,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          reference_number: sale.sale_number,
+          total_value: Number(sale.total_value),
+          paid_amount: Number(sale.paid_amount || 0),
+          remaining_amount: Number(sale.remaining_amount || (sale.total_value - (sale.paid_amount || 0))),
+          due_date: candidateDateStr,
+          payment_status: 'pending',
+          service_name: sale.service_name,
+          days_overdue: daysOverdue,
+          type: 'recurring'
+        });
+
+        fallbackCount++;
+      });
+
       // Ordenar por data de vencimento (mais próximas primeiro)
       unifiedReceivables.sort((a, b) => {
         return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
@@ -214,6 +278,7 @@ export const useUnifiedReceivables = (dateRange: number = 30) => {
       console.log('- Vendas:', sales?.length || 0);
       console.log('- Recorrentes (gerados):', recurring?.length || 0);
       console.log('- Recorrentes (previstos):', projectedCount);
+      console.log('- Recorrentes (fallback vendas sem service):', fallbackCount);
       
       return unifiedReceivables;
     },

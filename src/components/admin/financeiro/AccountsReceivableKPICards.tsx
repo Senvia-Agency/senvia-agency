@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, AlertTriangle, Euro, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUnifiedReceivables, useUnifiedReceivablesStats } from "@/hooks/useUnifiedReceivables";
+import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+
 
 interface AccountsReceivableKPICardsProps {
   stats: {
@@ -15,17 +17,25 @@ interface AccountsReceivableKPICardsProps {
 }
 
 const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPICardsProps) => {
-  const { data: unifiedReceivables, isLoading } = useUnifiedReceivables();
+  // Unificada (vendas + recorrentes + previstos)
+  const { data: unifiedReceivables, isLoading: isLoadingUnified } = useUnifiedReceivables();
   const unifiedStats = useUnifiedReceivablesStats(unifiedReceivables || []);
+
+  // Fallback: apenas vendas não recorrentes (Tudo)
+  const { data: salesAccounts, isLoading: isLoadingSales } = useAccountsReceivable(0);
+  const salesStats = useAccountsReceivableStats(salesAccounts || []);
+
+  const hasUnified = (unifiedReceivables?.length || 0) > 0;
+  const mergedStats = hasUnified ? unifiedStats : (salesStats || unifiedStats);
   
-  // Usar propStats se fornecido, senão usar unifiedStats
-  const stats = propStats || unifiedStats;
+  // Usar propStats se fornecido, senão tentar unificada e cair para vendas
+  const stats = propStats || mergedStats;
 
   // Log de diagnóstico
-  console.log('[KPIs] propStats:', propStats, 'unifiedStats:', unifiedStats);
+  console.log('[KPIs] propStats:', propStats, 'unifiedStats:', unifiedStats, 'salesStats:', salesStats, 'hasUnified:', hasUnified);
 
-  // Só mostrar loading se não tiver propStats e estiver carregando
-  const isLoadingEffective = propStats ? false : isLoading;
+  // Só mostrar loading se não tiver propStats e estiver carregando a fonte selecionada
+  const isLoadingEffective = propStats ? false : (hasUnified ? isLoadingUnified : isLoadingSales);
 
   if (isLoadingEffective || !stats) {
     return (

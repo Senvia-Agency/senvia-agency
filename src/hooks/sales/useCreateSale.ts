@@ -66,6 +66,7 @@ export const useCreateSale = () => {
           const { data: recurringService, error: recurringError } = await supabase
             .from('recurring_services')
             .insert([{
+              recurrence_type: 'receita',
               customer_id: data.customer_id,
               sale_id: data.id,
               service_name: data.service_name,

@@ -1833,16 +1833,7 @@ export type Database = {
         Returns: string
       }
       generate_blog_slug: { Args: { title: string }; Returns: string }
-      generate_recurring_receivables: {
-        Args: never
-        Returns: {
-          amount: number
-          customer_id: string
-          due_date: string
-          generated_count: number
-          service_id: string
-        }[]
-      }
+      generate_recurring_receivables: { Args: never; Returns: number }
       generate_sale_number: { Args: never; Returns: string }
       get_leads_stats: {
         Args: { end_date?: string; start_date?: string }

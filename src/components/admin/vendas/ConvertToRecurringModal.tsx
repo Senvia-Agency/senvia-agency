@@ -23,10 +23,35 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
   const { data: customers } = useCustomers();
   const createRecurringService = useCreateRecurringService();
 
+  // Calcular próxima data de cobrança baseada no billing_day
+  const calculateNextBillingDate = (billingDay: number, startDate: string): string => {
+    const start = new Date(startDate);
+    const now = new Date();
+    
+    // Usar a data mais recente (início ou hoje)
+    const referenceDate = start > now ? start : now;
+    
+    // Criar data de cobrança no mês de referência
+    let nextBilling = new Date(
+      referenceDate.getFullYear(),
+      referenceDate.getMonth(),
+      billingDay
+    );
+    
+    // Se já passou, mover para próximo mês
+    if (nextBilling <= now) {
+      nextBilling.setMonth(nextBilling.getMonth() + 1);
+    }
+    
+    return nextBilling.toISOString().split('T')[0];
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!sale) return;
+
+    const nextBillingDate = calculateNextBillingDate(parseInt(billingDay), startDate);
 
     try {
       await createRecurringService.mutateAsync({
@@ -39,7 +64,7 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
         billing_day: parseInt(billingDay),
         start_date: startDate,
         status: 'active',
-        next_billing_date: startDate
+        next_billing_date: nextBillingDate
       });
 
       onClose();

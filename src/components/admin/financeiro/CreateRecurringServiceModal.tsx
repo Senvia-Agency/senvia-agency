@@ -32,7 +32,7 @@ const CreateRecurringServiceModal = () => {
         service_name: serviceName,
         service_description: serviceDescription,
         customer_id: customerId,
-        monthly_amount: parseFloat(monthlyAmount),
+        amount: parseFloat(monthlyAmount),
         billing_day: parseInt(billingDay),
         start_date: startDate,
         status: 'active',

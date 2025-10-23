@@ -1189,6 +1189,129 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_receivables: {
+        Row: {
+          amount: number
+          created_at: string | null
+          customer_id: string
+          due_date: string
+          id: string
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string
+          recurring_service_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          customer_id: string
+          due_date: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          recurring_service_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          customer_id?: string
+          due_date?: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          recurring_service_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_receivables_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_receivables_recurring_service_id_fkey"
+            columns: ["recurring_service_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recurring_services: {
+        Row: {
+          amount: number
+          billing_day: number
+          created_at: string | null
+          customer_id: string
+          end_date: string | null
+          id: string
+          next_billing_date: string | null
+          sale_id: string | null
+          service_description: string | null
+          service_name: string
+          start_date: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number
+          billing_day: number
+          created_at?: string | null
+          customer_id: string
+          end_date?: string | null
+          id?: string
+          next_billing_date?: string | null
+          sale_id?: string | null
+          service_description?: string | null
+          service_name: string
+          start_date: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          billing_day?: number
+          created_at?: string | null
+          customer_id?: string
+          end_date?: string | null
+          id?: string
+          next_billing_date?: string | null
+          sale_id?: string | null
+          service_description?: string | null
+          service_name?: string
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_services_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_services_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sale_payments: {
         Row: {
           amount: number
@@ -1707,6 +1830,16 @@ export type Database = {
         Returns: string
       }
       generate_blog_slug: { Args: { title: string }; Returns: string }
+      generate_recurring_receivables: {
+        Args: never
+        Returns: {
+          amount: number
+          customer_id: string
+          due_date: string
+          generated_count: number
+          service_id: string
+        }[]
+      }
       generate_sale_number: { Args: never; Returns: string }
       get_leads_stats: {
         Args: { end_date?: string; start_date?: string }
@@ -1716,6 +1849,17 @@ export type Database = {
           pending_leads: number
           senvia_landing_leads: number
           total_leads: number
+        }[]
+      }
+      get_recurring_stats: {
+        Args: never
+        Returns: {
+          overdue_receivables_amount: number
+          overdue_receivables_count: number
+          pending_receivables_amount: number
+          pending_receivables_count: number
+          total_active_services: number
+          total_monthly_revenue: number
         }[]
       }
       get_trial_days_remaining: {

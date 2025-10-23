@@ -31,10 +31,10 @@ const ConvertToRecurringModal = ({ sale, isOpen, onClose }: ConvertToRecurringMo
     try {
       await createRecurringService.mutateAsync({
         customer_id: customerId || sale.customer_id || '',
-        service_id: sale.service_id,
+        sale_id: sale.id,
         service_name: sale.service_name,
         service_description: sale.service_description,
-        monthly_amount: sale.total_value,
+        amount: sale.total_value,
         billing_day: parseInt(billingDay),
         start_date: startDate,
         status: 'active',

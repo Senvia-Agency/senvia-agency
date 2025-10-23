@@ -67,10 +67,10 @@ export const useCreateSale = () => {
             .from('recurring_services')
             .insert([{
               customer_id: data.customer_id,
-              service_id: data.service_id,
+              sale_id: data.id,
               service_name: data.service_name,
               service_description: data.service_description,
-              monthly_amount: data.total_value,
+              amount: data.total_value,
               billing_day: data.recurring_billing_day,
               start_date: data.recurring_start_date,
               next_billing_date: nextBillingDate,
@@ -86,35 +86,8 @@ export const useCreateSale = () => {
           
           console.log('Serviço recorrente criado:', recurringService);
           
-          // Se a data de início é hoje ou no passado, criar primeira cobrança
-          const startDate = new Date(data.recurring_start_date);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          startDate.setHours(0, 0, 0, 0);
-          
-          if (startDate <= today) {
-            const billingPeriodStart = data.recurring_start_date;
-            const billingPeriodEnd = new Date(startDate);
-            billingPeriodEnd.setMonth(billingPeriodEnd.getMonth() + 1);
-            
-            const { error: receivableError } = await supabase
-              .from('recurring_receivables')
-              .insert([{
-                recurring_service_id: recurringService.id,
-                customer_id: data.customer_id,
-                amount: data.total_value,
-                due_date: data.recurring_start_date,
-                billing_period_start: billingPeriodStart,
-                billing_period_end: billingPeriodEnd.toISOString().split('T')[0],
-                status: 'pending'
-              }]);
-            
-            if (receivableError) {
-              console.error('Erro ao criar primeira cobrança:', receivableError);
-            } else {
-              console.log('Primeira cobrança criada com sucesso');
-            }
-          }
+          // As cobranças serão criadas automaticamente pela edge function
+          // quando a data de início chegar (generate-recurring-bills)
           
           queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
           queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });

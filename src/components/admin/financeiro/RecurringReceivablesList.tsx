@@ -112,7 +112,7 @@ const RecurringReceivablesList = () => {
                   <div className="text-lg font-bold text-white">
                     €{Number(receivable.amount).toFixed(2)}
                   </div>
-                  {getStatusBadge(receivable.status)}
+                  {getStatusBadge(receivable.payment_status)}
                 </div>
               </div>
               
@@ -123,13 +123,13 @@ const RecurringReceivablesList = () => {
                   {new Date(receivable.due_date).toLocaleDateString('pt-PT')}
                 </div>
                 <div>
-                  <span className="font-medium">Período:</span>
+                  <span className="font-medium">Serviço:</span>
                   <br />
-                  {new Date(receivable.billing_period_start).toLocaleDateString('pt-PT')} - {new Date(receivable.billing_period_end).toLocaleDateString('pt-PT')}
+                  {receivable.recurring_services?.service_name || 'N/A'}
                 </div>
               </div>
 
-              {receivable.status === 'pending' || receivable.status === 'overdue' ? (
+              {receivable.payment_status === 'pending' || receivable.payment_status === 'overdue' ? (
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button 
@@ -194,9 +194,9 @@ const RecurringReceivablesList = () => {
                     </div>
                   </DialogContent>
                 </Dialog>
-              ) : receivable.status === 'paid' ? (
+              ) : receivable.payment_status === 'paid' ? (
                 <div className="text-sm text-gray-400">
-                  <strong>Pago em:</strong> {receivable.paid_date ? new Date(receivable.paid_date).toLocaleDateString('pt-PT') : 'N/A'}
+                  <strong>Pago em:</strong> {receivable.paid_at ? new Date(receivable.paid_at).toLocaleDateString('pt-PT') : 'N/A'}
                   {receivable.payment_method && (
                     <>
                       <br />

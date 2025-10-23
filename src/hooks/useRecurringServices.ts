@@ -6,16 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 export interface RecurringService {
   id: string;
   customer_id: string;
-  service_id?: string;
+  sale_id?: string;
   service_name: string;
   service_description?: string;
-  monthly_amount: number;
+  amount: number;
   billing_day: number;
   start_date: string;
   end_date?: string;
   status: 'active' | 'paused' | 'cancelled';
-  next_billing_date: string;
-  last_billed_date?: string;
+  next_billing_date?: string;
   created_at: string;
   updated_at: string;
   customers?: {
@@ -30,12 +29,13 @@ export interface RecurringReceivable {
   customer_id: string;
   amount: number;
   due_date: string;
-  billing_period_start: string;
-  billing_period_end: string;
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
-  paid_date?: string;
+  payment_status: 'pending' | 'paid' | 'overdue' | 'cancelled';
+  paid_at?: string;
+  paid_amount?: number;
   payment_method?: string;
   notes?: string;
+  created_at: string;
+  updated_at: string;
   customers?: {
     full_name: string;
     email: string;
@@ -48,10 +48,10 @@ export interface RecurringReceivable {
 export interface RecurringStats {
   total_active_services: number;
   total_monthly_revenue: number;
-  overdue_count: number;
-  overdue_amount: number;
-  next_week_due_count: number;
-  next_week_due_amount: number;
+  pending_receivables_count: number;
+  pending_receivables_amount: number;
+  overdue_receivables_count: number;
+  overdue_receivables_amount: number;
 }
 
 export const useRecurringServices = () => {

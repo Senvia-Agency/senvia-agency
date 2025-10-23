@@ -69,10 +69,10 @@ const RecurringServicesKPICards = () => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-red-500">
-            €{Number(stats.overdue_amount).toFixed(2)}
+            €{Number(stats.overdue_receivables_amount || 0).toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            {stats.overdue_count} contas atrasadas
+            {stats.overdue_receivables_count || 0} contas atrasadas
           </div>
         </CardContent>
       </Card>
@@ -86,10 +86,10 @@ const RecurringServicesKPICards = () => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-yellow-500">
-            €{Number(stats.next_week_due_amount).toFixed(2)}
+            €{Number(stats.pending_receivables_amount || 0).toFixed(2)}
           </div>
           <div className="text-xs text-gray-400">
-            {stats.next_week_due_count} contas a vencer
+            {stats.pending_receivables_count || 0} contas pendentes
           </div>
         </CardContent>
       </Card>

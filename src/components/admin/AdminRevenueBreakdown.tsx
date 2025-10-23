@@ -25,6 +25,11 @@ const AdminRevenueBreakdown = ({ revenueMetrics }: AdminRevenueBreakdownProps) =
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {totalRevenue === 0 && (
+          <p className="text-gray-400 text-sm text-center py-4">
+            Sem dados de receita no período selecionado
+          </p>
+        )}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
           <div className="flex-1 min-w-0">
             <div className="font-medium text-sm sm:text-base">Receitas de Vendas</div>

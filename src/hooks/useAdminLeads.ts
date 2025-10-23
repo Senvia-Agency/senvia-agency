@@ -6,16 +6,22 @@ export const useAdminLeads = (dateRange: number) => {
   return useQuery({
     queryKey: ['admin-leads-stats', dateRange],
     queryFn: async () => {
+      const hasRange = dateRange > 0;
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
+      if (hasRange) {
+        startDate.setDate(startDate.getDate() - dateRange);
+      }
       
-      console.log('Buscando estatísticas de leads desde:', startDate.toISOString());
+      console.log('Buscando estatísticas de leads:', hasRange ? `desde ${startDate.toISOString()}` : 'todos os dados');
       
       // Buscar leads unificados
-      const { data: unifiedLeads, error: unifiedError } = await supabase
-        .from('unified_leads')
-        .select('*')
-        .gte('created_at', startDate.toISOString());
+      let leadsQuery = supabase.from('unified_leads').select('*');
+      
+      if (hasRange) {
+        leadsQuery = leadsQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: unifiedLeads, error: unifiedError } = await leadsQuery;
 
       if (unifiedError) {
         console.error('Erro ao buscar leads:', unifiedError);

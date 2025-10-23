@@ -6,43 +6,65 @@ export const useAdminRevenue = (dateRange: number) => {
   return useQuery({
     queryKey: ['admin-revenue-metrics', dateRange],
     queryFn: async () => {
+      const hasRange = dateRange > 0;
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - dateRange);
+      if (hasRange) {
+        startDate.setDate(startDate.getDate() - dateRange);
+      }
       
-      console.log('Buscando métricas de receita desde:', startDate.toISOString());
+      console.log('Buscando métricas de receita:', hasRange ? `desde ${startDate.toISOString()}` : 'todos os dados');
       
       // Buscar transações de clientes (sistema novo - dados reais)
-      const { data: customerTransactions, error: transactionsError } = await supabase
+      let txQuery = supabase
         .from('customer_transactions')
         .select('*')
-        .eq('status', 'completed')
-        .gte('created_at', startDate.toISOString());
+        .eq('status', 'completed');
+      
+      if (hasRange) {
+        txQuery = txQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: customerTransactions, error: transactionsError } = await txQuery;
 
       // Buscar pagamentos confirmados da tabela payments (sistema legado)
-      const { data: legacyPayments, error: paymentsError } = await supabase
+      let paymentsQuery = supabase
         .from('payments')
         .select('*')
-        .eq('status', 'paid')
-        .gte('created_at', startDate.toISOString());
+        .eq('status', 'paid');
+      
+      if (hasRange) {
+        paymentsQuery = paymentsQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: legacyPayments, error: paymentsError } = await paymentsQuery;
 
-      // Buscar assinaturas ativas do Senvia Assistant
+      // Buscar assinaturas ativas do Senvia Assistant (sempre sem filtro de data)
       const { data: activeSubscriptions, error: subsError } = await supabase
         .from('senvia_assistant_subscriptions')
         .select('*')
-        .eq('status', 'active')
-        .gte('created_at', startDate.toISOString());
+        .eq('status', 'active');
 
       // Buscar vendas do módulo de vendas
-      const { data: salesData, error: salesError } = await supabase
+      let salesQuery = supabase
         .from('sales')
-        .select('*')
-        .gte('created_at', startDate.toISOString());
+        .select('*');
+      
+      if (hasRange) {
+        salesQuery = salesQuery.gte('created_at', startDate.toISOString());
+      }
+      
+      const { data: salesData, error: salesError } = await salesQuery;
 
       // Buscar movimentos financeiros
-      const { data: financialMovements, error: movementsError } = await supabase
+      let movementsQuery = supabase
         .from('financial_movements')
-        .select('*')
-        .gte('movement_date', startDate.toISOString().split('T')[0]);
+        .select('*');
+      
+      if (hasRange) {
+        movementsQuery = movementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      }
+      
+      const { data: financialMovements, error: movementsError } = await movementsQuery;
 
       // Buscar todos os custom_services para fazer o join manualmente
       const { data: customServices, error: servicesError } = await supabase

@@ -10,7 +10,9 @@ const PeriodSelector = ({ selectedPeriod, onPeriodChange }: PeriodSelectorProps)
   const periods = [
     { value: 7, label: '7d' },
     { value: 30, label: '30d' },
-    { value: 90, label: '90d' }
+    { value: 90, label: '90d' },
+    { value: 365, label: '365d' },
+    { value: 0, label: 'Tudo' }
   ];
 
   return (

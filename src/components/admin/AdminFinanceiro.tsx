@@ -91,7 +91,7 @@ const AdminFinanceiro = () => {
           </div>
         </div>
         <RecurringServicesKPICards />
-        <RecurringReceivablesList />
+        <RecurringReceivablesList dateRange={dateRange} />
       </div>
 
       {/* Financial Movements */}

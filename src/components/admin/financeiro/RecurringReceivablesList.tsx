@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +10,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateRange } from "react-day-picker";
+import { isAfter, isBefore } from "date-fns";
 
-const RecurringReceivablesList = () => {
-  const { data: receivables, isLoading } = useRecurringReceivables();
+interface RecurringReceivablesListProps {
+  dateRange: DateRange | null;
+}
+
+const RecurringReceivablesList = ({ dateRange }: RecurringReceivablesListProps) => {
+  const { data: allReceivables, isLoading } = useRecurringReceivables();
+  
+  // Filtrar receivables pelo período selecionado
+  const receivables = useMemo(() => {
+    if (!allReceivables || !dateRange?.from || !dateRange?.to) return allReceivables || [];
+    
+    return allReceivables.filter(receivable => {
+      const dueDate = new Date(receivable.due_date);
+      return !isBefore(dueDate, dateRange.from!) && !isAfter(dueDate, dateRange.to!);
+    });
+  }, [allReceivables, dateRange]);
   const markAsPaid = useMarkReceivableAsPaid();
   
   const [selectedReceivable, setSelectedReceivable] = useState<any>(null);

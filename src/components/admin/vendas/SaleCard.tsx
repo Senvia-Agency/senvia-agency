@@ -1,7 +1,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Edit, Trash2, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sale } from "@/hooks/sales/types";
@@ -40,8 +40,14 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
 
         {/* Nome do Serviço */}
         <div className="flex-1 min-w-0">
-          <span className="text-sm text-white truncate block">
+          <span className="text-sm text-white truncate block flex items-center gap-2">
             {sale.service_name}
+            {sale.is_recurring && (
+              <Badge className="bg-senvia-500/20 text-senvia-500 text-xs">
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Recorrente
+              </Badge>
+            )}
           </span>
         </div>
 

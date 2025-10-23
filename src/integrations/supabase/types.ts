@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -525,6 +525,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      database: {
+        Row: {
+          content: string | null
+          embedding: string | null
+          id: number
+          metadata: Json | null
+        }
+        Insert: {
+          content?: string | null
+          embedding?: string | null
+          id?: number
+          metadata?: Json | null
+        }
+        Update: {
+          content?: string | null
+          embedding?: string | null
+          id?: number
+          metadata?: Json | null
+        }
+        Relationships: []
       }
       entity_contacts: {
         Row: {
@@ -1231,11 +1252,14 @@ export type Database = {
           expected_delivery_date: string | null
           id: string
           internal_notes: string | null
+          is_recurring: boolean | null
           lead_id: string | null
           notes: string | null
           paid_amount: number
           payment_method: string | null
           payment_status: string
+          recurring_billing_day: number | null
+          recurring_start_date: string | null
           remaining_amount: number | null
           sale_date: string
           sale_number: string
@@ -1259,11 +1283,14 @@ export type Database = {
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null
+          is_recurring?: boolean | null
           lead_id?: string | null
           notes?: string | null
           paid_amount?: number
           payment_method?: string | null
           payment_status?: string
+          recurring_billing_day?: number | null
+          recurring_start_date?: string | null
           remaining_amount?: number | null
           sale_date?: string
           sale_number: string
@@ -1287,11 +1314,14 @@ export type Database = {
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null
+          is_recurring?: boolean | null
           lead_id?: string | null
           notes?: string | null
           paid_amount?: number
           payment_method?: string | null
           payment_status?: string
+          recurring_billing_day?: number | null
+          recurring_start_date?: string | null
           remaining_amount?: number | null
           sale_date?: string
           sale_number?: string
@@ -1654,81 +1684,72 @@ export type Database = {
     }
     Functions: {
       calculate_revenue_metrics: {
-        Args: { start_date?: string; end_date?: string }
+        Args: { end_date?: string; start_date?: string }
         Returns: {
-          total_revenue: number
+          avg_transaction_value: number
           landing_page_revenue: number
           subscription_revenue: number
+          total_revenue: number
           total_transactions: number
-          avg_transaction_value: number
         }[]
       }
-      clean_phone_number: {
-        Args: { phone_input: string }
-        Returns: string
-      }
-      convert_lead_to_customer: {
-        Args: { lead_id: string }
-        Returns: string
-      }
+      clean_phone_number: { Args: { phone_input: string }; Returns: string }
+      convert_lead_to_customer: { Args: { lead_id: string }; Returns: string }
       convert_lead_to_sale: {
         Args: {
           p_lead_id: string
-          p_service_id?: string
-          p_service_type?: string
-          p_service_name?: string
-          p_total_value?: number
           p_notes?: string
+          p_service_id?: string
+          p_service_name?: string
+          p_service_type?: string
+          p_total_value?: number
         }
         Returns: string
       }
-      generate_blog_slug: {
-        Args: { title: string }
-        Returns: string
-      }
-      generate_sale_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_blog_slug: { Args: { title: string }; Returns: string }
+      generate_sale_number: { Args: never; Returns: string }
       get_leads_stats: {
-        Args: { start_date?: string; end_date?: string }
+        Args: { end_date?: string; start_date?: string }
         Returns: {
-          total_leads: number
-          landing_page_leads: number
-          senvia_landing_leads: number
           conversion_rate: number
+          landing_page_leads: number
           pending_leads: number
+          senvia_landing_leads: number
+          total_leads: number
         }[]
       }
       get_trial_days_remaining: {
         Args: { subscription_id: string }
         Returns: number
       }
-      is_admin: {
-        Args: { user_uuid?: string }
-        Returns: boolean
+      is_admin: { Args: { user_uuid?: string }; Returns: boolean }
+      is_admin_user: { Args: never; Returns: boolean }
+      is_trial_expired: { Args: { subscription_id: string }; Returns: boolean }
+      match_database: {
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          id: number
+          metadata: Json
+          similarity: number
+        }[]
       }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      match_documents: {
+        Args: { filter?: Json; match_count?: number; query_embedding: string }
+        Returns: {
+          content: string
+          id: number
+          metadata: Json
+          similarity: number
+        }[]
       }
-      is_trial_expired: {
-        Args: { subscription_id: string }
-        Returns: boolean
-      }
-      migrate_existing_leads: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      migrate_paid_leads_to_customers: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      migrate_existing_leads: { Args: never; Returns: undefined }
+      migrate_paid_leads_to_customers: { Args: never; Returns: undefined }
       send_notification: {
         Args: {
-          notification_type: string
-          notification_subject: string
           notification_data: Json
+          notification_subject: string
+          notification_type: string
           recipient_email?: string
         }
         Returns: undefined

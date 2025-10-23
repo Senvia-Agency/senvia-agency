@@ -21,6 +21,9 @@ export interface Sale {
   internal_notes?: string;
   commission_rate: number;
   assigned_to?: string;
+  is_recurring?: boolean;
+  recurring_billing_day?: number;
+  recurring_start_date?: string;
   stripe_payment_intent_id?: string;
   stripe_session_id?: string;
   stripe_customer_id?: string;

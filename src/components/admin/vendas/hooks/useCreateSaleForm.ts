@@ -20,7 +20,10 @@ export const useCreateSaleForm = (onClose: () => void) => {
     payment_status: 'pending' as const,
     notes: '',
     expected_delivery_date: '',
-    assigned_to: ''
+    assigned_to: '',
+    is_recurring: false,
+    recurring_billing_day: '5',
+    recurring_start_date: ''
   });
 
   const { toast } = useToast();
@@ -54,7 +57,10 @@ export const useCreateSaleForm = (onClose: () => void) => {
       payment_status: 'pending',
       notes: '',
       expected_delivery_date: '',
-      assigned_to: ''
+      assigned_to: '',
+      is_recurring: false,
+      recurring_billing_day: '5',
+      recurring_start_date: ''
     });
   };
 
@@ -79,7 +85,10 @@ export const useCreateSaleForm = (onClose: () => void) => {
         expected_delivery_date: formData.expected_delivery_date || undefined,
         sale_date: new Date().toISOString(),
         commission_rate: 0,
-        assigned_to: formData.assigned_to === 'unassigned' ? undefined : formData.assigned_to || undefined
+        assigned_to: formData.assigned_to === 'unassigned' ? undefined : formData.assigned_to || undefined,
+        is_recurring: formData.is_recurring,
+        recurring_billing_day: formData.is_recurring ? Number(formData.recurring_billing_day) : undefined,
+        recurring_start_date: formData.is_recurring ? formData.recurring_start_date : undefined
       });
       
       toast({

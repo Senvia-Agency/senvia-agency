@@ -5,15 +5,10 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminLeads from "@/components/admin/AdminLeads";
 import AdminClientes from "@/components/admin/AdminClientes";
-import AdminBlog from "@/components/admin/AdminBlog";
 import AdminFinanceiro from "@/components/admin/AdminFinanceiro";
-import AdminProdutosAssinaturas from "@/components/admin/AdminProdutosAssinaturas";
 import AdminVendas from "@/components/admin/AdminVendas";
-
-import AdminSubscriptions from "@/components/admin/AdminSubscriptions";
 import AdminSettings from "@/components/admin/AdminSettings";
 import AdminMeusProjetos from "@/components/admin/AdminMeusProjetos";
-import AdminRelatoriosMarketing from "@/components/admin/AdminRelatoriosMarketing";
 
 const SECTION_STORAGE_KEY = 'admin-active-section';
 const DEFAULT_SECTION = 'overview';
@@ -34,16 +29,8 @@ const AdminDashboard = () => {
         return <AdminClientes />;
       case "meus-projetos":
         return <AdminMeusProjetos />;
-      case "relatorios-marketing":
-        return <AdminRelatoriosMarketing />;
       case "financeiro":
         return <AdminFinanceiro />;
-      case "produtos":
-        return <AdminProdutosAssinaturas />;
-      case "assinaturas":
-        return <AdminSubscriptions />;
-      case "blog":
-        return <AdminBlog />;
       case "configuracoes":
         return <AdminSettings />;
       default:

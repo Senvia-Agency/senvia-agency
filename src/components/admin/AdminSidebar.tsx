@@ -4,18 +4,12 @@ import {
   BarChart,
   Users,
   DollarSign,
-  Package,
-  
-  RefreshCw,
-  FileText,
   Settings,
   UserCheck,
   TrendingUp,
-  Menu,
   User,
   LogOut,
-  FolderOpen,
-  LineChart
+  FolderOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -50,12 +44,7 @@ const AdminSidebar = ({ activeSection, setActiveSection, sidebarOpen, setSidebar
     { id: "vendas", label: "Vendas", icon: TrendingUp },
     { id: "clientes", label: "Clientes", icon: UserCheck },
     { id: "meus-projetos", label: "Meus Projetos", icon: FolderOpen },
-    { id: "relatorios-marketing", label: "Relatórios Marketing", icon: LineChart },
     { id: "financeiro", label: "Financeiro", icon: DollarSign },
-    { id: "produtos", label: "Produtos & Assinaturas", icon: Package },
-    
-    { id: "assinaturas", label: "Assinaturas", icon: RefreshCw },
-    { id: "blog", label: "Blog", icon: FileText },
     { id: "configuracoes", label: "Configurações", icon: Settings }
   ];
 

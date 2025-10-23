@@ -34,6 +34,16 @@ const AccountsReceivableKPICards = ({ stats: propStats }: AccountsReceivableKPIC
   // Log de diagnóstico
   console.log('[KPIs] propStats:', propStats, 'unifiedStats:', unifiedStats, 'salesStats:', salesStats, 'hasUnified:', hasUnified);
 
+  // Log detalhado dos stats calculados
+  console.log('📊 [AccountsReceivableKPICards] Stats calculados:', {
+    totalPending: stats?.totalPending,
+    totalOverdue: stats?.totalOverdue,
+    pendingCount: stats?.pendingCount,
+    overdueCount: stats?.overdueCount,
+    source: propStats ? 'propStats' : (hasUnified ? 'unified' : 'sales'),
+    unifiedReceivablesCount: unifiedReceivables?.length || 0
+  });
+
   // Só mostrar loading se não tiver propStats e estiver carregando a fonte selecionada
   const isLoadingEffective = propStats ? false : (hasUnified ? isLoadingUnified : isLoadingSales);
 

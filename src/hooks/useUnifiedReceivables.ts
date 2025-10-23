@@ -88,7 +88,7 @@ export const useUnifiedReceivables = () => {
         .eq('is_recurring', true)
         .in('payment_status', ['recurring', 'pending'])
         .neq('sale_status', 'cancelled')
-        .is('recurring_start_date', 'not.null')
+        .not('recurring_start_date', 'is', null)
         .lte('recurring_start_date', today.toISOString().split('T')[0])
         .order('recurring_start_date', { ascending: false });
 
@@ -166,13 +166,23 @@ export const useUnifiedReceivables = () => {
       });
 
       // Adicionar serviços recorrentes previstos (que ainda não têm cobrança gerada)
+      // NOTA: Projetamos até 30 dias no futuro para capturar as cobranças iminentes
+      // sem inflar excessivamente o KPI "Total a Receber" com valores muito distantes
       let projectedCount = 0;
+      
+      console.log('🔍 Serviços ativos para previsão:', activeServices?.length || 0);
+      activeServices?.forEach((s: any) => {
+        console.log(`  - ${s.service_name}: €${s.amount}, next_date: ${s.next_billing_date}, billing_day: ${s.billing_day}`);
+      });
       
       (activeServices || []).forEach((service: any) => {
         // Determinar data de vencimento candidata
         let candidateDate: Date;
         if (service.next_billing_date) {
-          candidateDate = new Date(service.next_billing_date);
+          // Parse da data como UTC para evitar problemas de timezone
+          const [year, month, day] = service.next_billing_date.split('-').map(Number);
+          candidateDate = new Date(year, month - 1, day);
+          console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, parsed = ${candidateDate.toISOString()}`);
         } else if (service.billing_day) {
           const currentMonth = today.getMonth();
           const currentYear = today.getFullYear();
@@ -186,17 +196,30 @@ export const useUnifiedReceivables = () => {
           return; // Sem data de cobrança definida
         }
 
-        // Verificar se está dentro de 30 dias
+        // Verificar se está dentro de 30 dias (usar início do dia para comparação)
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const candidateDateStart = new Date(candidateDate.getFullYear(), candidateDate.getMonth(), candidateDate.getDate());
         const candidateDateStr = candidateDate.toISOString().split('T')[0];
-        const thirtyDaysFromNow = new Date(today);
-        thirtyDaysFromNow.setDate(today.getDate() + 30);
-        if (candidateDate > thirtyDaysFromNow) {
+        
+        const thirtyDaysFromNow = new Date(todayStart);
+        thirtyDaysFromNow.setDate(todayStart.getDate() + 30);
+        
+        console.log(`⏰ Comparação ${service.service_name}:`, {
+          today: todayStart.toISOString().split('T')[0],
+          candidateDate: candidateDateStr,
+          thirtyDaysLimit: thirtyDaysFromNow.toISOString().split('T')[0],
+          isWithin30Days: candidateDateStart <= thirtyDaysFromNow
+        });
+        
+        if (candidateDateStart > thirtyDaysFromNow) {
+          console.log(`⏭️ Serviço ${service.service_name} descartado: data ${candidateDateStr} > 30 dias`);
           return; // Muito distante no futuro
         }
 
         // Verificar se já existe uma cobrança para este serviço nesta data
         const candidateKey = `${service.id}|${candidateDateStr}`;
         if (existingRecurringKeys.has(candidateKey)) {
+          console.log(`🔁 Serviço ${service.service_name} descartado: já existe cobrança para ${candidateDateStr}`);
           return; // Já existe, não criar previsto
         }
 

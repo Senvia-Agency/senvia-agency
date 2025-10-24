@@ -34,7 +34,14 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
       const startDate = dateRange?.from ? new Date(dateRange.from) : null;
       const endDate = dateRange?.to ? new Date(dateRange.to) : null;
       const fromStr = startDate ? format(startDate, 'yyyy-MM-dd') : null;
-      const toStr = endDate ? format(endDate, 'yyyy-MM-dd') : null;
+      
+      // Use next day for end date to include full day
+      let endDateStr: string | null = null;
+      if (endDate) {
+        const nextDay = new Date(endDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        endDateStr = format(nextDay, 'yyyy-MM-dd');
+      }
 
       // 1. Buscar movimentos casuais com filtro de data no banco
       let casualQuery = supabase
@@ -53,7 +60,7 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         .order('movement_date', { ascending: false });
 
       if (fromStr) casualQuery = casualQuery.gte('movement_date', fromStr);
-      if (toStr) casualQuery = casualQuery.lte('movement_date', toStr);
+      if (endDateStr) casualQuery = casualQuery.lt('movement_date', endDateStr);
 
       const { data: casualMovements, error: casualError } = await casualQuery;
       if (casualError) throw casualError;
@@ -76,14 +83,8 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         .eq('payment_status', 'paid')
         .order('paid_at', { ascending: false });
 
-      if (startDate) {
-        receivablesQuery = receivablesQuery.gte('paid_at', startDate.toISOString());
-      }
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        receivablesQuery = receivablesQuery.lte('paid_at', endOfDay.toISOString());
-      }
+      if (fromStr) receivablesQuery = receivablesQuery.gte('paid_at', fromStr);
+      if (endDateStr) receivablesQuery = receivablesQuery.lt('paid_at', endDateStr);
 
       const { data: recurringReceivables, error: recurringError } = await receivablesQuery;
       if (recurringError) throw recurringError;
@@ -106,7 +107,7 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         .order('sale_date', { ascending: false });
 
       if (fromStr) salesQuery = salesQuery.gte('sale_date', fromStr);
-      if (toStr) salesQuery = salesQuery.lte('sale_date', toStr);
+      if (endDateStr) salesQuery = salesQuery.lt('sale_date', endDateStr);
 
       const { data: salesData, error: salesError } = await salesQuery;
       if (salesError) throw salesError;

@@ -49,6 +49,7 @@ const generateRecurringOccurrences = (
 export const useRealFinancialData = (dateRange: DateRange | undefined) => {
   return useQuery({
     queryKey: ['real-financial-data', dateRange],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       const startDate = dateRange?.from ? new Date(dateRange.from) : null;
       const endDate = dateRange?.to ? new Date(dateRange.to) : null;

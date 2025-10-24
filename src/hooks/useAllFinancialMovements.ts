@@ -21,6 +21,7 @@ export interface FinancialMovement {
 export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
   return useQuery({
     queryKey: ['all-financial-movements', dateRange],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       console.log('🔍 Buscando todos os movimentos financeiros...');
 

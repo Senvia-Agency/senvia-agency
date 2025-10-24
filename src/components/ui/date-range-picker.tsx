@@ -86,17 +86,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
   const handlePresetClick = (preset: DatePreset) => {
     setSelectedRange(preset.value);
     setSelectedPreset(preset.label);
-    // Não chama onChange aqui - apenas ao clicar em "Atualizar"
-  };
-
-  const handleApply = () => {
-    onChange?.(selectedRange);
-    setIsOpen(false);
-  };
-
-  const handleCancel = () => {
-    setSelectedRange(value);
-    setSelectedPreset(null);
+    onChange?.(preset.value);
     setIsOpen(false);
   };
 
@@ -180,32 +170,18 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
               mode="range"
               defaultMonth={selectedRange?.from}
               selected={selectedRange}
-              onSelect={setSelectedRange}
+              onSelect={(nextRange) => {
+                setSelectedRange(nextRange);
+                if (nextRange?.from && nextRange?.to) {
+                  onChange?.(nextRange);
+                  setIsOpen(false);
+                  setSelectedPreset("Personalizado");
+                }
+              }}
               numberOfMonths={1}
               locale={pt}
               className="pointer-events-auto"
             />
-            
-            {/* Action buttons */}
-            <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-700">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleCancel}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleApply}
-                className="bg-blue-600 hover:bg-blue-500 text-white"
-              >
-                Atualizar
-              </Button>
-            </div>
           </div>
         </div>
       </PopoverContent>

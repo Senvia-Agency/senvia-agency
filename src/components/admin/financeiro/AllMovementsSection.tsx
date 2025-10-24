@@ -29,7 +29,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
   
-  const { data: movements, isLoading } = useAllFinancialMovements(dateRange);
+  const { data: movements, isLoading, isFetching } = useAllFinancialMovements(dateRange);
 
   // Debounce do search
   const handleSearchChange = useMemo(
@@ -58,7 +58,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
   }, [filteredMovements, currentPage, itemsPerPage]);
 
 
-  if (isLoading) {
+  if (isLoading && !movements) {
     return (
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
@@ -75,7 +75,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
 
   return (
     <>
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className={`bg-gray-800 border-gray-700 transition-opacity duration-200 ${isFetching && !isLoading ? 'opacity-60' : 'opacity-100'}`}>
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex flex-col">

@@ -78,7 +78,14 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <CardTitle className="text-white">Registro de Movimentações</CardTitle>
+            <div className="flex flex-col">
+              <CardTitle className="text-white">Registro de Movimentações</CardTitle>
+              {dateRange?.from && dateRange?.to && (
+                <span className="text-sm text-muted-foreground">
+                  Período: {format(dateRange.from, 'dd/MM/yyyy', { locale: ptBR })} — {format(dateRange.to, 'dd/MM/yyyy', { locale: ptBR })}
+                </span>
+              )}
+            </div>
             <Button
               onClick={() => setModalOpen(true)}
               variant="default"
@@ -109,10 +116,15 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
 
           {/* Total encontrado */}
           {filteredMovements.length > 0 && (
-            <div className="text-sm text-muted-foreground mb-2">
-              {filteredMovements.length} movimento{filteredMovements.length !== 1 ? 's' : ''} encontrado{filteredMovements.length !== 1 ? 's' : ''}
-              {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-            </div>
+            <>
+              <div className="text-sm text-muted-foreground mb-1">
+                {filteredMovements.length} movimento{filteredMovements.length !== 1 ? 's' : ''} encontrado{filteredMovements.length !== 1 ? 's' : ''}
+                {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+              </div>
+              <div className="text-xs text-muted-foreground mb-2">
+                Inclui despesas recorrentes do período. Se já houver lançamento manual no mês, evitamos duplicar.
+              </div>
+            </>
           )}
 
           {!filteredMovements || filteredMovements.length === 0 ? (

@@ -262,6 +262,7 @@ export type Database = {
           access_token: string
           calendar_id: string | null
           created_at: string
+          email: string | null
           id: string
           last_synced_at: string | null
           provider: string
@@ -270,12 +271,13 @@ export type Database = {
           sync_enabled: boolean | null
           token_expires_at: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           access_token: string
           calendar_id?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           last_synced_at?: string | null
           provider?: string
@@ -284,12 +286,13 @@ export type Database = {
           sync_enabled?: boolean | null
           token_expires_at: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           access_token?: string
           calendar_id?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           last_synced_at?: string | null
           provider?: string
@@ -298,7 +301,7 @@ export type Database = {
           sync_enabled?: boolean | null
           token_expires_at?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }

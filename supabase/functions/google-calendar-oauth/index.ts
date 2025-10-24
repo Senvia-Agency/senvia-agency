@@ -12,6 +12,13 @@ serve(async (req) => {
   }
 
   try {
+    // Service role client for bypassing RLS
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Regular client for auth (when available)
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -22,15 +29,11 @@ serve(async (req) => {
       }
     );
 
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const { code, email, action } = await req.json();
 
-    if (!user) {
-      throw new Error('Unauthorized');
+    if (!email && action === 'connect') {
+      throw new Error('Email is required');
     }
-
-    const { code, action } = await req.json();
 
     if (action === 'connect') {
       // Exchange authorization code for tokens
@@ -59,16 +62,19 @@ serve(async (req) => {
       // Calculate token expiration
       const expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
 
-      // Save tokens to database
-      const { error: dbError } = await supabaseClient
+      // Save tokens to database using service role (bypass RLS)
+      const { error: dbError } = await supabaseAdmin
         .from('customer_calendar_integrations')
         .upsert({
-          user_id: user.id,
+          user_id: null, // No user_id for anonymous connections
+          email: email,
           provider: 'google',
           access_token: tokens.access_token,
           refresh_token: tokens.refresh_token,
           token_expires_at: expiresAt.toISOString(),
           scopes: tokens.scope.split(' '),
+        }, {
+          onConflict: 'email,provider'
         });
 
       if (dbError) {
@@ -83,11 +89,15 @@ serve(async (req) => {
     }
 
     if (action === 'refresh') {
+      if (!email) {
+        throw new Error('Email is required for refresh');
+      }
+
       // Get current integration
-      const { data: integration, error: fetchError } = await supabaseClient
+      const { data: integration, error: fetchError } = await supabaseAdmin
         .from('customer_calendar_integrations')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('email', email)
         .eq('provider', 'google')
         .single();
 
@@ -116,15 +126,15 @@ serve(async (req) => {
       const newTokens = await refreshResponse.json();
       const expiresAt = new Date(Date.now() + newTokens.expires_in * 1000);
 
-      // Update tokens
-      const { error: updateError } = await supabaseClient
+      // Update tokens using service role
+      const { error: updateError } = await supabaseAdmin
         .from('customer_calendar_integrations')
         .update({
           access_token: newTokens.access_token,
           token_expires_at: expiresAt.toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id)
+        .eq('email', email)
         .eq('provider', 'google');
 
       if (updateError) {

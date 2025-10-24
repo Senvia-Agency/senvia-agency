@@ -19,7 +19,7 @@ interface UseGoogleCalendar {
   isLoading: boolean;
   lastSync: Date | null;
   events: CalendarEvent[];
-  connectCalendar: () => void;
+  connectCalendar: (email: string) => void;
   disconnectCalendar: () => Promise<void>;
   syncNow: () => Promise<void>;
   error: string | null;
@@ -71,11 +71,20 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
     }
   };
 
-  const connectCalendar = () => {
+  const connectCalendar = (email: string) => {
     if (!clientId) {
       toast({
         title: "Erro",
         description: "Configuração do Google não carregada",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!email) {
+      toast({
+        title: "Erro",
+        description: "Email é obrigatório",
         variant: "destructive",
       });
       return;
@@ -90,7 +99,8 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
       `response_type=code&` +
       `scope=${encodeURIComponent(scope)}&` +
       `access_type=offline&` +
-      `prompt=consent`;
+      `prompt=consent&` +
+      `state=${encodeURIComponent(email)}`;
 
     window.location.href = authUrl;
   };

@@ -52,17 +52,8 @@ serve(async (req) => {
     if (user_id) {
       query = query.eq('user_id', user_id);
     } else if (email) {
-      // Buscar user_id pelo email
-      const { data: profile } = await supabaseClient
-        .from('profiles')
-        .select('user_id')
-        .eq('email', email)
-        .single();
-      
-      if (!profile) {
-        throw new Error(`User not found with email: ${email}`);
-      }
-      query = query.eq('user_id', profile.user_id);
+      // Buscar diretamente pelo email na tabela
+      query = query.eq('email', email);
     }
 
     const { data: integration, error: fetchError } = await query.single();
@@ -72,7 +63,7 @@ serve(async (req) => {
       throw new Error('Calendar not connected for this user');
     }
 
-    console.log(`Found integration for user: ${integration.user_id}`);
+    console.log(`Found integration for user_id: ${integration.user_id}, email: ${integration.email}`);
 
     // Check if token needs refresh
     const tokenExpiresAt = new Date(integration.token_expires_at);
@@ -106,15 +97,22 @@ serve(async (req) => {
       accessToken = newTokens.access_token;
       const expiresAt = new Date(Date.now() + newTokens.expires_in * 1000);
 
-      // Update tokens in database
-      await supabaseClient
+      // Update tokens in database (works with both user_id and email)
+      const updateQuery = supabaseClient
         .from('customer_calendar_integrations')
         .update({
           access_token: accessToken,
           token_expires_at: expiresAt.toISOString(),
         })
-        .eq('user_id', integration.user_id)
         .eq('provider', 'google');
+
+      if (integration.user_id) {
+        updateQuery.eq('user_id', integration.user_id);
+      } else if (integration.email) {
+        updateQuery.eq('email', integration.email);
+      }
+
+      await updateQuery;
 
       console.log('Token refreshed successfully');
     }
@@ -147,14 +145,21 @@ serve(async (req) => {
 
     const calendarData = await calendarResponse.json();
 
-    // Update last sync time
-    await supabaseClient
+    // Update last sync time (works with both user_id and email)
+    const syncUpdateQuery = supabaseClient
       .from('customer_calendar_integrations')
       .update({
         last_synced_at: new Date().toISOString(),
       })
-      .eq('user_id', integration.user_id)
       .eq('provider', 'google');
+
+    if (integration.user_id) {
+      syncUpdateQuery.eq('user_id', integration.user_id);
+    } else if (integration.email) {
+      syncUpdateQuery.eq('email', integration.email);
+    }
+
+    await syncUpdateQuery;
 
     // Transform events to our format
     const events = calendarData.items?.map((event: any) => ({
@@ -171,18 +176,24 @@ serve(async (req) => {
 
     console.log(`Successfully fetched ${events.length} events`);
 
-    // Get user email from profiles
-    const { data: userProfile } = await supabaseClient
-      .from('profiles')
-      .select('email')
-      .eq('user_id', integration.user_id)
-      .single();
+    // Get user email (from integration or profiles)
+    let userEmail = integration.email || email;
+    
+    if (!userEmail && integration.user_id) {
+      const { data: userProfile } = await supabaseClient
+        .from('profiles')
+        .select('email')
+        .eq('user_id', integration.user_id)
+        .single();
+      
+      userEmail = userProfile?.email;
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
         user_id: integration.user_id,
-        email: userProfile?.email || email,
+        email: userEmail,
         events,
         count: events.length,
         synced_at: new Date().toISOString(),

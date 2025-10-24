@@ -16,7 +16,7 @@ import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
 import UnifiedMovementModal from "./UnifiedMovementModal";
 import UnifiedReceivablesTable from "./UnifiedReceivablesTable";
-import RecurringRevenuesTable from "./RecurringRevenuesTable";
+import RecurringRevenuesTableGrouped from "./RecurringRevenuesTableGrouped";
 import RecurringExpensesTable from "./RecurringExpensesTable";
 import { useUnifiedReceivables, filterReceivablesByStatus } from "@/hooks/useUnifiedReceivables";
 import { useRecurringServices, filterRecurringServicesByType, RecurringService } from "@/hooks/useRecurringServices";
@@ -269,7 +269,7 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
                     : "Nenhuma receita mensal recorrente ativa no momento."}
                 </div>
               ) : (
-                <RecurringRevenuesTable revenues={filteredRecurringServices} />
+                <RecurringRevenuesTableGrouped revenues={filteredRecurringServices} />
               )}
             </div>
           ) : typeFilter === 'monthly_expenses' ? (

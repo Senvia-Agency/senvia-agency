@@ -5,27 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Sale } from "./types";
 import { useCreateActivity } from "@/hooks/useActivityHistory";
 
-// Função auxiliar para calcular próxima data de cobrança
-const calculateNextBillingDate = (startDate: string, billingDay: number): string => {
-  const start = new Date(startDate);
-  const now = new Date();
-  
-  // Se a data de início é no futuro, retorna ela
-  if (start > now) {
-    return startDate;
-  }
-  
-  // Calcular próximo mês de cobrança
-  const nextBilling = new Date(now.getFullYear(), now.getMonth(), billingDay);
-  
-  // Se o dia já passou neste mês, vai para o próximo
-  if (nextBilling <= now) {
-    nextBilling.setMonth(nextBilling.getMonth() + 1);
-  }
-  
-  return nextBilling.toISOString().split('T')[0];
-};
-
 export const useCreateSale = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -50,89 +29,28 @@ export const useCreateSale = () => {
       return data;
     },
     onSuccess: async (data) => {
+      // Invalidar queries relevantes
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-stats'] });
       
-      // Se é recorrente e tem customer_id, criar o serviço recorrente
-      if (data.is_recurring && data.customer_id && data.recurring_billing_day && data.recurring_start_date) {
-        try {
-          console.log('Criando serviço recorrente para venda:', data.id);
-          
-          const nextBillingDate = calculateNextBillingDate(
-            data.recurring_start_date, 
-            data.recurring_billing_day
-          );
-          
-          const { data: recurringService, error: recurringError } = await supabase
-            .from('recurring_services')
-            .insert([{
-              recurrence_type: 'receita',
-              customer_id: data.customer_id,
-              sale_id: data.id,
-              service_name: data.service_name,
-              service_description: data.service_description,
-              amount: data.total_value,
-              billing_day: data.recurring_billing_day,
-              start_date: data.recurring_start_date,
-              next_billing_date: nextBillingDate,
-              status: 'active'
-            }])
-            .select()
-            .single();
-          
-          if (recurringError) {
-            console.error('Erro ao criar serviço recorrente:', recurringError);
-            throw recurringError;
-          }
-          
-          console.log('Serviço recorrente criado:', recurringService);
-          
-          // Atualizar a venda para status 'recurring' (não aparece em contas a receber)
-          await supabase
-            .from('sales')
-            .update({ 
-              payment_status: 'recurring'
-            })
-            .eq('id', data.id);
-          
-          // As cobranças serão criadas automaticamente pela edge function
-          // quando a data de início chegar (generate-recurring-bills)
-          
-          queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
-          queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });
-          queryClient.invalidateQueries({ queryKey: ['recurring-stats'] });
-          
-          // Criar atividade sobre o serviço recorrente
-          createActivity.mutate({
-            entity_type: 'customer',
-            entity_id: data.customer_id,
-            activity_type: 'status_change',
-            title: 'Serviço recorrente iniciado',
-            description: `Serviço recorrente "${data.service_name}" iniciado - €${Number(data.total_value).toFixed(2)}/mês - Cobrança todo dia ${data.recurring_billing_day}`,
-            contact_method: 'sistema'
-          });
-        } catch (error) {
-          console.error('Erro ao configurar recorrência:', error);
-          toast({
-            title: "Aviso",
-            description: "Venda criada mas houve erro ao configurar recorrência.",
-            variant: "destructive"
-          });
-        }
-      }
-      
-      // Criar atividade no histórico do cliente se a venda tiver customer_id
-      if (data.customer_id && !data.is_recurring) {
+      // Criar atividade no histórico do cliente
+      if (data.customer_id) {
         createActivity.mutate({
           entity_type: 'customer',
           entity_id: data.customer_id,
-          activity_type: 'payment_update',
-          title: 'Nova venda registrada',
-          description: `Venda #${data.sale_number} criada - ${data.service_name} - €${Number(data.total_value).toFixed(2)}`,
+          activity_type: data.is_recurring ? 'status_change' : 'payment_update',
+          title: data.is_recurring ? 'Serviço recorrente iniciado' : 'Nova venda registrada',
+          description: data.is_recurring 
+            ? `Serviço recorrente "${data.service_name}" iniciado - €${Number(data.total_value).toFixed(2)}/mês - Cobrança todo dia ${data.recurring_billing_day}`
+            : `Venda #${data.sale_number} criada - ${data.service_name} - €${Number(data.total_value).toFixed(2)}`,
           contact_method: 'sistema'
         });
       }
       
+      // Toast de sucesso
       toast({
         title: "Venda criada",
         description: data.is_recurring 

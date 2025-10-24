@@ -59,7 +59,27 @@ export const GoogleCalendarConnect = () => {
           body: { code, email: emailToUse, action: 'connect' }
         });
 
-        if (response.error) throw response.error;
+        if (response.error) {
+          throw new Error(response.error.message || 'Failed to connect calendar');
+        }
+
+        const data = response.data as { success?: boolean; error?: string; details?: string; email?: string };
+        
+        if (!data.success || data.error) {
+          throw new Error(data.details || data.error || 'Failed to connect calendar');
+        }
+
+        // Verify the connection was saved in the database
+        const { data: integrationCheck } = await supabase
+          .from('customer_calendar_integrations')
+          .select('id')
+          .eq('email', emailToUse)
+          .eq('provider', 'google')
+          .maybeSingle();
+
+        if (!integrationCheck) {
+          throw new Error('Connection was not saved properly. Please try again.');
+        }
 
         toast({
           title: "Conectado!",

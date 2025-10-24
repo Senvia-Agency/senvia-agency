@@ -53,14 +53,23 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
   const checkConnection = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const savedEmail = localStorage.getItem('calendar_email');
+      
+      if (!user && !savedEmail) return;
 
-      const { data, error } = await supabase
+      // Check by user_id or email
+      let query = supabase
         .from('customer_calendar_integrations')
         .select('*')
-        .eq('user_id', user.id)
-        .eq('provider', 'google')
-        .single();
+        .eq('provider', 'google');
+
+      if (user?.id) {
+        query = query.eq('user_id', user.id);
+      } else if (savedEmail) {
+        query = query.eq('email', savedEmail);
+      }
+
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         setIsConnected(true);
@@ -111,13 +120,23 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const savedEmail = localStorage.getItem('calendar_email');
 
-      const { error } = await supabase
+      if (!user && !savedEmail) throw new Error('No connection found');
+
+      // Delete by user_id or email
+      let query = supabase
         .from('customer_calendar_integrations')
         .delete()
-        .eq('user_id', user.id)
         .eq('provider', 'google');
+
+      if (user?.id) {
+        query = query.eq('user_id', user.id);
+      } else if (savedEmail) {
+        query = query.eq('email', savedEmail);
+      }
+
+      const { error } = await query;
 
       if (error) throw error;
 

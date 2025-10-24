@@ -54,7 +54,22 @@ serve(async (req) => {
       if (!tokenResponse.ok) {
         const error = await tokenResponse.text();
         console.error('Token exchange failed:', error);
-        throw new Error('Failed to exchange authorization code');
+        console.error('Request details:', {
+          code: code?.substring(0, 10) + '...',
+          redirect_uri: `${req.headers.get('origin')}/calendar`,
+          client_id: Deno.env.get('GOOGLE_CLIENT_ID')?.substring(0, 20) + '...'
+        });
+        return new Response(
+          JSON.stringify({ 
+            error: 'Failed to exchange authorization code', 
+            details: 'Invalid or expired authorization code. Please try connecting again.',
+            google_error: error 
+          }),
+          { 
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
       }
 
       const tokens = await tokenResponse.json();
@@ -79,11 +94,26 @@ serve(async (req) => {
 
       if (dbError) {
         console.error('Database error:', dbError);
-        throw new Error('Failed to save integration');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Failed to save integration', 
+            details: dbError.message 
+          }),
+          { 
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
       }
 
+      console.log('Calendar connected successfully for email:', email);
+      
       return new Response(
-        JSON.stringify({ success: true, message: 'Calendar connected successfully' }),
+        JSON.stringify({ 
+          success: true, 
+          message: 'Calendar connected successfully',
+          email: email
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -152,7 +182,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message || 'Unknown error occurred',
+        details: 'Please try again or contact support if the issue persists'
+      }),
       { 
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

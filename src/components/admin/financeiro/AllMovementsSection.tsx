@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
 import UnifiedMovementModal from "./UnifiedMovementModal";
+import UnifiedReceivablesTable from "./UnifiedReceivablesTable";
+import { useUnifiedReceivables, filterReceivablesByStatus } from "@/hooks/useUnifiedReceivables";
 import { debounce } from "@/utils/performance";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -22,7 +24,7 @@ import { ptBR } from "date-fns/locale";
 interface AllMovementsSectionProps {
   dateRange: DateRange | null;
   setDateRange?: (range: DateRange | undefined) => void;
-  typeFilter?: 'all' | 'receita' | 'despesa';
+  typeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue';
   onClearFilter?: () => void;
 }
 
@@ -34,6 +36,7 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
   const itemsPerPage = 50;
   
   const { data: movements, isLoading, isFetching } = useAllFinancialMovements(dateRange);
+  const { data: allReceivables, refetch: refetchReceivables } = useUnifiedReceivables();
 
   // Debounce do search
   const handleSearchChange = useMemo(
@@ -43,6 +46,14 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
     }, 300),
     []
   );
+
+  // Filtrar receivables
+  const filteredReceivables = useMemo(() => {
+    if (!allReceivables || (typeFilter !== 'receivables' && typeFilter !== 'overdue')) {
+      return [];
+    }
+    return filterReceivablesByStatus(allReceivables, typeFilter === 'overdue' ? 'overdue' : 'all');
+  }, [allReceivables, typeFilter]);
 
   // Filtrar movimentos com base na pesquisa e tipo (usando debounced)
   const filteredMovements = useMemo(() => {
@@ -108,17 +119,65 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-white">Registro de Movimentações</CardTitle>
-              {typeFilter !== 'all' && (
+              <CardTitle className="text-white">
+                {typeFilter === 'receivables' && "Contas a Receber"}
+                {typeFilter === 'overdue' && "Contas em Atraso"}
+                {typeFilter !== 'receivables' && typeFilter !== 'overdue' && "Registro de Movimentações"}
+              </CardTitle>
+              {typeFilter === 'receita' && (
                 <Badge 
                   variant="secondary" 
-                  className={`${
-                    typeFilter === 'receita' 
-                      ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                      : 'bg-red-500/20 text-red-400 border-red-500/30'
-                  }`}
+                  className="bg-green-500/20 text-green-400 border-green-500/30"
                 >
-                  Filtro: {typeFilter === 'receita' ? 'Receitas' : 'Despesas'}
+                  Filtro: Receitas
+                  {onClearFilter && (
+                    <button
+                      onClick={onClearFilter}
+                      className="ml-2 hover:bg-background/20 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </Badge>
+              )}
+              {typeFilter === 'despesa' && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-red-500/20 text-red-400 border-red-500/30"
+                >
+                  Filtro: Despesas
+                  {onClearFilter && (
+                    <button
+                      onClick={onClearFilter}
+                      className="ml-2 hover:bg-background/20 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </Badge>
+              )}
+              {typeFilter === 'receivables' && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-blue-500/20 text-blue-400 border-blue-500/30"
+                >
+                  Filtro: Contas a Receber
+                  {onClearFilter && (
+                    <button
+                      onClick={onClearFilter}
+                      className="ml-2 hover:bg-background/20 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </Badge>
+              )}
+              {typeFilter === 'overdue' && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-red-500/20 text-red-400 border-red-500/30"
+                >
+                  Filtro: Contas em Atraso
                   {onClearFilter && (
                     <button
                       onClick={onClearFilter}
@@ -142,124 +201,133 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
           </div>
         </CardHeader>
         <CardContent>
-          {/* Filtro de Pesquisa */}
-          <div className="flex gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Buscar por descrição ou cliente..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  handleSearchChange(e.target.value);
-                }}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          {!filteredMovements || filteredMovements.length === 0 ? (
-            <div className="border border-border rounded-lg p-12 text-center">
-              <p className="text-muted-foreground text-lg">
-                {movements && movements.length > 0 && debouncedSearch
-                  ? "Nenhum movimento encontrado com esse filtro."
-                  : "Nenhum movimento registrado no período selecionado."}
-              </p>
-            </div>
+          {(typeFilter === 'receivables' || typeFilter === 'overdue') ? (
+            <UnifiedReceivablesTable 
+              receivables={filteredReceivables} 
+              onRefresh={refetchReceivables}
+            />
           ) : (
             <>
-              <div className="border border-border rounded-lg overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-muted">
-                    <TableRow>
-                      <TableHead className="text-foreground font-semibold">Nome</TableHead>
-                      <TableHead className="text-foreground font-semibold">Data do Movimento</TableHead>
-                      <TableHead className="text-right text-foreground font-semibold">Valor</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedMovements.map((movement) => (
-                      <TableRow 
-                        key={movement.id}
-                        className="hover:bg-muted/50"
-                      >
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-foreground">{movement.description}</span>
-                              {movement.source === 'casual' && (
-                                <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">
-                                  Manual
-                                </span>
-                              )}
-                              {movement.source === 'sale' && (
-                                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-400">
-                                  Venda
-                                </span>
-                              )}
-                              {movement.source === 'recurring' && movement.type === 'despesa' && (
-                                <span className="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">
-                                  Recorrente
-                                </span>
-                              )}
-                              {movement.source === 'recurring' && movement.type === 'receita' && (
-                                <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400">
-                                  Recebível
-                                </span>
-                              )}
-                            </div>
-                            {movement.customer_name && (
-                              <span className="text-xs text-muted-foreground">
-                                {movement.customer_name}
-                              </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        
-                        <TableCell>
-                          <span className="text-muted-foreground">
-                            {format(new Date(movement.movement_date), 'dd/MM/yyyy', { locale: ptBR })}
-                          </span>
-                        </TableCell>
-                        
-                        <TableCell className="text-right">
-                          <span className={`font-semibold text-lg ${
-                            movement.type === 'receita' 
-                              ? 'text-green-500' 
-                              : 'text-red-500'
-                          }`}>
-                            {movement.type === 'receita' ? '+' : '-'}€{movement.amount.toFixed(2)}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              {/* Filtro de Pesquisa */}
+              <div className="flex gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="Buscar por descrição ou cliente..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      handleSearchChange(e.target.value);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
               </div>
 
-              {/* Controles de paginação */}
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-700">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Página {currentPage} de {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+              {!filteredMovements || filteredMovements.length === 0 ? (
+                <div className="border border-border rounded-lg p-12 text-center">
+                  <p className="text-muted-foreground text-lg">
+                    {movements && movements.length > 0 && debouncedSearch
+                      ? "Nenhum movimento encontrado com esse filtro."
+                      : "Nenhum movimento registrado no período selecionado."}
+                  </p>
                 </div>
+              ) : (
+                <>
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader className="bg-muted">
+                        <TableRow>
+                          <TableHead className="text-foreground font-semibold">Nome</TableHead>
+                          <TableHead className="text-foreground font-semibold">Data do Movimento</TableHead>
+                          <TableHead className="text-right text-foreground font-semibold">Valor</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {paginatedMovements.map((movement) => (
+                          <TableRow 
+                            key={movement.id}
+                            className="hover:bg-muted/50"
+                          >
+                            <TableCell className="font-medium">
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-foreground">{movement.description}</span>
+                                  {movement.source === 'casual' && (
+                                    <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                                      Manual
+                                    </span>
+                                  )}
+                                  {movement.source === 'sale' && (
+                                    <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-400">
+                                      Venda
+                                    </span>
+                                  )}
+                                  {movement.source === 'recurring' && movement.type === 'despesa' && (
+                                    <span className="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                                      Recorrente
+                                    </span>
+                                  )}
+                                  {movement.source === 'recurring' && movement.type === 'receita' && (
+                                    <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400">
+                                      Recebível
+                                    </span>
+                                  )}
+                                </div>
+                                {movement.customer_name && (
+                                  <span className="text-xs text-muted-foreground">
+                                    {movement.customer_name}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            
+                            <TableCell>
+                              <span className="text-muted-foreground">
+                                {format(new Date(movement.movement_date), 'dd/MM/yyyy', { locale: ptBR })}
+                              </span>
+                            </TableCell>
+                            
+                            <TableCell className="text-right">
+                              <span className={`font-semibold text-lg ${
+                                movement.type === 'receita' 
+                                  ? 'text-green-500' 
+                                  : 'text-red-500'
+                              }`}>
+                                {movement.type === 'receita' ? '+' : '-'}€{movement.amount.toFixed(2)}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Controles de paginação */}
+                  {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-700">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        Página {currentPage} de {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

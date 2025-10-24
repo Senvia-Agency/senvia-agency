@@ -1,33 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingDown, TrendingUp, Percent, AlertTriangle, Repeat, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface FinancialAllKPICardsProps {
-  // Dados do período
   totalRevenue: number;
   totalExpenses: number;
   netProfit: number;
   profitMargin: number;
   periodDescription: string;
-  
-  // Dados de recebíveis
   totalReceivable: number;
   totalOverdue: number;
-  
-  // Dados de recorrência
   monthlyRevenue: number;
   monthlyExpenses: number;
   monthlyBalance: number;
   activeRevenueServices: number;
   activeExpenseServices: number;
-  
-  // Dados para o novo KPI
   totalPaidAmount: number;
   totalInvoicedAmount: number;
-
-  // Filtro de movimentações
-  activeFilter?: 'all' | 'receita' | 'despesa';
-  onFilterChange?: (filter: 'all' | 'receita' | 'despesa') => void;
+  activeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue';
+  onFilterChange?: (filter: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue') => void;
 }
 
 const FinancialAllKPICards = ({
@@ -49,10 +41,10 @@ const FinancialAllKPICards = ({
   onFilterChange,
 }: FinancialAllKPICardsProps) => {
   
-  const handleKPIClick = (type: 'receita' | 'despesa') => {
+  const handleKPIClick = (filter: 'receita' | 'despesa' | 'receivables' | 'overdue') => {
     if (!onFilterChange) return;
     // Toggle: se já está ativo, volta para 'all'
-    onFilterChange(activeFilter === type ? 'all' : type);
+    onFilterChange(activeFilter === filter ? 'all' : filter);
   };
   const receivingRate = totalInvoicedAmount > 0
     ? ((totalPaidAmount / totalInvoicedAmount) * 100)
@@ -168,45 +160,55 @@ const FinancialAllKPICards = ({
 
       {/* Linha 2: Métricas de Recebíveis e Recorrentes */}
 
-      {/* 6. Total a Receber */}
-      <Link to="/admin/contas-receber" className="block">
-        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-yellow-500" />
-              Total a Receber
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-500">
-              €{totalReceivable.toFixed(2)}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Pendentes + Em Atraso
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
+      {/* 6. Total a Receber - CLICÁVEL */}
+      <Card 
+        className={`bg-card border-border transition-all cursor-pointer ${
+          activeFilter === 'receivables' 
+            ? 'ring-2 ring-blue-500 shadow-lg shadow-blue-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-blue-500/50'
+        }`}
+        onClick={() => handleKPIClick('receivables')}
+      >
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <DollarSign className={`h-4 w-4 ${activeFilter === 'receivables' ? 'text-blue-400' : 'text-yellow-500'}`} />
+            Total a Receber
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-yellow-500">
+            €{totalReceivable.toFixed(2)}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Pendentes + Em Atraso
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* 7. Em Atraso */}
-      <Link to="/admin/contas-atraso" className="block">
-        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-              Em Atraso
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-500">
-              €{totalOverdue.toFixed(2)}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Contas Vencidas
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
+      {/* 7. Em Atraso - CLICÁVEL */}
+      <Card 
+        className={`bg-card border-border transition-all cursor-pointer ${
+          activeFilter === 'overdue' 
+            ? 'ring-2 ring-red-500 shadow-lg shadow-red-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-red-500/50'
+        }`}
+        onClick={() => handleKPIClick('overdue')}
+      >
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <AlertTriangle className={`h-4 w-4 ${activeFilter === 'overdue' ? 'text-red-400' : 'text-red-500'}`} />
+            Em Atraso
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-red-500">
+            €{totalOverdue.toFixed(2)}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Contas Vencidas
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 8. Receitas Mensais */}
       <Link to="/admin/receitas-mensais" className="block">

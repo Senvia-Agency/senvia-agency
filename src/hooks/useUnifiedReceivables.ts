@@ -317,32 +317,36 @@ export const useUnifiedReceivables = () => {
 
 export const useUnifiedReceivablesStats = (receivables: UnifiedReceivable[]) => {
   return useMemo(() => {
-    if (!receivables || receivables.length === 0) {
-      return {
-        totalPending: 0,
-        totalOverdue: 0,
-        pendingCount: 0,
-        overdueCount: 0,
-        averageTicket: 0
-      };
-    }
+    const totalPending = receivables
+      .filter(r => r.payment_status === 'pending' || r.payment_status === 'partial')
+      .reduce((sum, r) => sum + Number(r.remaining_amount || 0), 0);
 
-    const totalPending = receivables.reduce((sum, rec) => sum + rec.remaining_amount, 0);
     const totalOverdue = receivables
-      .filter(rec => rec.days_overdue > 0)
-      .reduce((sum, rec) => sum + rec.remaining_amount, 0);
-    
-    const pendingCount = receivables.length;
-    const overdueCount = receivables.filter(rec => rec.days_overdue > 0).length;
-    
-    const averageTicket = pendingCount > 0 ? totalPending / pendingCount : 0;
-    
+      .filter(r => r.days_overdue > 0)
+      .reduce((sum, r) => sum + Number(r.remaining_amount || 0), 0);
+
+    const pendingCount = receivables.filter(r => 
+      r.payment_status === 'pending' || r.payment_status === 'partial'
+    ).length;
+
+    const overdueCount = receivables.filter(r => r.days_overdue > 0).length;
+
     return {
       totalPending,
       totalOverdue,
       pendingCount,
       overdueCount,
-      averageTicket
+      averageTicket: pendingCount > 0 ? totalPending / pendingCount : 0,
     };
   }, [receivables]);
+};
+
+export const filterReceivablesByStatus = (
+  receivables: UnifiedReceivable[], 
+  status: 'all' | 'overdue'
+): UnifiedReceivable[] => {
+  if (status === 'overdue') {
+    return receivables.filter(rec => rec.days_overdue > 0);
+  }
+  return receivables;
 };

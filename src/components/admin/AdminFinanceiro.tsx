@@ -9,7 +9,7 @@ import FinancialAllKPICards from "./financeiro/FinancialAllKPICards";
 import AllMovementsSection from "./financeiro/AllMovementsSection";
 
 const AdminFinanceiro = () => {
-  const [movementTypeFilter, setMovementTypeFilter] = useState<'all' | 'receita' | 'despesa'>('all');
+  const [movementTypeFilter, setMovementTypeFilter] = useState<'all' | 'receita' | 'despesa' | 'receivables' | 'overdue'>('all');
   
   const { dateRange, setDateRange, getPeriodDescription } = useDateRangeFilter({
     defaultDays: 30,

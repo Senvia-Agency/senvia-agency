@@ -161,7 +161,6 @@ export const useCreateSaleForm = (onClose: () => void) => {
         total_value: totalValue,
         paid_amount: paidAmount,
         payment_method: formData.payment_method || undefined,
-        sale_status: 'pending' as const,
         payment_status: paymentStatus,
         notes: formData.notes || undefined,
         sale_date: new Date().toISOString(),

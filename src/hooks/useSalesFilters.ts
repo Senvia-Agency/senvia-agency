@@ -18,7 +18,7 @@ export const useSalesFilters = (
         sale.customers?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         sale.customers?.email?.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesStatus = statusFilter === "all" || sale.sale_status === statusFilter;
+      const matchesStatus = statusFilter === "all" || sale.payment_status === statusFilter;
       const matchesPayment = paymentFilter === "all" || sale.payment_status === paymentFilter;
       
       return matchesSearch && matchesStatus && matchesPayment;

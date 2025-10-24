@@ -5,7 +5,7 @@ import { MoreHorizontal, Eye, Edit, Trash2, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sale } from "@/hooks/sales/types";
-import { getSaleStatusLabel, getSaleStatusColorWithOpacity } from "@/utils/saleStatusUtils";
+import { getPaymentStatusLabel, getPaymentStatusColorWithOpacity } from "@/utils/saleStatusUtils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,8 +60,8 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
 
         {/* Status - Centralizado para combinar com o cabeçalho */}
         <div className="flex-shrink-0 w-24 flex justify-center">
-          <Badge variant="outline" className={`${getSaleStatusColorWithOpacity(sale.sale_status)} text-xs`}>
-            {getSaleStatusLabel(sale.sale_status)}
+          <Badge variant="outline" className={`${getPaymentStatusColorWithOpacity(sale.payment_status)} text-xs`}>
+            {getPaymentStatusLabel(sale.payment_status)}
           </Badge>
         </div>
 
@@ -101,7 +101,7 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
                   Editar
                 </DropdownMenuItem>
               )}
-              {onDelete && sale.sale_status !== 'cancelled' && (
+              {onDelete && sale.payment_status !== 'cancelled' && (
                 <DropdownMenuItem 
                   onClick={() => onDelete(sale)}
                   className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer"

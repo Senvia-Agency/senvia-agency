@@ -16,7 +16,6 @@ export interface AccountReceivable {
   due_date?: string; // Data de vencimento/cobrança
   sale_date: string;
   payment_status: string;
-  sale_status: string;
   service_name: string;
   days_overdue: number;
 }
@@ -37,7 +36,7 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
         `)
         .eq('is_recurring', false) // Excluir vendas recorrentes (não são contas a receber)
         .in('payment_status', ['pending', 'partial', 'overdue'])
-        .neq('sale_status', 'cancelled'); // Filtrar projetos cancelados
+        .neq('payment_status', 'cancelled'); // Filtrar projetos cancelados
 
       // Aplicar filtro de data APENAS se dateRange > 0
       if (dateRange > 0) {
@@ -77,7 +76,6 @@ export const useAccountsReceivable = (dateRange: number = 30) => {
           due_date: dueDate,
           sale_date: sale.sale_date,
           payment_status: sale.payment_status,
-          sale_status: sale.sale_status,
           service_name: sale.service_name,
           days_overdue: daysOverdue
         };

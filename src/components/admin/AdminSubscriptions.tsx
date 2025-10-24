@@ -116,7 +116,6 @@ type UnifiedSubscription = {
     stripe_payment_intent_id?: string;
     created_at: string;
   }>;
-  sale_status?: string;
   payment_status?: string;
   assigned_to?: string;
   notes?: string;
@@ -282,7 +281,7 @@ const AdminSubscriptions = () => {
       let status = 'active';
       const daysSinceNextBilling = Math.floor((today.getTime() - nextBilling.getTime()) / (1000 * 60 * 60 * 24));
       
-      if (service.payment_status === 'cancelled' || service.sale_status === 'cancelled') {
+      if (service.payment_status === 'cancelled') {
         status = 'cancelled';
       } else if (service.payment_status === 'overdue' || daysSinceNextBilling > 7) {
         status = 'overdue';
@@ -313,7 +312,6 @@ const AdminSubscriptions = () => {
         is_overdue: status === 'overdue',
         customers: service.customers,
         sale_payments: service.sale_payments,
-        sale_status: service.sale_status,
         payment_status: service.payment_status,
         assigned_to: service.assigned_to,
         notes: service.notes
@@ -829,12 +827,6 @@ const AdminSubscriptions = () => {
                                     {selectedSubscription.subscription_type === 'recurring_service' && (
                                       <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                          <div>
-                                            <label className="text-sm font-medium text-gray-300">Status da Venda</label>
-                                            <p className="text-sm text-gray-400 capitalize">
-                                              {selectedSubscription.sale_status || 'N/A'}
-                                            </p>
-                                          </div>
                                           <div>
                                             <label className="text-sm font-medium text-gray-300">Status do Pagamento</label>
                                             <p className="text-sm text-gray-400 capitalize">

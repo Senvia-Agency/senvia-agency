@@ -58,8 +58,7 @@ export const useNotifications = () => {
           sale_number: "VD2024-TEST",
           customer_name: "Cliente Teste",
           service_name: "Landing Page Premium",
-          total_value: 1299.99,
-          sale_status: "completed"
+          total_value: 1299.99
         },
         payment_received: {
           email: "cliente.teste@exemplo.com",

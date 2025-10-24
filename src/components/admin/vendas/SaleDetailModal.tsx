@@ -7,7 +7,7 @@ import { Edit, Calendar, DollarSign, User, Package } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-import { getSaleStatusLabel, getSaleStatusColor, getPaymentStatusLabel, getPaymentStatusColor, getServiceTypeLabel } from "@/utils/saleStatusUtils";
+import { getPaymentStatusLabel, getPaymentStatusColor, getServiceTypeLabel } from "@/utils/saleStatusUtils";
 import EditSaleModal from "./EditSaleModal";
 
 interface SaleDetailModalProps {
@@ -34,9 +34,6 @@ const SaleDetailModal = ({ sale, isOpen, onClose, onSaleUpdated }: SaleDetailMod
               Detalhes da Venda - {sale.sale_number}
             </DialogTitle>
             <div className="flex gap-2">
-              <Badge className={`${getSaleStatusColor(sale.sale_status)} text-white`}>
-                {getSaleStatusLabel(sale.sale_status)}
-              </Badge>
               <Badge className={`${getPaymentStatusColor(sale.payment_status)} text-white`}>
                 {getPaymentStatusLabel(sale.payment_status)}
               </Badge>

@@ -1390,7 +1390,6 @@ export type Database = {
           remaining_amount: number | null
           sale_date: string
           sale_number: string
-          sale_status: string
           service_description: string | null
           service_id: string | null
           service_name: string
@@ -1422,7 +1421,6 @@ export type Database = {
           remaining_amount?: number | null
           sale_date?: string
           sale_number: string
-          sale_status?: string
           service_description?: string | null
           service_id?: string | null
           service_name: string
@@ -1454,7 +1452,6 @@ export type Database = {
           remaining_amount?: number | null
           sale_date?: string
           sale_number?: string
-          sale_status?: string
           service_description?: string | null
           service_id?: string | null
           service_name?: string

@@ -35,7 +35,7 @@ export const useUnifiedReceivables = () => {
         `)
         .eq('is_recurring', false)
         .in('payment_status', ['pending', 'partial', 'overdue'])
-        .neq('sale_status', 'cancelled')
+        .neq('payment_status', 'cancelled')
         .order('sale_date', { ascending: false });
 
       if (salesError) {
@@ -89,7 +89,7 @@ export const useUnifiedReceivables = () => {
         `)
         .eq('is_recurring', true)
         .in('payment_status', ['recurring', 'pending'])
-        .neq('sale_status', 'cancelled')
+        .neq('payment_status', 'cancelled')
         .not('recurring_start_date', 'is', null)
         .lte('recurring_start_date', todayStr)
         .order('recurring_start_date', { ascending: false });

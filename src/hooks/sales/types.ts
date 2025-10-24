@@ -12,8 +12,7 @@ export interface Sale {
   total_value: number;
   paid_amount: number;
   remaining_amount: number;
-  sale_status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  payment_status: 'pending' | 'partial' | 'paid' | 'overdue';
+  payment_status: 'pending' | 'partial' | 'paid' | 'overdue' | 'cancelled' | 'recurring';
   payment_method?: string;
   due_date?: string;
   expected_delivery_date?: string;

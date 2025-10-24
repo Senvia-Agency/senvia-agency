@@ -264,8 +264,8 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         sales_module: {
           count: salesData?.length || 0,
           revenue: salesRevenue,
-          total_value: (salesData || []).filter(sale => sale.sale_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0), 0),
-          pending_amount: (salesData || []).filter(sale => sale.sale_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0) - Number(sale.paid_amount || 0), 0),
+          total_value: (salesData || []).filter(sale => sale.payment_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0), 0),
+          pending_amount: (salesData || []).filter(sale => sale.payment_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0) - Number(sale.paid_amount || 0), 0),
           sales: salesData || []
         },
         financial_movements: {

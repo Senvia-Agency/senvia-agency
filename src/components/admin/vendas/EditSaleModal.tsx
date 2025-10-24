@@ -27,7 +27,6 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
     service_description: '',
     total_value: '',
     paid_amount: '',
-    sale_status: '',
     payment_status: '',
     payment_method: '',
     expected_delivery_date: '',
@@ -43,7 +42,6 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
         service_description: sale.service_description || '',
         total_value: sale.total_value?.toString() || '',
         paid_amount: sale.paid_amount?.toString() || '',
-        sale_status: sale.sale_status || '',
         payment_status: sale.payment_status || '',
         payment_method: sale.payment_method || '',
         expected_delivery_date: sale.expected_delivery_date ? sale.expected_delivery_date.split('T')[0] : '',
@@ -65,7 +63,6 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
           service_description: formData.service_description,
           total_value: Number(formData.total_value),
           paid_amount: Number(formData.paid_amount),
-          sale_status: formData.sale_status as any,
           payment_status: formData.payment_status as any,
           payment_method: formData.payment_method,
           expected_delivery_date: formData.expected_delivery_date || undefined,
@@ -198,26 +195,7 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
               <h3 className="text-lg font-semibold">Status e Responsável</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="sale_status" className="text-white">Status da Venda</Label>
-                <Select
-                  value={formData.sale_status}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, sale_status: value }))}
-                >
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-700 border-gray-600">
-                    <SelectItem value="pending">Pendente</SelectItem>
-                    <SelectItem value="confirmed">Confirmada</SelectItem>
-                    <SelectItem value="in_progress">Em Andamento</SelectItem>
-                    <SelectItem value="completed">Concluída</SelectItem>
-                    <SelectItem value="cancelled">Cancelada</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="payment_status" className="text-white">Status do Pagamento</Label>
                 <Select
@@ -232,6 +210,8 @@ const EditSaleModal = ({ sale, isOpen, onClose, onSaleUpdated }: EditSaleModalPr
                     <SelectItem value="partial">Parcial</SelectItem>
                     <SelectItem value="paid">Pago</SelectItem>
                     <SelectItem value="overdue">Em Atraso</SelectItem>
+                    <SelectItem value="cancelled">Cancelada</SelectItem>
+                    <SelectItem value="recurring">Recorrente</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

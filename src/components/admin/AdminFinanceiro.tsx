@@ -1,10 +1,10 @@
 
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import { useRealFinancialData } from "@/hooks/useRealFinancialData";
+import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
+import { useRecurringStats } from "@/hooks/useRecurringServices";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import FinancialKPICards from "./financeiro/FinancialKPICards";
-import FinancialReceivablesKPIs from "./financeiro/FinancialReceivablesKPIs";
-import RecurringMonthlyKPIs from "./financeiro/RecurringMonthlyKPIs";
+import FinancialAllKPICards from "./financeiro/FinancialAllKPICards";
 import AllMovementsSection from "./financeiro/AllMovementsSection";
 
 const AdminFinanceiro = () => {
@@ -15,11 +15,23 @@ const AdminFinanceiro = () => {
 
   const selectedPeriod = getDaysInRange();
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(dateRange);
+  const { data: receivables } = useUnifiedReceivables();
+  const { data: recurringStats } = useRecurringStats();
 
   const totalRevenue = financialData?.total_revenue || 0;
   const totalExpenses = financialData?.total_expenses || 0;
   const netProfit = financialData?.net_profit || 0;
   const profitMargin = financialData?.profit_margin || 0;
+  const totalPaidAmount = financialData?.total_paid_amount || 0;
+
+  // Calcular totais de recebíveis
+  const totalReceivable = receivables
+    ?.filter(r => r.payment_status === 'pending' || r.payment_status === 'partial')
+    .reduce((sum, r) => sum + Number(r.remaining_amount || 0), 0) || 0;
+
+  const totalOverdue = receivables
+    ?.filter(r => r.days_overdue > 0)
+    .reduce((sum, r) => sum + Number(r.remaining_amount || 0), 0) || 0;
 
   if (isLoadingFinancial) {
     return (
@@ -50,26 +62,23 @@ const AdminFinanceiro = () => {
         </div>
       </div>
 
-      {/* KPIs Principais (afetados pelo período) */}
-      <FinancialKPICards
+      {/* KPIs Completos - Grid 5x2 */}
+      <FinancialAllKPICards
         totalRevenue={totalRevenue}
         totalExpenses={totalExpenses}
         netProfit={netProfit}
         profitMargin={profitMargin}
         selectedPeriod={selectedPeriod}
+        totalReceivable={totalReceivable}
+        totalOverdue={totalOverdue}
+        monthlyRevenue={recurringStats?.total_monthly_revenue || 0}
+        monthlyExpenses={recurringStats?.total_monthly_expenses || 0}
+        monthlyBalance={recurringStats?.net_monthly_balance || 0}
+        activeRevenueServices={recurringStats?.total_active_revenue_services || 0}
+        activeExpenseServices={recurringStats?.total_active_expense_services || 0}
+        totalPaidAmount={totalPaidAmount}
+        totalInvoicedAmount={totalRevenue}
       />
-
-      {/* Contas a Receber (SEM filtro de período) */}
-      <div className="space-y-3">
-        <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
-        <FinancialReceivablesKPIs />
-      </div>
-
-      {/* Recorrência Mensal (valores fixos) */}
-      <div className="space-y-3">
-        <h2 className="text-xl font-semibold text-white">Recorrência Mensal</h2>
-        <RecurringMonthlyKPIs />
-      </div>
 
       {/* Registro Completo de Movimentações */}
       <div className="space-y-3">

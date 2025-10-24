@@ -217,6 +217,18 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         });
       });
       
+      // Calcular valor efetivamente recebido (pago) no período
+      const totalPaid = 
+        (customerTransactions || [])
+          .filter(t => t.status === 'completed')
+          .reduce((sum, t) => sum + Number(t.amount), 0) +
+        (legacyPayments || [])
+          .filter(p => p.status === 'paid')
+          .reduce((sum, p) => sum + (p.amount / 100), 0) +
+        (salesData || [])
+          .filter(s => s.payment_status === 'paid')
+          .reduce((sum, s) => sum + Number(s.paid_amount || 0), 0);
+      
       const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + salesRevenue + movementsRevenue;
       const totalExpenses = movementsExpenses + recurringExpensesInRange;
       const netProfit = totalRevenue - totalExpenses;
@@ -233,6 +245,7 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         recurringExpensesInRange,
         totalExpenses,
         totalRefunds,
+        totalPaid,
         netProfit,
         profitMargin
       });
@@ -264,6 +277,7 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         total_revenue: totalRevenue,
         total_expenses: totalExpenses,
         total_refunds: totalRefunds,
+        total_paid_amount: totalPaid,
         net_profit: netProfit,
         profit_margin: profitMargin
       };

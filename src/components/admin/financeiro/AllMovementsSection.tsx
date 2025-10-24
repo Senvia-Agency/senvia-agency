@@ -164,6 +164,11 @@ const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionPro
                                   Manual
                                 </span>
                               )}
+                              {movement.source === 'sale' && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-400">
+                                  Venda
+                                </span>
+                              )}
                               {movement.source === 'recurring' && movement.type === 'despesa' && (
                                 <span className="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">
                                   Recorrente

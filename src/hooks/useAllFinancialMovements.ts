@@ -88,7 +88,30 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
       const { data: recurringReceivables, error: recurringError } = await receivablesQuery;
       if (recurringError) throw recurringError;
 
-      // 3. Buscar despesas recorrentes ativas
+      // 3. Buscar vendas pagas como receitas
+      let salesQuery = supabase
+        .from('sales')
+        .select(`
+          id,
+          customer_id,
+          service_name,
+          sale_date,
+          paid_amount,
+          payment_method,
+          notes,
+          customers(full_name)
+        `)
+        .in('payment_status', ['paid', 'completed', 'partial'])
+        .gt('paid_amount', 0)
+        .order('sale_date', { ascending: false });
+
+      if (fromStr) salesQuery = salesQuery.gte('sale_date', fromStr);
+      if (toStr) salesQuery = salesQuery.lte('sale_date', toStr);
+
+      const { data: salesData, error: salesError } = await salesQuery;
+      if (salesError) throw salesError;
+
+      // 4. Buscar despesas recorrentes ativas
       const { data: recurringExpenseServices, error: expenseError } = await supabase
         .from('recurring_services')
         .select(`
@@ -175,6 +198,24 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         });
       });
 
+      // Adicionar vendas pagas como receitas
+      salesData?.forEach(sale => {
+        movements.push({
+          id: sale.id,
+          type: 'receita',
+          source: 'sale',
+          amount: Number(sale.paid_amount),
+          description: sale.service_name || 'Venda',
+          category: 'Vendas',
+          customer_name: (sale.customers as any)?.full_name || undefined,
+          customer_id: sale.customer_id || undefined,
+          movement_date: sale.sale_date.split('T')[0],
+          payment_method: sale.payment_method || undefined,
+          notes: sale.notes || undefined,
+          reference: `SALE-${sale.id.slice(0, 8)}`,
+        });
+      });
+
       // Adicionar despesas recorrentes (gerar ocorrências no período)
       if ((startDate || endDate) && recurringExpenseServices) {
         // Definir range: se só uma data, tratar como período de 1 dia
@@ -209,6 +250,7 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         total: movements.length,
         casual: movements.filter(m => m.source === 'casual').length,
         recurring: movements.filter(m => m.source === 'recurring').length,
+        sales: movements.filter(m => m.source === 'sale').length,
         receitas: movements.filter(m => m.type === 'receita').length,
         despesas: movements.filter(m => m.type === 'despesa').length,
       });

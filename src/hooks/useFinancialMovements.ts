@@ -24,7 +24,7 @@ export interface NewFinancialMovement {
   description: string;
   category: string;
   movement_date: string;
-  customer_id?: string;
+  customer_id?: string | null;
   notes?: string;
 }
 
@@ -204,9 +204,17 @@ export const useFinancialMovements = (dateRange: number | null = 30) => {
 
   const addMovementMutation = useMutation({
     mutationFn: async (newMovement: NewFinancialMovement) => {
+      const payload = {
+        ...newMovement,
+        customer_id: newMovement.customer_id && newMovement.customer_id !== 'none' && newMovement.customer_id.trim() !== ''
+          ? newMovement.customer_id
+          : null,
+        notes: newMovement.notes ?? null,
+      };
+
       const { data, error } = await supabase
         .from('financial_movements')
-        .insert([newMovement])
+        .insert([payload])
         .select()
         .single();
 

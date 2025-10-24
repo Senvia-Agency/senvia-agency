@@ -75,7 +75,7 @@ const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) =>
         amount: parseFloat(amount),
         billing_day: parseInt(billingDay),
         start_date: startDate,
-        customer_id: type === 'receita' ? customerId : undefined,
+        customer_id: type === 'receita' ? (customerId && customerId !== 'none' && customerId.trim() !== '' ? customerId : null) : undefined,
         status: 'active'
       });
     } else {
@@ -90,7 +90,7 @@ const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) =>
         description,
         category,
         movement_date: movementDate,
-        customer_id: customerId || '',
+        customer_id: (customerId && customerId !== 'none' && customerId.trim() !== '' ? customerId : null),
         notes
       });
     }

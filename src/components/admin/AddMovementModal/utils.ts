@@ -28,5 +28,5 @@ export const validateForm = (movement: MovementFormData): boolean => {
 export const formatMovementForSubmission = (movement: MovementFormData) => ({
   ...movement,
   amount: parseFloat(movement.amount),
-  customer_id: movement.customer_id || null
+  customer_id: movement.customer_id && movement.customer_id !== 'none' && movement.customer_id.trim() !== '' ? movement.customer_id : null
 });

@@ -11,7 +11,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import AccountsReceivableKPICards from "@/components/admin/financeiro/AccountsReceivableKPICards";
 import AccountsReceivableList from "@/components/admin/financeiro/AccountsReceivableList";
 import ReceivablesEvolutionChart from "@/components/admin/financeiro/ReceivablesEvolutionChart";
 import PeriodSelector from "@/components/admin/financeiro/PeriodSelector";
@@ -171,9 +170,6 @@ const AdminContasReceber = () => {
                 />
               </div>
             </div>
-
-            {/* KPI Cards */}
-            <AccountsReceivableKPICards stats={null} />
 
             {/* Gráfico de Evolução */}
             <ReceivablesEvolutionChart accounts={accountsReceivable || []} />

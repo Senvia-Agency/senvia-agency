@@ -1,41 +1,25 @@
 
-import { useState } from "react";
-import { useRealFinancialData } from "@/hooks/useRealFinancialData";
-import { useFinancialMovements } from "@/hooks/useFinancialMovements";
-import { useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
+import { useRealFinancialData } from "@/hooks/useRealFinancialData";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import AddMovementModal from "./AddMovementModal";
 import FinancialKPICards from "./financeiro/FinancialKPICards";
-import AccountsReceivableKPICards from "./financeiro/AccountsReceivableKPICards";
-import FinancialMovementsCard from "./financeiro/FinancialMovementsCard";
-import RecurringServicesKPICards from "./financeiro/RecurringServicesKPICards";
-import RecurringReceivablesList from "./financeiro/RecurringReceivablesList";
-import CreateRecurringItemModal from "./financeiro/CreateRecurringItemModal";
+import FinancialReceivablesKPIs from "./financeiro/FinancialReceivablesKPIs";
+import RecurringMonthlyKPIs from "./financeiro/RecurringMonthlyKPIs";
+import AllMovementsSection from "./financeiro/AllMovementsSection";
 
 const AdminFinanceiro = () => {
-  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
   const { dateRange, setDateRange, getDaysInRange } = useDateRangeFilter({
     defaultDays: 30,
     storageKey: 'admin-financeiro-date-range'
   });
 
-  const selectedPeriod = dateRange ? getDaysInRange() : null;
+  const selectedPeriod = dateRange ? getDaysInRange() : 30;
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
-  const { movements, addMovement, isAddingMovement, updateMovement, isUpdatingMovement } = useFinancialMovements(selectedPeriod);
 
   const totalRevenue = financialData?.total_revenue || 0;
   const totalExpenses = financialData?.total_expenses || 0;
   const netProfit = financialData?.net_profit || 0;
   const profitMargin = financialData?.profit_margin || 0;
-
-  const handleAddMovement = (movement: any) => {
-    addMovement(movement);
-  };
-
-  const handleUpdateMovement = (id: string, updates: any) => {
-    updateMovement({ id, updates });
-  };
 
   if (isLoadingFinancial) {
     return (
@@ -52,10 +36,10 @@ const AdminFinanceiro = () => {
 
   return (
     <div className="space-y-6 p-6 overflow-y-auto pb-12">
-      {/* Header */}
+      {/* Header com Filtro de Data */}
       <div className="space-y-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 whitespace-nowrap">Módulo Financeiro</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1">Módulo Financeiro</h1>
           <p className="text-gray-400 text-sm sm:text-base">Controle completo das finanças da SENVIA</p>
         </div>
         <div className="flex justify-end items-center">
@@ -66,50 +50,32 @@ const AdminFinanceiro = () => {
         </div>
       </div>
 
-      {/* KPI Cards Financeiros */}
+      {/* KPIs Principais (afetados pelo período) */}
       <FinancialKPICards
         totalRevenue={totalRevenue}
         totalExpenses={totalExpenses}
         netProfit={netProfit}
         profitMargin={profitMargin}
-        selectedPeriod={selectedPeriod || 0}
+        selectedPeriod={selectedPeriod}
       />
 
-      {/* KPI Cards Contas a Receber */}
-      <div className="space-y-2">
+      {/* Contas a Receber (SEM filtro de período) */}
+      <div className="space-y-3">
         <h2 className="text-xl font-semibold text-white">Contas a Receber</h2>
-        <AccountsReceivableKPICards stats={null} dateRange={dateRange} />
+        <FinancialReceivablesKPIs />
       </div>
 
-      {/* Serviços Recorrentes */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Serviços Recorrentes</h2>
-          <div className="flex gap-2">
-            <CreateRecurringItemModal type="receita" />
-            <CreateRecurringItemModal type="despesa" />
-          </div>
-        </div>
-        <RecurringServicesKPICards />
-        <RecurringReceivablesList dateRange={dateRange} />
+      {/* Recorrência Mensal (valores fixos) */}
+      <div className="space-y-3">
+        <h2 className="text-xl font-semibold text-white">Recorrência Mensal</h2>
+        <RecurringMonthlyKPIs />
       </div>
 
-      {/* Financial Movements */}
-      <div className="grid grid-cols-1 gap-4">
-        <FinancialMovementsCard
-          movements={movements}
-          onAddMovement={() => setIsMovementModalOpen(true)}
-          onUpdateMovement={handleUpdateMovement}
-          isUpdating={isUpdatingMovement}
-        />
+      {/* Registro Completo de Movimentações */}
+      <div className="space-y-3">
+        <h2 className="text-xl font-semibold text-white">Registro de Movimentações</h2>
+        <AllMovementsSection dateRange={dateRange} />
       </div>
-
-      <AddMovementModal
-        isOpen={isMovementModalOpen}
-        onClose={() => setIsMovementModalOpen(false)}
-        onSubmit={handleAddMovement}
-        isLoading={isAddingMovement}
-      />
     </div>
   );
 };

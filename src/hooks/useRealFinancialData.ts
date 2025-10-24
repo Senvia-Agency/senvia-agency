@@ -282,6 +282,9 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         profit_margin: profitMargin
       };
     },
-    refetchInterval: 10000,
+    staleTime: 60000, // Dados considerados "fresh" por 1 minuto
+    gcTime: 5 * 60 * 1000, // Cache mantido por 5 minutos
+    refetchInterval: false, // Desabilitar refetch automático
+    refetchOnWindowFocus: false, // Não refetch ao voltar para aba
   });
 };

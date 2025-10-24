@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useFinancialMovements } from "@/hooks/useFinancialMovements";
 import { useCreateRecurringService } from "@/hooks/useRecurringServices";
 import { useAdminCustomers } from "@/hooks/useAdminCustomers";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import CategoryField from "../AddMovementModal/CategoryField";
 import CustomerField from "../AddMovementModal/CustomerField";
@@ -39,6 +40,7 @@ const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) =>
   const { data: customers } = useAdminCustomers();
   const { addMovement, isAddingMovement } = useFinancialMovements(null);
   const createRecurringMutation = useCreateRecurringService();
+  const queryClient = useQueryClient();
 
   const resetForm = () => {
     setType('receita');
@@ -92,6 +94,11 @@ const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) =>
         notes
       });
     }
+
+    // Invalidar queries para atualizar dados
+    await queryClient.invalidateQueries({ queryKey: ['all-financial-movements'] });
+    await queryClient.invalidateQueries({ queryKey: ['real-financial-data'] });
+    await queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
 
     resetForm();
     onClose();

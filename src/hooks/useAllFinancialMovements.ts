@@ -24,22 +24,36 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
     queryFn: async () => {
       console.log('🔍 Buscando todos os movimentos financeiros...');
 
-      // 1. Buscar movimentos casuais
+      // 1. Buscar movimentos casuais com campos específicos (otimização)
       const { data: casualMovements, error: casualError } = await supabase
         .from('financial_movements')
         .select(`
-          *,
+          id,
+          movement_type,
+          amount,
+          description,
+          category,
+          customer_id,
+          movement_date,
+          notes,
           customers(full_name)
         `)
         .order('movement_date', { ascending: false });
 
       if (casualError) throw casualError;
 
-      // 2. Buscar recorrentes pagos (receitas)
+      // 2. Buscar recorrentes pagos (receitas) com campos específicos
       const { data: recurringReceivables, error: recurringError } = await supabase
         .from('recurring_receivables')
         .select(`
-          *,
+          id,
+          amount,
+          paid_amount,
+          due_date,
+          paid_at,
+          payment_method,
+          notes,
+          customer_id,
           customers(full_name),
           recurring_services(service_name)
         `)
@@ -48,15 +62,8 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
 
       if (recurringError) throw recurringError;
 
-      // 3. Buscar serviços recorrentes de despesas (considerar apenas os ativos)
-      const { data: recurringExpenses, error: expensesError } = await supabase
-        .from('recurring_services')
-        .select('*')
-        .eq('recurrence_type', 'despesa')
-        .eq('status', 'active')
-        .order('start_date', { ascending: false });
-
-      if (expensesError) throw expensesError;
+      // Não buscamos despesas recorrentes aqui - elas já aparecem nos KPIs
+      // Remover geração de ocorrências mensais para melhorar performance
 
       // Combinar todos os movimentos
       const movements: FinancialMovement[] = [];
@@ -70,7 +77,7 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
           amount: Number(m.amount),
           description: m.description,
           category: m.category || undefined,
-          customer_name: m.customers?.full_name || undefined,
+          customer_name: (m.customers as any)?.full_name || undefined,
           customer_id: m.customer_id || undefined,
           movement_date: m.movement_date,
           notes: m.notes || undefined,
@@ -84,41 +91,14 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
           type: 'receita',
           source: 'recurring',
           amount: Number(r.paid_amount || r.amount),
-          description: r.recurring_services?.service_name || 'Serviço Recorrente',
-          customer_name: r.customers?.full_name || undefined,
+          description: (r.recurring_services as any)?.service_name || 'Serviço Recorrente',
+          customer_name: (r.customers as any)?.full_name || undefined,
           customer_id: r.customer_id || undefined,
           movement_date: r.paid_at || r.due_date,
           payment_method: r.payment_method || undefined,
           notes: r.notes || undefined,
           reference: `REC-${r.id.slice(0, 8)}`,
         });
-      });
-
-      // Adicionar despesas recorrentes (simuladas mensalmente)
-      recurringExpenses?.forEach(s => {
-        // Para despesas recorrentes, vamos criar um movimento para cada mês desde start_date
-        const startDate = new Date(s.start_date);
-        const endDate = s.end_date ? new Date(s.end_date) : new Date();
-        const today = new Date();
-        
-        let currentDate = new Date(startDate);
-        currentDate.setDate(s.billing_day);
-        
-        while (currentDate <= (s.end_date ? endDate : today)) {
-          movements.push({
-            id: `${s.id}-${format(currentDate, 'yyyy-MM')}`,
-            type: 'despesa',
-            source: 'recurring',
-            amount: Number(s.amount),
-            description: s.service_name,
-            category: 'Recorrente',
-            movement_date: format(currentDate, 'yyyy-MM-dd'),
-            notes: s.service_description || undefined,
-          });
-          
-          // Avançar para o próximo mês
-          currentDate.setMonth(currentDate.getMonth() + 1);
-        }
       });
 
       // Filtrar por dateRange se fornecido
@@ -148,6 +128,9 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
 
       return filteredMovements;
     },
-    refetchInterval: 30000, // Atualizar a cada 30 segundos
+    staleTime: 30000, // Dados considerados "fresh" por 30 segundos
+    gcTime: 5 * 60 * 1000, // Cache mantido por 5 minutos
+    refetchInterval: false, // Desabilitar refetch automático
+    refetchOnWindowFocus: false, // Não refetch ao voltar para aba
   });
 };

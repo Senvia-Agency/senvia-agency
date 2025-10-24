@@ -81,10 +81,7 @@ const AdminFinanceiro = () => {
       />
 
       {/* Registro Completo de Movimentações */}
-      <div className="space-y-3">
-        <h2 className="text-xl font-semibold text-white">Registro de Movimentações</h2>
-        <AllMovementsSection dateRange={dateRange} />
-      </div>
+      <AllMovementsSection dateRange={dateRange} />
     </div>
   );
 };

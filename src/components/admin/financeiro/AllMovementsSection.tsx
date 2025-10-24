@@ -122,7 +122,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
                 {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
               </div>
               <div className="text-xs text-muted-foreground mb-2">
-                Inclui despesas recorrentes do período. Se já houver lançamento manual no mês, evitamos duplicar.
+                Inclui todas as despesas e receitas do período: manuais e recorrentes.
               </div>
             </>
           )}
@@ -154,7 +154,24 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
                       >
                         <TableCell className="font-medium">
                           <div className="flex flex-col gap-1">
-                            <span className="text-foreground">{movement.description}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-foreground">{movement.description}</span>
+                              {movement.source === 'casual' && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                                  Manual
+                                </span>
+                              )}
+                              {movement.source === 'recurring' && movement.type === 'despesa' && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                                  Recorrente
+                                </span>
+                              )}
+                              {movement.source === 'recurring' && movement.type === 'receita' && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400">
+                                  Recebível
+                                </span>
+                              )}
+                            </div>
                             {movement.customer_name && (
                               <span className="text-xs text-muted-foreground">
                                 {movement.customer_name}

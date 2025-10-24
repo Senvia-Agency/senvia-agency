@@ -170,42 +170,26 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
       });
 
       // Adicionar despesas recorrentes (gerar ocorrências no período)
-      // Mas EXCLUIR as que já foram registradas como casuais no mesmo mês
-      if (startDate && endDate && recurringExpenseServices) {
+      if ((startDate || endDate) && recurringExpenseServices) {
+        // Definir range: se só uma data, tratar como período de 1 dia
+        const rangeStart = startDate || endDate!;
+        const rangeEnd = endDate || startDate!;
+        
         recurringExpenseServices.forEach(service => {
-          const occurrences = generateRecurringOccurrences(service, startDate, endDate);
+          const occurrences = generateRecurringOccurrences(service, rangeStart, rangeEnd);
           occurrences.forEach(dateStr => {
-            // Verificar se já existe uma despesa casual com descrição similar no mesmo mês
-            const [year, month] = dateStr.split('-');
-            const hasCasualRecord = casualMovements?.some(casual => {
-              if (casual.movement_type !== 'despesa') return false;
-              const casualDate = casual.movement_date;
-              const [casualYear, casualMonth] = casualDate.split('-');
-              
-              // Mesmo mês/ano e descrição similar (normalizada)
-              const normalizeDesc = (desc: string) => 
-                desc.toLowerCase().replace(/[^a-z0-9]/g, '');
-              
-              return casualYear === year && 
-                     casualMonth === month && 
-                     normalizeDesc(casual.description) === normalizeDesc(service.service_name);
+            movements.push({
+              id: `REXP-${service.id}-${dateStr.replace(/-/g, '')}`,
+              type: 'despesa',
+              source: 'recurring',
+              amount: Number(service.amount),
+              description: service.service_name,
+              customer_name: (service.customers as any)?.full_name || undefined,
+              customer_id: service.customer_id || undefined,
+              movement_date: dateStr,
+              notes: 'Despesa recorrente',
+              reference: `REXP-${service.id.slice(0, 8)}`,
             });
-
-            // Só adicionar a previsão se NÃO houver registro casual correspondente
-            if (!hasCasualRecord) {
-              movements.push({
-                id: `REXP-${service.id}-${dateStr.replace(/-/g, '')}`,
-                type: 'despesa',
-                source: 'recurring',
-                amount: Number(service.amount),
-                description: service.service_name,
-                customer_name: (service.customers as any)?.full_name || undefined,
-                customer_id: service.customer_id || undefined,
-                movement_date: dateStr,
-                notes: 'Despesa recorrente (previsão)',
-                reference: `REXP-${service.id.slice(0, 8)}`,
-              });
-            }
           });
         });
       }

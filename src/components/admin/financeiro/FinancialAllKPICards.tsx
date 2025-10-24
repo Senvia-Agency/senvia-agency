@@ -42,7 +42,7 @@ const FinancialAllKPICards = ({
   totalPaidAmount,
   totalInvoicedAmount
 }: FinancialAllKPICardsProps) => {
-  const receivingRate = totalInvoicedAmount > 0 
+  const receivingRate = totalInvoicedAmount > 0
     ? ((totalPaidAmount / totalInvoicedAmount) * 100)
     : 0;
 

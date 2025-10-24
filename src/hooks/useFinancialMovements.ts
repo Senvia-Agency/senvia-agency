@@ -28,18 +28,15 @@ export interface NewFinancialMovement {
   notes?: string;
 }
 
-export const useFinancialMovements = (dateRange: number | null = 30) => {
+export const useFinancialMovements = (dateRange?: { from?: Date; to?: Date }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: movements, isLoading } = useQuery({
     queryKey: ['financial-movements', dateRange],
     queryFn: async () => {
-      let startDate = null;
-      if (dateRange) {
-        startDate = new Date();
-        startDate.setDate(startDate.getDate() - dateRange);
-      }
+      const startDate = dateRange?.from || null;
+      const endDate = dateRange?.to || null;
       
       // Buscar movimentos manuais da tabela financial_movements
       let manualMovementsQuery = supabase
@@ -51,6 +48,9 @@ export const useFinancialMovements = (dateRange: number | null = 30) => {
         
       if (startDate) {
         manualMovementsQuery = manualMovementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      }
+      if (endDate) {
+        manualMovementsQuery = manualMovementsQuery.lte('movement_date', endDate.toISOString().split('T')[0]);
       }
       
       const { data: manualMovements, error: manualError } = await manualMovementsQuery
@@ -71,6 +71,11 @@ export const useFinancialMovements = (dateRange: number | null = 30) => {
       if (startDate) {
         customerTransactionsQuery = customerTransactionsQuery.gte('created_at', startDate.toISOString());
       }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        customerTransactionsQuery = customerTransactionsQuery.lte('created_at', endOfDay.toISOString());
+      }
       
       const { data: customerTransactions, error: transactionsError } = await customerTransactionsQuery;
 
@@ -83,10 +88,14 @@ export const useFinancialMovements = (dateRange: number | null = 30) => {
           *,
           customers(full_name, email)
         `)
+        .in('payment_status', ['paid', 'completed', 'partial'])
         .gt('paid_amount', 0);
         
       if (startDate) {
-        salesQuery = salesQuery.gte('created_at', startDate.toISOString());
+        salesQuery = salesQuery.gte('sale_date', startDate.toISOString().split('T')[0]);
+      }
+      if (endDate) {
+        salesQuery = salesQuery.lte('sale_date', endDate.toISOString().split('T')[0]);
       }
       
       const { data: sales, error: salesError } = await salesQuery;
@@ -102,6 +111,11 @@ export const useFinancialMovements = (dateRange: number | null = 30) => {
         
       if (startDate) {
         legacyPaymentsQuery = legacyPaymentsQuery.gte('created_at', startDate.toISOString());
+      }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        legacyPaymentsQuery = legacyPaymentsQuery.lte('created_at', endOfDay.toISOString());
       }
       
       const { data: legacyPayments, error: paymentsError } = await legacyPaymentsQuery;

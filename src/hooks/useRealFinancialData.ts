@@ -107,21 +107,36 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
       
       const { data: activeSubscriptions, error: subsError } = await subscriptionsQuery;
 
-      // Buscar vendas do módulo de vendas
+      // Buscar vendas pagas do módulo de vendas (usar sale_date)
       let salesQuery = supabase
         .from('sales')
-        .select('*');
+        .select('*')
+        .in('payment_status', ['paid', 'completed', 'partial'])
+        .gt('paid_amount', 0);
         
       if (startDate) {
-        salesQuery = salesQuery.gte('created_at', startDate.toISOString());
+        salesQuery = salesQuery.gte('sale_date', startDate.toISOString().split('T')[0]);
       }
       if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        salesQuery = salesQuery.lte('created_at', endOfDay.toISOString());
+        salesQuery = salesQuery.lte('sale_date', endDate.toISOString().split('T')[0]);
       }
       
       const { data: salesData, error: salesError } = await salesQuery;
+      
+      // Buscar TODAS as vendas não-canceladas para cálculo de total faturado
+      let allSalesQuery = supabase
+        .from('sales')
+        .select('*')
+        .neq('payment_status', 'cancelled');
+        
+      if (startDate) {
+        allSalesQuery = allSalesQuery.gte('sale_date', startDate.toISOString().split('T')[0]);
+      }
+      if (endDate) {
+        allSalesQuery = allSalesQuery.lte('sale_date', endDate.toISOString().split('T')[0]);
+      }
+      
+      const { data: allSalesData, error: allSalesError } = await allSalesQuery;
 
       // Buscar movimentos financeiros
       let movementsQuery = supabase
@@ -137,25 +152,16 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
       
       const { data: financialMovements, error: movementsError } = await movementsQuery;
 
-      // Buscar serviços recorrentes de despesa
-      let recurringServicesQuery = supabase
-        .from('recurring_services')
-        .select('*')
-        .eq('status', 'active')
-        .eq('recurrence_type', 'despesa');
-      
-      const { data: recurringServices, error: recurringError } = await recurringServicesQuery;
-
-      if (transactionsError || paymentsError || subsError || movementsError || salesError || recurringError) {
+      if (transactionsError || paymentsError || subsError || movementsError || salesError || allSalesError) {
         console.error('Erro ao buscar dados financeiros:', {
           transactionsError,
           paymentsError,
           subsError,
           movementsError,
           salesError,
-          recurringError
+          allSalesError
         });
-        throw transactionsError || paymentsError || subsError || movementsError || salesError || recurringError;
+        throw transactionsError || paymentsError || subsError || movementsError || salesError || allSalesError;
       }
 
       // Calcular receitas das transações (já em euros)
@@ -189,37 +195,12 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .filter(m => m.movement_type === 'despesa' && m.category === 'estorno')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
-      // Gerar ocorrências de despesas recorrentes
-      let recurringExpensesInRange = 0;
-      const manualExpenseKeys = new Set<string>();
-      
-      // Construir set de chaves de despesas já lançadas manualmente
-      (financialMovements || [])
-        .filter(m => m.movement_type === 'despesa' && m.category !== 'estorno')
-        .forEach(m => {
-          const date = new Date(m.movement_date);
-          const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          const key = `${slugify(m.description)}-${yearMonth}`;
-          manualExpenseKeys.add(key);
-        });
-      
-      // Somar ocorrências recorrentes (excluindo as já lançadas manualmente)
-      (recurringServices || []).forEach(service => {
-        const occurrences = generateRecurringOccurrences(service, startDate, endDate);
-        occurrences.forEach(occ => {
-          const date = new Date(occ.date);
-          const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          const key = `${slugify(occ.description)}-${yearMonth}`;
-          
-          // Só somar se não tiver sido lançado manualmente
-          if (!manualExpenseKeys.has(key)) {
-            recurringExpensesInRange += occ.amount;
-          }
-        });
-      });
+      // Calcular total faturado (todas as vendas não-canceladas)
+      const totalInvoicedAmount = (allSalesData || [])
+        .reduce((sum, sale) => sum + Number(sale.total_value || 0), 0);
       
       // Calcular valor efetivamente recebido (pago) no período
-      const totalPaid = 
+      const totalPaidAmount = 
         (customerTransactions || [])
           .filter(t => t.status === 'completed')
           .reduce((sum, t) => sum + Number(t.amount), 0) +
@@ -227,11 +208,10 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
           .filter(p => p.status === 'paid')
           .reduce((sum, p) => sum + (p.amount / 100), 0) +
         (salesData || [])
-          .filter(s => s.payment_status === 'paid')
           .reduce((sum, s) => sum + Number(s.paid_amount || 0), 0);
       
       const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + salesRevenue + movementsRevenue;
-      const totalExpenses = movementsExpenses + recurringExpensesInRange;
+      const totalExpenses = movementsExpenses;
       const netProfit = totalRevenue - totalExpenses;
       const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
       
@@ -243,10 +223,10 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         movementsRevenue,
         totalRevenue,
         movementsExpenses,
-        recurringExpensesInRange,
         totalExpenses,
         totalRefunds,
-        totalPaid,
+        totalInvoicedAmount,
+        totalPaidAmount,
         netProfit,
         profitMargin
       });
@@ -265,8 +245,8 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         sales_module: {
           count: salesData?.length || 0,
           revenue: salesRevenue,
-          total_value: (salesData || []).filter(sale => sale.payment_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0), 0),
-          pending_amount: (salesData || []).filter(sale => sale.payment_status !== 'cancelled').reduce((sum, sale) => sum + Number(sale.total_value || 0) - Number(sale.paid_amount || 0), 0),
+          total_value: totalInvoicedAmount,
+          pending_amount: (allSalesData || []).reduce((sum, sale) => sum + Number(sale.total_value || 0) - Number(sale.paid_amount || 0), 0),
           sales: salesData || []
         },
         financial_movements: {
@@ -278,7 +258,8 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         total_revenue: totalRevenue,
         total_expenses: totalExpenses,
         total_refunds: totalRefunds,
-        total_paid_amount: totalPaid,
+        total_invoiced_amount: totalInvoicedAmount,
+        total_paid_amount: totalPaidAmount,
         net_profit: netProfit,
         profit_margin: profitMargin
       };

@@ -1,9 +1,11 @@
 
 import { useState } from "react";
 import { useFinancialMovements } from "@/hooks/useFinancialMovements";
+import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, TrendingDown, ArrowLeft } from "lucide-react";
@@ -13,13 +15,13 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const AdminDespesasTotal = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(30);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [activeSection, setActiveSection] = useState("financeiro");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  const { movements, isLoading } = useFinancialMovements(selectedPeriod);
+  const { dateRange, setDateRange } = useDateRangeFilter({ defaultDays: 30 });
+  const { movements, isLoading } = useFinancialMovements(dateRange);
   
   // Filtrar apenas despesas
   const despesas = movements.filter(m => m.movement_type === 'despesa');
@@ -100,19 +102,10 @@ const AdminDespesasTotal = () => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={selectedPeriod.toString()} onValueChange={(value) => setSelectedPeriod(Number(value))}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">Últimos 7 dias</SelectItem>
-                  <SelectItem value="30">Últimos 30 dias</SelectItem>
-                  <SelectItem value="90">Últimos 90 dias</SelectItem>
-                  <SelectItem value="365">Último ano</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+            />
           </div>
 
           {/* Filtros */}
@@ -126,19 +119,21 @@ const AdminDespesasTotal = () => {
                 className="pl-10"
               />
             </div>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtrar por categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category.replace('_', ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {categories.length > 0 && (
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filtrar por categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
+                  {categories.map(category => (
+                    <SelectItem key={category} value={category}>
+                      {category.replace('_', ' ')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* Lista de Despesas */}

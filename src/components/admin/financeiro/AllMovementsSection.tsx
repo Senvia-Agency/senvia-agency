@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, TrendingUp, TrendingDown } from "lucide-react";
 import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
-import AddMovementModal from "../AddMovementModal";
-import CreateRecurringItemModal from "./CreateRecurringItemModal";
+import UnifiedMovementModal from "./UnifiedMovementModal";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -15,15 +14,9 @@ interface AllMovementsSectionProps {
 }
 
 const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
-  const [casualModalOpen, setCasualModalOpen] = useState(false);
-  const [casualModalType, setCasualModalType] = useState<'receita' | 'despesa'>('receita');
+  const [modalOpen, setModalOpen] = useState(false);
   
   const { data: movements, isLoading } = useAllFinancialMovements(dateRange);
-
-  const handleAddCasual = (movement: any) => {
-    console.log('Movimento casual adicionado:', movement);
-    setCasualModalOpen(false);
-  };
 
   const getSourceBadge = (source: string) => {
     const variants = {
@@ -62,34 +55,15 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <CardTitle className="text-white">Registro de Movimentações</CardTitle>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => {
-                  setCasualModalType('receita');
-                  setCasualModalOpen(true);
-                }}
-                variant="default"
-                size="sm"
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Nova Receita
-              </Button>
-              <Button
-                onClick={() => {
-                  setCasualModalType('despesa');
-                  setCasualModalOpen(true);
-                }}
-                variant="destructive"
-                size="sm"
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Nova Despesa
-              </Button>
-              <CreateRecurringItemModal type="receita" />
-              <CreateRecurringItemModal type="despesa" />
-            </div>
+            <Button
+              onClick={() => setModalOpen(true)}
+              variant="default"
+              size="sm"
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Adicionar Registro
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -164,11 +138,9 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
         </CardContent>
       </Card>
 
-      <AddMovementModal
-        isOpen={casualModalOpen}
-        onClose={() => setCasualModalOpen(false)}
-        onSubmit={handleAddCasual}
-        isLoading={false}
+      <UnifiedMovementModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
       />
     </>
   );

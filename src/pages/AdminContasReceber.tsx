@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+import { useAccountsReceivable } from "@/hooks/useAccountsReceivable";
 import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
 import type { UnifiedReceivable } from "@/hooks/useUnifiedReceivables";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AccountsReceivableList from "@/components/admin/financeiro/AccountsReceivableList";
-import ReceivablesEvolutionChart from "@/components/admin/financeiro/ReceivablesEvolutionChart";
+
 import PeriodSelector from "@/components/admin/financeiro/PeriodSelector";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -24,7 +24,6 @@ const AdminContasReceber = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: accountsReceivable, isLoading } = useAccountsReceivable(selectedPeriod);
-  const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
 
   // Recebíveis unificados (vendas + recorrentes + previstos)
   const { data: unifiedReceivables } = useUnifiedReceivables();
@@ -171,8 +170,6 @@ const AdminContasReceber = () => {
               </div>
             </div>
 
-            {/* Gráfico de Evolução */}
-            <ReceivablesEvolutionChart accounts={accountsReceivable || []} />
 
             {/* Lista de Contas a Receber */}
             <AccountsReceivableList 

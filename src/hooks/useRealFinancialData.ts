@@ -54,6 +54,16 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
       const startDate = dateRange?.from ? new Date(dateRange.from) : null;
       const endDate = dateRange?.to ? new Date(dateRange.to) : null;
       
+      const fromStr = startDate ? startDate.toISOString().split('T')[0] : null;
+      
+      // Use next day for end date to include full day
+      let endDateStr: string | null = null;
+      if (endDate) {
+        const nextDay = new Date(endDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        endDateStr = nextDay.toISOString().split('T')[0];
+      }
+      
       console.log('Buscando dados financeiros reais desde:', startDate ? startDate.toISOString() : 'todos os tempos');
       
       // Buscar transações de clientes (sistema novo)
@@ -62,13 +72,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .select('*')
         .eq('status', 'completed');
         
-      if (startDate) {
-        customerTransactionsQuery = customerTransactionsQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        customerTransactionsQuery = customerTransactionsQuery.gte('created_at', fromStr);
       }
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        customerTransactionsQuery = customerTransactionsQuery.lte('created_at', endOfDay.toISOString());
+      if (endDateStr) {
+        customerTransactionsQuery = customerTransactionsQuery.lt('created_at', endDateStr);
       }
       
       const { data: customerTransactions, error: transactionsError } = await customerTransactionsQuery;
@@ -79,13 +87,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .select('*')
         .eq('status', 'paid');
         
-      if (startDate) {
-        legacyPaymentsQuery = legacyPaymentsQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        legacyPaymentsQuery = legacyPaymentsQuery.gte('created_at', fromStr);
       }
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        legacyPaymentsQuery = legacyPaymentsQuery.lte('created_at', endOfDay.toISOString());
+      if (endDateStr) {
+        legacyPaymentsQuery = legacyPaymentsQuery.lt('created_at', endDateStr);
       }
       
       const { data: legacyPayments, error: paymentsError } = await legacyPaymentsQuery;
@@ -96,13 +102,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .select('*')
         .eq('status', 'active');
         
-      if (startDate) {
-        subscriptionsQuery = subscriptionsQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        subscriptionsQuery = subscriptionsQuery.gte('created_at', fromStr);
       }
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        subscriptionsQuery = subscriptionsQuery.lte('created_at', endOfDay.toISOString());
+      if (endDateStr) {
+        subscriptionsQuery = subscriptionsQuery.lt('created_at', endDateStr);
       }
       
       const { data: activeSubscriptions, error: subsError } = await subscriptionsQuery;
@@ -114,11 +118,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .in('payment_status', ['paid', 'completed', 'partial'])
         .gt('paid_amount', 0);
         
-      if (startDate) {
-        salesQuery = salesQuery.gte('sale_date', startDate.toISOString().split('T')[0]);
+      if (fromStr) {
+        salesQuery = salesQuery.gte('sale_date', fromStr);
       }
-      if (endDate) {
-        salesQuery = salesQuery.lte('sale_date', endDate.toISOString().split('T')[0]);
+      if (endDateStr) {
+        salesQuery = salesQuery.lt('sale_date', endDateStr);
       }
       
       const { data: salesData, error: salesError } = await salesQuery;
@@ -129,11 +133,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .select('*')
         .neq('payment_status', 'cancelled');
         
-      if (startDate) {
-        allSalesQuery = allSalesQuery.gte('sale_date', startDate.toISOString().split('T')[0]);
+      if (fromStr) {
+        allSalesQuery = allSalesQuery.gte('sale_date', fromStr);
       }
-      if (endDate) {
-        allSalesQuery = allSalesQuery.lte('sale_date', endDate.toISOString().split('T')[0]);
+      if (endDateStr) {
+        allSalesQuery = allSalesQuery.lt('sale_date', endDateStr);
       }
       
       const { data: allSalesData, error: allSalesError } = await allSalesQuery;
@@ -143,11 +147,11 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .from('financial_movements')
         .select('*');
         
-      if (startDate) {
-        movementsQuery = movementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      if (fromStr) {
+        movementsQuery = movementsQuery.gte('movement_date', fromStr);
       }
-      if (endDate) {
-        movementsQuery = movementsQuery.lte('movement_date', endDate.toISOString().split('T')[0]);
+      if (endDateStr) {
+        movementsQuery = movementsQuery.lt('movement_date', endDateStr);
       }
       
       const { data: financialMovements, error: movementsError } = await movementsQuery;

@@ -1,17 +1,13 @@
 
 import { useState } from "react";
-import { useAccountsReceivable } from "@/hooks/useAccountsReceivable";
 import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import UnifiedReceivablesTable from "@/components/admin/financeiro/UnifiedReceivablesTable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Search, AlertTriangle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 const AdminContasAtraso = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
@@ -20,28 +16,20 @@ const AdminContasAtraso = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Usar recebíveis unificados (vendas + recorrentes + previstos)
-  const { data: unifiedReceivables, isLoading: isLoadingUnified } = useUnifiedReceivables();
-  const { data: accounts, isLoading: isLoadingSales } = useAccountsReceivable(selectedPeriod);
-  
-  // Priorizar dados unificados (incluem recorrentes)
-  const isLoading = isLoadingUnified || isLoadingSales;
-  const hasUnified = unifiedReceivables && unifiedReceivables.length > 0;
-  const sourceData = hasUnified ? unifiedReceivables : accounts;
+  const { data: unifiedReceivables, isLoading } = useUnifiedReceivables();
   
   // Filtrar contas em atraso (com days_overdue > 0)
-  const contasAtraso = (sourceData || []).filter(item => item.days_overdue > 0);
+  const contasAtraso = (unifiedReceivables || []).filter(item => item.days_overdue > 0);
   
   console.log('📊 Contas em Atraso:', {
-    totalUnified: unifiedReceivables?.length || 0,
-    totalSales: accounts?.length || 0,
-    usingSource: hasUnified ? 'unified' : 'sales',
+    totalReceivables: unifiedReceivables?.length || 0,
     contasAtrasoCount: contasAtraso.length,
     contasAtraso: contasAtraso.map(c => ({ 
       customer: c.customer_name, 
       service: c.service_name, 
       amount: c.remaining_amount, 
       days: c.days_overdue,
-      type: 'type' in c ? c.type : 'sale'
+      type: c.type
     }))
   });
   
@@ -148,62 +136,27 @@ const AdminContasAtraso = () => {
             </div>
           </div>
 
-          {/* Lista de Contas em Atraso */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
+          {/* Tabela Unificada de Contas em Atraso */}
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <h3 className="text-xl font-semibold text-white">
                 Contas em Atraso ({filteredContas.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {filteredContas.map((conta) => (
-                  <div key={conta.id} className="border border-red-600 rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-white">
-                            {conta.customer_name || 'Cliente não informado'}
-                          </h4>
-                          {'type' in conta && conta.type === 'recurring' && (
-                            <Badge className="bg-blue-600 text-white text-xs">Recorrente</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-400 mb-2">
-                          {conta.customer_email}
-                        </p>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline" className="text-red-500 border-red-500">
-                            {conta.days_overdue} dias em atraso
-                          </Badge>
-                          <span className="text-sm text-gray-400">
-                            Vencimento: {conta.due_date ? format(new Date(conta.due_date), 'dd/MM/yyyy', { locale: ptBR }) : 'N/A'}
-                          </span>
-                        </div>
-                        {conta.service_name && (
-                          <p className="text-sm text-gray-400">{conta.service_name}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-red-500">
-                          €{Number(conta.remaining_amount).toFixed(2)}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          {'reference_number' in conta ? conta.reference_number : ('sale_number' in conta ? conta.sale_number : 'N/A')}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {filteredContas.length === 0 && (
-                  <div className="text-center py-8 text-gray-400">
-                    {contasAtraso.length === 0 ? "Nenhuma conta em atraso! 🎉" : "Nenhuma conta encontrada para os filtros selecionados."}
-                  </div>
-                )}
+              </h3>
+            </div>
+            
+            {filteredContas.length === 0 ? (
+              <div className="border border-border rounded-lg p-12 text-center">
+                <p className="text-muted-foreground text-lg">
+                  {contasAtraso.length === 0 
+                    ? "Nenhuma conta em atraso! 🎉" 
+                    : "Nenhuma conta encontrada para os filtros selecionados."}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <UnifiedReceivablesTable receivables={filteredContas} />
+            )}
+          </div>
         </div>
       </main>
     </div>

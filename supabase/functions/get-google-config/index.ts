@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         clientId,
-        redirectUri: `${req.headers.get('origin')}/dashboard/calendar`
+        redirectUri: `${req.headers.get('origin')}/calendar`
       }),
       { 
         headers: { 

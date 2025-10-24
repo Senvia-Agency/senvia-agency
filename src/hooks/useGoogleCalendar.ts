@@ -81,7 +81,7 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
       return;
     }
 
-    const redirectUri = `${window.location.origin}/dashboard/calendar`;
+    const redirectUri = `${window.location.origin}/calendar`;
     const scope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events.readonly';
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +

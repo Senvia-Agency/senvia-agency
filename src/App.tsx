@@ -19,7 +19,7 @@ const LandingPages = lazy(() => import("./pages/LandingPages"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
-const DashboardCalendar = lazy(() => import("./pages/DashboardCalendar"));
+const CalendarConnect = lazy(() => import("./pages/CalendarConnect"));
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
@@ -75,6 +75,7 @@ function App() {
               <Route path="/termos-servico" element={<TermosServico />} />
               <Route path="/exemplos-ia-atendimento" element={<ExemplosIAAtendimento />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/calendar" element={<CalendarConnect />} />
               
               {/* Protected Routes for Customers */}
               <Route path="/dashboard" element={
@@ -95,11 +96,6 @@ function App() {
               <Route path="/dashboard/settings" element={
                 <ProtectedRoute>
                   <DashboardSettings />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard/calendar" element={
-                <ProtectedRoute>
-                  <DashboardCalendar />
                 </ProtectedRoute>
               } />
               

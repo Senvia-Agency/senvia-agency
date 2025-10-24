@@ -1,114 +1,38 @@
-
 import { useState } from "react";
-import { useAccountsReceivable } from "@/hooks/useAccountsReceivable";
 import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
-import type { UnifiedReceivable } from "@/hooks/useUnifiedReceivables";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { Menu, ArrowLeft, Loader2 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import AccountsReceivableList from "@/components/admin/financeiro/AccountsReceivableList";
-
-import PeriodSelector from "@/components/admin/financeiro/PeriodSelector";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import UnifiedReceivablesTable from "@/components/admin/financeiro/UnifiedReceivablesTable";
 
 const AdminContasReceber = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState(0);
-  const [activeSection, setActiveSection] = useState("financeiro");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const { data: accountsReceivable, isLoading } = useAccountsReceivable(selectedPeriod);
+  const [activeSidebarSection, setActiveSidebarSection] = useState("financeiro");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   // Recebíveis unificados (vendas + recorrentes + previstos)
-  const { data: unifiedReceivables } = useUnifiedReceivables();
-  const predictedRecurring: UnifiedReceivable[] = (unifiedReceivables || []).filter(r => r.type === 'recurring' && r.id.startsWith('svc-')) as UnifiedReceivable[];
+  const { data: unifiedReceivables, isLoading, refetch } = useUnifiedReceivables();
 
-  const handleMarkAsPaid = async (accountId: string) => {
-    try {
-      console.log('Marcando como pago:', accountId);
-      
-      // 1. Buscar dados da venda
-      const { data: sale, error: saleError } = await supabase
-        .from('sales')
-        .select('*, customers(full_name, email)')
-        .eq('id', accountId)
-        .single();
-
-      if (saleError) {
-        throw saleError;
-      }
-
-      const remainingAmount = Number(sale.remaining_amount || (sale.total_value - sale.paid_amount));
-      
-      // 2. Atualizar a venda para "pago"
-      const { error: updateError } = await supabase
-        .from('sales')
-        .update({
-          payment_status: 'paid',
-          paid_amount: sale.total_value,
-          remaining_amount: 0,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', accountId);
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      // 3. Criar movimento financeiro (receita)
-      const { error: movementError } = await supabase
-        .from('financial_movements')
-        .insert({
-          movement_type: 'receita',
-          category: 'vendas',
-          description: `Recebimento da venda ${sale.sale_number} - ${sale.service_name}`,
-          amount: remainingAmount,
-          currency: 'EUR',
-          customer_id: sale.customer_id,
-          movement_date: new Date().toISOString().split('T')[0],
-          notes: `Pagamento total da venda ${sale.sale_number}. Cliente: ${sale.customers?.full_name || 'N/A'}`
-        });
-
-      if (movementError) {
-        throw movementError;
-      }
-
-      // 4. Invalidar queries para atualizar os dados
-      queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
-      queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
-
-      toast({
-        title: "✅ Pagamento registrado",
-        description: `Venda ${sale.sale_number} marcada como paga. Receita de €${remainingAmount.toFixed(2)} adicionada aos movimentos financeiros.`,
-      });
-
-    } catch (error: any) {
-      console.error('Erro ao marcar como pago:', error);
-      toast({
-        title: "❌ Erro ao registrar pagamento",
-        description: error.message || "Não foi possível registrar o pagamento.",
-        variant: "destructive"
-      });
-    }
-  };
+  // Ordenar recebíveis por data de vencimento
+  const sortedReceivables = (unifiedReceivables || []).sort((a, b) => 
+    new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+  );
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex">
+      <div className="min-h-screen bg-background flex">
         <AdminSidebar 
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
+          activeSection={activeSidebarSection}
+          setActiveSection={setActiveSidebarSection}
+          sidebarOpen={isSidebarOpen}
+          setSidebarOpen={setIsSidebarOpen}
         />
         <div className="flex-1 p-8">
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
             Carregando contas a receber...
           </div>
         </div>
@@ -117,96 +41,74 @@ const AdminContasReceber = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
+    <div className="min-h-screen bg-background flex">
       <AdminSidebar 
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
+        activeSection={activeSidebarSection}
+        setActiveSection={setActiveSidebarSection}
+        sidebarOpen={isSidebarOpen}
+        setSidebarOpen={setIsSidebarOpen}
       />
       
       {/* Overlay para mobile */}
-      {sidebarOpen && (
+      {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       <main className="flex-1 min-w-0">
         {/* Header mobile com hambúrguer */}
-        <div className="lg:hidden p-6">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
+        {isMobile && (
+          <div className="p-6 lg:hidden">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+        )}
 
         <div className="p-6 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <Link to="/admin?tab=financeiro">
-                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Voltar para Financeiro
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate('/admin?tab=financeiro')}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Voltar para Financeiro
+                </Button>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white whitespace-nowrap">Contas a Receber</h1>
-                  <p className="text-gray-400 text-sm sm:text-base">Gestão completa das contas a receber</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold">Contas a Receber</h1>
+                  <p className="text-muted-foreground text-sm sm:text-base">
+                    Gestão completa das contas a receber
+                  </p>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <PeriodSelector
-                  selectedPeriod={selectedPeriod}
-                  onPeriodChange={setSelectedPeriod}
-                />
               </div>
             </div>
 
-
-            {/* Lista de Contas a Receber */}
-            <AccountsReceivableList 
-              accounts={accountsReceivable || []} 
-              onMarkAsPaid={handleMarkAsPaid}
-            />
-
-            {/* Recorrentes previstos (próximos 30 dias) - João e Tiago devem aparecer aqui */}
-            {predictedRecurring.length > 0 && (
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    Recorrentes previstos (30 dias) ({predictedRecurring.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {predictedRecurring.map((rec) => (
-                      <div 
-                        key={rec.id} 
-                        className="flex justify-between items-center py-3 px-4 rounded hover:bg-gray-700/50 transition-colors border border-gray-700"
-                      >
-                        <span className="text-white font-medium min-w-[200px]">
-                          {rec.customer_name}
-                        </span>
-                        <span className="text-gray-400 text-sm">
-                          {format(new Date(rec.due_date), 'dd/MM/yyyy', { locale: ptBR })}
-                        </span>
-                        <span className="text-blue-400 font-semibold text-lg">
-                          €{rec.remaining_amount.toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Tabela Unificada de Contas a Receber */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">
+                Contas a Receber ({sortedReceivables.length})
+              </h3>
+              
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <UnifiedReceivablesTable 
+                  receivables={sortedReceivables} 
+                  onRefresh={refetch}
+                />
+              )}
+            </div>
           </div>
         </div>
       </main>

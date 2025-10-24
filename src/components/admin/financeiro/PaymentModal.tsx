@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AccountReceivable } from "@/hooks/useAccountsReceivable";
+import { UnifiedReceivable } from "@/hooks/useUnifiedReceivables";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Calculator, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface PaymentModalProps {
-  account: AccountReceivable | null;
+  account: AccountReceivable | UnifiedReceivable | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -21,10 +22,23 @@ interface PaymentModalProps {
 const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
+  const [paymentDate, setPaymentDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Helper para pegar o número de referência
+  const getReferenceNumber = () => {
+    if (!account) return '';
+    return 'sale_number' in account ? account.sale_number : account.reference_number || '';
+  };
+
+  // Helper para pegar a data
+  const getAccountDate = () => {
+    if (!account) return new Date();
+    return 'sale_date' in account ? new Date(account.sale_date) : new Date(account.due_date);
+  };
 
   const handlePayment = async () => {
     if (!account || !paymentAmount || isLoading) return;
@@ -59,9 +73,10 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       if (updateError) throw updateError;
 
       // 2. Criar movimento financeiro (receita)
+      const referenceNumber = getReferenceNumber();
       const movementDescription = overpayment > 0 
-        ? `Recebimento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number} + gorjeta de €${overpayment.toFixed(2)} - ${account.service_name}`
-        : `Recebimento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number} - ${account.service_name}`;
+        ? `Recebimento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''} + gorjeta de €${overpayment.toFixed(2)} - ${account.service_name}`
+        : `Recebimento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''} - ${account.service_name}`;
         
       const { error: movementError } = await supabase
         .from('financial_movements')
@@ -72,8 +87,8 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
           amount,
           currency: 'EUR',
           customer_id: account.customer_id,
-          movement_date: new Date().toISOString().split('T')[0],
-          notes: notes || `Pagamento ${isFullyPaid ? 'total' : 'parcial'} da venda ${account.sale_number}. Cliente: ${account.customer_name}. Método: ${paymentMethod}${overpayment > 0 ? `. Gorjeta: €${overpayment.toFixed(2)}` : ''}`
+          movement_date: paymentDate,
+          notes: notes || `Pagamento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''}. Cliente: ${account.customer_name}. Método: ${paymentMethod}${overpayment > 0 ? `. Gorjeta: €${overpayment.toFixed(2)}` : ''}`
         });
 
       if (movementError) throw movementError;
@@ -109,20 +124,22 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
       // 4. Invalidar queries para atualizar os dados
       queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-receivables'] });
       queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
 
       toast({
         title: isFullyPaid ? "✅ Conta liquidada!" : "✅ Pagamento parcial registrado",
         description: overpayment > 0
-          ? `Venda ${account.sale_number} ${isFullyPaid ? 'totalmente paga' : 'parcialmente paga'} + gorjeta de €${overpayment.toFixed(2)}. Receita total: €${amount.toFixed(2)}`
+          ? `${referenceNumber ? `Venda ${referenceNumber}` : 'Conta'} ${isFullyPaid ? 'totalmente paga' : 'parcialmente paga'} + gorjeta de €${overpayment.toFixed(2)}. Receita total: €${amount.toFixed(2)}`
           : isFullyPaid 
-            ? `Venda ${account.sale_number} totalmente paga. Receita de €${amount.toFixed(2)} adicionada.`
+            ? `${referenceNumber ? `Venda ${referenceNumber}` : 'Conta'} totalmente paga. Receita de €${amount.toFixed(2)} adicionada.`
             : `Pagamento de €${amount.toFixed(2)} registrado. Restante: €${Math.max(0, newRemainingAmount).toFixed(2)}`,
       });
 
       // Reset form and close
       setPaymentAmount("");
       setPaymentMethod("bank_transfer");
+      setPaymentDate(format(new Date(), 'yyyy-MM-dd'));
       setNotes("");
       onClose();
 
@@ -179,13 +196,15 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
           <div className="bg-gray-700 p-4 rounded-lg">
             <h4 className="font-medium text-white mb-2">{account.customer_name}</h4>
             <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
-              <div>
-                <span className="text-gray-400">Venda: </span>
-                <span>{account.sale_number}</span>
-              </div>
+              {getReferenceNumber() && (
+                <div>
+                  <span className="text-gray-400">Ref: </span>
+                  <span>{getReferenceNumber()}</span>
+                </div>
+              )}
               <div>
                 <span className="text-gray-400">Data: </span>
-                <span>{format(new Date(account.sale_date), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                <span>{format(getAccountDate(), 'dd/MM/yyyy', { locale: ptBR })}</span>
               </div>
               <div>
                 <span className="text-gray-400">Valor Total: </span>
@@ -240,10 +259,25 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
                 50%
               </Button>
             </div>
-          </div>
+              </div>
 
-          {/* Método de Pagamento */}
-          <div className="space-y-2">
+              {/* Data do Pagamento */}
+              <div className="space-y-2">
+                <Label htmlFor="payment-date" className="text-gray-300">
+                  Data do Pagamento
+                </Label>
+                <Input
+                  id="payment-date"
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                  max={format(new Date(), 'yyyy-MM-dd')}
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+
+              {/* Método de Pagamento */}
+              <div className="space-y-2">
             <Label htmlFor="payment-method" className="text-gray-300">
               Método de Pagamento
             </Label>

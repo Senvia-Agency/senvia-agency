@@ -6,7 +6,8 @@ import {
   Package, 
   Settings, 
   LogOut,
-  User
+  User,
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Visão Geral", path: "/dashboard" },
   { icon: Package, label: "Meus Produtos", path: "/dashboard/products" },
+  { icon: Calendar, label: "Calendário", path: "/dashboard/calendar" },
   { icon: User, label: "Perfil", path: "/dashboard/profile" },
   { icon: Settings, label: "Configurações", path: "/dashboard/settings" },
 ];

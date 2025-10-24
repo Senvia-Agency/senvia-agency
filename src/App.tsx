@@ -19,6 +19,7 @@ const LandingPages = lazy(() => import("./pages/LandingPages"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
+const DashboardCalendar = lazy(() => import("./pages/DashboardCalendar"));
 
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
@@ -94,6 +95,11 @@ function App() {
               <Route path="/dashboard/settings" element={
                 <ProtectedRoute>
                   <DashboardSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/calendar" element={
+                <ProtectedRoute>
+                  <DashboardCalendar />
                 </ProtectedRoute>
               } />
               

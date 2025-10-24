@@ -1375,6 +1375,7 @@ export type Database = {
           created_at: string
           customer_id: string | null
           delivered_at: string | null
+          due_date: string | null
           expected_delivery_date: string | null
           id: string
           internal_notes: string | null
@@ -1406,6 +1407,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivered_at?: string | null
+          due_date?: string | null
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null
@@ -1437,6 +1439,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivered_at?: string | null
+          due_date?: string | null
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,10 +9,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "lucide-react";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
 import CustomerSearchField from "./form-fields/CustomerSearchField";
-import ServiceSearchField from "./form-fields/ServiceSearchField";
-import StatusFields from "./form-fields/StatusFields";
-import ValueFields from "./form-fields/ValueFields";
-import AdditionalFields from "./form-fields/AdditionalFields";
 import AssigneeField from "./form-fields/AssigneeField";
 
 interface CreateSaleModalProps {
@@ -27,8 +22,6 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
     formData,
     setFormData,
     handleSubmit,
-    handleServiceTypeChange,
-    handleServiceSelect,
     createSaleMutation
   } = useCreateSaleForm(onClose);
 
@@ -40,6 +33,7 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Seção 1: Informações Básicas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <CustomerSearchField
               value={formData.customer_id}
@@ -47,30 +41,6 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
               leadData={leadData}
             />
 
-            <div className="space-y-2">
-              <Label className="text-gray-300">Tipo de Serviço</Label>
-              <Select value={formData.service_type} onValueChange={handleServiceTypeChange}>
-                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Selecionar tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manual">Manual</SelectItem>
-                  <SelectItem value="custom_service">Serviço Personalizado</SelectItem>
-                  <SelectItem value="stripe_product">Produto do Stripe</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {formData.service_type !== 'manual' && (
-            <ServiceSearchField
-              serviceType={formData.service_type}
-              serviceId={formData.service_id}
-              onServiceSelect={handleServiceSelect}
-            />
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label className="text-gray-300">Nome do Serviço *</Label>
               <Input
@@ -81,21 +51,9 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                 required
               />
             </div>
-
-            <div>
-              <Label className="text-gray-300">Valor Total (€) *</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={formData.total_value}
-                onChange={(e) => setFormData(prev => ({ ...prev, total_value: e.target.value }))}
-                placeholder="0.00"
-                className="bg-gray-700 border-gray-600 text-white"
-                required
-              />
-            </div>
           </div>
 
+          {/* Seção 2: Descrição */}
           <div>
             <Label className="text-gray-300">Descrição do Serviço</Label>
             <Textarea
@@ -107,35 +65,115 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
             />
           </div>
 
-          <ValueFields
-            totalValue={formData.total_value}
-            paidAmount={formData.paid_amount}
-            paymentMethod={formData.payment_method}
-            onTotalValueChange={(value) => setFormData(prev => ({ ...prev, total_value: value }))}
-            onPaidAmountChange={(value) => setFormData(prev => ({ ...prev, paid_amount: value }))}
-            onPaymentMethodChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
-          />
+          {/* Seção 3: Valores e Pagamento */}
+          <div className="space-y-4 p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+            <h3 className="text-sm font-semibold text-gray-300 mb-3">Valores e Pagamento</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-300">Valor Total (€) *</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={formData.total_value}
+                  onChange={(e) => setFormData(prev => ({ ...prev, total_value: e.target.value }))}
+                  placeholder="0.00"
+                  className="bg-gray-700 border-gray-600 text-white"
+                  required
+                />
+              </div>
 
-          <StatusFields
-            saleStatus={formData.sale_status}
-            paymentStatus={formData.payment_status}
-            onSaleStatusChange={(value: any) => setFormData(prev => ({ ...prev, sale_status: value }))}
-            onPaymentStatusChange={(value: any) => setFormData(prev => ({ ...prev, payment_status: value }))}
-          />
+              <div>
+                <Label className="text-gray-300">Data de Vencimento *</Label>
+                <Input
+                  type="date"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                  className="bg-gray-700 border-gray-600 text-white"
+                  required
+                />
+              </div>
+            </div>
 
-          <AdditionalFields
-            notes={formData.notes}
-            expectedDeliveryDate={formData.expected_delivery_date}
-            onNotesChange={(value) => setFormData(prev => ({ ...prev, notes: value }))}
-            onExpectedDeliveryDateChange={(value) => setFormData(prev => ({ ...prev, expected_delivery_date: value }))}
-          />
+            {/* Checkbox "Pago" */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_paid"
+                checked={formData.is_paid}
+                onCheckedChange={(checked) => 
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    is_paid: checked as boolean,
+                    paid_amount: checked ? prev.total_value : '',
+                    payment_method: checked ? prev.payment_method : ''
+                  }))
+                }
+              />
+              <Label htmlFor="is_paid" className="text-gray-300 text-sm font-medium cursor-pointer">
+                ✓ Pago
+              </Label>
+            </div>
 
-          <AssigneeField
-            value={formData.assigned_to}
-            onChange={(value) => setFormData(prev => ({ ...prev, assigned_to: value }))}
-          />
+            {/* Campos condicionais quando marcado como "Pago" */}
+            {formData.is_paid && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6 border-l-2 border-green-500/30 bg-green-500/5 p-4 rounded-r-lg">
+                <div>
+                  <Label className="text-gray-300">Valor Pago (€) *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={formData.paid_amount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, paid_amount: e.target.value }))}
+                    placeholder="0.00"
+                    className="bg-gray-700 border-gray-600 text-white"
+                    required
+                  />
+                </div>
 
-          {/* Configuração de Pagamento Recorrente */}
+                <div>
+                  <Label className="text-gray-300">Método de Pagamento *</Label>
+                  <Select 
+                    value={formData.payment_method} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
+                  >
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue placeholder="Selecionar método" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectItem value="mbway">MB Way</SelectItem>
+                      <SelectItem value="bank_transfer">Transferência Bancária</SelectItem>
+                      <SelectItem value="card">Cartão</SelectItem>
+                      <SelectItem value="cash">Dinheiro</SelectItem>
+                      <SelectItem value="check">Cheque</SelectItem>
+                      <SelectItem value="stripe">Stripe</SelectItem>
+                      <SelectItem value="other">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Seção 4: Informações Adicionais */}
+          <div className="space-y-4">
+            <AssigneeField
+              value={formData.assigned_to}
+              onChange={(value) => setFormData(prev => ({ ...prev, assigned_to: value }))}
+            />
+
+            <div>
+              <Label className="text-gray-300">Observações</Label>
+              <Textarea
+                value={formData.notes}
+                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Observações sobre a venda"
+                className="bg-gray-700 border-gray-600 text-white"
+                rows={3}
+              />
+            </div>
+          </div>
+
+          {/* Seção 5: Serviço Recorrente */}
           <div className="space-y-4 pt-4 border-t border-gray-700">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -146,7 +184,7 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                 }
               />
               <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">
-                🔄 Este serviço é recorrente? (Gera cobranças mensais automáticas)
+                🔄 Serviço Recorrente (gera cobranças mensais automáticas)
               </Label>
             </div>
 
@@ -154,14 +192,14 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
               <div className="space-y-4 pl-6 border-l-2 border-senvia-500/30 bg-senvia-500/5 p-4 rounded-r-lg">
                 {!formData.customer_id || formData.customer_id === 'none' ? (
                   <p className="text-sm text-amber-400">
-                    ⚠️ Selecione um cliente para configurar pagamento recorrente
+                    ⚠️ Selecione um cliente para configurar serviço recorrente
                   </p>
                 ) : (
                   <>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="recurring_billing_day" className="text-gray-300">
-                          Dia de Vencimento (1-28)
+                          Dia de Vencimento (1-28) *
                         </Label>
                         <Input
                           id="recurring_billing_day"
@@ -181,7 +219,7 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                       <div className="space-y-2">
                         <Label htmlFor="recurring_start_date" className="text-gray-300">
                           <Calendar className="inline w-4 h-4 mr-1" />
-                          Data de Início
+                          Data de Início *
                         </Label>
                         <Input
                           id="recurring_start_date"

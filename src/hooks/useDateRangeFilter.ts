@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
-import { subDays } from "date-fns";
+import { subDays, isSameMonth, isSameDay, endOfMonth, format, startOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface UseDateRangeFilterProps {
   defaultDays?: number;
@@ -87,11 +88,45 @@ export const useDateRangeFilter = ({
     return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
   };
 
+  // Get smart period description
+  const getPeriodDescription = () => {
+    if (!dateRange?.from || !dateRange?.to) return `Últimos ${defaultDays} dias`;
+    
+    const today = new Date();
+    const from = dateRange.from;
+    const to = dateRange.to;
+    
+    // Detectar se é "Hoje"
+    if (isSameDay(from, to) && isSameDay(from, today)) {
+      return "Hoje";
+    }
+    
+    // Detectar se é "Este mês" (do dia 1 ao último dia do mês)
+    if (isSameMonth(from, to) && 
+        from.getDate() === 1 && 
+        to.getDate() === endOfMonth(to).getDate() &&
+        isSameMonth(from, today)) {
+      return "Este mês";
+    }
+    
+    // Detectar se é um mês completo específico
+    if (isSameMonth(from, to) && 
+        from.getDate() === 1 && 
+        to.getDate() === endOfMonth(to).getDate()) {
+      return format(from, "MMMM 'de' yyyy", { locale: ptBR });
+    }
+    
+    // Fallback: número de dias
+    const days = getDaysInRange();
+    return `Últimos ${days} dias`;
+  };
+
   return {
     dateRange,
     setDateRange,
     getDateRangeForAPI,
     getDaysInRange,
+    getPeriodDescription,
     resetToDefault: () => setDateRange(getDefaultRange()),
     clearDateRange: () => setDateRange(undefined)
   };

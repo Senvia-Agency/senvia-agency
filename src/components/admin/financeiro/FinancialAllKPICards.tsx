@@ -8,7 +8,7 @@ interface FinancialAllKPICardsProps {
   totalExpenses: number;
   netProfit: number;
   profitMargin: number;
-  selectedPeriod: number;
+  periodDescription: string;
   
   // Dados de recebíveis
   totalReceivable: number;
@@ -31,7 +31,7 @@ const FinancialAllKPICards = ({
   totalExpenses,
   netProfit,
   profitMargin,
-  selectedPeriod,
+  periodDescription,
   totalReceivable,
   totalOverdue,
   monthlyRevenue,
@@ -63,7 +63,7 @@ const FinancialAllKPICards = ({
             €{totalRevenue.toFixed(2)}
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            Últimos {selectedPeriod} dias
+            {periodDescription}
           </div>
         </CardContent>
       </Card>
@@ -81,7 +81,7 @@ const FinancialAllKPICards = ({
             €{totalExpenses.toFixed(2)}
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            Últimos {selectedPeriod} dias
+            {periodDescription}
           </div>
         </CardContent>
       </Card>

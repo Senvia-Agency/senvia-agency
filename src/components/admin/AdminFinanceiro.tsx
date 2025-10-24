@@ -8,12 +8,12 @@ import FinancialAllKPICards from "./financeiro/FinancialAllKPICards";
 import AllMovementsSection from "./financeiro/AllMovementsSection";
 
 const AdminFinanceiro = () => {
-  const { dateRange, setDateRange, getDaysInRange } = useDateRangeFilter({
+  const { dateRange, setDateRange, getPeriodDescription } = useDateRangeFilter({
     defaultDays: 30,
     storageKey: 'admin-financeiro-date-range'
   });
 
-  const selectedPeriod = getDaysInRange();
+  const periodDescription = getPeriodDescription();
   const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(dateRange);
   const { data: receivables } = useUnifiedReceivables();
   const { data: recurringStats } = useRecurringStats();
@@ -55,7 +55,7 @@ const AdminFinanceiro = () => {
         totalExpenses={totalExpenses}
         netProfit={netProfit}
         profitMargin={profitMargin}
-        selectedPeriod={selectedPeriod}
+        periodDescription={periodDescription}
         totalReceivable={totalReceivable}
         totalOverdue={totalOverdue}
         monthlyRevenue={recurringStats?.total_monthly_revenue || 0}

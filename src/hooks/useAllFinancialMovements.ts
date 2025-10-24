@@ -19,8 +19,13 @@ export interface FinancialMovement {
 }
 
 export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
+  const startDate = dateRange?.from ? new Date(dateRange.from) : null;
+  const endDate = dateRange?.to ? new Date(dateRange.to) : null;
+  const fromStrKey = startDate ? format(startDate, 'yyyy-MM-dd') : 'null';
+  const toStrKey = endDate ? format(endDate, 'yyyy-MM-dd') : 'null';
+
   return useQuery({
-    queryKey: ['all-financial-movements', dateRange],
+    queryKey: ['all-financial-movements', { from: fromStrKey, to: toStrKey }],
     placeholderData: (prev) => prev,
     queryFn: async () => {
       console.log('🔍 Buscando todos os movimentos financeiros...');

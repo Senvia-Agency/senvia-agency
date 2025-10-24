@@ -107,6 +107,10 @@ const UnifiedMovementModal = ({ isOpen, onClose, onMovementCreated }: UnifiedMov
     await queryClient.invalidateQueries({ queryKey: ['real-financial-data'] });
     await queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
 
+    // Forçar refetch imediato para refletir já na UI
+    await queryClient.refetchQueries({ queryKey: ['all-financial-movements'] });
+    await queryClient.refetchQueries({ queryKey: ['real-financial-data'] });
+
     resetForm();
     onClose();
   };

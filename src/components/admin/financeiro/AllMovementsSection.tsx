@@ -61,11 +61,11 @@ const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionPro
   // Ajustar filtro quando movimento é criado
   const handleMovementCreated = (movementDateStr: string) => {
     if (!setDateRange || !dateRange) return;
-    
+
     const movementDate = new Date(movementDateStr);
     const from = dateRange.from;
     const to = dateRange.to;
-    
+
     // Se a data está fora do range atual, expandir
     if (from && movementDate < from) {
       setDateRange({ from: movementDate, to });
@@ -76,6 +76,9 @@ const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionPro
     else if (!from || !to) {
       setDateRange({ from: movementDate, to: movementDate });
     }
+
+    // Garantir que o novo item apareça imediatamente
+    setCurrentPage(1);
   };
 
   if (isLoading && !movements) {

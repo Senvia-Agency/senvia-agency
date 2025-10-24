@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
 import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
 import UnifiedMovementModal from "./UnifiedMovementModal";
@@ -15,8 +16,16 @@ interface AllMovementsSectionProps {
 
 const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   
   const { data: movements, isLoading } = useAllFinancialMovements(dateRange);
+
+  // Filtrar movimentos com base na pesquisa
+  const filteredMovements = movements?.filter(movement => {
+    const matchesSearch = 
+      movement.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  }) || [];
 
   const getSourceBadge = (source: string) => {
     const variants = {
@@ -67,13 +76,28 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
           </div>
         </CardHeader>
         <CardContent>
-          {!movements || movements.length === 0 ? (
+          {/* Filtro de Pesquisa */}
+          <div className="flex gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar por descrição..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {!filteredMovements || filteredMovements.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
-              Nenhum movimento registrado no período selecionado.
+              {movements && movements.length > 0 && searchTerm
+                ? "Nenhum movimento encontrado com esse filtro."
+                : "Nenhum movimento registrado no período selecionado."}
             </div>
           ) : (
             <div className="space-y-1 max-h-[600px] overflow-y-auto pr-2">
-              {movements.map((movement) => (
+              {filteredMovements.map((movement) => (
                 <div
                   key={movement.id}
                   className="flex justify-between items-center py-2 px-3 rounded hover:bg-gray-700/50 transition-colors"

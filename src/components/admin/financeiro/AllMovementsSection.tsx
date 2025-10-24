@@ -78,14 +78,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
       <Card className={`bg-gray-800 border-gray-700 transition-opacity duration-200 ${isFetching && !isLoading ? 'opacity-60' : 'opacity-100'}`}>
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex flex-col">
-              <CardTitle className="text-white">Registro de Movimentações</CardTitle>
-              {dateRange?.from && dateRange?.to && (
-                <span className="text-sm text-muted-foreground">
-                  Período: {format(dateRange.from, 'dd/MM/yyyy', { locale: ptBR })} — {format(dateRange.to, 'dd/MM/yyyy', { locale: ptBR })}
-                </span>
-              )}
-            </div>
+            <CardTitle className="text-white">Registro de Movimentações</CardTitle>
             <Button
               onClick={() => setModalOpen(true)}
               variant="default"

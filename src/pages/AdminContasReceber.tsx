@@ -198,6 +198,9 @@ const AdminContasReceber = () => {
                         <span className="text-white font-medium min-w-[200px]">
                           {rec.customer_name}
                         </span>
+                        <span className="text-gray-400 text-sm">
+                          {format(new Date(rec.due_date), 'dd/MM/yyyy', { locale: ptBR })}
+                        </span>
                         <span className="text-blue-400 font-semibold text-lg">
                           €{rec.remaining_amount.toFixed(2)}
                         </span>

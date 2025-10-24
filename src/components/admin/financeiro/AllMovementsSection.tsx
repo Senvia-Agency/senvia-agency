@@ -1,8 +1,15 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
@@ -50,21 +57,6 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
     return filteredMovements.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredMovements, currentPage, itemsPerPage]);
 
-  const getSourceBadge = (source: string) => {
-    const variants = {
-      casual: { label: 'Casual', className: 'bg-purple-600 text-white' },
-      recurring: { label: 'Recorrente', className: 'bg-blue-600 text-white' },
-      sale: { label: 'Venda', className: 'bg-orange-600 text-white' },
-    };
-    
-    const variant = variants[source as keyof typeof variants] || variants.casual;
-    
-    return (
-      <Badge className={variant.className}>
-        {variant.label}
-      </Badge>
-    );
-  };
 
   if (isLoading) {
     return (
@@ -124,32 +116,60 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
           )}
 
           {!filteredMovements || filteredMovements.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
-              {movements && movements.length > 0 && debouncedSearch
-                ? "Nenhum movimento encontrado com esse filtro."
-                : "Nenhum movimento registrado no período selecionado."}
+            <div className="border border-border rounded-lg p-12 text-center">
+              <p className="text-muted-foreground text-lg">
+                {movements && movements.length > 0 && debouncedSearch
+                  ? "Nenhum movimento encontrado com esse filtro."
+                  : "Nenhum movimento registrado no período selecionado."}
+              </p>
             </div>
           ) : (
             <>
-              <div className="space-y-1 max-h-[600px] overflow-y-auto pr-2">
-                {paginatedMovements.map((movement) => (
-                  <div
-                    key={movement.id}
-                    className="flex justify-between items-center py-2 px-3 rounded hover:bg-gray-700/50 transition-colors"
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-white">{movement.description}</span>
-                      {movement.customer_name && (
-                        <span className="text-xs text-muted-foreground">{movement.customer_name}</span>
-                      )}
-                    </div>
-                    <span className={`font-semibold ${
-                      movement.type === 'receita' ? 'text-green-500' : 'text-red-500'
-                    }`}>
-                      {movement.type === 'receita' ? '+' : '-'}€{movement.amount.toFixed(2)}
-                    </span>
-                  </div>
-                ))}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-muted">
+                    <TableRow>
+                      <TableHead className="text-foreground font-semibold">Nome</TableHead>
+                      <TableHead className="text-foreground font-semibold">Data do Movimento</TableHead>
+                      <TableHead className="text-right text-foreground font-semibold">Valor</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedMovements.map((movement) => (
+                      <TableRow 
+                        key={movement.id}
+                        className="hover:bg-muted/50"
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-foreground">{movement.description}</span>
+                            {movement.customer_name && (
+                              <span className="text-xs text-muted-foreground">
+                                {movement.customer_name}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        
+                        <TableCell>
+                          <span className="text-muted-foreground">
+                            {format(new Date(movement.movement_date), 'dd/MM/yyyy', { locale: ptBR })}
+                          </span>
+                        </TableCell>
+                        
+                        <TableCell className="text-right">
+                          <span className={`font-semibold text-lg ${
+                            movement.type === 'receita' 
+                              ? 'text-green-500' 
+                              : 'text-red-500'
+                          }`}>
+                            {movement.type === 'receita' ? '+' : '-'}€{movement.amount.toFixed(2)}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
 
               {/* Controles de paginação */}

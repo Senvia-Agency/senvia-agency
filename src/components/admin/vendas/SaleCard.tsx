@@ -5,7 +5,7 @@ import { MoreHorizontal, Eye, Edit, Trash2, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sale } from "@/hooks/sales/types";
-import { getPaymentStatusLabel, getPaymentStatusColorWithOpacity } from "@/utils/saleStatusUtils";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,12 +58,6 @@ const SaleCard = ({ sale, onViewDetails, onConvertToRecurring, onEdit, onDelete 
           </span>
         </div>
 
-        {/* Status - Centralizado para combinar com o cabeçalho */}
-        <div className="flex-shrink-0 w-24 flex justify-center">
-          <Badge variant="outline" className={`${getPaymentStatusColorWithOpacity(sale.payment_status)} text-xs`}>
-            {getPaymentStatusLabel(sale.payment_status)}
-          </Badge>
-        </div>
 
         {/* Data da Venda - Alinhada à direita para combinar com o cabeçalho */}
         <div className="flex-shrink-0 w-20 text-right">

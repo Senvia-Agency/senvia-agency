@@ -1,7 +1,10 @@
 
 import { useState } from "react";
 import { useAccountsReceivable, useAccountsReceivableStats } from "@/hooks/useAccountsReceivable";
+import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
+import type { UnifiedReceivable } from "@/hooks/useUnifiedReceivables";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +15,8 @@ import AccountsReceivableKPICards from "@/components/admin/financeiro/AccountsRe
 import AccountsReceivableList from "@/components/admin/financeiro/AccountsReceivableList";
 import ReceivablesEvolutionChart from "@/components/admin/financeiro/ReceivablesEvolutionChart";
 import PeriodSelector from "@/components/admin/financeiro/PeriodSelector";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const AdminContasReceber = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(0);
@@ -21,6 +26,10 @@ const AdminContasReceber = () => {
   const queryClient = useQueryClient();
   const { data: accountsReceivable, isLoading } = useAccountsReceivable(selectedPeriod);
   const accountsStats = useAccountsReceivableStats(accountsReceivable || []);
+
+  // Recebíveis unificados (vendas + recorrentes + previstos)
+  const { data: unifiedReceivables } = useUnifiedReceivables();
+  const predictedRecurring: UnifiedReceivable[] = (unifiedReceivables || []).filter(r => r.type === 'recurring' && r.id.startsWith('svc-')) as UnifiedReceivable[];
 
   const handleMarkAsPaid = async (accountId: string) => {
     try {
@@ -174,6 +183,47 @@ const AdminContasReceber = () => {
               accounts={accountsReceivable || []} 
               onMarkAsPaid={handleMarkAsPaid}
             />
+
+            {/* Recorrentes previstos (próximos 30 dias) - João e Tiago devem aparecer aqui */}
+            {predictedRecurring.length > 0 && (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    Recorrentes previstos (30 dias) ({predictedRecurring.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {predictedRecurring.map((rec) => (
+                      <div key={rec.id} className="border border-gray-700 rounded-lg p-4">
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-medium text-white truncate">{rec.customer_name}</h4>
+                              <span className="text-xs px-2 py-0.5 rounded bg-blue-600 text-white">Prevista</span>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-300">
+                              <div>
+                                <span className="text-gray-400">Serviço: </span>
+                                <span className="truncate">{rec.service_name}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Vencimento: </span>
+                                <span>{format(new Date(rec.due_date), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                              </div>
+                              <div className="sm:col-span-2">
+                                <span className="text-gray-400">Valor: </span>
+                                <span className="font-medium text-yellow-400">€{rec.remaining_amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

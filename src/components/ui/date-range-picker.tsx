@@ -86,8 +86,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
   const handlePresetClick = (preset: DatePreset) => {
     setSelectedRange(preset.value);
     setSelectedPreset(preset.label);
-    onChange?.(preset.value);
-    setIsOpen(false);
+    // Não chama onChange aqui - apenas ao clicar em "Atualizar"
   };
 
   const handleApply = () => {
@@ -141,6 +140,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
               {presets.map((preset) => (
                 <button
                   key={preset.label}
+                  type="button"
                   onClick={() => handlePresetClick(preset)}
                   className={cn(
                     "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-700 transition-colors",
@@ -151,6 +151,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 </button>
               ))}
               <button
+                type="button"
                 onClick={() => {
                   setSelectedPreset("Personalizado");
                 }}
@@ -162,6 +163,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 Personalizado
               </button>
               <button
+                type="button"
                 onClick={handleClear}
                 className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-red-600 transition-colors text-red-400 hover:text-white flex items-center gap-2"
               >
@@ -187,6 +189,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
             {/* Action buttons */}
             <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-700">
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
@@ -195,6 +198,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 Cancelar
               </Button>
               <Button
+                type="button"
                 size="sm"
                 onClick={handleApply}
                 className="bg-blue-600 hover:bg-blue-500 text-white"

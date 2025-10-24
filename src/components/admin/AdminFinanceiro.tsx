@@ -33,21 +33,8 @@ const AdminFinanceiro = () => {
     ?.filter(r => r.days_overdue > 0)
     .reduce((sum, r) => sum + Number(r.remaining_amount || 0), 0) || 0;
 
-  if (isLoadingFinancial) {
-    return (
-      <div className="space-y-6 p-6 h-screen overflow-hidden">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold whitespace-nowrap">Módulo Financeiro</h1>
-        </div>
-        <div className="text-center py-8 text-gray-400">
-          Carregando dados financeiros...
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6 p-6 overflow-y-auto pb-12">
+    <div className={`space-y-6 p-6 overflow-y-auto pb-12 transition-opacity duration-200 ${isLoadingFinancial ? 'opacity-60' : 'opacity-100'}`}>
       {/* Header com Filtro de Data */}
       <div className="space-y-3">
         <div>

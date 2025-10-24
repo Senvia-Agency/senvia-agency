@@ -42,6 +42,83 @@ export const useCreateSaleForm = (onClose: () => void) => {
     try {
       console.log('Creating sale with data:', formData);
       
+      // ===== VALIDAÇÕES =====
+      
+      // Validar campos obrigatórios
+      if (!formData.service_name.trim()) {
+        toast({
+          title: "Erro de validação",
+          description: "Nome do serviço é obrigatório.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (!formData.total_value || Number(formData.total_value) <= 0) {
+        toast({
+          title: "Erro de validação",
+          description: "Valor total deve ser maior que zero.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Validar data de vencimento para vendas não recorrentes
+      if (!formData.is_recurring && !formData.due_date) {
+        toast({
+          title: "Erro de validação",
+          description: "Data de vencimento é obrigatória para vendas não recorrentes.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Validar cliente para vendas recorrentes
+      if (formData.is_recurring && (!formData.customer_id || formData.customer_id === 'none')) {
+        toast({
+          title: "Erro de validação",
+          description: "Cliente é obrigatório para serviços recorrentes.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Validar billing day para recorrentes
+      if (formData.is_recurring) {
+        const billingDay = Number(formData.recurring_billing_day);
+        if (isNaN(billingDay) || billingDay < 1 || billingDay > 28) {
+          toast({
+            title: "Erro de validação",
+            description: "Dia de vencimento deve ser entre 1 e 28.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
+      // Validar pagamento
+      if (formData.is_paid) {
+        if (!formData.paid_amount || Number(formData.paid_amount) <= 0) {
+          toast({
+            title: "Erro de validação",
+            description: "Valor pago é obrigatório quando marcado como pago.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        if (!formData.payment_method) {
+          toast({
+            title: "Erro de validação",
+            description: "Método de pagamento é obrigatório quando marcado como pago.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
+      // ===== CÁLCULOS =====
+      
       // Calcular payment_status automaticamente
       const totalValue = Number(formData.total_value);
       const paidAmount = Number(formData.paid_amount) || 0;
@@ -54,7 +131,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
       }
       
       // Calcular due_date baseado em is_recurring
-      let dueDate: string | undefined;
+      let dueDate: string;
       
       if (formData.is_recurring) {
         // Se for recorrente, calcular a próxima data baseado no billing_day
@@ -68,22 +145,25 @@ export const useCreateSaleForm = (onClose: () => void) => {
         }
         
         dueDate = nextBillingDate.toISOString().split('T')[0];
+        console.log('📅 Data calculada para recorrente:', dueDate);
       } else {
         // Se não for recorrente, usar a data de vencimento do form
         dueDate = formData.due_date;
+        console.log('📅 Data de vencimento fornecida:', dueDate);
       }
       
-      await createSaleMutation.mutateAsync({
+      // Preparar dados para envio
+      const saleData = {
         customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
-        service_type: 'manual',
+        service_type: 'manual' as const,
         service_name: formData.service_name,
-        service_description: formData.service_description,
+        service_description: formData.service_description || undefined,
         total_value: totalValue,
         paid_amount: paidAmount,
         payment_method: formData.payment_method || undefined,
-        sale_status: 'pending',
+        sale_status: 'pending' as const,
         payment_status: paymentStatus,
-        notes: formData.notes,
+        notes: formData.notes || undefined,
         sale_date: new Date().toISOString(),
         commission_rate: 0,
         assigned_to: undefined,
@@ -91,7 +171,11 @@ export const useCreateSaleForm = (onClose: () => void) => {
         recurring_billing_day: formData.is_recurring ? Number(formData.recurring_billing_day) : undefined,
         recurring_start_date: formData.is_recurring ? dueDate : undefined,
         due_date: dueDate,
-      });
+      };
+      
+      console.log('📤 Enviando dados para API:', saleData);
+      
+      await createSaleMutation.mutateAsync(saleData);
       
       toast({
         title: "Venda criada",
@@ -101,10 +185,14 @@ export const useCreateSaleForm = (onClose: () => void) => {
       onClose();
       resetForm();
     } catch (error) {
-      console.error('Erro ao criar venda:', error);
+      console.error('❌ Erro ao criar venda:', error);
+      
+      // Erro mais específico
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível criar a venda. Tente novamente.';
+      
       toast({
         title: "Erro ao criar venda",
-        description: "Não foi possível criar a venda. Tente novamente.",
+        description: errorMessage,
         variant: "destructive"
       });
     }

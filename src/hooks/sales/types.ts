@@ -15,6 +15,7 @@ export interface Sale {
   sale_status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
   payment_status: 'pending' | 'partial' | 'paid' | 'overdue';
   payment_method?: string;
+  due_date?: string;
   expected_delivery_date?: string;
   delivered_at?: string;
   notes?: string;

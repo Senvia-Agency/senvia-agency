@@ -13,10 +13,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
     paid_amount: '',
     payment_method: '',
     notes: '',
-    assigned_to: '',
     is_recurring: false,
-    recurring_billing_day: '5',
-    recurring_start_date: ''
+    recurring_billing_day: '5'
   });
 
   const { toast } = useToast();
@@ -33,10 +31,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
       paid_amount: '',
       payment_method: '',
       notes: '',
-      assigned_to: '',
       is_recurring: false,
-      recurring_billing_day: '5',
-      recurring_start_date: ''
+      recurring_billing_day: '5'
     });
   };
 
@@ -57,6 +53,26 @@ export const useCreateSaleForm = (onClose: () => void) => {
         paymentStatus = 'partial';
       }
       
+      // Calcular due_date baseado em is_recurring
+      let dueDate: string | undefined;
+      
+      if (formData.is_recurring) {
+        // Se for recorrente, calcular a próxima data baseado no billing_day
+        const today = new Date();
+        const billingDay = Number(formData.recurring_billing_day);
+        const nextBillingDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
+        
+        // Se o dia já passou neste mês, usar o próximo mês
+        if (nextBillingDate < today) {
+          nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+        }
+        
+        dueDate = nextBillingDate.toISOString().split('T')[0];
+      } else {
+        // Se não for recorrente, usar a data de vencimento do form
+        dueDate = formData.due_date;
+      }
+      
       await createSaleMutation.mutateAsync({
         customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
         service_type: 'manual',
@@ -70,10 +86,11 @@ export const useCreateSaleForm = (onClose: () => void) => {
         notes: formData.notes,
         sale_date: new Date().toISOString(),
         commission_rate: 0,
-        assigned_to: formData.assigned_to === 'unassigned' ? undefined : formData.assigned_to || undefined,
+        assigned_to: undefined,
         is_recurring: formData.is_recurring,
         recurring_billing_day: formData.is_recurring ? Number(formData.recurring_billing_day) : undefined,
-        recurring_start_date: formData.is_recurring ? formData.recurring_start_date : undefined,
+        recurring_start_date: formData.is_recurring ? dueDate : undefined,
+        due_date: dueDate,
       });
       
       toast({

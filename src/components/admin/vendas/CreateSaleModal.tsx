@@ -6,10 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar } from "lucide-react";
 import { useCreateSaleForm } from "./hooks/useCreateSaleForm";
 import CustomerSearchField from "./form-fields/CustomerSearchField";
-import AssigneeField from "./form-fields/AssigneeField";
 
 interface CreateSaleModalProps {
   isOpen: boolean;
@@ -53,6 +51,31 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
             </div>
           </div>
 
+          {/* Checkbox Serviço Recorrente no topo */}
+          <div className="flex items-center space-x-2 p-3 bg-senvia-500/10 border border-senvia-500/30 rounded-lg">
+            <Checkbox
+              id="is_recurring"
+              checked={formData.is_recurring}
+              onCheckedChange={(checked) => {
+                const isChecked = checked as boolean;
+                setFormData(prev => ({ 
+                  ...prev, 
+                  is_recurring: isChecked,
+                  recurring_billing_day: isChecked ? prev.recurring_billing_day : '5',
+                  due_date: isChecked ? '' : prev.due_date
+                }))
+              }}
+            />
+            <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">
+              🔄 Serviço Recorrente (gera cobranças mensais automáticas)
+            </Label>
+            {formData.is_recurring && (
+              <span className="ml-auto text-xs text-senvia-400 font-semibold">
+                ATIVO
+              </span>
+            )}
+          </div>
+
           {/* Seção 2: Descrição */}
           <div>
             <Label className="text-gray-300">Descrição do Serviço</Label>
@@ -83,16 +106,54 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                 />
               </div>
 
-              <div>
-                <Label className="text-gray-300">Data de Vencimento *</Label>
-                <Input
-                  type="date"
-                  value={formData.due_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                  className="bg-gray-700 border-gray-600 text-white"
-                  required
-                />
-              </div>
+              {/* CONDICIONAL: Se NÃO for recorrente, mostrar Data de Vencimento */}
+              {!formData.is_recurring && (
+                <div>
+                  <Label className="text-gray-300">Data de Vencimento *</Label>
+                  <Input
+                    type="date"
+                    value={formData.due_date}
+                    onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                    className="bg-gray-700 border-gray-600 text-white"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* CONDICIONAL: Se for recorrente, mostrar Dia de Vencimento */}
+              {formData.is_recurring && (
+                <div>
+                  <Label className="text-gray-300">
+                    Dia de Vencimento Mensal (1-28) *
+                  </Label>
+                  {!formData.customer_id || formData.customer_id === 'none' ? (
+                    <div className="flex items-center h-10 px-3 bg-gray-700/50 border border-amber-500/50 rounded-md">
+                      <span className="text-sm text-amber-400">
+                        ⚠️ Selecione um cliente primeiro
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="28"
+                        value={formData.recurring_billing_day}
+                        onChange={(e) => setFormData(prev => ({ 
+                          ...prev, 
+                          recurring_billing_day: e.target.value 
+                        }))}
+                        placeholder="5"
+                        className="bg-gray-700 border-gray-600 text-white"
+                        required
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        💡 Cobranças geradas automaticamente todo dia {formData.recurring_billing_day || '5'} do mês
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Checkbox "Pago" */}
@@ -154,94 +215,16 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
             )}
           </div>
 
-          {/* Seção 4: Informações Adicionais */}
-          <div className="space-y-4">
-            <AssigneeField
-              value={formData.assigned_to}
-              onChange={(value) => setFormData(prev => ({ ...prev, assigned_to: value }))}
+          {/* Seção 4: Observações */}
+          <div>
+            <Label className="text-gray-300">Observações</Label>
+            <Textarea
+              value={formData.notes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Observações sobre a venda"
+              className="bg-gray-700 border-gray-600 text-white"
+              rows={3}
             />
-
-            <div>
-              <Label className="text-gray-300">Observações</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder="Observações sobre a venda"
-                className="bg-gray-700 border-gray-600 text-white"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Seção 5: Serviço Recorrente */}
-          <div className="space-y-4 pt-4 border-t border-gray-700">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_recurring"
-                checked={formData.is_recurring}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, is_recurring: checked as boolean }))
-                }
-              />
-              <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">
-                🔄 Serviço Recorrente (gera cobranças mensais automáticas)
-              </Label>
-            </div>
-
-            {formData.is_recurring && (
-              <div className="space-y-4 pl-6 border-l-2 border-senvia-500/30 bg-senvia-500/5 p-4 rounded-r-lg">
-                {!formData.customer_id || formData.customer_id === 'none' ? (
-                  <p className="text-sm text-amber-400">
-                    ⚠️ Selecione um cliente para configurar serviço recorrente
-                  </p>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="recurring_billing_day" className="text-gray-300">
-                          Dia de Vencimento (1-28) *
-                        </Label>
-                        <Input
-                          id="recurring_billing_day"
-                          type="number"
-                          min="1"
-                          max="28"
-                          value={formData.recurring_billing_day}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            recurring_billing_day: e.target.value 
-                          }))}
-                          placeholder="5"
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="recurring_start_date" className="text-gray-300">
-                          <Calendar className="inline w-4 h-4 mr-1" />
-                          Data de Início *
-                        </Label>
-                        <Input
-                          id="recurring_start_date"
-                          type="date"
-                          value={formData.recurring_start_date}
-                          onChange={(e) => setFormData(prev => ({ 
-                            ...prev, 
-                            recurring_start_date: e.target.value 
-                          }))}
-                          min={new Date().toISOString().split('T')[0]}
-                          className="bg-gray-700 border-gray-600 text-white"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      💡 O sistema gerará automaticamente as cobranças mensais todo dia {formData.recurring_billing_day} do mês
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
           </div>
 
           <DialogFooter>

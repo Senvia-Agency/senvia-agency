@@ -1,24 +1,35 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DateRange } from "react-day-picker";
 
-export const useAdminLeads = (dateRange: number) => {
+export const useAdminLeads = (dateRange?: DateRange | undefined) => {
   return useQuery({
     queryKey: ['admin-leads-stats', dateRange],
     queryFn: async () => {
-      const hasRange = dateRange > 0;
-      const startDate = new Date();
-      if (hasRange) {
-        startDate.setDate(startDate.getDate() - dateRange);
+      const startDate = dateRange?.from ? new Date(dateRange.from) : null;
+      const endDate = dateRange?.to ? new Date(dateRange.to) : null;
+
+      const fromStr = startDate ? startDate.toISOString() : null;
+
+      // Use next day for end date to include full day
+      let endDateStr: string | null = null;
+      if (endDate) {
+        const nextDay = new Date(endDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        endDateStr = nextDay.toISOString();
       }
       
-      console.log('Buscando estatísticas de leads:', hasRange ? `desde ${startDate.toISOString()}` : 'todos os dados');
+      console.log('Buscando estatísticas de leads:', fromStr ? `de ${fromStr} até ${endDateStr}` : 'todos os dados');
       
       // Buscar leads unificados
       let leadsQuery = supabase.from('unified_leads').select('*');
       
-      if (hasRange) {
-        leadsQuery = leadsQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        leadsQuery = leadsQuery.gte('created_at', fromStr);
+      }
+      if (endDateStr) {
+        leadsQuery = leadsQuery.lt('created_at', endDateStr);
       }
       
       const { data: unifiedLeads, error: unifiedError } = await leadsQuery;

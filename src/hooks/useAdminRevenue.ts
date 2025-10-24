@@ -1,18 +1,26 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DateRange } from "react-day-picker";
 
-export const useAdminRevenue = (dateRange: number) => {
+export const useAdminRevenue = (dateRange?: DateRange | undefined) => {
   return useQuery({
     queryKey: ['admin-revenue-metrics', dateRange],
     queryFn: async () => {
-      const hasRange = dateRange > 0;
-      const startDate = new Date();
-      if (hasRange) {
-        startDate.setDate(startDate.getDate() - dateRange);
+      const startDate = dateRange?.from ? new Date(dateRange.from) : null;
+      const endDate = dateRange?.to ? new Date(dateRange.to) : null;
+
+      const fromStr = startDate ? startDate.toISOString().split('T')[0] : null;
+
+      // Use next day for end date to include full day
+      let endDateStr: string | null = null;
+      if (endDate) {
+        const nextDay = new Date(endDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        endDateStr = nextDay.toISOString().split('T')[0];
       }
       
-      console.log('Buscando métricas de receita:', hasRange ? `desde ${startDate.toISOString()}` : 'todos os dados');
+      console.log('Buscando métricas de receita:', fromStr ? `de ${fromStr} até ${endDateStr}` : 'todos os dados');
       
       // Buscar transações de clientes (sistema novo - dados reais)
       let txQuery = supabase
@@ -20,8 +28,11 @@ export const useAdminRevenue = (dateRange: number) => {
         .select('*')
         .eq('status', 'completed');
       
-      if (hasRange) {
-        txQuery = txQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        txQuery = txQuery.gte('created_at', fromStr);
+      }
+      if (endDateStr) {
+        txQuery = txQuery.lt('created_at', endDateStr);
       }
       
       const { data: customerTransactions, error: transactionsError } = await txQuery;
@@ -32,8 +43,11 @@ export const useAdminRevenue = (dateRange: number) => {
         .select('*')
         .eq('status', 'paid');
       
-      if (hasRange) {
-        paymentsQuery = paymentsQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        paymentsQuery = paymentsQuery.gte('created_at', fromStr);
+      }
+      if (endDateStr) {
+        paymentsQuery = paymentsQuery.lt('created_at', endDateStr);
       }
       
       const { data: legacyPayments, error: paymentsError } = await paymentsQuery;
@@ -49,8 +63,11 @@ export const useAdminRevenue = (dateRange: number) => {
         .from('sales')
         .select('*');
       
-      if (hasRange) {
-        salesQuery = salesQuery.gte('created_at', startDate.toISOString());
+      if (fromStr) {
+        salesQuery = salesQuery.gte('created_at', fromStr);
+      }
+      if (endDateStr) {
+        salesQuery = salesQuery.lt('created_at', endDateStr);
       }
       
       const { data: salesData, error: salesError } = await salesQuery;
@@ -60,8 +77,11 @@ export const useAdminRevenue = (dateRange: number) => {
         .from('financial_movements')
         .select('*');
       
-      if (hasRange) {
-        movementsQuery = movementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      if (fromStr) {
+        movementsQuery = movementsQuery.gte('movement_date', fromStr);
+      }
+      if (endDateStr) {
+        movementsQuery = movementsQuery.lt('movement_date', endDateStr);
       }
       
       const { data: financialMovements, error: movementsError } = await movementsQuery;

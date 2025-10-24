@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
 import UnifiedMovementModal from "./UnifiedMovementModal";
@@ -21,9 +22,11 @@ import { ptBR } from "date-fns/locale";
 interface AllMovementsSectionProps {
   dateRange: DateRange | null;
   setDateRange?: (range: DateRange | undefined) => void;
+  typeFilter?: 'all' | 'receita' | 'despesa';
+  onClearFilter?: () => void;
 }
 
-const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionProps) => {
+const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onClearFilter }: AllMovementsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -41,15 +44,18 @@ const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionPro
     []
   );
 
-  // Filtrar movimentos com base na pesquisa (usando debounced)
+  // Filtrar movimentos com base na pesquisa e tipo (usando debounced)
   const filteredMovements = useMemo(() => {
     return movements?.filter(movement => {
       const matchesSearch = 
         movement.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         movement.customer_name?.toLowerCase().includes(debouncedSearch.toLowerCase());
-      return matchesSearch;
+      
+      const matchesType = typeFilter === 'all' || movement.type === typeFilter;
+      
+      return matchesSearch && matchesType;
     }) || [];
-  }, [movements, debouncedSearch]);
+  }, [movements, debouncedSearch, typeFilter]);
 
   // Paginação
   const totalPages = Math.ceil(filteredMovements.length / itemsPerPage);
@@ -101,7 +107,29 @@ const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionPro
       <Card className={`bg-gray-800 border-gray-700 transition-opacity duration-200 ${isFetching && !isLoading ? 'opacity-60' : 'opacity-100'}`}>
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <CardTitle className="text-white">Registro de Movimentações</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-white">Registro de Movimentações</CardTitle>
+              {typeFilter !== 'all' && (
+                <Badge 
+                  variant="secondary" 
+                  className={`${
+                    typeFilter === 'receita' 
+                      ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                      : 'bg-red-500/20 text-red-400 border-red-500/30'
+                  }`}
+                >
+                  Filtro: {typeFilter === 'receita' ? 'Receitas' : 'Despesas'}
+                  {onClearFilter && (
+                    <button
+                      onClick={onClearFilter}
+                      className="ml-2 hover:bg-background/20 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </Badge>
+              )}
+            </div>
             <Button
               onClick={() => setModalOpen(true)}
               variant="default"

@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
 import { useRealFinancialData } from "@/hooks/useRealFinancialData";
 import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
@@ -8,6 +9,8 @@ import FinancialAllKPICards from "./financeiro/FinancialAllKPICards";
 import AllMovementsSection from "./financeiro/AllMovementsSection";
 
 const AdminFinanceiro = () => {
+  const [movementTypeFilter, setMovementTypeFilter] = useState<'all' | 'receita' | 'despesa'>('all');
+  
   const { dateRange, setDateRange, getPeriodDescription } = useDateRangeFilter({
     defaultDays: 30,
     storageKey: 'admin-financeiro-date-range'
@@ -65,10 +68,17 @@ const AdminFinanceiro = () => {
         activeExpenseServices={recurringStats?.total_active_expense_services || 0}
         totalPaidAmount={totalPaidAmount}
         totalInvoicedAmount={totalRevenue}
+        activeFilter={movementTypeFilter}
+        onFilterChange={setMovementTypeFilter}
       />
 
       {/* Registro Completo de Movimentações */}
-      <AllMovementsSection dateRange={dateRange} setDateRange={setDateRange} />
+      <AllMovementsSection 
+        dateRange={dateRange} 
+        setDateRange={setDateRange}
+        typeFilter={movementTypeFilter}
+        onClearFilter={() => setMovementTypeFilter('all')}
+      />
     </div>
   );
 };

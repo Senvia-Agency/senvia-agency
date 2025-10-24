@@ -24,6 +24,10 @@ interface FinancialAllKPICardsProps {
   // Dados para o novo KPI
   totalPaidAmount: number;
   totalInvoicedAmount: number;
+
+  // Filtro de movimentações
+  activeFilter?: 'all' | 'receita' | 'despesa';
+  onFilterChange?: (filter: 'all' | 'receita' | 'despesa') => void;
 }
 
 const FinancialAllKPICards = ({
@@ -40,8 +44,16 @@ const FinancialAllKPICards = ({
   activeRevenueServices,
   activeExpenseServices,
   totalPaidAmount,
-  totalInvoicedAmount
+  totalInvoicedAmount,
+  activeFilter = 'all',
+  onFilterChange,
 }: FinancialAllKPICardsProps) => {
+  
+  const handleKPIClick = (type: 'receita' | 'despesa') => {
+    if (!onFilterChange) return;
+    // Toggle: se já está ativo, volta para 'all'
+    onFilterChange(activeFilter === type ? 'all' : type);
+  };
   const receivingRate = totalInvoicedAmount > 0
     ? ((totalPaidAmount / totalInvoicedAmount) * 100)
     : 0;
@@ -50,11 +62,18 @@ const FinancialAllKPICards = ({
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
       {/* Linha 1: Métricas do Período */}
       
-      {/* 1. Receita Total */}
-      <Card className="bg-card border-border">
+      {/* 1. Receita Total - CLICÁVEL */}
+      <Card 
+        className={`bg-card border-border transition-all cursor-pointer ${
+          activeFilter === 'receita' 
+            ? 'ring-2 ring-green-500 shadow-lg shadow-green-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-green-500/50'
+        }`}
+        onClick={() => handleKPIClick('receita')}
+      >
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-green-500" />
+            <TrendingUp className={`h-4 w-4 ${activeFilter === 'receita' ? 'text-green-400' : 'text-green-500'}`} />
             Receita Total
           </CardTitle>
         </CardHeader>
@@ -68,11 +87,18 @@ const FinancialAllKPICards = ({
         </CardContent>
       </Card>
 
-      {/* 2. Despesas Total */}
-      <Card className="bg-card border-border">
+      {/* 2. Despesas Total - CLICÁVEL */}
+      <Card 
+        className={`bg-card border-border transition-all cursor-pointer ${
+          activeFilter === 'despesa' 
+            ? 'ring-2 ring-red-500 shadow-lg shadow-red-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-red-500/50'
+        }`}
+        onClick={() => handleKPIClick('despesa')}
+      >
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-red-500" />
+            <TrendingDown className={`h-4 w-4 ${activeFilter === 'despesa' ? 'text-red-400' : 'text-red-500'}`} />
             Despesas Total
           </CardTitle>
         </CardHeader>

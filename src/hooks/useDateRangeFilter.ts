@@ -42,7 +42,7 @@ export const useDateRangeFilter = ({
         console.error('Error loading saved date range:', error);
       }
     }
-    return undefined; // Sem filtro de data por padrão
+    return getDefaultRange(); // Filtro padrão de 30 dias
   });
 
   // Save to localStorage when range changes

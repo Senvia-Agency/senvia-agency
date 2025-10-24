@@ -13,8 +13,8 @@ const AdminFinanceiro = () => {
     storageKey: 'admin-financeiro-date-range'
   });
 
-  const selectedPeriod = dateRange ? getDaysInRange() : 30;
-  const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(selectedPeriod);
+  const selectedPeriod = getDaysInRange();
+  const { data: financialData, isLoading: isLoadingFinancial } = useRealFinancialData(dateRange);
 
   const totalRevenue = financialData?.total_revenue || 0;
   const totalExpenses = financialData?.total_expenses || 0;

@@ -1,15 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DateRange } from "react-day-picker";
 
-export const useRealFinancialData = (dateRange: number | null = 30) => {
+export const useRealFinancialData = (dateRange: DateRange | undefined) => {
   return useQuery({
     queryKey: ['real-financial-data', dateRange],
     queryFn: async () => {
-      let startDate = null;
-      if (dateRange) {
-        startDate = new Date();
-        startDate.setDate(startDate.getDate() - dateRange);
-      }
+      const startDate = dateRange?.from ? new Date(dateRange.from) : null;
+      const endDate = dateRange?.to ? new Date(dateRange.to) : null;
       
       console.log('Buscando dados financeiros reais desde:', startDate ? startDate.toISOString() : 'todos os tempos');
       
@@ -21,6 +19,11 @@ export const useRealFinancialData = (dateRange: number | null = 30) => {
         
       if (startDate) {
         customerTransactionsQuery = customerTransactionsQuery.gte('created_at', startDate.toISOString());
+      }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        customerTransactionsQuery = customerTransactionsQuery.lte('created_at', endOfDay.toISOString());
       }
       
       const { data: customerTransactions, error: transactionsError } = await customerTransactionsQuery;
@@ -34,6 +37,11 @@ export const useRealFinancialData = (dateRange: number | null = 30) => {
       if (startDate) {
         legacyPaymentsQuery = legacyPaymentsQuery.gte('created_at', startDate.toISOString());
       }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        legacyPaymentsQuery = legacyPaymentsQuery.lte('created_at', endOfDay.toISOString());
+      }
       
       const { data: legacyPayments, error: paymentsError } = await legacyPaymentsQuery;
 
@@ -46,6 +54,11 @@ export const useRealFinancialData = (dateRange: number | null = 30) => {
       if (startDate) {
         subscriptionsQuery = subscriptionsQuery.gte('created_at', startDate.toISOString());
       }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        subscriptionsQuery = subscriptionsQuery.lte('created_at', endOfDay.toISOString());
+      }
       
       const { data: activeSubscriptions, error: subsError } = await subscriptionsQuery;
 
@@ -57,6 +70,11 @@ export const useRealFinancialData = (dateRange: number | null = 30) => {
       if (startDate) {
         salesQuery = salesQuery.gte('created_at', startDate.toISOString());
       }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        salesQuery = salesQuery.lte('created_at', endOfDay.toISOString());
+      }
       
       const { data: salesData, error: salesError } = await salesQuery;
 
@@ -67,6 +85,9 @@ export const useRealFinancialData = (dateRange: number | null = 30) => {
         
       if (startDate) {
         movementsQuery = movementsQuery.gte('movement_date', startDate.toISOString().split('T')[0]);
+      }
+      if (endDate) {
+        movementsQuery = movementsQuery.lte('movement_date', endDate.toISOString().split('T')[0]);
       }
       
       const { data: financialMovements, error: movementsError } = await movementsQuery;

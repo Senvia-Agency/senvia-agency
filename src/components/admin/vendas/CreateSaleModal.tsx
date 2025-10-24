@@ -51,30 +51,6 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
             </div>
           </div>
 
-          {/* Checkbox Serviço Recorrente no topo */}
-          <div className="flex items-center space-x-2 p-3 bg-senvia-500/10 border border-senvia-500/30 rounded-lg">
-            <Checkbox
-              id="is_recurring"
-              checked={formData.is_recurring}
-              onCheckedChange={(checked) => {
-                const isChecked = checked as boolean;
-                setFormData(prev => ({ 
-                  ...prev, 
-                  is_recurring: isChecked,
-                  recurring_billing_day: isChecked ? prev.recurring_billing_day : '5',
-                  due_date: isChecked ? '' : prev.due_date
-                }))
-              }}
-            />
-            <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">
-              🔄 Serviço Recorrente (gera cobranças mensais automáticas)
-            </Label>
-            {formData.is_recurring && (
-              <span className="ml-auto text-xs text-senvia-400 font-semibold">
-                ATIVO
-              </span>
-            )}
-          </div>
 
           {/* Seção 2: Descrição */}
           <div>
@@ -156,23 +132,46 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
               )}
             </div>
 
-            {/* Checkbox "Pago" */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_paid"
-                checked={formData.is_paid}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    is_paid: checked as boolean,
-                    paid_amount: checked ? prev.total_value : '',
-                    payment_method: checked ? prev.payment_method : ''
-                  }))
-                }
-              />
-              <Label htmlFor="is_paid" className="text-gray-300 text-sm font-medium cursor-pointer">
-                ✓ Pago
-              </Label>
+            {/* Checkboxes lado a lado: "Pago" e "Serviço Recorrente" */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Checkbox "Pago" */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_paid"
+                  checked={formData.is_paid}
+                  onCheckedChange={(checked) => 
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      is_paid: checked as boolean,
+                      paid_amount: checked ? prev.total_value : '',
+                      payment_method: checked ? prev.payment_method : ''
+                    }))
+                  }
+                />
+                <Label htmlFor="is_paid" className="text-gray-300 text-sm font-medium cursor-pointer">
+                  ✓ Pago
+                </Label>
+              </div>
+
+              {/* Checkbox "Serviço Recorrente" */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_recurring"
+                  checked={formData.is_recurring}
+                  onCheckedChange={(checked) => {
+                    const isChecked = checked as boolean;
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      is_recurring: isChecked,
+                      recurring_billing_day: isChecked ? prev.recurring_billing_day : '5',
+                      due_date: isChecked ? '' : prev.due_date
+                    }))
+                  }}
+                />
+                <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">
+                  🔄 Serviço Recorrente
+                </Label>
+              </div>
             </div>
 
             {/* Campos condicionais quando marcado como "Pago" */}

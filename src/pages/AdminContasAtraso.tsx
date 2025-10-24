@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useAccountsReceivable } from "@/hooks/useAccountsReceivable";
+import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,15 +19,33 @@ const AdminContasAtraso = () => {
   const [activeSection, setActiveSection] = useState("financeiro");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  const { data: accounts, isLoading } = useAccountsReceivable(selectedPeriod);
+  // Usar recebíveis unificados (vendas + recorrentes + previstos)
+  const { data: unifiedReceivables, isLoading: isLoadingUnified } = useUnifiedReceivables();
+  const { data: accounts, isLoading: isLoadingSales } = useAccountsReceivable(selectedPeriod);
   
-  // Filtrar contas em atraso (pending ou partial que passaram da data de vencimento)
-  const contasAtraso = (accounts || []).filter(account => 
-    (account.payment_status === 'pending' || account.payment_status === 'partial') && 
-    account.days_overdue > 0
-  );
+  // Priorizar dados unificados (incluem recorrentes)
+  const isLoading = isLoadingUnified || isLoadingSales;
+  const hasUnified = unifiedReceivables && unifiedReceivables.length > 0;
+  const sourceData = hasUnified ? unifiedReceivables : accounts;
   
-  // Aplicar filtros
+  // Filtrar contas em atraso (com days_overdue > 0)
+  const contasAtraso = (sourceData || []).filter(item => item.days_overdue > 0);
+  
+  console.log('📊 Contas em Atraso:', {
+    totalUnified: unifiedReceivables?.length || 0,
+    totalSales: accounts?.length || 0,
+    usingSource: hasUnified ? 'unified' : 'sales',
+    contasAtrasoCount: contasAtraso.length,
+    contasAtraso: contasAtraso.map(c => ({ 
+      customer: c.customer_name, 
+      service: c.service_name, 
+      amount: c.remaining_amount, 
+      days: c.days_overdue,
+      type: 'type' in c ? c.type : 'sale'
+    }))
+  });
+  
+  // Aplicar filtros de busca
   const filteredContas = contasAtraso.filter(conta => {
     const matchesSearch = conta.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          conta.customer_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,9 +162,14 @@ const AdminContasAtraso = () => {
                   <div key={conta.id} className="border border-red-600 rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h4 className="font-medium text-white mb-1">
-                          {conta.customer_name || 'Cliente não informado'}
-                        </h4>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-white">
+                            {conta.customer_name || 'Cliente não informado'}
+                          </h4>
+                          {'type' in conta && conta.type === 'recurring' && (
+                            <Badge className="bg-blue-600 text-white text-xs">Recorrente</Badge>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-400 mb-2">
                           {conta.customer_email}
                         </p>
@@ -166,7 +190,7 @@ const AdminContasAtraso = () => {
                           €{Number(conta.remaining_amount).toFixed(2)}
                         </div>
                         <div className="text-xs text-gray-400">
-                          Venda: {conta.sale_number}
+                          {'reference_number' in conta ? conta.reference_number : ('sale_number' in conta ? conta.sale_number : 'N/A')}
                         </div>
                       </div>
                     </div>

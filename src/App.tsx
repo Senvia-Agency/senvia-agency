@@ -25,6 +25,8 @@ const AdminContasReceber = lazy(() => import("./pages/AdminContasReceber"));
 const AdminReceitasTotal = lazy(() => import("./pages/AdminReceitasTotal"));
 const AdminDespesasTotal = lazy(() => import("./pages/AdminDespesasTotal"));
 const AdminContasAtraso = lazy(() => import("./pages/AdminContasAtraso"));
+const AdminReceitasMensais = lazy(() => import("./pages/AdminReceitasMensais"));
+const AdminDespesasMensais = lazy(() => import("./pages/AdminDespesasMensais"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
@@ -119,6 +121,16 @@ function App() {
               <Route path="/admin/contas-atraso" element={
                 <AdminRoute>
                   <AdminContasAtraso />
+                </AdminRoute>
+              } />
+              <Route path="/admin/receitas-mensais" element={
+                <AdminRoute>
+                  <AdminReceitasMensais />
+                </AdminRoute>
+              } />
+              <Route path="/admin/despesas-mensais" element={
+                <AdminRoute>
+                  <AdminDespesasMensais />
                 </AdminRoute>
               } />
               

@@ -183,40 +183,44 @@ const FinancialAllKPICards = ({
       </Link>
 
       {/* 8. Receitas Mensais */}
-      <Card className="bg-card border-border">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-green-500" />
-            Receitas Mensais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-500">
-            €{Number(monthlyRevenue).toFixed(2)}
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {activeRevenueServices} serviços ativos
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/receitas-mensais" className="block">
+        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              Receitas Mensais
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-500">
+              €{Number(monthlyRevenue).toFixed(2)}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {activeRevenueServices} serviços ativos
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* 9. Despesas Mensais */}
-      <Card className="bg-card border-border">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            Despesas Mensais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-500">
-            €{Number(monthlyExpenses).toFixed(2)}
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {activeExpenseServices} despesas ativas
-          </div>
-        </CardContent>
-      </Card>
+      <Link to="/admin/despesas-mensais" className="block">
+        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-red-500" />
+              Despesas Mensais
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">
+              €{Number(monthlyExpenses).toFixed(2)}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {activeExpenseServices} despesas ativas
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       {/* 10. Balanço Mensal */}
       <Card className="bg-card border-border">

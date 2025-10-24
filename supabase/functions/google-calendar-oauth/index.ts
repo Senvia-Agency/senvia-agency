@@ -46,7 +46,7 @@ serve(async (req) => {
           code,
           client_id: Deno.env.get('GOOGLE_CLIENT_ID') ?? '',
           client_secret: Deno.env.get('GOOGLE_CLIENT_SECRET') ?? '',
-          redirect_uri: `${req.headers.get('origin')}/dashboard/calendar`,
+          redirect_uri: `${req.headers.get('origin')}/calendar`,
           grant_type: 'authorization_code',
         }),
       });

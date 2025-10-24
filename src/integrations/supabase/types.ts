@@ -257,6 +257,51 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_calendar_integrations: {
+        Row: {
+          access_token: string
+          calendar_id: string | null
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          provider: string
+          refresh_token: string
+          scopes: string[]
+          sync_enabled: boolean | null
+          token_expires_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token: string
+          scopes: string[]
+          sync_enabled?: boolean | null
+          token_expires_at: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string
+          scopes?: string[]
+          sync_enabled?: boolean | null
+          token_expires_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       customer_settings: {
         Row: {
           billing_address: Json | null

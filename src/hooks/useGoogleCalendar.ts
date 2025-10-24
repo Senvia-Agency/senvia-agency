@@ -31,11 +31,24 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     checkConnection();
+    fetchGoogleConfig();
   }, []);
+
+  const fetchGoogleConfig = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-google-config');
+      if (!error && data) {
+        setClientId(data.clientId);
+      }
+    } catch (err) {
+      console.error('Error fetching Google config:', err);
+    }
+  };
 
   const checkConnection = async () => {
     try {
@@ -59,7 +72,15 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
   };
 
   const connectCalendar = () => {
-    const clientId = "YOUR_GOOGLE_CLIENT_ID"; // This will be from Supabase secrets
+    if (!clientId) {
+      toast({
+        title: "Erro",
+        description: "Configuração do Google não carregada",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const redirectUri = `${window.location.origin}/dashboard/calendar`;
     const scope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events.readonly';
     

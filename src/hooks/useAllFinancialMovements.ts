@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, isWithinInterval } from "date-fns";
+import { format } from "date-fns";
 import { DateRange } from "@/components/ui/date-range-picker";
 
 export interface FinancialMovement {
@@ -24,8 +24,14 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
     queryFn: async () => {
       console.log('🔍 Buscando todos os movimentos financeiros...');
 
-      // 1. Buscar movimentos casuais com campos específicos (otimização)
-      const { data: casualMovements, error: casualError } = await supabase
+      // Preparar datas para filtro no banco
+      const startDate = dateRange?.from ? new Date(dateRange.from) : null;
+      const endDate = dateRange?.to ? new Date(dateRange.to) : null;
+      const fromStr = startDate ? format(startDate, 'yyyy-MM-dd') : null;
+      const toStr = endDate ? format(endDate, 'yyyy-MM-dd') : null;
+
+      // 1. Buscar movimentos casuais com filtro de data no banco
+      let casualQuery = supabase
         .from('financial_movements')
         .select(`
           id,
@@ -40,10 +46,14 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         `)
         .order('movement_date', { ascending: false });
 
+      if (fromStr) casualQuery = casualQuery.gte('movement_date', fromStr);
+      if (toStr) casualQuery = casualQuery.lte('movement_date', toStr);
+
+      const { data: casualMovements, error: casualError } = await casualQuery;
       if (casualError) throw casualError;
 
-      // 2. Buscar recorrentes pagos (receitas) com campos específicos
-      const { data: recurringReceivables, error: recurringError } = await supabase
+      // 2. Buscar recorrentes pagos (receitas) com filtro de data
+      let receivablesQuery = supabase
         .from('recurring_receivables')
         .select(`
           id,
@@ -60,10 +70,68 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         .eq('payment_status', 'paid')
         .order('paid_at', { ascending: false });
 
+      if (startDate) {
+        receivablesQuery = receivablesQuery.gte('paid_at', startDate.toISOString());
+      }
+      if (endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        receivablesQuery = receivablesQuery.lte('paid_at', endOfDay.toISOString());
+      }
+
+      const { data: recurringReceivables, error: recurringError } = await receivablesQuery;
       if (recurringError) throw recurringError;
 
-      // Não buscamos despesas recorrentes aqui - elas já aparecem nos KPIs
-      // Remover geração de ocorrências mensais para melhorar performance
+      // 3. Buscar despesas recorrentes ativas
+      const { data: recurringExpenseServices, error: expenseError } = await supabase
+        .from('recurring_services')
+        .select(`
+          id,
+          service_name,
+          amount,
+          billing_day,
+          start_date,
+          end_date,
+          customer_id,
+          customers(full_name)
+        `)
+        .eq('status', 'active')
+        .eq('recurrence_type', 'despesa');
+
+      if (expenseError) throw expenseError;
+
+      // Função auxiliar para gerar ocorrências mensais de despesas recorrentes
+      const generateRecurringOccurrences = (
+        service: any,
+        rangeStart: Date,
+        rangeEnd: Date
+      ): string[] => {
+        const occurrences: string[] = [];
+        const serviceStart = new Date(service.start_date);
+        const serviceEnd = service.end_date ? new Date(service.end_date) : null;
+        
+        // Começar na data mais recente entre o início do serviço e o início do range
+        let currentDate = new Date(Math.max(serviceStart.getTime(), rangeStart.getTime()));
+        
+        // Ajustar para o billing_day correto no mês atual
+        currentDate.setDate(service.billing_day);
+        
+        // Se o dia ajustado ficou antes do início, avançar um mês
+        if (currentDate < serviceStart || currentDate < rangeStart) {
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          currentDate.setDate(service.billing_day);
+        }
+        
+        // Gerar ocorrências até o fim do range ou fim do serviço
+        while (currentDate <= rangeEnd) {
+          if (serviceEnd && currentDate > serviceEnd) break;
+          occurrences.push(format(currentDate, 'yyyy-MM-dd'));
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          currentDate.setDate(service.billing_day);
+        }
+        
+        return occurrences;
+      };
 
       // Combinar todos os movimentos
       const movements: FinancialMovement[] = [];
@@ -101,32 +169,41 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         });
       });
 
-      // Filtrar por dateRange se fornecido
-      let filteredMovements = movements;
-      if (dateRange?.from && dateRange?.to) {
-        filteredMovements = movements.filter(m => {
-          const movementDate = new Date(m.movement_date);
-          return isWithinInterval(movementDate, {
-            start: dateRange.from,
-            end: dateRange.to,
+      // Adicionar despesas recorrentes (gerar ocorrências no período)
+      if (startDate && endDate && recurringExpenseServices) {
+        recurringExpenseServices.forEach(service => {
+          const occurrences = generateRecurringOccurrences(service, startDate, endDate);
+          occurrences.forEach(dateStr => {
+            movements.push({
+              id: `REXP-${service.id}-${dateStr.replace(/-/g, '')}`,
+              type: 'despesa',
+              source: 'recurring',
+              amount: Number(service.amount),
+              description: service.service_name,
+              customer_name: (service.customers as any)?.full_name || undefined,
+              customer_id: service.customer_id || undefined,
+              movement_date: dateStr,
+              notes: 'Despesa recorrente',
+              reference: `REXP-${service.id.slice(0, 8)}`,
+            });
           });
         });
       }
 
       // Ordenar por data (mais recente primeiro)
-      filteredMovements.sort((a, b) => 
+      movements.sort((a, b) => 
         new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
       );
 
       console.log('✅ Movimentos encontrados:', {
-        total: filteredMovements.length,
-        casual: filteredMovements.filter(m => m.source === 'casual').length,
-        recurring: filteredMovements.filter(m => m.source === 'recurring').length,
-        receitas: filteredMovements.filter(m => m.type === 'receita').length,
-        despesas: filteredMovements.filter(m => m.type === 'despesa').length,
+        total: movements.length,
+        casual: movements.filter(m => m.source === 'casual').length,
+        recurring: movements.filter(m => m.source === 'recurring').length,
+        receitas: movements.filter(m => m.type === 'receita').length,
+        despesas: movements.filter(m => m.type === 'despesa').length,
       });
 
-      return filteredMovements;
+      return movements;
     },
     staleTime: 30000, // Dados considerados "fresh" por 30 segundos
     gcTime: 5 * 60 * 1000, // Cache mantido por 5 minutos

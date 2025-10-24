@@ -189,31 +189,18 @@ const AdminContasReceber = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     {predictedRecurring.map((rec) => (
-                      <div key={rec.id} className="border border-gray-700 rounded-lg p-4">
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-medium text-white truncate">{rec.customer_name}</h4>
-                              <span className="text-xs px-2 py-0.5 rounded bg-blue-600 text-white">Prevista</span>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-300">
-                              <div>
-                                <span className="text-gray-400">Serviço: </span>
-                                <span className="truncate">{rec.service_name}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-400">Vencimento: </span>
-                                <span>{format(new Date(rec.due_date), 'dd/MM/yyyy', { locale: ptBR })}</span>
-                              </div>
-                              <div className="sm:col-span-2">
-                                <span className="text-gray-400">Valor: </span>
-                                <span className="font-medium text-yellow-400">€{rec.remaining_amount.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div 
+                        key={rec.id} 
+                        className="flex justify-between items-center py-3 px-4 rounded hover:bg-gray-700/50 transition-colors border border-gray-700"
+                      >
+                        <span className="text-white font-medium min-w-[200px]">
+                          {rec.customer_name}
+                        </span>
+                        <span className="text-blue-400 font-semibold text-lg">
+                          €{rec.remaining_amount.toFixed(2)}
+                        </span>
                       </div>
                     ))}
                   </div>

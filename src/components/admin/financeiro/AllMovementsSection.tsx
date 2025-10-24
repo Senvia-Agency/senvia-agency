@@ -16,7 +16,10 @@ import { useAllFinancialMovements } from "@/hooks/useAllFinancialMovements";
 import { DateRange } from "@/components/ui/date-range-picker";
 import UnifiedMovementModal from "./UnifiedMovementModal";
 import UnifiedReceivablesTable from "./UnifiedReceivablesTable";
+import RecurringRevenuesTable from "./RecurringRevenuesTable";
+import RecurringExpensesTable from "./RecurringExpensesTable";
 import { useUnifiedReceivables, filterReceivablesByStatus } from "@/hooks/useUnifiedReceivables";
+import { useRecurringServices, filterRecurringServicesByType, RecurringService } from "@/hooks/useRecurringServices";
 import { debounce } from "@/utils/performance";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -24,19 +27,21 @@ import { ptBR } from "date-fns/locale";
 interface AllMovementsSectionProps {
   dateRange: DateRange | null;
   setDateRange?: (range: DateRange | undefined) => void;
-  typeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue';
+  typeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue' | 'monthly_revenues' | 'monthly_expenses';
   onClearFilter?: () => void;
 }
 
 const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onClearFilter }: AllMovementsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [recurringSearch, setRecurringSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
   
   const { data: movements, isLoading, isFetching } = useAllFinancialMovements(dateRange);
   const { data: allReceivables, refetch: refetchReceivables } = useUnifiedReceivables();
+  const { data: allRecurringServices } = useRecurringServices();
 
   // Debounce do search
   const handleSearchChange = useMemo(
@@ -54,6 +59,39 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
     }
     return filterReceivablesByStatus(allReceivables, typeFilter === 'overdue' ? 'overdue' : 'all');
   }, [allReceivables, typeFilter]);
+
+  // Filtrar serviços recorrentes
+  const filteredRecurringServices = useMemo(() => {
+    if (!allRecurringServices) return [];
+    
+    let filtered: RecurringService[] = [];
+    
+    if (typeFilter === 'monthly_revenues') {
+      filtered = filterRecurringServicesByType(allRecurringServices, 'revenues');
+    } else if (typeFilter === 'monthly_expenses') {
+      filtered = filterRecurringServicesByType(allRecurringServices, 'expenses');
+    } else {
+      return [];
+    }
+    
+    // Aplicar busca
+    if (recurringSearch) {
+      return filtered.filter(service => {
+        const matchesSearch = 
+          service.service_name?.toLowerCase().includes(recurringSearch.toLowerCase()) ||
+          service.service_description?.toLowerCase().includes(recurringSearch.toLowerCase()) ||
+          service.customers?.full_name?.toLowerCase().includes(recurringSearch.toLowerCase());
+        return matchesSearch;
+      });
+    }
+    
+    return filtered;
+  }, [allRecurringServices, typeFilter, recurringSearch]);
+
+  // Calcular total mensal
+  const totalMensal = useMemo(() => {
+    return filteredRecurringServices.reduce((sum, s) => sum + Number(s.amount), 0);
+  }, [filteredRecurringServices]);
 
   // Filtrar movimentos com base na pesquisa e tipo (usando debounced)
   const filteredMovements = useMemo(() => {
@@ -122,8 +160,20 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
               <CardTitle className="text-white">
                 {typeFilter === 'receivables' && "Contas a Receber"}
                 {typeFilter === 'overdue' && "Contas em Atraso"}
-                {typeFilter !== 'receivables' && typeFilter !== 'overdue' && "Registro de Movimentações"}
+                {typeFilter === 'monthly_revenues' && "Receitas Mensais Recorrentes"}
+                {typeFilter === 'monthly_expenses' && "Despesas Mensais Recorrentes"}
+                {(!typeFilter || typeFilter === 'all' || typeFilter === 'receita' || typeFilter === 'despesa') && "Registro de Movimentações"}
               </CardTitle>
+              {typeFilter === 'monthly_revenues' && (
+                <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                  {filteredRecurringServices.length} serviço{filteredRecurringServices.length !== 1 ? 's' : ''} - €{totalMensal.toFixed(2)}/mês
+                </Badge>
+              )}
+              {typeFilter === 'monthly_expenses' && (
+                <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">
+                  {filteredRecurringServices.length} despesa{filteredRecurringServices.length !== 1 ? 's' : ''} - €{totalMensal.toFixed(2)}/mês
+                </Badge>
+              )}
               {typeFilter === 'receita' && (
                 <Badge 
                   variant="secondary" 
@@ -201,7 +251,49 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
           </div>
         </CardHeader>
         <CardContent>
-          {(typeFilter === 'receivables' || typeFilter === 'overdue') ? (
+          {typeFilter === 'monthly_revenues' ? (
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Buscar por serviço ou cliente..."
+                  value={recurringSearch}
+                  onChange={(e) => setRecurringSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              {filteredRecurringServices.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  {recurringSearch 
+                    ? "Nenhuma receita encontrada com esse critério de busca."
+                    : "Nenhuma receita mensal recorrente ativa no momento."}
+                </div>
+              ) : (
+                <RecurringRevenuesTable revenues={filteredRecurringServices} />
+              )}
+            </div>
+          ) : typeFilter === 'monthly_expenses' ? (
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Buscar por nome ou descrição..."
+                  value={recurringSearch}
+                  onChange={(e) => setRecurringSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              {filteredRecurringServices.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  {recurringSearch 
+                    ? "Nenhuma despesa encontrada com esse critério de busca."
+                    : "Nenhuma despesa mensal recorrente ativa no momento."}
+                </div>
+              ) : (
+                <RecurringExpensesTable expenses={filteredRecurringServices} />
+              )}
+            </div>
+          ) : (typeFilter === 'receivables' || typeFilter === 'overdue') ? (
             <UnifiedReceivablesTable 
               receivables={filteredReceivables} 
               onRefresh={refetchReceivables}

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingDown, TrendingUp, Percent, AlertTriangle, Repeat, BarChart3 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface FinancialAllKPICardsProps {
@@ -18,8 +17,8 @@ interface FinancialAllKPICardsProps {
   activeExpenseServices: number;
   totalPaidAmount: number;
   totalInvoicedAmount: number;
-  activeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue';
-  onFilterChange?: (filter: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue') => void;
+  activeFilter?: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue' | 'monthly_revenues' | 'monthly_expenses';
+  onFilterChange?: (filter: 'all' | 'receita' | 'despesa' | 'receivables' | 'overdue' | 'monthly_revenues' | 'monthly_expenses') => void;
 }
 
 const FinancialAllKPICards = ({
@@ -41,9 +40,8 @@ const FinancialAllKPICards = ({
   onFilterChange,
 }: FinancialAllKPICardsProps) => {
   
-  const handleKPIClick = (filter: 'receita' | 'despesa' | 'receivables' | 'overdue') => {
+  const handleKPIClick = (filter: 'receita' | 'despesa' | 'receivables' | 'overdue' | 'monthly_revenues' | 'monthly_expenses') => {
     if (!onFilterChange) return;
-    // Toggle: se já está ativo, volta para 'all'
     onFilterChange(activeFilter === filter ? 'all' : filter);
   };
   const receivingRate = totalInvoicedAmount > 0
@@ -210,45 +208,57 @@ const FinancialAllKPICards = ({
         </CardContent>
       </Card>
 
-      {/* 8. Receitas Mensais */}
-      <Link to="/admin/receitas-mensais" className="block">
-        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              Receitas Mensais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-500">
-              €{Number(monthlyRevenue).toFixed(2)}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {activeRevenueServices} serviços ativos
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
+      {/* 8. Receitas Mensais - CLICÁVEL */}
+      <Card 
+        className={cn(
+          "bg-card border-border transition-all cursor-pointer",
+          activeFilter === 'monthly_revenues' 
+            ? 'ring-2 ring-green-500 shadow-lg shadow-green-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-green-500/50'
+        )}
+        onClick={() => handleKPIClick('monthly_revenues')}
+      >
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <TrendingUp className={`h-4 w-4 ${activeFilter === 'monthly_revenues' ? 'text-green-400' : 'text-green-500'}`} />
+            Receitas Mensais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-green-500">
+            €{Number(monthlyRevenue).toFixed(2)}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {activeRevenueServices} serviços ativos
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* 9. Despesas Mensais */}
-      <Link to="/admin/despesas-mensais" className="block">
-        <Card className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer h-full">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-500" />
-              Despesas Mensais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-500">
-              €{Number(monthlyExpenses).toFixed(2)}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {activeExpenseServices} despesas ativas
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
+      {/* 9. Despesas Mensais - CLICÁVEL */}
+      <Card 
+        className={cn(
+          "bg-card border-border transition-all cursor-pointer",
+          activeFilter === 'monthly_expenses' 
+            ? 'ring-2 ring-red-500 shadow-lg shadow-red-500/20' 
+            : 'hover:shadow-lg hover:ring-1 hover:ring-red-500/50'
+        )}
+        onClick={() => handleKPIClick('monthly_expenses')}
+      >
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <TrendingDown className={`h-4 w-4 ${activeFilter === 'monthly_expenses' ? 'text-red-400' : 'text-red-500'}`} />
+            Despesas Mensais
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-red-500">
+            €{Number(monthlyExpenses).toFixed(2)}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {activeExpenseServices} despesas ativas
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 10. Balanço Mensal */}
       <Card className="bg-card border-border">

@@ -59,6 +59,16 @@ export interface RecurringStats {
   overdue_receivables_amount: number;
 }
 
+export const filterRecurringServicesByType = (
+  services: RecurringService[], 
+  type: 'revenues' | 'expenses'
+): RecurringService[] => {
+  return services.filter(service => 
+    service.status === 'active' && 
+    service.recurrence_type === (type === 'revenues' ? 'receita' : 'despesa')
+  );
+};
+
 export const useRecurringServices = () => {
   return useQuery({
     queryKey: ['recurring-services'],

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useUnifiedReceivables } from "@/hooks/useUnifiedReceivables";
 import { Button } from "@/components/ui/button";
-import { Menu, ArrowLeft, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Menu, ArrowLeft, Loader2, Search } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -10,6 +11,7 @@ import UnifiedReceivablesTable from "@/components/admin/financeiro/UnifiedReceiv
 const AdminContasReceber = () => {
   const [activeSidebarSection, setActiveSidebarSection] = useState("financeiro");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -20,6 +22,15 @@ const AdminContasReceber = () => {
   const sortedReceivables = (unifiedReceivables || []).sort((a, b) => 
     new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
   );
+
+  // Filtrar recebíveis com base na pesquisa
+  const filteredReceivables = sortedReceivables.filter(receivable => {
+    const matchesSearch = 
+      receivable.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      receivable.customer_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      receivable.service_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
 
   if (isLoading) {
     return (
@@ -95,8 +106,19 @@ const AdminContasReceber = () => {
             {/* Tabela Unificada de Contas a Receber */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">
-                Contas a Receber ({sortedReceivables.length})
+                Contas a Receber ({filteredReceivables.length})
               </h3>
+              
+              {/* Filtro de Pesquisa */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Buscar por cliente ou serviço..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 max-w-md"
+                />
+              </div>
               
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
@@ -104,7 +126,7 @@ const AdminContasReceber = () => {
                 </div>
               ) : (
                 <UnifiedReceivablesTable 
-                  receivables={sortedReceivables} 
+                  receivables={filteredReceivables} 
                   onRefresh={refetch}
                 />
               )}

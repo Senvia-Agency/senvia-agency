@@ -2,6 +2,50 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DateRange } from "react-day-picker";
 
+// Helper to normalize description for deduplication
+const slugify = (text: string): string => {
+  return text.toLowerCase().trim().replace(/\s+/g, '-');
+};
+
+// Helper to generate monthly occurrences of recurring services
+const generateRecurringOccurrences = (
+  service: any,
+  periodStart: Date | null,
+  periodEnd: Date | null
+): Array<{ date: string; amount: number; description: string }> => {
+  const occurrences: Array<{ date: string; amount: number; description: string }> = [];
+  
+  const serviceStart = new Date(service.start_date);
+  const serviceEnd = service.end_date ? new Date(service.end_date) : new Date();
+  const billingDay = service.billing_day;
+  
+  // Determine bounds
+  const startBound = periodStart && periodStart > serviceStart ? periodStart : serviceStart;
+  const endBound = periodEnd && periodEnd < serviceEnd ? periodEnd : serviceEnd;
+  
+  // Start from the first billing date in range
+  let current = new Date(startBound);
+  current.setDate(billingDay);
+  
+  // If billing day already passed in start month, move to next month
+  if (current < startBound) {
+    current.setMonth(current.getMonth() + 1);
+  }
+  
+  // Generate occurrences
+  while (current <= endBound) {
+    const dateStr = current.toISOString().split('T')[0];
+    occurrences.push({
+      date: dateStr,
+      amount: Number(service.amount),
+      description: service.service_name
+    });
+    current.setMonth(current.getMonth() + 1);
+  }
+  
+  return occurrences;
+};
+
 export const useRealFinancialData = (dateRange: DateRange | undefined) => {
   return useQuery({
     queryKey: ['real-financial-data', dateRange],
@@ -92,15 +136,25 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
       
       const { data: financialMovements, error: movementsError } = await movementsQuery;
 
-      if (transactionsError || paymentsError || subsError || movementsError || salesError) {
+      // Buscar serviços recorrentes de despesa
+      let recurringServicesQuery = supabase
+        .from('recurring_services')
+        .select('*')
+        .eq('status', 'active')
+        .eq('recurrence_type', 'despesa');
+      
+      const { data: recurringServices, error: recurringError } = await recurringServicesQuery;
+
+      if (transactionsError || paymentsError || subsError || movementsError || salesError || recurringError) {
         console.error('Erro ao buscar dados financeiros:', {
           transactionsError,
           paymentsError,
           subsError,
           movementsError,
-          salesError
+          salesError,
+          recurringError
         });
-        throw transactionsError || paymentsError || subsError || movementsError || salesError;
+        throw transactionsError || paymentsError || subsError || movementsError || salesError || recurringError;
       }
 
       // Calcular receitas das transações (já em euros)
@@ -134,8 +188,37 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .filter(m => m.movement_type === 'despesa' && m.category === 'estorno')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
+      // Gerar ocorrências de despesas recorrentes
+      let recurringExpensesInRange = 0;
+      const manualExpenseKeys = new Set<string>();
+      
+      // Construir set de chaves de despesas já lançadas manualmente
+      (financialMovements || [])
+        .filter(m => m.movement_type === 'despesa' && m.category !== 'estorno')
+        .forEach(m => {
+          const date = new Date(m.movement_date);
+          const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const key = `${slugify(m.description)}-${yearMonth}`;
+          manualExpenseKeys.add(key);
+        });
+      
+      // Somar ocorrências recorrentes (excluindo as já lançadas manualmente)
+      (recurringServices || []).forEach(service => {
+        const occurrences = generateRecurringOccurrences(service, startDate, endDate);
+        occurrences.forEach(occ => {
+          const date = new Date(occ.date);
+          const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const key = `${slugify(occ.description)}-${yearMonth}`;
+          
+          // Só somar se não tiver sido lançado manualmente
+          if (!manualExpenseKeys.has(key)) {
+            recurringExpensesInRange += occ.amount;
+          }
+        });
+      });
+      
       const totalRevenue = customerTransactionsRevenue + legacyPaymentsRevenue + subscriptionsRevenue + salesRevenue + movementsRevenue;
-      const totalExpenses = movementsExpenses;
+      const totalExpenses = movementsExpenses + recurringExpensesInRange;
       const netProfit = totalRevenue - totalExpenses;
       const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
       
@@ -146,6 +229,8 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         salesRevenue,
         movementsRevenue,
         totalRevenue,
+        movementsExpenses,
+        recurringExpensesInRange,
         totalExpenses,
         totalRefunds,
         netProfit,

@@ -107,19 +107,6 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
             </div>
           </div>
 
-          {/* Total encontrado */}
-          {filteredMovements.length > 0 && (
-            <>
-              <div className="text-sm text-muted-foreground mb-1">
-                {filteredMovements.length} movimento{filteredMovements.length !== 1 ? 's' : ''} encontrado{filteredMovements.length !== 1 ? 's' : ''}
-                {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
-              </div>
-              <div className="text-xs text-muted-foreground mb-2">
-                Inclui todas as despesas e receitas do período: manuais e recorrentes.
-              </div>
-            </>
-          )}
-
           {!filteredMovements || filteredMovements.length === 0 ? (
             <div className="border border-border rounded-lg p-12 text-center">
               <p className="text-muted-foreground text-lg">

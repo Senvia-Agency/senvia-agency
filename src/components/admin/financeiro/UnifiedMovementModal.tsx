@@ -17,9 +17,10 @@ import CustomerField from "../AddMovementModal/CustomerField";
 interface UnifiedMovementModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onMovementCreated?: (movementDate: string) => void;
 }
 
-const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) => {
+const UnifiedMovementModal = ({ isOpen, onClose, onMovementCreated }: UnifiedMovementModalProps) => {
   const [type, setType] = useState<'receita' | 'despesa'>('receita');
   const [isRecurring, setIsRecurring] = useState(false);
   
@@ -93,6 +94,12 @@ const UnifiedMovementModal = ({ isOpen, onClose }: UnifiedMovementModalProps) =>
         customer_id: (customerId && customerId !== 'none' && customerId.trim() !== '' ? customerId : null),
         notes
       });
+    }
+
+    // Notificar sobre a data do movimento criado
+    if (onMovementCreated) {
+      const createdDate = isRecurring ? startDate : movementDate;
+      onMovementCreated(createdDate);
     }
 
     // Invalidar queries para atualizar dados

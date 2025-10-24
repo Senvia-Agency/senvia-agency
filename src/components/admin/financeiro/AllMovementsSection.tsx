@@ -20,9 +20,10 @@ import { ptBR } from "date-fns/locale";
 
 interface AllMovementsSectionProps {
   dateRange: DateRange | null;
+  setDateRange?: (range: DateRange | undefined) => void;
 }
 
-const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
+const AllMovementsSection = ({ dateRange, setDateRange }: AllMovementsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -57,6 +58,25 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
     return filteredMovements.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredMovements, currentPage, itemsPerPage]);
 
+  // Ajustar filtro quando movimento é criado
+  const handleMovementCreated = (movementDateStr: string) => {
+    if (!setDateRange || !dateRange) return;
+    
+    const movementDate = new Date(movementDateStr);
+    const from = dateRange.from;
+    const to = dateRange.to;
+    
+    // Se a data está fora do range atual, expandir
+    if (from && movementDate < from) {
+      setDateRange({ from: movementDate, to });
+    } else if (to && movementDate > to) {
+      setDateRange({ from, to: movementDate });
+    }
+    // Se não tem range definido, criar um que inclua a data
+    else if (!from || !to) {
+      setDateRange({ from: movementDate, to: movementDate });
+    }
+  };
 
   if (isLoading && !movements) {
     return (
@@ -213,6 +233,7 @@ const AllMovementsSection = ({ dateRange }: AllMovementsSectionProps) => {
       <UnifiedMovementModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
+        onMovementCreated={handleMovementCreated}
       />
     </>
   );

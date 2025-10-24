@@ -68,7 +68,7 @@ const AdminFinanceiro = () => {
       />
 
       {/* Registro Completo de Movimentações */}
-      <AllMovementsSection dateRange={dateRange} />
+      <AllMovementsSection dateRange={dateRange} setDateRange={setDateRange} />
     </div>
   );
 };

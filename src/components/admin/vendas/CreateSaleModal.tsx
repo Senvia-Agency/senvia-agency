@@ -16,6 +16,8 @@ interface CreateSaleModalProps {
 }
 
 const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) => {
+  console.log('🟢 [MODAL] CreateSaleModal renderizado - isOpen:', isOpen);
+  
   const {
     formData,
     setFormData,
@@ -23,14 +25,26 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
     createSaleMutation
   } = useCreateSaleForm(onClose);
 
+  console.log('🟢 [MODAL] Estado da mutação:', {
+    isPending: createSaleMutation.isPending,
+    isError: createSaleMutation.isError,
+    isSuccess: createSaleMutation.isSuccess
+  });
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      console.log('🟡 [MODAL] Dialog onOpenChange chamado - novo estado:', open);
+      onClose();
+    }}>
       <DialogContent className="bg-gray-800 border-gray-700 max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-white">Nova Venda</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => {
+          console.log('📝 [MODAL] Formulário submetido via onSubmit');
+          handleSubmit(e);
+        }} className="space-y-6">
           {/* Seção 1: Informações Básicas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <CustomerSearchField
@@ -239,8 +253,9 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
               type="submit"
               disabled={createSaleMutation.isPending}
               className="bg-senvia-500 hover:bg-senvia-400 text-black"
+              onClick={() => console.log('🔵 [MODAL] Botão "Criar Venda" clicado')}
             >
-              {createSaleMutation.isPending ? 'Criando...' : 'Criar Venda'}
+              {createSaleMutation.isPending ? '⏳ Criando...' : 'Criar Venda'}
             </Button>
           </DialogFooter>
         </form>

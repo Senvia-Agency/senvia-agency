@@ -59,10 +59,17 @@ export const useCreateSale = () => {
       });
     },
     onError: (error: any) => {
-      console.error('Erro na criação da venda:', error);
+      console.error('❌ [HOOK] Erro na criação da venda:', error);
+      console.error('❌ [HOOK] Detalhes do erro:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      
       toast({
-        title: "Erro ao criar venda",
-        description: error.message,
+        title: "❌ Erro ao criar venda",
+        description: error.message || 'Erro desconhecido ao criar venda',
         variant: "destructive"
       });
     }

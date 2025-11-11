@@ -54,13 +54,17 @@ const AdminVendas = () => {
   };
 
   const handleCreateSale = () => {
-    console.log('Opening create sale modal...');
+    console.log('🔵 [ADMIN] Botão "Nova Venda" clicado');
+    console.log('🔵 [ADMIN] Estado atual do modal:', isCreateModalOpen);
     setIsCreateModalOpen(true);
+    console.log('🔵 [ADMIN] Modal definido como aberto');
   };
 
   const handleCloseCreateModal = () => {
-    console.log('Closing create sale modal...');
+    console.log('🔴 [ADMIN] Fechando modal de criação de venda');
+    console.log('🔴 [ADMIN] Estado atual do modal:', isCreateModalOpen);
     setIsCreateModalOpen(false);
+    console.log('🔴 [ADMIN] Modal definido como fechado');
   };
 
   const handleSaleUpdated = () => {

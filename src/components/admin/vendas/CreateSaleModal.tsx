@@ -127,7 +127,17 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                         value={formData.recurring_start_date}
                         onChange={(e) => {
                           const selectedDate = e.target.value;
-                          const day = new Date(selectedDate + 'T00:00:00').getDate();
+                          
+                          // Validar formato da data
+                          if (!selectedDate || !/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
+                            console.warn('⚠️ Data inválida selecionada:', selectedDate);
+                            return;
+                          }
+                          
+                          const day = parseInt(selectedDate.split('-')[2], 10);
+                          
+                          console.log('📅 Data selecionada:', selectedDate, '- Dia extraído:', day);
+                          
                           setFormData(prev => ({ 
                             ...prev, 
                             recurring_start_date: selectedDate,

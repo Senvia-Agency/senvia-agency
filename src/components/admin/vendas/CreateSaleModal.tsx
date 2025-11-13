@@ -110,12 +110,10 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                 </div>
               )}
 
-              {/* CONDICIONAL: Se for recorrente, mostrar Dia de Vencimento */}
+              {/* CONDICIONAL: Se for recorrente, mostrar Data da Primeira Cobrança */}
               {formData.is_recurring && (
                 <div>
-                  <Label className="text-gray-300">
-                    Dia de Vencimento Mensal (1-28) *
-                  </Label>
+                  <Label className="text-gray-300">Data da Primeira Cobrança *</Label>
                   {!formData.customer_id || formData.customer_id === 'none' ? (
                     <div className="flex items-center h-10 px-3 bg-gray-700/50 border border-amber-500/50 rounded-md">
                       <span className="text-sm text-amber-400">
@@ -125,20 +123,22 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                   ) : (
                     <>
                       <Input
-                        type="number"
-                        min="1"
-                        max="28"
-                        value={formData.recurring_billing_day}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          recurring_billing_day: e.target.value 
-                        }))}
-                        placeholder="5"
+                        type="date"
+                        value={formData.recurring_start_date}
+                        onChange={(e) => {
+                          const selectedDate = e.target.value;
+                          const day = new Date(selectedDate + 'T00:00:00').getDate();
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            recurring_start_date: selectedDate,
+                            recurring_billing_day: day.toString()
+                          }));
+                        }}
                         className="bg-gray-700 border-gray-600 text-white"
                         required
                       />
                       <p className="text-xs text-gray-400 mt-1">
-                        💡 Cobranças geradas automaticamente todo dia {formData.recurring_billing_day || '5'} do mês
+                        💡 Primeira cobrança nesta data. Próximas cobranças todo dia {formData.recurring_billing_day || '-'}
                       </p>
                     </>
                   )}

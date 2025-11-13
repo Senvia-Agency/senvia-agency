@@ -177,12 +177,28 @@ export const useCreateSaleForm = (onClose: () => void) => {
       console.log('📦 [DATA] Preparando dados para envio...');
       
       // Extrair o dia da data de início para recorrentes
-      const billingDay = formData.is_recurring 
-        ? new Date(formData.recurring_start_date).getDate()
+      const billingDay = formData.is_recurring && formData.recurring_start_date
+        ? parseInt(formData.recurring_start_date.split('-')[2], 10)
         : undefined;
+
+      // Validar billing day se for recorrente
+      if (formData.is_recurring) {
+        if (!billingDay || isNaN(billingDay) || billingDay < 1 || billingDay > 28) {
+          console.error('❌ [ERROR] Billing day inválido:', billingDay);
+          toast({
+            title: "Erro ao processar data",
+            description: "Não foi possível extrair o dia de cobrança da data selecionada.",
+            variant: "destructive"
+          });
+          return;
+        }
+        console.log('✅ [VALIDATION] Billing day extraído:', billingDay);
+      }
       
-      const saleData = {
-        customer_id: formData.customer_id === 'none' ? null : formData.customer_id || null,
+    const saleData = {
+      customer_id: (!formData.customer_id || formData.customer_id === 'none' || formData.customer_id === '') 
+        ? null 
+        : formData.customer_id,
         sale_date: new Date().toISOString(),
         service_type: 'manual' as const,
         service_name: formData.service_name,
@@ -201,6 +217,14 @@ export const useCreateSaleForm = (onClose: () => void) => {
       };
       
       console.log('📤 [API] Enviando dados para API:', saleData);
+      console.log('🔍 [DEBUG] Tipos dos dados:', {
+        customer_id: typeof saleData.customer_id,
+        total_value: typeof saleData.total_value,
+        recurring_billing_day: typeof saleData.recurring_billing_day,
+        is_recurring: typeof saleData.is_recurring,
+        due_date: typeof saleData.due_date,
+        recurring_start_date: typeof saleData.recurring_start_date
+      });
       
       // Mostrar toast de processamento
       toast({

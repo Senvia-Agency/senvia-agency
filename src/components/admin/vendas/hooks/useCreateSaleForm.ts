@@ -14,7 +14,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
     payment_method: '',
     notes: '',
     is_recurring: false,
-    recurring_billing_day: '5'
+    recurring_billing_day: '',
+    recurring_start_date: ''
   });
 
   const { toast } = useToast();
@@ -32,7 +33,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
       payment_method: '',
       notes: '',
       is_recurring: false,
-      recurring_billing_day: '5'
+      recurring_billing_day: '',
+      recurring_start_date: ''
     });
   };
 
@@ -93,19 +95,31 @@ export const useCreateSaleForm = (onClose: () => void) => {
       }
       console.log('✅ [VALIDATION] Validação de cliente OK');
       
-      // Validar billing day para recorrentes
+      // Validar data de início para recorrentes
       if (formData.is_recurring) {
-        const billingDay = Number(formData.recurring_billing_day);
-        if (isNaN(billingDay) || billingDay < 1 || billingDay > 28) {
-          console.log('❌ [VALIDATION] Dia de vencimento inválido:', billingDay);
+        if (!formData.recurring_start_date) {
+          console.log('❌ [VALIDATION] Data da primeira cobrança ausente');
           toast({
             title: "Erro de validação",
-            description: "Dia de vencimento deve ser entre 1 e 28.",
+            description: "Data da primeira cobrança é obrigatória para serviços recorrentes.",
             variant: "destructive"
           });
           return;
         }
-        console.log('✅ [VALIDATION] Dia de vencimento OK:', billingDay);
+        
+        const startDate = new Date(formData.recurring_start_date);
+        const billingDay = startDate.getDate();
+        
+        if (billingDay > 28) {
+          console.log('❌ [VALIDATION] Dia maior que 28:', billingDay);
+          toast({
+            title: "Erro de validação",
+            description: "Para garantir recorrência em todos os meses, escolha uma data entre os dias 1 e 28.",
+            variant: "destructive"
+          });
+          return;
+        }
+        console.log('✅ [VALIDATION] Data de início OK:', formData.recurring_start_date, '- Dia:', billingDay);
       }
       
       // Validar pagamento
@@ -147,46 +161,43 @@ export const useCreateSaleForm = (onClose: () => void) => {
         paymentStatus = 'partial';
       }
       
-      // Calcular due_date baseado em is_recurring
+      // ===== CALCULAR DATA DE VENCIMENTO =====
       let dueDate: string;
       
       if (formData.is_recurring) {
-        // Se for recorrente, calcular a próxima data baseado no billing_day
-        const today = new Date();
-        const billingDay = Number(formData.recurring_billing_day);
-        const nextBillingDate = new Date(today.getFullYear(), today.getMonth(), billingDay);
-        
-        // Se o dia já passou neste mês, usar o próximo mês
-        if (nextBillingDate < today) {
-          nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
-        }
-        
-        dueDate = nextBillingDate.toISOString().split('T')[0];
-        console.log('📅 Data calculada para recorrente:', dueDate);
+        // Para vendas recorrentes, usar a data de início fornecida
+        dueDate = formData.recurring_start_date;
+        console.log('📅 [DATE] Data de vencimento recorrente:', dueDate);
       } else {
-        // Se não for recorrente, usar a data de vencimento do form
         dueDate = formData.due_date;
-        console.log('📅 Data de vencimento fornecida:', dueDate);
+        console.log('📅 [DATE] Data de vencimento manual:', dueDate);
       }
       
-      // Preparar dados para envio
+      // ===== PREPARAR DADOS PARA ENVIO =====
+      console.log('📦 [DATA] Preparando dados para envio...');
+      
+      // Extrair o dia da data de início para recorrentes
+      const billingDay = formData.is_recurring 
+        ? new Date(formData.recurring_start_date).getDate()
+        : undefined;
+      
       const saleData = {
-        customer_id: formData.customer_id === 'none' ? undefined : formData.customer_id || undefined,
+        customer_id: formData.customer_id === 'none' ? null : formData.customer_id || null,
+        sale_date: new Date().toISOString(),
         service_type: 'manual' as const,
         service_name: formData.service_name,
-        service_description: formData.service_description || undefined,
-        total_value: totalValue,
+        service_description: formData.service_description || null,
+        total_value: Number(formData.total_value),
         paid_amount: paidAmount,
-        payment_method: formData.payment_method || undefined,
+        remaining_amount: totalValue - paidAmount,
         payment_status: paymentStatus,
-        notes: formData.notes || undefined,
-        sale_date: new Date().toISOString(),
-        commission_rate: 0,
-        assigned_to: undefined,
-        is_recurring: formData.is_recurring,
-        recurring_billing_day: formData.is_recurring ? Number(formData.recurring_billing_day) : undefined,
-        recurring_start_date: formData.is_recurring ? dueDate : undefined,
+        payment_method: formData.payment_method || null,
         due_date: dueDate,
+        notes: formData.notes || null,
+        commission_rate: 0,
+        is_recurring: formData.is_recurring,
+        recurring_billing_day: billingDay || null,
+        recurring_start_date: formData.is_recurring ? dueDate : null
       };
       
       console.log('📤 [API] Enviando dados para API:', saleData);

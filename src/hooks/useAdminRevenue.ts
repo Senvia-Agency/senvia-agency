@@ -125,8 +125,10 @@ export const useAdminRevenue = (dateRange?: DateRange | undefined) => {
       const movementsByCustomerService = new Map();
       (financialMovements || []).forEach(m => {
         if (m.movement_type === 'receita' && m.customer_id) {
+          // Extrair nome do serviço da descrição (formato: "Descrição - Nome do Serviço")
+          const serviceName = m.description?.split(' - ')[1]?.trim() || m.description?.trim() || '';
           const normalizedAmount = Number(m.amount).toFixed(2);
-          const key = `${m.customer_id}|${m.description.trim()}|${normalizedAmount}`;
+          const key = `${m.customer_id}|${serviceName}|${normalizedAmount}`;
           movementsByCustomerService.set(key, true);
         }
       });

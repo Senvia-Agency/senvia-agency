@@ -167,6 +167,77 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
           .eq('id', actualReceivableId);
 
         if (updateError) throw updateError;
+
+        // CORREÇÃO 2: Atualizar venda original para receivables existentes (não apenas previstos)
+        if (!isPredictedRecurring) {
+          console.log('Buscando sale_id para recurring_receivable:', actualReceivableId);
+          
+          const { data: receivableData, error: receivableError } = await supabase
+            .from('recurring_receivables')
+            .select(`
+              recurring_service_id,
+              recurring_services!inner(sale_id)
+            `)
+            .eq('id', actualReceivableId)
+            .single();
+
+          if (receivableError) {
+            console.error('Erro ao buscar receivable data:', receivableError);
+            throw receivableError;
+          }
+
+          const recurringServices = receivableData?.recurring_services as any;
+          const saleId = recurringServices?.sale_id;
+          
+          if (saleId) {
+            console.log('Atualizando venda original (receivable existente):', saleId);
+            
+            // Buscar valores atuais da venda
+            const { data: currentSale, error: fetchSaleError } = await supabase
+              .from('sales')
+              .select('paid_amount, total_value')
+              .eq('id', saleId)
+              .single();
+
+            if (fetchSaleError) {
+              console.error('Erro ao buscar venda atual:', fetchSaleError);
+              throw fetchSaleError;
+            }
+
+            const newPaidAmount = (currentSale?.paid_amount || 0) + amount;
+            const totalValue = currentSale?.total_value || 0;
+            const newRemainingAmount = Math.max(0, totalValue - newPaidAmount);
+            const newPaymentStatus = newPaidAmount >= totalValue ? 'paid' : 'partial';
+
+            console.log('Valores da venda:', {
+              paid_before: currentSale?.paid_amount,
+              payment: amount,
+              new_paid: newPaidAmount,
+              total: totalValue,
+              remaining: newRemainingAmount,
+              status: newPaymentStatus
+            });
+
+            const { error: saleUpdateError } = await supabase
+              .from('sales')
+              .update({
+                paid_amount: newPaidAmount,
+                remaining_amount: newRemainingAmount,
+                payment_status: newPaymentStatus,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', saleId);
+
+            if (saleUpdateError) {
+              console.error('Erro ao atualizar venda original:', saleUpdateError);
+              throw saleUpdateError;
+            }
+
+            console.log('✅ Venda original atualizada com sucesso');
+          } else {
+            console.log('⚠️ Nenhuma venda vinculada a este receivable');
+          }
+        }
       } else {
         // Atualizar venda
         const newPaidAmount = account.paid_amount + amount;

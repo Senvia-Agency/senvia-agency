@@ -23,9 +23,10 @@ export const useUnifiedReceivables = () => {
   return useQuery({
     queryKey: ['unified-receivables'],
     queryFn: async () => {
-      console.log('Buscando todas as contas a receber (vendas + recorrentes)...');
-      
-      // 1. Buscar vendas não-recorrentes pendentes (sem filtro de data)
+      try {
+        console.log('🔄 [useUnifiedReceivables] INICIANDO busca de contas a receber...');
+        
+        // 1. Buscar vendas não-recorrentes pendentes (sem filtro de data)
       const { data: sales, error: salesError } = await supabase
         .from('sales')
         .select(`
@@ -43,6 +44,8 @@ export const useUnifiedReceivables = () => {
         console.error('Detalhes do erro:', JSON.stringify(salesError, null, 2));
         throw salesError;
       }
+      
+      console.log('✅ [SALES] Vendas encontradas:', sales?.length || 0, sales);
 
       // 2. Buscar contas recorrentes pendentes (sem filtro de data)
       const { data: recurring, error: recurringError } = await supabase
@@ -60,6 +63,8 @@ export const useUnifiedReceivables = () => {
         console.error('Detalhes do erro:', JSON.stringify(recurringError, null, 2));
         throw recurringError;
       }
+      
+      console.log('✅ [RECURRING] Recurring_receivables encontrados:', recurring?.length || 0, recurring);
 
       // 3. Buscar serviços recorrentes ativos (para prever próximas cobranças)
       const { data: activeServices, error: servicesError } = await supabase
@@ -76,6 +81,8 @@ export const useUnifiedReceivables = () => {
         console.error('Detalhes do erro:', JSON.stringify(servicesError, null, 2));
         throw servicesError;
       }
+      
+      console.log('✅ [SERVICES] Serviços ativos encontrados:', activeServices?.length || 0, activeServices);
 
       // 3.1. Buscar recurring_receivables pagos para excluir suas vendas originais
       const { data: paidReceivables, error: paidReceivablesError } = await supabase
@@ -355,17 +362,36 @@ export const useUnifiedReceivables = () => {
         return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
       });
 
-      console.log('Total de contas a receber unificadas:', unifiedReceivables.length);
+      console.log('📊 Total de contas a receber unificadas:', unifiedReceivables.length);
       console.log('- Vendas:', sales?.length || 0);
       console.log('- Recorrentes (gerados):', recurring?.length || 0);
       console.log('- Recorrentes (previstos):', projectedCount);
       console.log('- Recorrentes (fallback vendas sem service):', fallbackCount);
       
+      // ⚠️ VALIDAÇÃO: Verificar se array está vazio
+      if (unifiedReceivables.length === 0) {
+        console.warn('⚠️ [ALERTA] ARRAY VAZIO! Dados disponíveis:', {
+          sales: sales?.length || 0,
+          recurring: recurring?.length || 0,
+          activeServices: activeServices?.length || 0,
+          projectedCount,
+          fallbackCount
+        });
+      }
+      
+      console.log('🎯 [RETORNO] Retornando array com', unifiedReceivables.length, 'contas:', unifiedReceivables);
       return unifiedReceivables;
+      
+      } catch (error) {
+        console.error('💥 [ERRO FATAL] Erro no useUnifiedReceivables:', error);
+        console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
+        throw error;
+      }
     },
     staleTime: 0,
+    gcTime: 0,
     refetchOnWindowFocus: true,
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchInterval: 30000,
   });
 };

@@ -193,7 +193,7 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
           // Extrair nome do serviço da descrição (formato esperado: "Descrição - Nome do Serviço")
           const serviceName = m.description?.split(' - ')[1]?.trim() || '';
           if (m.customer_id && serviceName) {
-            const key = `${m.customer_id}|${serviceName}|${m.amount}`;
+            const key = `${m.customer_id}|${serviceName}|${Number(m.amount).toFixed(2)}`;
             movementsByCustomerService.set(key, Number(m.amount));
           }
         });
@@ -206,7 +206,7 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
           
           // Para vendas recurring, verificar por customer_id + service_name + amount
           if (sale.is_recurring || sale.payment_status === 'recurring') {
-            const key = `${sale.customer_id}|${sale.service_name}|${sale.paid_amount}`;
+            const key = `${sale.customer_id}|${sale.service_name}|${Number(sale.paid_amount).toFixed(2)}`;
             return !movementsByCustomerService.has(key);
           }
           

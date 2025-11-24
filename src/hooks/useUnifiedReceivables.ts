@@ -66,6 +66,19 @@ export const useUnifiedReceivables = () => {
       
       console.log('✅ [RECURRING] Recurring_receivables encontrados:', recurring?.length || 0, recurring);
 
+      // 2.1. Buscar TODOS recurring_receivables (incluindo PAID) para popular Set de exclusão
+      const { data: allRecurringForExclusion, error: exclusionError } = await supabase
+        .from('recurring_receivables')
+        .select('recurring_service_id, due_date, payment_status')
+        .in('payment_status', ['pending', 'overdue', 'paid']);
+
+      if (exclusionError) {
+        console.error('❌ ERRO ao buscar receivables para exclusão:', exclusionError);
+        throw exclusionError;
+      }
+
+      console.log('✅ [EXCLUSION] Receivables para exclusão (incluindo paid):', allRecurringForExclusion?.length || 0);
+
       // 3. Buscar serviços recorrentes ativos (para prever próximas cobranças)
       const { data: activeServices, error: servicesError } = await supabase
         .from('recurring_services')
@@ -152,13 +165,12 @@ export const useUnifiedReceivables = () => {
       console.log('✅ Vendas recorrentes ativas encontradas:', recurringActiveSales?.length || 0);
 
       // 4. Criar Set de cobranças recorrentes existentes para evitar duplicatas
+      // Usar o query completo (incluindo PAID) para popular o Set
       const existingRecurringKeys = new Set<string>();
-      (recurring || []).forEach((rec: any) => {
-        if (['pending', 'overdue', 'paid'].includes(rec.payment_status)) {
-          const serviceId = rec.recurring_services?.id || rec.recurring_service_id;
-          if (serviceId) {
-            existingRecurringKeys.add(`${serviceId}|${rec.due_date}`);
-          }
+      (allRecurringForExclusion || []).forEach((rec: any) => {
+        const serviceId = rec.recurring_service_id;
+        if (serviceId) {
+          existingRecurringKeys.add(`${serviceId}|${rec.due_date}`);
         }
       });
 

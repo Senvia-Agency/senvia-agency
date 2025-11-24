@@ -122,8 +122,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
         console.log('✅ [VALIDATION] Data de início OK:', formData.recurring_start_date, '- Dia:', billingDay);
       }
       
-      // Validar pagamento
-      if (formData.is_paid) {
+      // Validar pagamento (não necessário para vendas recorrentes)
+      if (formData.is_paid && !formData.is_recurring) {
         if (!formData.paid_amount || Number(formData.paid_amount) <= 0) {
           console.log('❌ [VALIDATION] Valor pago inválido:', formData.paid_amount);
           toast({
@@ -146,6 +146,11 @@ export const useCreateSaleForm = (onClose: () => void) => {
         console.log('✅ [VALIDATION] Dados de pagamento OK');
       }
       
+      // Para vendas recorrentes, resetar dados de pagamento inicial
+      if (formData.is_recurring) {
+        console.log('🔄 [PAYMENT] Resetando dados de pagamento para venda recorrente');
+      }
+      
       console.log('✅ [VALIDATION] Todas as validações passaram!');
       
       // ===== CÁLCULOS =====
@@ -153,12 +158,20 @@ export const useCreateSaleForm = (onClose: () => void) => {
       // Calcular payment_status automaticamente
       const totalValue = Number(formData.total_value);
       const paidAmount = Number(formData.paid_amount) || 0;
-      let paymentStatus: 'pending' | 'partial' | 'paid' = 'pending';
+      let paymentStatus: 'pending' | 'partial' | 'paid' | 'recurring' = 'pending';
       
-      if (paidAmount >= totalValue) {
-        paymentStatus = 'paid';
-      } else if (paidAmount > 0) {
-        paymentStatus = 'partial';
+      // Para vendas recorrentes, o status é sempre 'recurring'
+      if (formData.is_recurring) {
+        paymentStatus = 'recurring';
+        console.log('💰 [PAYMENT] Status definido como "recurring" para venda recorrente');
+      } else {
+        // Para vendas normais, calcular baseado no pagamento
+        if (paidAmount >= totalValue) {
+          paymentStatus = 'paid';
+        } else if (paidAmount > 0) {
+          paymentStatus = 'partial';
+        }
+        console.log('💰 [PAYMENT] Status calculado:', paymentStatus, '(Pago:', paidAmount, '/ Total:', totalValue, ')');
       }
       
       // ===== CALCULAR DATA DE VENCIMENTO =====
@@ -204,10 +217,12 @@ export const useCreateSaleForm = (onClose: () => void) => {
         service_name: formData.service_name,
         service_description: formData.service_description || null,
         total_value: Number(formData.total_value),
-        paid_amount: paidAmount,
-        remaining_amount: totalValue - paidAmount,
+        // Para vendas recorrentes, paid_amount sempre 0 inicialmente
+        paid_amount: formData.is_recurring ? 0 : paidAmount,
+        remaining_amount: formData.is_recurring ? Number(formData.total_value) : (totalValue - paidAmount),
         payment_status: paymentStatus,
-        payment_method: formData.payment_method || null,
+        // Para vendas recorrentes, payment_method é null inicialmente
+        payment_method: formData.is_recurring ? null : (formData.payment_method || null),
         due_date: dueDate,
         notes: formData.notes || null,
         commission_rate: 0,

@@ -29,6 +29,93 @@ export const useCreateSale = () => {
       return data;
     },
     onSuccess: async (data) => {
+      console.log('✅ [CREATE SALE] Venda criada, processando pós-criação...', data);
+      
+      // ===== 1. CRIAR MOVIMENTO FINANCEIRO SE HOUVE PAGAMENTO =====
+      if (data.paid_amount > 0) {
+        console.log('💰 [FINANCIAL] Criando movimento financeiro:', data.paid_amount);
+        
+        const { error: movementError } = await supabase
+          .from('financial_movements')
+          .insert({
+            movement_type: 'receita',
+            category: 'venda',
+            description: `Pagamento venda ${data.sale_number} - ${data.service_name}`,
+            amount: data.paid_amount,
+            movement_date: new Date().toISOString().split('T')[0],
+            customer_id: data.customer_id,
+            notes: data.payment_method ? `Método: ${data.payment_method}` : null
+          });
+        
+        if (movementError) {
+          console.error('❌ [FINANCIAL] Erro ao criar movimento:', movementError);
+        } else {
+          console.log('✅ [FINANCIAL] Movimento financeiro criado');
+        }
+      }
+      
+      // ===== 2. PROCESSAR SERVIÇO RECORRENTE SE APLICÁVEL =====
+      if (data.is_recurring && data.customer_id) {
+        console.log('🔄 [RECURRING] Processando serviço recorrente...');
+        
+        // Buscar o recurring_service criado pelo trigger
+        const { data: recurringService, error: fetchError } = await supabase
+          .from('recurring_services')
+          .select('id, next_billing_date')
+          .eq('sale_id', data.id)
+          .single();
+        
+        if (fetchError || !recurringService) {
+          console.error('❌ [RECURRING] Erro ao buscar recurring_service:', fetchError);
+        } else {
+          console.log('✅ [RECURRING] Recurring service encontrado:', recurringService);
+          
+          // Se houve pagamento, criar recurring_receivable como pago
+          if (data.paid_amount > 0) {
+            console.log('💰 [RECEIVABLE] Criando receivable pago para serviço recorrente...');
+            
+            const { error: receivableError } = await supabase
+              .from('recurring_receivables')
+              .insert({
+                recurring_service_id: recurringService.id,
+                customer_id: data.customer_id,
+                amount: data.total_value,
+                due_date: data.recurring_start_date || data.due_date,
+                payment_status: data.payment_status === 'paid' ? 'paid' : 'partial',
+                paid_amount: data.paid_amount,
+                paid_at: new Date().toISOString(),
+                payment_method: data.payment_method,
+                notes: `Pagamento inicial da venda ${data.sale_number}`
+              });
+            
+            if (receivableError) {
+              console.error('❌ [RECEIVABLE] Erro ao criar receivable:', receivableError);
+            } else {
+              console.log('✅ [RECEIVABLE] Receivable criado como pago');
+            }
+            
+            // Atualizar next_billing_date para o próximo mês
+            const currentDate = new Date(data.recurring_start_date || data.due_date);
+            const nextMonth = new Date(currentDate);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            const nextBillingDate = nextMonth.toISOString().split('T')[0];
+            
+            console.log('📅 [RECURRING] Atualizando next_billing_date para:', nextBillingDate);
+            
+            const { error: updateError } = await supabase
+              .from('recurring_services')
+              .update({ next_billing_date: nextBillingDate })
+              .eq('id', recurringService.id);
+            
+            if (updateError) {
+              console.error('❌ [RECURRING] Erro ao atualizar next_billing_date:', updateError);
+            } else {
+              console.log('✅ [RECURRING] Next billing date atualizado');
+            }
+          }
+        }
+      }
+      
       // Invalidar queries relevantes
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });

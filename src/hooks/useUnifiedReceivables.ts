@@ -77,10 +77,44 @@ export const useUnifiedReceivables = () => {
         throw servicesError;
       }
 
-      // 3.1. Buscar vendas recorrentes ativas (fallback para vendas sem recurring_service)
+      // 3.1. Buscar recurring_receivables pagos para excluir suas vendas originais
+      const { data: paidReceivables, error: paidReceivablesError } = await supabase
+        .from('recurring_receivables')
+        .select('id, recurring_service_id, payment_status')
+        .eq('payment_status', 'paid');
+
+      if (paidReceivablesError) {
+        console.error('❌ ERRO ao buscar receivables pagos:', paidReceivablesError);
+        throw paidReceivablesError;
+      }
+
+      // Buscar os sale_ids dos recurring_services que têm receivables pagos
+      const paidServiceIds = new Set((paidReceivables || []).map(r => r.recurring_service_id));
+      
+      const { data: paidServices, error: paidServicesError } = await supabase
+        .from('recurring_services')
+        .select('id, sale_id')
+        .in('id', Array.from(paidServiceIds));
+
+      if (paidServicesError) {
+        console.error('❌ ERRO ao buscar services com receivables pagos:', paidServicesError);
+        throw paidServicesError;
+      }
+
+      // Criar Set de sale_ids que já têm receivables pagos
+      const paidRecurringSaleIds = new Set(
+        (paidServices || [])
+          .filter(s => s.sale_id)
+          .map(s => s.sale_id)
+      );
+
+      console.log('📊 Vendas recorrentes com receivables pagos (excluir):', paidRecurringSaleIds.size);
+
+      // 3.2. Buscar vendas recorrentes ativas (fallback para vendas sem recurring_service)
       const today = new Date();
       const todayStr = format(today, 'yyyy-MM-dd');
-      const { data: recurringActiveSales, error: recurringActiveSalesError } = await supabase
+      
+      let recurringActiveSalesQuery = supabase
         .from('sales')
         .select(`
           *,
@@ -91,7 +125,15 @@ export const useUnifiedReceivables = () => {
         .in('payment_status', ['recurring', 'pending'])
         .neq('payment_status', 'cancelled')
         .not('recurring_start_date', 'is', null)
-        .lte('recurring_start_date', todayStr)
+        .lte('recurring_start_date', todayStr);
+
+      // CORREÇÃO 1: Excluir vendas que já têm receivables pagos
+      if (paidRecurringSaleIds.size > 0) {
+        recurringActiveSalesQuery = recurringActiveSalesQuery
+          .not('id', 'in', `(${Array.from(paidRecurringSaleIds).join(',')})`);
+      }
+
+      const { data: recurringActiveSales, error: recurringActiveSalesError } = await recurringActiveSalesQuery
         .order('recurring_start_date', { ascending: false });
 
       if (recurringActiveSalesError) {
@@ -99,6 +141,8 @@ export const useUnifiedReceivables = () => {
         console.error('Detalhes do erro:', JSON.stringify(recurringActiveSalesError, null, 2));
         throw recurringActiveSalesError;
       }
+
+      console.log('✅ Vendas recorrentes ativas encontradas:', recurringActiveSales?.length || 0);
 
       // 4. Criar Set de cobranças recorrentes existentes para evitar duplicatas
       const existingRecurringKeys = new Set<string>();

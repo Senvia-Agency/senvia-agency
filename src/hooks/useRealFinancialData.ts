@@ -180,14 +180,35 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
       const subscriptionsRevenue = (activeSubscriptions || [])
         .reduce((sum, subscription) => sum + (subscription.monthly_price || 20), 0);
 
-      // Receitas das vendas do módulo
-      const salesRevenue = (salesData || [])
-        .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
-      
       // Receitas dos movimentos financeiros
       const movementsRevenue = (financialMovements || [])
         .filter(m => m.movement_type === 'receita')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
+      
+      // Identificar vendas que já têm movimentos financeiros correspondentes (deduplicação)
+      const salesWithMovements = new Set<string>();
+      (financialMovements || [])
+        .filter(m => m.movement_type === 'receita')
+        .forEach(m => {
+          // Identificar se o movimento veio de uma venda pela descrição
+          const desc = m.description?.toLowerCase() || '';
+          if (desc.includes('vd2025-') || desc.includes('rec-') || desc.includes('prev-')) {
+            salesWithMovements.add(m.description || '');
+          }
+        });
+
+      // Receitas das vendas do módulo (excluindo vendas já contabilizadas em movements)
+      const salesRevenue = (salesData || [])
+        .filter(sale => {
+          // Verificar se essa venda já tem movimento financeiro
+          const hasMovement = Array.from(salesWithMovements)
+            .some(desc => 
+              desc.toLowerCase().includes(sale.sale_number?.toLowerCase() || '') || 
+              desc.toLowerCase().includes(sale.id?.toLowerCase() || '')
+            );
+          return !hasMovement;
+        })
+        .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);
       
       // Despesas dos movimentos financeiros (excluindo estornos)
       const movementsExpenses = (financialMovements || [])

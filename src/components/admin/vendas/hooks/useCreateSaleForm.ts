@@ -122,8 +122,8 @@ export const useCreateSaleForm = (onClose: () => void) => {
         console.log('✅ [VALIDATION] Data de início OK:', formData.recurring_start_date, '- Dia:', billingDay);
       }
       
-      // Validar pagamento (não necessário para vendas recorrentes)
-      if (formData.is_paid && !formData.is_recurring) {
+      // Validar pagamento quando marcado como pago
+      if (formData.is_paid) {
         if (!formData.paid_amount || Number(formData.paid_amount) <= 0) {
           console.log('❌ [VALIDATION] Valor pago inválido:', formData.paid_amount);
           toast({
@@ -146,24 +146,38 @@ export const useCreateSaleForm = (onClose: () => void) => {
         console.log('✅ [VALIDATION] Dados de pagamento OK');
       }
       
-      // Para vendas recorrentes, resetar dados de pagamento inicial
-      if (formData.is_recurring) {
-        console.log('🔄 [PAYMENT] Resetando dados de pagamento para venda recorrente');
-      }
-      
       console.log('✅ [VALIDATION] Todas as validações passaram!');
       
       // ===== CÁLCULOS =====
       
-      // Calcular payment_status automaticamente
+      // Calcular valores de pagamento
       const totalValue = Number(formData.total_value);
       const paidAmount = Number(formData.paid_amount) || 0;
+      
+      // Log de dados de pagamento para recorrentes
+      if (formData.is_recurring) {
+        console.log('💰 [PAYMENT] Dados de pagamento para recorrente:', {
+          paid_amount: paidAmount,
+          payment_method: formData.payment_method,
+          is_paid: formData.is_paid
+        });
+      }
+      
+      // Calcular payment_status automaticamente
       let paymentStatus: 'pending' | 'partial' | 'paid' | 'recurring' = 'pending';
       
-      // Para vendas recorrentes, o status é sempre 'recurring'
+      // Para vendas recorrentes, calcular status baseado no pagamento inicial
       if (formData.is_recurring) {
-        paymentStatus = 'recurring';
-        console.log('💰 [PAYMENT] Status definido como "recurring" para venda recorrente');
+        if (paidAmount >= totalValue) {
+          paymentStatus = 'paid';
+          console.log('💰 [PAYMENT] Venda recorrente paga totalmente na criação');
+        } else if (paidAmount > 0) {
+          paymentStatus = 'partial';
+          console.log('💰 [PAYMENT] Venda recorrente com pagamento parcial:', paidAmount, '/', totalValue);
+        } else {
+          paymentStatus = 'recurring';
+          console.log('💰 [PAYMENT] Venda recorrente sem pagamento inicial');
+        }
       } else {
         // Para vendas normais, calcular baseado no pagamento
         if (paidAmount >= totalValue) {
@@ -217,12 +231,10 @@ export const useCreateSaleForm = (onClose: () => void) => {
         service_name: formData.service_name,
         service_description: formData.service_description || null,
         total_value: Number(formData.total_value),
-        // Para vendas recorrentes, paid_amount sempre 0 inicialmente
-        paid_amount: formData.is_recurring ? 0 : paidAmount,
+        paid_amount: paidAmount,
         // ✅ remaining_amount é calculado automaticamente pelo DB: (total_value - paid_amount)
         payment_status: paymentStatus,
-        // Para vendas recorrentes, payment_method é null inicialmente
-        payment_method: formData.is_recurring ? null : (formData.payment_method || null),
+        payment_method: formData.payment_method || null,
         due_date: dueDate,
         notes: formData.notes || null,
         commission_rate: 0,

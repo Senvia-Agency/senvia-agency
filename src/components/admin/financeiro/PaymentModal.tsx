@@ -186,6 +186,10 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
       queryClient.invalidateQueries({ queryKey: ['unified-receivables'] });
       queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
 
       toast({
         title: isFullyPaid ? "✅ Conta liquidada!" : "✅ Pagamento parcial registrado",

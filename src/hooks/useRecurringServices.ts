@@ -91,6 +91,9 @@ export const useRecurringServices = () => {
       console.log('Serviços recorrentes encontrados:', data?.length);
       return data as RecurringService[];
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };
 
@@ -117,6 +120,9 @@ export const useRecurringReceivables = () => {
       console.log('Contas recorrentes encontradas:', data?.length);
       return data as RecurringReceivable[];
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };
 
@@ -136,7 +142,10 @@ export const useRecurringStats = () => {
       console.log('Estatísticas obtidas:', data);
       return data[0] as RecurringStats;
     },
-    refetchInterval: 60000, // Atualizar a cada minuto
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchInterval: 60000,
   });
 };
 

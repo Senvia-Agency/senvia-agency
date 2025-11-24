@@ -219,7 +219,7 @@ export const useCreateSaleForm = (onClose: () => void) => {
         total_value: Number(formData.total_value),
         // Para vendas recorrentes, paid_amount sempre 0 inicialmente
         paid_amount: formData.is_recurring ? 0 : paidAmount,
-        remaining_amount: formData.is_recurring ? Number(formData.total_value) : (totalValue - paidAmount),
+        // ✅ remaining_amount é calculado automaticamente pelo DB: (total_value - paid_amount)
         payment_status: paymentStatus,
         // Para vendas recorrentes, payment_method é null inicialmente
         payment_method: formData.is_recurring ? null : (formData.payment_method || null),

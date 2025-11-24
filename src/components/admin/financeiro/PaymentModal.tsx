@@ -55,25 +55,85 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
     setIsLoading(true);
     try {
-      const newPaidAmount = account.paid_amount + amount;
-      const newRemainingAmount = account.total_value - newPaidAmount;
-      const isFullyPaid = newRemainingAmount <= 0;
-      const overpayment = Math.max(0, amount - account.remaining_amount); // Valor pago a mais (gorjeta/prenda)
+      const isFullyPaid = amount >= account.remaining_amount;
+      const overpayment = Math.max(0, amount - account.remaining_amount);
 
-      // 1. Atualizar a venda (remaining_amount é calculado automaticamente)
-      const { error: updateError } = await supabase
-        .from('sales')
-        .update({
-          paid_amount: newPaidAmount,
-          payment_status: isFullyPaid ? 'paid' : 'partial',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', account.id);
+      // Detectar se é uma receita prevista (ID começa com 'svc-')
+      const isPredictedRecurring = account.id.startsWith('svc-');
+      let actualReceivableId = account.id;
 
-      if (updateError) throw updateError;
+      // Se for receita prevista, criar o recurring_receivable primeiro
+      if (isPredictedRecurring) {
+        // Formato do ID: svc-{service_id}-{date}
+        const parts = account.id.split('-');
+        if (parts.length < 3) {
+          throw new Error('ID de receita prevista inválido');
+        }
+        
+        // Extrair service_id (UUID é formado por 5 partes separadas por hífen)
+        const serviceId = parts.slice(1, 6).join('-'); // Reconstrói o UUID
+        const dueDate = parts.slice(6).join('-'); // Pega a data
+
+        console.log('Criando recurring_receivable para serviço:', serviceId, 'com vencimento:', dueDate);
+
+        // Criar o recurring_receivable
+        const { data: newReceivable, error: createError } = await supabase
+          .from('recurring_receivables')
+          .insert({
+            recurring_service_id: serviceId,
+            customer_id: account.customer_id,
+            amount: account.total_value,
+            due_date: dueDate,
+            payment_status: 'pending'
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Erro ao criar recurring_receivable:', createError);
+          throw createError;
+        }
+
+        actualReceivableId = newReceivable.id;
+        console.log('Recurring_receivable criado com sucesso:', actualReceivableId);
+      }
+
+      // Determinar o tipo de conta e atualizar adequadamente
+      const isRecurringType = isPredictedRecurring || ('type' in account && account.type === 'recurring');
+      
+      if (isRecurringType) {
+        // Atualizar recurring_receivable
+        const { error: updateError } = await supabase
+          .from('recurring_receivables')
+          .update({
+            paid_amount: amount,
+            payment_status: isFullyPaid ? 'paid' : 'partial',
+            paid_at: isFullyPaid ? new Date().toISOString() : null,
+            payment_method: paymentMethod,
+            notes: notes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', actualReceivableId);
+
+        if (updateError) throw updateError;
+      } else {
+        // Atualizar venda
+        const newPaidAmount = account.paid_amount + amount;
+        const { error: updateError } = await supabase
+          .from('sales')
+          .update({
+            paid_amount: newPaidAmount,
+            payment_status: isFullyPaid ? 'paid' : 'partial',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', account.id);
+
+        if (updateError) throw updateError;
+      }
 
       // 2. Criar movimento financeiro (receita)
       const referenceNumber = getReferenceNumber();
+      const newRemainingAmount = account.total_value - amount;
       const movementDescription = overpayment > 0 
         ? `Recebimento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''} + gorjeta de €${overpayment.toFixed(2)} - ${account.service_name}`
         : `Recebimento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''} - ${account.service_name}`;

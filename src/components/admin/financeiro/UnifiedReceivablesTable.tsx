@@ -80,8 +80,16 @@ export default function UnifiedReceivablesTable({ receivables, onRefresh }: Unif
   };
 
   // Detectar se é uma receita prevista (gerada pelo sistema, ainda não criada no DB)
+  // MAS: se estiver em atraso, permitir pagamento (criará automaticamente o receivable)
   const isPredictedReceivable = (receivable: UnifiedReceivable): boolean => {
-    return receivable.type === 'recurring' && receivable.id.startsWith('svc-');
+    const isPredict = receivable.type === 'recurring' && receivable.id.startsWith('svc-');
+    
+    // Se for prevista MAS estiver em atraso, permitir pagamento
+    if (isPredict && receivable.days_overdue > 0) {
+      return false; // Não bloquear - permite pagar contas em atraso mesmo que previstas
+    }
+    
+    return isPredict;
   };
 
   if (receivables.length === 0) {

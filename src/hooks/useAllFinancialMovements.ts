@@ -195,7 +195,7 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
 
       // Adicionar recorrentes pagos (receitas) COM DEDUPLICAÇÃO
       recurringReceivables?.forEach(r => {
-        const serviceName = (r.recurring_services as any)?.service_name || '';
+        const serviceName = ((r.recurring_services as any)?.service_name || '').trim();
         const key = `${r.customer_id}|${serviceName}|${Number(r.paid_amount || r.amount).toFixed(2)}`;
         
         // Pular se já existe movimento casual correspondente

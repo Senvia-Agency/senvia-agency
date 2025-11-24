@@ -184,12 +184,42 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                   checked={formData.is_recurring}
                   onCheckedChange={(checked) => {
                     const isChecked = checked as boolean;
-                    setFormData(prev => ({ 
-                      ...prev, 
-                      is_recurring: isChecked,
-                      recurring_billing_day: isChecked ? prev.recurring_billing_day : '5',
-                      due_date: isChecked ? '' : prev.due_date
-                    }))
+                    console.log('🔄 [CHECKBOX] Alternando modo recorrente:', isChecked);
+                    
+                    setFormData(prev => {
+                      console.log('📅 [CHECKBOX] Dados atuais:', {
+                        due_date: prev.due_date,
+                        recurring_start_date: prev.recurring_start_date
+                      });
+                      
+                      let newData = { 
+                        ...prev, 
+                        is_recurring: isChecked
+                      };
+                      
+                      // Se ATIVOU recorrente: copiar due_date → recurring_start_date
+                      if (isChecked) {
+                        if (prev.due_date) {
+                          newData.recurring_start_date = prev.due_date;
+                          const day = parseInt(prev.due_date.split('-')[2], 10);
+                          newData.recurring_billing_day = day.toString();
+                          console.log('✅ [CHECKBOX] Data copiada de due_date → recurring_start_date:', prev.due_date);
+                        }
+                        newData.due_date = '';
+                      } 
+                      // Se DESATIVOU recorrente: copiar recurring_start_date → due_date
+                      else {
+                        if (prev.recurring_start_date) {
+                          newData.due_date = prev.recurring_start_date;
+                          console.log('✅ [CHECKBOX] Data copiada de recurring_start_date → due_date:', prev.recurring_start_date);
+                        }
+                        newData.recurring_start_date = '';
+                        newData.recurring_billing_day = '';
+                      }
+                      
+                      console.log('📊 [CHECKBOX] Novo estado:', newData);
+                      return newData;
+                    });
                   }}
                 />
                 <Label htmlFor="is_recurring" className="text-gray-300 text-sm font-medium cursor-pointer">

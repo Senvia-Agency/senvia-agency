@@ -128,9 +128,11 @@ export const useUnifiedReceivables = () => {
         .lte('recurring_start_date', todayStr);
 
       // CORREÇÃO 1: Excluir vendas que já têm receivables pagos
-      if (paidRecurringSaleIds.size > 0) {
-        recurringActiveSalesQuery = recurringActiveSalesQuery
-          .not('id', 'in', `(${Array.from(paidRecurringSaleIds).join(',')})`);
+    if (paidRecurringSaleIds.size > 0) {
+      const idsArray = Array.from(paidRecurringSaleIds);
+      const idsString = idsArray.map(id => `'${id}'`).join(',');
+      recurringActiveSalesQuery = recurringActiveSalesQuery
+        .not('id', 'in', `(${idsString})`);
       }
 
       const { data: recurringActiveSales, error: recurringActiveSalesError } = await recurringActiveSalesQuery

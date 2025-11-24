@@ -229,11 +229,15 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
               .eq('id', saleId);
 
             if (saleUpdateError) {
-              console.error('Erro ao atualizar venda original:', saleUpdateError);
-              throw saleUpdateError;
+              console.error('❌ ERRO CRÍTICO ao atualizar venda:', saleUpdateError);
+              toast({
+                title: "⚠️ Aviso",
+                description: "Pagamento registrado, mas houve erro ao atualizar a venda. Atualize a página.",
+                variant: "destructive"
+              });
+            } else {
+              console.log('✅ Venda original atualizada com sucesso');
             }
-
-            console.log('✅ Venda original atualizada com sucesso');
           } else {
             console.log('⚠️ Nenhuma venda vinculada a este receivable');
           }

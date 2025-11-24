@@ -154,7 +154,7 @@ export const useUnifiedReceivables = () => {
       // 4. Criar Set de cobranças recorrentes existentes para evitar duplicatas
       const existingRecurringKeys = new Set<string>();
       (recurring || []).forEach((rec: any) => {
-        if (['pending', 'overdue'].includes(rec.payment_status)) {
+        if (['pending', 'overdue', 'paid'].includes(rec.payment_status)) {
           const serviceId = rec.recurring_services?.id || rec.recurring_service_id;
           if (serviceId) {
             existingRecurringKeys.add(`${serviceId}|${rec.due_date}`);

@@ -230,7 +230,13 @@ export const useUnifiedReceivables = () => {
           // Parse da data como local para evitar problemas de timezone
           const [year, month, day] = service.next_billing_date.split('-').map(Number);
           candidateDate = new Date(year, month - 1, day);
-          console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, parsed = ${format(candidateDate, 'yyyy-MM-dd')}`);
+          
+          // ✅ CORREÇÃO: Se a data está no passado, avançar para o próximo mês
+          while (candidateDate < today) {
+            candidateDate.setMonth(candidateDate.getMonth() + 1);
+          }
+          
+          console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, ajustado = ${format(candidateDate, 'yyyy-MM-dd')}`);
         } else if (service.billing_day) {
           const currentMonth = today.getMonth();
           const currentYear = today.getFullYear();

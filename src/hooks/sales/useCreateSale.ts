@@ -61,7 +61,7 @@ export const useCreateSale = () => {
         // Buscar o recurring_service criado pelo trigger
         const { data: recurringService, error: fetchError } = await supabase
           .from('recurring_services')
-          .select('id, next_billing_date')
+          .select('id, next_billing_date, billing_day')
           .eq('sale_id', data.id)
           .single();
         
@@ -74,13 +74,25 @@ export const useCreateSale = () => {
           if (data.paid_amount > 0) {
             console.log('💰 [RECEIVABLE] Criando receivable pago para serviço recorrente...');
             
+            // ✅ CORREÇÃO: Usar data ATUAL se a data de início estiver no passado
+            const startDate = new Date(data.recurring_start_date || data.due_date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const dueDateToUse = startDate < today 
+              ? today.toISOString().split('T')[0]  // Usar hoje se data é passada
+              : startDate.toISOString().split('T')[0]; // Usar data original se é futura
+            
+            console.log('📅 [RECEIVABLE] Start date:', startDate.toISOString(), '| Today:', today.toISOString());
+            console.log('📅 [RECEIVABLE] Due date calculado:', dueDateToUse, '(usou data', startDate < today ? 'ATUAL' : 'ORIGINAL', ')');
+            
             const { error: receivableError } = await supabase
               .from('recurring_receivables')
               .insert({
                 recurring_service_id: recurringService.id,
                 customer_id: data.customer_id,
                 amount: data.total_value,
-                due_date: data.recurring_start_date || data.due_date,
+                due_date: dueDateToUse,
                 payment_status: data.payment_status === 'paid' ? 'paid' : 'partial',
                 paid_amount: data.paid_amount,
                 paid_at: new Date().toISOString(),
@@ -94,13 +106,27 @@ export const useCreateSale = () => {
               console.log('✅ [RECEIVABLE] Receivable criado como pago');
             }
             
-            // Atualizar next_billing_date para o próximo mês
-            const currentDate = new Date(data.recurring_start_date || data.due_date);
-            const nextMonth = new Date(currentDate);
-            nextMonth.setMonth(nextMonth.getMonth() + 1);
-            const nextBillingDate = nextMonth.toISOString().split('T')[0];
+            // ✅ CORREÇÃO: Calcular next_billing_date baseado no billing_day
+            const calculateNextBillingDate = (billingDay: number, fromDateStr: string): string => {
+              const fromDate = new Date(fromDateStr);
+              const nextDate = new Date(fromDate);
+              
+              // Avançar para o próximo mês
+              nextDate.setMonth(nextDate.getMonth() + 1);
+              
+              // Definir o dia de cobrança
+              // Garantir que não ultrapasse o último dia do mês
+              const lastDayOfMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+              const safeBillingDay = Math.min(billingDay, lastDayOfMonth);
+              nextDate.setDate(safeBillingDay);
+              
+              return nextDate.toISOString().split('T')[0];
+            };
             
-            console.log('📅 [RECURRING] Atualizando next_billing_date para:', nextBillingDate);
+            const nextBillingDate = calculateNextBillingDate(recurringService.billing_day, dueDateToUse);
+            
+            console.log('📅 [RECURRING] Billing day:', recurringService.billing_day, '| From date:', dueDateToUse);
+            console.log('📅 [RECURRING] Next billing date calculado:', nextBillingDate);
             
             const { error: updateError } = await supabase
               .from('recurring_services')
@@ -110,7 +136,7 @@ export const useCreateSale = () => {
             if (updateError) {
               console.error('❌ [RECURRING] Erro ao atualizar next_billing_date:', updateError);
             } else {
-              console.log('✅ [RECURRING] Next billing date atualizado');
+              console.log('✅ [RECURRING] Next billing date atualizado para:', nextBillingDate);
             }
           }
         }

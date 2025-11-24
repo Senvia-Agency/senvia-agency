@@ -163,29 +163,22 @@ export const useCreateSaleForm = (onClose: () => void) => {
         });
       }
       
-      // Calcular payment_status automaticamente
+      // ✅ CORREÇÃO: Calcular payment_status corretamente para recorrentes
       let paymentStatus: 'pending' | 'partial' | 'paid' | 'recurring' = 'pending';
       
-      // Para vendas recorrentes, calcular status baseado no pagamento inicial
-      if (formData.is_recurring) {
-        if (paidAmount >= totalValue) {
-          paymentStatus = 'paid';
-          console.log('💰 [PAYMENT] Venda recorrente paga totalmente na criação');
-        } else if (paidAmount > 0) {
-          paymentStatus = 'partial';
-          console.log('💰 [PAYMENT] Venda recorrente com pagamento parcial:', paidAmount, '/', totalValue);
-        } else {
-          paymentStatus = 'recurring';
-          console.log('💰 [PAYMENT] Venda recorrente sem pagamento inicial');
-        }
+      // Priorizar pagamento total independente de ser recorrente
+      if (paidAmount >= totalValue) {
+        paymentStatus = 'paid';
+        console.log('💰 [PAYMENT] Pagamento total - Status: paid (Pago:', paidAmount, '/ Total:', totalValue, ')');
+      } else if (paidAmount > 0) {
+        paymentStatus = 'partial';
+        console.log('💰 [PAYMENT] Pagamento parcial - Status: partial (Pago:', paidAmount, '/ Total:', totalValue, ')');
+      } else if (formData.is_recurring) {
+        // Apenas usa 'recurring' se não houver pagamento E for recorrente
+        paymentStatus = 'recurring';
+        console.log('💰 [PAYMENT] Venda recorrente sem pagamento inicial - Status: recurring');
       } else {
-        // Para vendas normais, calcular baseado no pagamento
-        if (paidAmount >= totalValue) {
-          paymentStatus = 'paid';
-        } else if (paidAmount > 0) {
-          paymentStatus = 'partial';
-        }
-        console.log('💰 [PAYMENT] Status calculado:', paymentStatus, '(Pago:', paidAmount, '/ Total:', totalValue, ')');
+        console.log('💰 [PAYMENT] Sem pagamento - Status: pending');
       }
       
       // ===== CALCULAR DATA DE VENCIMENTO =====

@@ -96,6 +96,57 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
         actualReceivableId = newReceivable.id;
         console.log('Recurring_receivable criado com sucesso:', actualReceivableId);
+
+        // CORREÇÃO 1: Buscar o sale_id do recurring_service e atualizar a venda original
+        const { data: recurringService, error: serviceError } = await supabase
+          .from('recurring_services')
+          .select('sale_id, billing_day')
+          .eq('id', serviceId)
+          .single();
+
+        if (serviceError) {
+          console.error('Erro ao buscar recurring_service:', serviceError);
+          throw serviceError;
+        }
+
+        // Se existe venda vinculada, atualizar a venda original
+        if (recurringService?.sale_id) {
+          console.log('Atualizando venda original:', recurringService.sale_id);
+          const { error: saleUpdateError } = await supabase
+            .from('sales')
+            .update({
+              paid_amount: amount,
+              payment_status: isFullyPaid ? 'paid' : 'partial',
+              remaining_amount: Math.max(0, account.total_value - amount),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', recurringService.sale_id);
+
+          if (saleUpdateError) {
+            console.error('Erro ao atualizar venda original:', saleUpdateError);
+            throw saleUpdateError;
+          }
+        }
+
+        // CORREÇÃO 3: Atualizar next_billing_date do recurring_service
+        if (isFullyPaid) {
+          const currentDueDate = new Date(dueDate);
+          const nextMonth = new Date(currentDueDate);
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          
+          console.log('Atualizando next_billing_date para:', format(nextMonth, 'yyyy-MM-dd'));
+          const { error: serviceUpdateError } = await supabase
+            .from('recurring_services')
+            .update({
+              next_billing_date: format(nextMonth, 'yyyy-MM-dd')
+            })
+            .eq('id', serviceId);
+
+          if (serviceUpdateError) {
+            console.error('Erro ao atualizar next_billing_date:', serviceUpdateError);
+            throw serviceUpdateError;
+          }
+        }
       }
 
       // Determinar o tipo de conta e atualizar adequadamente
@@ -132,7 +183,32 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       }
 
       // 2. Criar movimento financeiro (receita)
-      const referenceNumber = getReferenceNumber();
+      // CORREÇÃO 2: Buscar o sale_number real se for receita prevista
+      let referenceNumber = getReferenceNumber();
+      if (isPredictedRecurring) {
+        const parts = account.id.split('-');
+        const serviceId = parts.slice(1, 6).join('-');
+        
+        const { data: recurringService } = await supabase
+          .from('recurring_services')
+          .select('sale_id')
+          .eq('id', serviceId)
+          .single();
+
+        if (recurringService?.sale_id) {
+          const { data: saleData } = await supabase
+            .from('sales')
+            .select('sale_number')
+            .eq('id', recurringService.sale_id)
+            .single();
+          
+          if (saleData) {
+            referenceNumber = saleData.sale_number;
+            console.log('Usando sale_number real:', referenceNumber);
+          }
+        }
+      }
+      
       const newRemainingAmount = account.total_value - amount;
       const movementDescription = overpayment > 0 
         ? `Recebimento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''} + gorjeta de €${overpayment.toFixed(2)} - ${account.service_name}`

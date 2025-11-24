@@ -235,10 +235,44 @@ export const useUnifiedReceivables = () => {
           // Parse da data como local para evitar problemas de timezone
           const [year, month, day] = service.next_billing_date.split('-').map(Number);
           candidateDate = new Date(year, month - 1, day);
+          const originalDate = new Date(candidateDate); // Salvar data original
           
-          // ✅ CORREÇÃO: Se a data está no passado, avançar para o próximo mês
-          while (candidateDate < today) {
-            candidateDate.setMonth(candidateDate.getMonth() + 1);
+          // 🔴 CRIAR COBRANÇA EM ATRASO se a data está no passado
+          if (candidateDate < today) {
+            const candidateDateStr = format(originalDate, 'yyyy-MM-dd');
+            const candidateKey = `${service.id}|${candidateDateStr}`;
+            
+            // Verificar se já existe cobrança gerada
+            if (!existingRecurringKeys.has(candidateKey)) {
+              const timeDiff = today.getTime() - originalDate.getTime();
+              const daysOverdue = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+              
+              const customerName = service.customers?.full_name || 'Cliente Direto';
+              const customerEmail = service.customers?.email || '';
+              
+              unifiedReceivables.push({
+                id: `svc-overdue-${service.id}-${candidateDateStr}`,
+                customer_id: service.customer_id,
+                customer_name: customerName,
+                customer_email: customerEmail,
+                reference_number: `REC-${service.id.slice(0, 8)}`,
+                total_value: Number(service.amount),
+                paid_amount: 0,
+                remaining_amount: Number(service.amount),
+                due_date: candidateDateStr,
+                payment_status: 'overdue',
+                service_name: service.service_name || 'Serviço Recorrente',
+                days_overdue: daysOverdue,
+                type: 'recurring'
+              });
+              
+              console.log(`🔴 Cobrança em atraso criada: ${service.service_name} - ${candidateDateStr} (${daysOverdue} dias)`);
+            }
+            
+            // Avançar para próximo mês FUTURO
+            while (candidateDate < today) {
+              candidateDate.setMonth(candidateDate.getMonth() + 1);
+            }
           }
           
           console.log(`📅 Serviço ${service.service_name}: next_billing_date = ${service.next_billing_date}, ajustado = ${format(candidateDate, 'yyyy-MM-dd')}`);

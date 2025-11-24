@@ -64,15 +64,24 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
 
       // Se for receita prevista, criar o recurring_receivable primeiro
       if (isPredictedRecurring) {
-        // Formato do ID: svc-{service_id}-{date}
+        // Formato do ID pode ser:
+        // - svc-{uuid}-{date} (previsões futuras)
+        // - svc-overdue-{uuid}-{date} (cobranças em atraso)
         const parts = account.id.split('-');
         if (parts.length < 3) {
           throw new Error('ID de receita prevista inválido');
         }
         
+        // Detectar se tem 'overdue' no formato
+        const hasOverduePrefix = parts[1] === 'overdue';
+        
+        // Ajustar índices baseado no formato
+        const startIdx = hasOverduePrefix ? 2 : 1; // Pular 'svc' e 'overdue' se existir
+        const uuidEndIdx = startIdx + 5; // UUID tem 5 partes
+        
         // Extrair service_id (UUID é formado por 5 partes separadas por hífen)
-        const serviceId = parts.slice(1, 6).join('-'); // Reconstrói o UUID
-        const dueDate = parts.slice(6).join('-'); // Pega a data
+        const serviceId = parts.slice(startIdx, uuidEndIdx).join('-');
+        const dueDate = parts.slice(uuidEndIdx).join('-');
 
         console.log('Criando recurring_receivable para serviço:', serviceId, 'com vencimento:', dueDate);
 
@@ -262,7 +271,10 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       let referenceNumber = getReferenceNumber();
       if (isPredictedRecurring) {
         const parts = account.id.split('-');
-        const serviceId = parts.slice(1, 6).join('-');
+        const hasOverduePrefix = parts[1] === 'overdue';
+        const startIdx = hasOverduePrefix ? 2 : 1;
+        const uuidEndIdx = startIdx + 5;
+        const serviceId = parts.slice(startIdx, uuidEndIdx).join('-');
         
         const { data: recurringService } = await supabase
           .from('recurring_services')

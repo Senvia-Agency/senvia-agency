@@ -166,6 +166,17 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
       // Combinar todos os movimentos
       const movements: FinancialMovement[] = [];
 
+      // Criar índice de movimentos casuais por customer + service + amount para deduplicação
+      const casualMovementsByKey = new Map<string, boolean>();
+      casualMovements?.forEach(m => {
+        // Extrair nome do serviço da descrição (formato: "Descrição - Nome do Serviço")
+        const serviceName = m.description?.split(' - ')[1]?.trim() || '';
+        if (m.customer_id && serviceName && m.movement_type === 'receita') {
+          const key = `${m.customer_id}|${serviceName}|${Number(m.amount).toFixed(2)}`;
+          casualMovementsByKey.set(key, true);
+        }
+      });
+
       // Adicionar movimentos casuais
       casualMovements?.forEach(m => {
         movements.push({
@@ -182,21 +193,27 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
         });
       });
 
-      // Adicionar recorrentes pagos (receitas)
+      // Adicionar recorrentes pagos (receitas) COM DEDUPLICAÇÃO
       recurringReceivables?.forEach(r => {
-        movements.push({
-          id: r.id,
-          type: 'receita',
-          source: 'recurring',
-          amount: Number(r.paid_amount || r.amount),
-          description: (r.recurring_services as any)?.service_name || 'Serviço Recorrente',
-          customer_name: (r.customers as any)?.full_name || undefined,
-          customer_id: r.customer_id || undefined,
-          movement_date: r.paid_at || r.due_date,
-          payment_method: r.payment_method || undefined,
-          notes: r.notes || undefined,
-          reference: `REC-${r.id.slice(0, 8)}`,
-        });
+        const serviceName = (r.recurring_services as any)?.service_name || '';
+        const key = `${r.customer_id}|${serviceName}|${Number(r.paid_amount || r.amount).toFixed(2)}`;
+        
+        // Pular se já existe movimento casual correspondente
+        if (!casualMovementsByKey.has(key)) {
+          movements.push({
+            id: r.id,
+            type: 'receita',
+            source: 'recurring',
+            amount: Number(r.paid_amount || r.amount),
+            description: serviceName || 'Serviço Recorrente',
+            customer_name: (r.customers as any)?.full_name || undefined,
+            customer_id: r.customer_id || undefined,
+            movement_date: r.paid_at || r.due_date,
+            payment_method: r.payment_method || undefined,
+            notes: r.notes || undefined,
+            reference: `REC-${r.id.slice(0, 8)}`,
+          });
+        }
       });
 
       // Adicionar vendas pagas como receitas

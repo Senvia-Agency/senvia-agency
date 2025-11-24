@@ -121,7 +121,17 @@ export const useAdminRevenue = (dateRange?: DateRange | undefined) => {
         servicesMap.set(service.id, service);
       });
 
-      // Separar vendas recorrentes das não-recorrentes
+      // Criar Map de financial_movements para deduplicação (customer_id|service_name|amount)
+      const movementsByCustomerService = new Map();
+      (financialMovements || []).forEach(m => {
+        if (m.movement_type === 'receita' && m.customer_id) {
+          const normalizedAmount = Number(m.amount).toFixed(2);
+          const key = `${m.customer_id}|${m.description.trim()}|${normalizedAmount}`;
+          movementsByCustomerService.set(key, true);
+        }
+      });
+
+      // Separar vendas recorrentes das não-recorrentes COM DEDUPLICAÇÃO
       const oneTimeSales = (salesData || []).filter(sale => {
         // Se não tem service_id, é manual (consideramos não-recorrente)
         if (!sale.service_id) return true;
@@ -129,6 +139,12 @@ export const useAdminRevenue = (dateRange?: DateRange | undefined) => {
         // Se tem service_id, buscar no mapa e verificar se é one_time
         const service = servicesMap.get(sale.service_id);
         return !service || service.service_type === 'one_time';
+      }).filter(sale => {
+        // Deduplicar: remover vendas que já têm financial_movement
+        if (!sale.customer_id) return true;
+        const normalizedAmount = Number(sale.paid_amount || 0).toFixed(2);
+        const key = `${sale.customer_id}|${sale.service_name.trim()}|${normalizedAmount}`;
+        return !movementsByCustomerService.has(key);
       });
 
       const recurringSales = (salesData || []).filter(sale => {
@@ -136,6 +152,12 @@ export const useAdminRevenue = (dateRange?: DateRange | undefined) => {
         if (!sale.service_id) return false;
         const service = servicesMap.get(sale.service_id);
         return service && service.service_type === 'recurring';
+      }).filter(sale => {
+        // Deduplicar: remover vendas que já têm financial_movement
+        if (!sale.customer_id) return true;
+        const normalizedAmount = Number(sale.paid_amount || 0).toFixed(2);
+        const key = `${sale.customer_id}|${sale.service_name.trim()}|${normalizedAmount}`;
+        return !movementsByCustomerService.has(key);
       });
 
       // Receita das vendas não-recorrentes (únicas/fixas)

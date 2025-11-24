@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSales } from "@/hooks/useSales";
+import { useSales, useDeleteSale } from "@/hooks/useSales";
 import { useSalesStats } from "@/hooks/useSalesStats";
 import { useSalesFilters } from "@/hooks/useSalesFilters";
 import { useDateRangeFilter } from "@/hooks/useDateRangeFilter";
@@ -16,6 +16,16 @@ import SalesFilters from "./vendas/SalesFilters";
 import SaleCard from "./vendas/SaleCard";
 import EditSaleModal from "./vendas/EditSaleModal";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const AdminVendas = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,8 +37,11 @@ const AdminVendas = () => {
   const [saleToConvert, setSaleToConvert] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [saleToEdit, setSaleToEdit] = useState<any>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<any>(null);
 
   const queryClient = useQueryClient();
+  const deleteSaleMutation = useDeleteSale();
   const { dateRange, setDateRange } = useDateRangeFilter({ 
     defaultDays: 30, 
     storageKey: 'admin-sales-date-range' 
@@ -49,8 +62,19 @@ const AdminVendas = () => {
   };
 
   const handleDeleteSale = (sale: any) => {
-    // TODO: Implementar lógica de exclusão
-    console.log('Delete sale:', sale.id);
+    setSaleToDelete(sale);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteSale = () => {
+    if (saleToDelete) {
+      deleteSaleMutation.mutate(saleToDelete.id, {
+        onSuccess: () => {
+          setIsDeleteDialogOpen(false);
+          setSaleToDelete(null);
+        }
+      });
+    }
   };
 
   const handleCreateSale = () => {
@@ -228,6 +252,27 @@ const AdminVendas = () => {
           setSaleToConvert(null);
         }}
       />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir a venda <strong>{saleToDelete?.sale_number}</strong>?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteSale}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1468,7 +1468,7 @@ export type Database = {
           recurring_start_date?: string | null
           remaining_amount?: number | null
           sale_date?: string
-          sale_number: string
+          sale_number?: string
           service_description?: string | null
           service_id?: string | null
           service_name: string

@@ -185,27 +185,34 @@ export const useRealFinancialData = (dateRange: DateRange | undefined) => {
         .filter(m => m.movement_type === 'receita')
         .reduce((sum, movement) => sum + Number(movement.amount), 0);
       
-      // Identificar vendas que já têm movimentos financeiros correspondentes (deduplicação)
-      const salesWithMovements = new Set<string>();
+      // Criar índice de movimentos por customer_id + service_name + amount para deduplicação
+      const movementsByCustomerService = new Map<string, number>();
       (financialMovements || [])
         .filter(m => m.movement_type === 'receita')
         .forEach(m => {
-          // Identificar se o movimento veio de uma venda pela descrição
-          const desc = m.description?.toLowerCase() || '';
-          if (desc.includes('vd2025-') || desc.includes('rec-') || desc.includes('prev-')) {
-            salesWithMovements.add(m.description || '');
+          // Extrair nome do serviço da descrição (formato esperado: "Descrição - Nome do Serviço")
+          const serviceName = m.description?.split(' - ')[1]?.trim() || '';
+          if (m.customer_id && serviceName) {
+            const key = `${m.customer_id}|${serviceName}|${m.amount}`;
+            movementsByCustomerService.set(key, Number(m.amount));
           }
         });
 
-      // Receitas das vendas do módulo (excluindo vendas já contabilizadas em movements)
+      // Receitas das vendas (com deduplicação inteligente)
       const salesRevenue = (salesData || [])
         .filter(sale => {
-          // Verificar se essa venda já tem movimento financeiro
-          const hasMovement = Array.from(salesWithMovements)
-            .some(desc => 
-              desc.toLowerCase().includes(sale.sale_number?.toLowerCase() || '') || 
-              desc.toLowerCase().includes(sale.id?.toLowerCase() || '')
-            );
+          // Pular vendas não pagas
+          if (Number(sale.paid_amount || 0) === 0) return false;
+          
+          // Para vendas recurring, verificar por customer_id + service_name + amount
+          if (sale.is_recurring || sale.payment_status === 'recurring') {
+            const key = `${sale.customer_id}|${sale.service_name}|${sale.paid_amount}`;
+            return !movementsByCustomerService.has(key);
+          }
+          
+          // Para vendas one-time, verificar pelo sale_number na descrição
+          const hasMovement = (financialMovements || [])
+            .some(m => m.description?.includes(sale.sale_number || ''));
           return !hasMovement;
         })
         .reduce((sum, sale) => sum + Number(sale.paid_amount || 0), 0);

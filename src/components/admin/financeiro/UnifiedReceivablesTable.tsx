@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentModal from "./PaymentModal";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface UnifiedReceivablesTableProps {
   receivables: UnifiedReceivable[];
@@ -78,6 +79,11 @@ export default function UnifiedReceivablesTable({ receivables, onRefresh }: Unif
     onRefresh?.();
   };
 
+  // Detectar se é uma receita prevista (gerada pelo sistema, ainda não criada no DB)
+  const isPredictedReceivable = (receivable: UnifiedReceivable): boolean => {
+    return receivable.type === 'recurring' && receivable.id.startsWith('svc-');
+  };
+
   if (receivables.length === 0) {
     return (
       <div className="border border-border rounded-lg p-12 text-center">
@@ -137,6 +143,11 @@ export default function UnifiedReceivablesTable({ receivables, onRefresh }: Unif
                     >
                       {item.type === 'sale' ? 'Venda' : 'Recorrente'}
                     </Badge>
+                    {isPredictedReceivable(item) && (
+                      <Badge variant="secondary" className="text-xs">
+                        Previsto
+                      </Badge>
+                    )}
                   </div>
                 </TableCell>
                 
@@ -153,30 +164,53 @@ export default function UnifiedReceivablesTable({ receivables, onRefresh }: Unif
                 </TableCell>
                 
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleSendReminder(item)}
-                      disabled={sendingReminder === item.id}
-                      className="hover:bg-accent"
-                    >
-                      {sendingReminder === item.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                  <TooltipProvider>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSendReminder(item)}
+                        disabled={sendingReminder === item.id}
+                        className="hover:bg-accent"
+                      >
+                        {sendingReminder === item.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Mail className="h-4 w-4" />
+                        )}
+                      </Button>
+                      
+                      {isPredictedReceivable(item) ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                disabled
+                                className="border-muted text-muted-foreground cursor-not-allowed"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">Esta é uma receita prevista.</p>
+                            <p className="text-sm">O pagamento só pode ser registrado quando a cobrança for gerada automaticamente.</p>
+                          </TooltipContent>
+                        </Tooltip>
                       ) : (
-                        <Mail className="h-4 w-4" />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenPaymentModal(item)}
+                          className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                        </Button>
                       )}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenPaymentModal(item)}
-                      className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                    </Button>
-                  </div>
+                    </div>
+                  </TooltipProvider>
                 </TableCell>
               </TableRow>
             ))}

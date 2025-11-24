@@ -311,6 +311,9 @@ export const useUnifiedReceivables = () => {
       
       return unifiedReceivables;
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     refetchInterval: 30000,
   });
 };

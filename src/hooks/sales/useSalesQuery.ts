@@ -38,10 +38,9 @@ export const useSales = (dateRange?: DateRange) => {
       console.log('Vendas encontradas:', data?.length || 0);
       return data as Sale[];
     },
-    staleTime: 30000, // 30 segundos
-    gcTime: 5 * 60 * 1000, // 5 minutos
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchInterval: false,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 };

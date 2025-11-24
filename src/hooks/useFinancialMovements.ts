@@ -213,6 +213,9 @@ export const useFinancialMovements = (dateRange?: { from?: Date; to?: Date }) =>
         new Date(b.movement_date).getTime() - new Date(a.movement_date).getTime()
       );
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     refetchInterval: 10000,
   });
 

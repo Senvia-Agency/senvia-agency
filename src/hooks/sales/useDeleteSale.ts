@@ -14,7 +14,7 @@ export const useDeleteSale = () => {
       // 1. Buscar dados da venda e serviços recorrentes relacionados
       const { data: sale, error: fetchError } = await supabase
         .from('sales')
-        .select('id, customer_id, service_name, total_value')
+        .select('id, customer_id, service_name, total_value, sale_number')
         .eq('id', saleId)
         .single();
 
@@ -44,7 +44,7 @@ export const useDeleteSale = () => {
         }
       }
 
-      // 4. Excluir recurring_services
+      // 4. Excluir recurring_services vinculados à venda
       const { error: servicesError } = await supabase
         .from('recurring_services')
         .delete()
@@ -54,6 +54,23 @@ export const useDeleteSale = () => {
         console.error('Erro ao excluir recurring services:', servicesError);
       } else {
         console.log('✅ Recurring services excluídos');
+      }
+
+      // 4b. EXTRA: Excluir recurring_services órfãos do mesmo customer
+      // (serviços que ficaram sem sale_id por algum motivo)
+      if (sale.customer_id && sale.service_name) {
+        const { error: orphanServicesError } = await supabase
+          .from('recurring_services')
+          .delete()
+          .eq('customer_id', sale.customer_id)
+          .ilike('service_name', `%${sale.service_name}%`)
+          .is('sale_id', null);
+        
+        if (orphanServicesError) {
+          console.error('Erro ao excluir recurring services órfãos:', orphanServicesError);
+        } else {
+          console.log('✅ Recurring services órfãos excluídos');
+        }
       }
 
       // 5. Excluir sale_payments
@@ -68,15 +85,13 @@ export const useDeleteSale = () => {
         console.log('✅ Sale payments excluídos');
       }
 
-      // 6. Excluir financial_movements relacionados
-      if (sale.customer_id && sale.service_name) {
-        const normalizedAmount = Number(sale.total_value).toFixed(2);
+      // 6. Excluir financial_movements relacionados (usando sale_number para correspondência confiável)
+      if (sale.customer_id && sale.sale_number) {
         const { error: movementsError } = await supabase
           .from('financial_movements')
           .delete()
           .eq('customer_id', sale.customer_id)
-          .ilike('description', `%${sale.service_name}%`)
-          .eq('amount', normalizedAmount);
+          .ilike('description', `%${sale.sale_number}%`);
         
         if (movementsError) {
           console.error('Erro ao excluir financial movements:', movementsError);

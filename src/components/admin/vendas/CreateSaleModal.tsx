@@ -144,6 +144,19 @@ const CreateSaleModal = ({ isOpen, onClose, leadData }: CreateSaleModalProps) =>
                             recurring_billing_day: day.toString()
                           }));
                         }}
+                        onBlur={(e) => {
+                          // ✅ VALIDAÇÃO: Avisar quando data de início está no passado
+                          const selectedDate = e.target.value;
+                          if (selectedDate) {
+                            const startDate = new Date(selectedDate);
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            
+                            if (startDate < today) {
+                              console.warn('⚠️ [VALIDATION] Data de início no passado:', selectedDate);
+                            }
+                          }
+                        }}
                         className="bg-gray-700 border-gray-600 text-white"
                         required
                       />

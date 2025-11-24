@@ -258,9 +258,10 @@ export const useAllFinancialMovements = (dateRange?: DateRange | null) => {
 
       return movements;
     },
-    staleTime: 30000, // Dados considerados "fresh" por 30 segundos
+    staleTime: 0, // Sempre considerado "stale" para atualizações em tempo real
     gcTime: 5 * 60 * 1000, // Cache mantido por 5 minutos
     refetchInterval: false, // Desabilitar refetch automático
-    refetchOnWindowFocus: false, // Não refetch ao voltar para aba
+    refetchOnWindowFocus: true, // Atualiza ao voltar para a aba
+    refetchOnMount: true, // Atualiza ao montar componente
   });
 };

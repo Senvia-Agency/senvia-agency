@@ -35,6 +35,9 @@ export const useCreateSale = () => {
       queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
       queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });
       queryClient.invalidateQueries({ queryKey: ['recurring-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['real-financial-data'] });
+      queryClient.invalidateQueries({ queryKey: ['all-financial-movements'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-receivables'] });
       
       // Criar atividade no histórico do cliente
       if (data.customer_id) {

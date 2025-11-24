@@ -9,8 +9,83 @@ export const useDeleteSale = () => {
   
   return useMutation({
     mutationFn: async (saleId: string) => {
-      console.log('Excluindo venda:', saleId);
+      console.log('🗑️ Iniciando exclusão em cascata da venda:', saleId);
       
+      // 1. Buscar dados da venda e serviços recorrentes relacionados
+      const { data: sale, error: fetchError } = await supabase
+        .from('sales')
+        .select('id, customer_id, service_name, total_value')
+        .eq('id', saleId)
+        .single();
+
+      if (fetchError || !sale) {
+        console.error('Erro ao buscar venda:', fetchError);
+        throw new Error('Venda não encontrada');
+      }
+
+      // 2. Buscar IDs dos serviços recorrentes vinculados a esta venda
+      const { data: recurringServices } = await supabase
+        .from('recurring_services')
+        .select('id')
+        .eq('sale_id', saleId);
+
+      // 3. Excluir recurring_receivables vinculados aos serviços recorrentes
+      if (recurringServices && recurringServices.length > 0) {
+        const recurringServiceIds = recurringServices.map(rs => rs.id);
+        const { error: receivablesError } = await supabase
+          .from('recurring_receivables')
+          .delete()
+          .in('recurring_service_id', recurringServiceIds);
+        
+        if (receivablesError) {
+          console.error('Erro ao excluir receivables:', receivablesError);
+        } else {
+          console.log('✅ Recurring receivables excluídos');
+        }
+      }
+
+      // 4. Excluir recurring_services
+      const { error: servicesError } = await supabase
+        .from('recurring_services')
+        .delete()
+        .eq('sale_id', saleId);
+      
+      if (servicesError) {
+        console.error('Erro ao excluir recurring services:', servicesError);
+      } else {
+        console.log('✅ Recurring services excluídos');
+      }
+
+      // 5. Excluir sale_payments
+      const { error: paymentsError } = await supabase
+        .from('sale_payments')
+        .delete()
+        .eq('sale_id', saleId);
+      
+      if (paymentsError) {
+        console.error('Erro ao excluir sale payments:', paymentsError);
+      } else {
+        console.log('✅ Sale payments excluídos');
+      }
+
+      // 6. Excluir financial_movements relacionados
+      if (sale.customer_id && sale.service_name) {
+        const normalizedAmount = Number(sale.total_value).toFixed(2);
+        const { error: movementsError } = await supabase
+          .from('financial_movements')
+          .delete()
+          .eq('customer_id', sale.customer_id)
+          .ilike('description', `%${sale.service_name}%`)
+          .eq('amount', normalizedAmount);
+        
+        if (movementsError) {
+          console.error('Erro ao excluir financial movements:', movementsError);
+        } else {
+          console.log('✅ Financial movements excluídos');
+        }
+      }
+
+      // 7. Excluir a venda
       const { error } = await supabase
         .from('sales')
         .delete()
@@ -21,14 +96,20 @@ export const useDeleteSale = () => {
         throw error;
       }
       
-      console.log('Venda excluída com sucesso');
+      console.log('✅ Venda e todos os dados relacionados excluídos com sucesso');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       queryClient.invalidateQueries({ queryKey: ['admin-revenue-metrics'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-movements'] });
+      queryClient.invalidateQueries({ queryKey: ['all-financial-movements'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-services'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-receivables'] });
+      queryClient.invalidateQueries({ queryKey: ['unified-receivables'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts-receivable'] });
       toast({
         title: "Venda excluída",
-        description: "A venda foi excluída com sucesso."
+        description: "A venda e todos os dados relacionados foram excluídos com sucesso."
       });
     },
     onError: (error: any) => {

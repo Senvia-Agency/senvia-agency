@@ -84,7 +84,7 @@ const PromoForm = () => {
       const utmCampaign = urlParams.get('utm_campaign');
 
       // Combine country code with phone number
-      const fullWhatsapp = `${data.countryCode}${data.whatsappNumber.replace(/\D/g, '')}`;
+      const fullWhatsapp = `+${data.countryCode}${data.whatsappNumber.replace(/\D/g, '')}`;
 
       const { error } = await supabase
         .from('leads_ia')

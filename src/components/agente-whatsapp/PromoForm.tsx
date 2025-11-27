@@ -198,9 +198,14 @@ const PromoForm = () => {
                             option: (base, state) => ({
                               ...base,
                               backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
-                              color: 'hsl(var(--foreground))',
+                              color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'hsl(var(--foreground))',
                               cursor: 'pointer',
-                              '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                              padding: '12px 16px',
+                              fontWeight: state.isFocused ? '600' : '400',
+                              '&:active': { 
+                                backgroundColor: 'hsl(var(--accent))',
+                                color: 'hsl(var(--accent-foreground))'
+                              }
                             }),
                             singleValue: (base) => ({
                               ...base,
@@ -314,9 +319,14 @@ const PromoForm = () => {
                       option: (base, state) => ({
                         ...base,
                         backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
-                        color: 'hsl(var(--foreground))',
+                        color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'hsl(var(--foreground))',
                         cursor: 'pointer',
-                        '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                        padding: '12px 16px',
+                        fontWeight: state.isFocused ? '600' : '400',
+                        '&:active': { 
+                          backgroundColor: 'hsl(var(--accent))',
+                          color: 'hsl(var(--accent-foreground))'
+                        }
                       }),
                       singleValue: (base) => ({
                         ...base,
@@ -375,9 +385,14 @@ const PromoForm = () => {
                       option: (base, state) => ({
                         ...base,
                         backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
-                        color: 'hsl(var(--foreground))',
+                        color: state.isFocused ? 'hsl(var(--accent-foreground))' : 'hsl(var(--foreground))',
                         cursor: 'pointer',
-                        '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                        padding: '12px 16px',
+                        fontWeight: state.isFocused ? '600' : '400',
+                        '&:active': { 
+                          backgroundColor: 'hsl(var(--accent))',
+                          color: 'hsl(var(--accent-foreground))'
+                        }
                       }),
                       singleValue: (base) => ({
                         ...base,

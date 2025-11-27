@@ -781,39 +781,63 @@ export type Database = {
       }
       leads_ia: {
         Row: {
+          agent_conversation_status: string | null
           company_name: string | null
           created_at: string
+          diagnostic_answers: Json | null
           email: string
           full_name: string
           id: string
           lead_status: string
+          monthly_clients: number | null
           notes: string | null
+          qualification_score: number | null
+          segment: string | null
           source_page: string
           updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
           whatsapp: string
         }
         Insert: {
+          agent_conversation_status?: string | null
           company_name?: string | null
           created_at?: string
+          diagnostic_answers?: Json | null
           email: string
           full_name: string
           id?: string
           lead_status?: string
+          monthly_clients?: number | null
           notes?: string | null
+          qualification_score?: number | null
+          segment?: string | null
           source_page?: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           whatsapp: string
         }
         Update: {
+          agent_conversation_status?: string | null
           company_name?: string | null
           created_at?: string
+          diagnostic_answers?: Json | null
           email?: string
           full_name?: string
           id?: string
           lead_status?: string
+          monthly_clients?: number | null
           notes?: string | null
+          qualification_score?: number | null
+          segment?: string | null
           source_page?: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           whatsapp?: string
         }
         Relationships: []

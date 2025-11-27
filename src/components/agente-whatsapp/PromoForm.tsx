@@ -139,7 +139,7 @@ const PromoForm = () => {
   return (
     <div className="w-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
@@ -150,7 +150,7 @@ const PromoForm = () => {
                   <FormControl>
                     <Input 
                       placeholder="Seu nome completo" 
-                      className="h-12 border-2 focus:border-primary"
+                      className="h-14 sm:h-12 border-2 focus:border-primary text-base"
                       {...field} 
                     />
                   </FormControl>
@@ -161,12 +161,12 @@ const PromoForm = () => {
 
             <div className="space-y-2">
               <FormLabel className="text-base font-semibold">WhatsApp *</FormLabel>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <FormField
                   control={form.control}
                   name="countryCode"
                   render={({ field }) => (
-                    <FormItem className="w-40">
+                    <FormItem className="w-full sm:w-40">
                       <FormControl>
                         <Select
                           options={countryCodeOptions}
@@ -234,7 +234,7 @@ const PromoForm = () => {
                       <FormControl>
                         <Input 
                           placeholder="910320111"
-                          className="h-12 border-2 focus:border-primary"
+                          className="h-14 sm:h-12 border-2 focus:border-primary text-base"
                           {...field} 
                         />
                       </FormControl>
@@ -255,7 +255,7 @@ const PromoForm = () => {
                     <Input 
                       type="email" 
                       placeholder="seu@email.com"
-                      className="h-12 border-2 focus:border-primary"
+                      className="h-14 sm:h-12 border-2 focus:border-primary text-base"
                       {...field} 
                     />
                   </FormControl>
@@ -273,7 +273,7 @@ const PromoForm = () => {
                   <FormControl>
                     <Input 
                       placeholder="Nome da sua empresa"
-                      className="h-12 border-2 focus:border-primary"
+                      className="h-14 sm:h-12 border-2 focus:border-primary text-base"
                       {...field} 
                     />
                   </FormControl>
@@ -424,10 +424,11 @@ const PromoForm = () => {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    className="h-6 w-6 sm:h-5 sm:w-5 mt-0.5"
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel className="text-sm font-medium">
+                  <FormLabel className="text-sm font-medium cursor-pointer leading-relaxed">
                     Aceito o tratamento dos meus dados pessoais *
                   </FormLabel>
                   <p className="text-xs text-muted-foreground">
@@ -447,7 +448,7 @@ const PromoForm = () => {
 
           <Button 
             type="submit" 
-            className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl shadow-lg"
+            className="w-full h-14 sm:h-12 text-base sm:text-lg font-bold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground rounded-xl shadow-lg"
             disabled={isSubmitting || !form.watch('gdprConsent')}
           >
             {isSubmitting ? "Enviando..." : "Garantir Minha Vaga"}

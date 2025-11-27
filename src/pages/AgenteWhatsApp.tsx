@@ -22,23 +22,24 @@ const AgenteWhatsApp = () => {
         <PromoHero />
 
         {/* Urgency Section */}
-        <section className="py-8 px-4 bg-destructive/10 border-y border-destructive/30">
+        <section className="py-6 sm:py-8 px-4 bg-destructive/10 border-y border-destructive/30">
           <div className="container mx-auto max-w-6xl">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
               <CountdownTimer targetDate="2025-12-18T23:59:59" />
+              <div className="h-px w-full sm:h-16 sm:w-px bg-border/50" />
               <VacancyCounter totalVacancies={5} remainingVacancies={4} />
             </div>
           </div>
         </section>
 
         {/* Benefits Section */}
-        <section className="py-16 px-4">
+        <section className="py-10 sm:py-16 px-4">
           <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12">
               O que está incluído?
             </h2>
             
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
               {[
                 {
                   icon: Clock,
@@ -129,18 +130,18 @@ const AgenteWhatsApp = () => {
             </div>
 
             {/* Price Breakdown */}
-            <div className="bg-card/80 border border-primary/30 rounded-2xl p-8 mb-12">
+            <div className="bg-card/80 border border-primary/30 rounded-2xl p-4 sm:p-6 md:p-8 mb-12">
               <div className="max-w-2xl mx-auto">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl">Setup + Configuração Completa</span>
-                  <div className="text-right">
-                    <span className="line-through text-muted-foreground mr-3">€800</span>
-                    <span className="text-3xl font-bold text-primary">€500</span>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+                  <span className="text-lg sm:text-xl font-semibold">Setup + Configuração Completa</span>
+                  <div className="text-left sm:text-right">
+                    <span className="text-xl sm:text-2xl line-through text-muted-foreground mr-3">€800</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-primary">€500</span>
                   </div>
                 </div>
-                <div className="border-t border-border pt-4 flex items-center justify-between">
+                <div className="border-t border-border pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <span className="text-sm text-muted-foreground">+ Servidor (após setup)</span>
-                  <span className="text-xl">€50/mês</span>
+                  <span className="text-lg sm:text-xl font-semibold">€50/mês</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-4">
                   ⚠️ Custo de servidor: €50/mês para manter o agente ativo 24h (hosting + IA)

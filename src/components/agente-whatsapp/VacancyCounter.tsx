@@ -17,10 +17,10 @@ const VacancyCounter = ({ totalVacancies, remainingVacancies }: VacancyCounterPr
         </span>
       </div>
       
-      <div className="bg-card border border-primary/30 rounded-lg p-6 min-w-[200px]">
+      <div className="bg-card border border-primary/30 rounded-lg p-4 sm:p-6 min-w-[160px] sm:min-w-[200px]">
         <div className="text-center mb-4">
-          <span className="text-5xl font-bold text-primary">{remainingVacancies}</span>
-          <span className="text-2xl text-muted-foreground">/{totalVacancies}</span>
+          <span className="text-4xl sm:text-5xl font-bold text-primary">{remainingVacancies}</span>
+          <span className="text-xl sm:text-2xl text-muted-foreground">/{totalVacancies}</span>
         </div>
         
         {/* Visual Progress Bar */}

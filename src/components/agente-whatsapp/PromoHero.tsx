@@ -8,14 +8,14 @@ const PromoHero = () => {
   };
 
   return (
-    <section className="relative py-20 px-4 overflow-hidden">
+    <section className="relative py-12 sm:py-16 md:py-20 px-4 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent"></div>
       
-      {/* Floating sparkles */}
+      {/* Floating sparkles - hidden on mobile */}
       <motion.div
-        className="absolute top-20 left-10 text-primary/30"
+        className="absolute top-20 left-10 text-primary/30 hidden sm:block"
         animate={{ 
           y: [0, -20, 0],
           rotate: [0, 360],
@@ -26,7 +26,7 @@ const PromoHero = () => {
         <Sparkles className="h-8 w-8" />
       </motion.div>
       <motion.div
-        className="absolute top-40 right-20 text-accent/30"
+        className="absolute top-40 right-20 text-accent/30 hidden md:block"
         animate={{ 
           y: [0, 20, 0],
           rotate: [360, 0],
@@ -60,7 +60,7 @@ const PromoHero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
+            className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 leading-tight"
           >
             <span className="text-gradient">Agente IA</span> para o{" "}
             <br className="hidden md:block" />
@@ -108,7 +108,7 @@ const PromoHero = () => {
                   }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <Bot className="h-24 w-24 text-primary" />
+                  <Bot className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 text-primary" />
                 </motion.div>
                 
                 {/* Floating particles around robot */}
@@ -142,16 +142,16 @@ const PromoHero = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mb-8"
           >
-            <p className="text-muted-foreground mb-2">De €800 por apenas</p>
-            <div className="flex items-center justify-center gap-4">
+            <p className="text-sm sm:text-base text-muted-foreground mb-2">De €800 por apenas</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
               <motion.span
-                className="text-6xl md:text-7xl font-bold text-gradient"
+                className="text-4xl sm:text-6xl md:text-7xl font-bold text-gradient"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 €500
               </motion.span>
-              <div className="text-left">
+              <div className="text-center sm:text-left">
                 <p className="text-sm text-muted-foreground">Setup completo</p>
                 <p className="text-xs text-muted-foreground">+ €50/mês servidor</p>
               </div>
@@ -163,7 +163,7 @@ const PromoHero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-6 mb-8"
+            className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-3 sm:gap-6 mb-8"
           >
             {["Atendimento 24h", "Marcações automáticas", "Lembretes inteligentes"].map((benefit, i) => (
               <motion.div

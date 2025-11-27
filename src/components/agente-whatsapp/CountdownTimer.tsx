@@ -59,7 +59,7 @@ const CountdownTimer = ({ targetDate }: CountdownTimerProps) => {
         </span>
       </motion.div>
       
-      <div className="flex gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:flex gap-3 md:gap-4">
         {Object.entries(timeLeft).map(([unit, value], index) => (
           <motion.div
             key={unit}
@@ -79,7 +79,7 @@ const CountdownTimer = ({ targetDate }: CountdownTimerProps) => {
             />
             
             {/* Card */}
-            <div className="relative bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/40 rounded-2xl p-4 min-w-[80px] md:min-w-[90px] shadow-lg backdrop-blur-sm overflow-hidden">
+            <div className="relative bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/40 rounded-2xl p-3 sm:p-4 min-w-[70px] sm:min-w-[80px] md:min-w-[90px] shadow-lg backdrop-blur-sm overflow-hidden">
               {/* Shine effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent"
@@ -88,7 +88,7 @@ const CountdownTimer = ({ targetDate }: CountdownTimerProps) => {
               />
               
               {/* Number with flip animation */}
-              <div className="relative h-12 flex items-center justify-center overflow-hidden">
+              <div className="relative h-10 sm:h-12 flex items-center justify-center overflow-hidden">
                 <AnimatePresence mode="popLayout">
                   <motion.span
                     key={value}
@@ -96,7 +96,7 @@ const CountdownTimer = ({ targetDate }: CountdownTimerProps) => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="text-4xl md:text-5xl font-black text-gradient absolute"
+                    className="text-3xl sm:text-4xl md:text-5xl font-black text-gradient absolute"
                   >
                     {String(value).padStart(2, '0')}
                   </motion.span>

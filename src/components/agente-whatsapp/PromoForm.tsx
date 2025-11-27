@@ -171,6 +171,7 @@ const PromoForm = () => {
                         <Select
                           options={countryCodeOptions}
                           value={countryCodeOptions.find(option => option.value === field.value)}
+                          defaultValue={countryCodeOptions.find(option => option.value === "351")}
                           onChange={(option) => field.onChange(option?.value || "351")}
                           className="react-select-container"
                           classNamePrefix="react-select"

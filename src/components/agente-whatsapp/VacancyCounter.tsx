@@ -13,13 +13,13 @@ const VacancyCounter = ({ totalVacancies, remainingVacancies }: VacancyCounterPr
       <div className="flex items-center gap-2">
         <Users className="h-5 w-5 text-primary" />
         <span className="text-sm font-semibold text-primary uppercase">
-          Vagas Disponíveis
+          Vagas Reservadas
         </span>
       </div>
       
       <div className="bg-card border border-primary/30 rounded-lg p-4 sm:p-6 min-w-[160px] sm:min-w-[200px]">
         <div className="text-center mb-4">
-          <span className="text-4xl sm:text-5xl font-bold text-primary">{remainingVacancies}</span>
+          <span className="text-4xl sm:text-5xl font-bold text-primary">{filledVacancies}</span>
           <span className="text-xl sm:text-2xl text-muted-foreground">/{totalVacancies}</span>
         </div>
         
@@ -32,7 +32,7 @@ const VacancyCounter = ({ totalVacancies, remainingVacancies }: VacancyCounterPr
         </div>
         
         <p className="text-xs text-center text-muted-foreground mt-2">
-          {filledVacancies > 0 ? `${filledVacancies} ${filledVacancies === 1 ? 'vaga reservada' : 'vagas reservadas'}` : 'Seja o primeiro!'}
+          {remainingVacancies > 0 ? `${remainingVacancies} ${remainingVacancies === 1 ? 'vaga disponível' : 'vagas disponíveis'}` : 'Esgotado!'}
         </p>
       </div>
     </div>

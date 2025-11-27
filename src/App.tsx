@@ -16,6 +16,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Lazy load demais páginas
 const LandingPages = lazy(() => import("./pages/LandingPages"));
+const AgenteWhatsApp = lazy(() => import("./pages/AgenteWhatsApp"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
@@ -70,6 +71,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/landing-pages" element={<LandingPages />} />
+              <Route path="/agente-whatsapp" element={<AgenteWhatsApp />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/termos-servico" element={<TermosServico />} />

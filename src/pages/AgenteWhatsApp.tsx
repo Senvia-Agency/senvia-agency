@@ -26,7 +26,7 @@ const AgenteWhatsApp = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="flex flex-col md:flex-row items-center justify-center gap-8">
               <CountdownTimer targetDate="2025-12-18T23:59:59" />
-              <VacancyCounter totalVacancies={5} remainingVacancies={5} />
+              <VacancyCounter totalVacancies={5} remainingVacancies={4} />
             </div>
           </div>
         </section>

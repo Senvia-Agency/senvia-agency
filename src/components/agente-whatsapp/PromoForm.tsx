@@ -15,7 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  whatsapp: z.string().min(9, "WhatsApp inválido"),
+  countryCode: z.string().min(1, "Selecione o código do país"),
+  whatsappNumber: z.string().min(9, "Número inválido").max(15, "Número muito longo"),
   email: z.string().email("E-mail inválido"),
   companyName: z.string().optional(),
   segment: z.string().min(1, "Selecione um segmento"),
@@ -24,6 +25,19 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+
+const countryCodeOptions = [
+  { value: "351", label: "🇵🇹 +351", country: "Portugal" },
+  { value: "55", label: "🇧🇷 +55", country: "Brasil" },
+  { value: "34", label: "🇪🇸 +34", country: "Espanha" },
+  { value: "33", label: "🇫🇷 +33", country: "França" },
+  { value: "44", label: "🇬🇧 +44", country: "Reino Unido" },
+  { value: "49", label: "🇩🇪 +49", country: "Alemanha" },
+  { value: "39", label: "🇮🇹 +39", country: "Itália" },
+  { value: "31", label: "🇳🇱 +31", country: "Países Baixos" },
+  { value: "41", label: "🇨🇭 +41", country: "Suíça" },
+  { value: "1", label: "🇺🇸 +1", country: "EUA/Canadá" }
+];
 
 const segmentOptions = [
   { value: "saude-bem-estar", label: "Saúde e Bem-estar" },
@@ -50,7 +64,8 @@ const PromoForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
-      whatsapp: "",
+      countryCode: "351",
+      whatsappNumber: "",
       email: "",
       companyName: "",
       segment: "",
@@ -68,11 +83,14 @@ const PromoForm = () => {
       const utmMedium = urlParams.get('utm_medium');
       const utmCampaign = urlParams.get('utm_campaign');
 
+      // Combine country code with phone number
+      const fullWhatsapp = `${data.countryCode}${data.whatsappNumber.replace(/\D/g, '')}`;
+
       const { error } = await supabase
         .from('leads_ia')
         .insert({
           full_name: data.fullName,
-          whatsapp: data.whatsapp,
+          whatsapp: fullWhatsapp,
           email: data.email,
           company_name: data.companyName || null,
           segment: data.segment,
@@ -141,23 +159,85 @@ const PromoForm = () => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="whatsapp"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-semibold">WhatsApp *</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="910320111"
-                      className="h-12 border-2 focus:border-primary"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel className="text-base font-semibold">WhatsApp *</FormLabel>
+              <div className="flex gap-2">
+                <FormField
+                  control={form.control}
+                  name="countryCode"
+                  render={({ field }) => (
+                    <FormItem className="w-40">
+                      <FormControl>
+                        <Select
+                          options={countryCodeOptions}
+                          value={countryCodeOptions.find(option => option.value === field.value)}
+                          onChange={(option) => field.onChange(option?.value || "351")}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          isSearchable={false}
+                          styles={{
+                            control: (base, state) => ({
+                              ...base,
+                              minHeight: '48px',
+                              backgroundColor: 'hsl(var(--card))',
+                              border: `2px solid ${state.isFocused ? 'hsl(var(--primary))' : 'hsl(var(--input))'}`,
+                              '&:hover': { borderColor: 'hsl(var(--primary))' },
+                              boxShadow: 'none'
+                            }),
+                            menu: (base) => ({
+                              ...base,
+                              backgroundColor: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
+                              zIndex: 9999
+                            }),
+                            menuPortal: (base) => ({
+                              ...base,
+                              zIndex: 9999
+                            }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+                              color: 'hsl(var(--foreground))',
+                              cursor: 'pointer',
+                              '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                            }),
+                            singleValue: (base) => ({
+                              ...base,
+                              color: 'hsl(var(--foreground))'
+                            }),
+                            placeholder: (base) => ({
+                              ...base,
+                              color: 'hsl(var(--muted-foreground))'
+                            }),
+                            input: (base) => ({
+                              ...base,
+                              color: 'hsl(var(--foreground))'
+                            })
+                          }}
+                          menuPortalTarget={document.body}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="whatsappNumber"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input 
+                          placeholder="910320111"
+                          className="h-12 border-2 focus:border-primary"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <FormField
               control={form.control}
@@ -212,13 +292,45 @@ const PromoForm = () => {
                     className="react-select-container"
                     classNamePrefix="react-select"
                     styles={{
-                      control: (base) => ({
+                      control: (base, state) => ({
                         ...base,
                         minHeight: '48px',
-                        border: '2px solid hsl(var(--input))',
-                        '&:hover': { borderColor: 'hsl(var(--primary))' }
+                        backgroundColor: 'hsl(var(--card))',
+                        border: `2px solid ${state.isFocused ? 'hsl(var(--primary))' : 'hsl(var(--input))'}`,
+                        '&:hover': { borderColor: 'hsl(var(--primary))' },
+                        boxShadow: 'none'
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        zIndex: 9999
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+                        color: 'hsl(var(--foreground))',
+                        cursor: 'pointer',
+                        '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--foreground))'
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--muted-foreground))'
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--foreground))'
                       })
                     }}
+                    menuPortalTarget={document.body}
                   />
                 </FormControl>
                 <FormMessage />
@@ -241,13 +353,45 @@ const PromoForm = () => {
                     className="react-select-container"
                     classNamePrefix="react-select"
                     styles={{
-                      control: (base) => ({
+                      control: (base, state) => ({
                         ...base,
                         minHeight: '48px',
-                        border: '2px solid hsl(var(--input))',
-                        '&:hover': { borderColor: 'hsl(var(--primary))' }
+                        backgroundColor: 'hsl(var(--card))',
+                        border: `2px solid ${state.isFocused ? 'hsl(var(--primary))' : 'hsl(var(--input))'}`,
+                        '&:hover': { borderColor: 'hsl(var(--primary))' },
+                        boxShadow: 'none'
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        zIndex: 9999
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused ? 'hsl(var(--accent))' : 'transparent',
+                        color: 'hsl(var(--foreground))',
+                        cursor: 'pointer',
+                        '&:active': { backgroundColor: 'hsl(var(--accent))' }
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--foreground))'
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--muted-foreground))'
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: 'hsl(var(--foreground))'
                       })
                     }}
+                    menuPortalTarget={document.body}
                   />
                 </FormControl>
                 <FormMessage />

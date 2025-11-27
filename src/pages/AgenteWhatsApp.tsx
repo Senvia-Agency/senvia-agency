@@ -5,6 +5,7 @@ import VacancyCounter from "@/components/agente-whatsapp/VacancyCounter";
 import PromoForm from "@/components/agente-whatsapp/PromoForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Clock, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 const AgenteWhatsApp = () => {
   return (
@@ -38,35 +39,93 @@ const AgenteWhatsApp = () => {
             </h2>
             
             <div className="grid md:grid-cols-3 gap-8 mb-16">
-              <Card className="border-primary/30 bg-card/50 backdrop-blur">
-                <CardContent className="p-6">
-                  <Clock className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Atendimento 24/7</h3>
-                  <p className="text-muted-foreground">
-                    Seu agente IA responde clientes a qualquer hora, todos os dias da semana. Nunca perca uma oportunidade.
-                  </p>
-                </CardContent>
-              </Card>
+              {[
+                {
+                  icon: Clock,
+                  title: "Atendimento 24/7",
+                  description: "Seu agente IA responde clientes a qualquer hora, todos os dias da semana. Nunca perca uma oportunidade.",
+                  delay: 0
+                },
+                {
+                  icon: CheckCircle,
+                  title: "Marcações Automáticas",
+                  description: "Agenda consultas/reuniões automaticamente diretamente no seu calendário. Zero trabalho manual.",
+                  delay: 0.1
+                },
+                {
+                  icon: Zap,
+                  title: "Lembretes Inteligentes",
+                  description: "Envia lembretes automáticos aos clientes antes das marcações. Reduz faltas em até 80%.",
+                  delay: 0.2
+                }
+              ].map((benefit) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div
+                    key={benefit.title}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: benefit.delay, duration: 0.5 }}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                  >
+                    <Card className="border-primary/30 bg-card/50 backdrop-blur h-full relative overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:shadow-primary/20 hover:border-primary/60">
+                      {/* Animated gradient background */}
+                      <motion.div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{
+                          background: "radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.08) 0%, transparent 70%)"
+                        }}
+                        animate={{
+                          scale: [1, 1.2, 1],
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      />
+                      
+                      {/* Shine effect */}
+                      <motion.div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100"
+                        initial={false}
+                        animate={{
+                          background: [
+                            "linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.15) 50%, transparent 100%)",
+                            "linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.15) 50%, transparent 100%)"
+                          ],
+                          x: ["-200%", "200%"]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 1,
+                          ease: "easeInOut"
+                        }}
+                      />
 
-              <Card className="border-primary/30 bg-card/50 backdrop-blur">
-                <CardContent className="p-6">
-                  <CheckCircle className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Marcações Automáticas</h3>
-                  <p className="text-muted-foreground">
-                    Agenda consultas/reuniões automaticamente diretamente no seu calendário. Zero trabalho manual.
-                  </p>
-                </CardContent>
-              </Card>
+                      <CardContent className="p-6 relative z-10">
+                        <motion.div
+                          whileHover={{ rotate: [0, -5, 5, 0], scale: 1.1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <Icon className="h-12 w-12 text-primary mb-4" />
+                        </motion.div>
+                        <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
+                        <p className="text-muted-foreground">
+                          {benefit.description}
+                        </p>
+                      </CardContent>
 
-              <Card className="border-primary/30 bg-card/50 backdrop-blur">
-                <CardContent className="p-6">
-                  <Zap className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Lembretes Inteligentes</h3>
-                  <p className="text-muted-foreground">
-                    Envia lembretes automáticos aos clientes antes das marcações. Reduz faltas em até 80%.
-                  </p>
-                </CardContent>
-              </Card>
+                      {/* Corner glow accent */}
+                      <motion.div
+                        className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Price Breakdown */}

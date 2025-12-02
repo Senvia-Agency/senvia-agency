@@ -250,6 +250,35 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
           } else {
             console.log('⚠️ Nenhuma venda vinculada a este receivable');
           }
+
+          // CORREÇÃO: Atualizar next_billing_date para receivables existentes quando totalmente pagos
+          if (isFullyPaid && receivableData?.recurring_service_id) {
+            const { data: receivableWithDueDate } = await supabase
+              .from('recurring_receivables')
+              .select('due_date')
+              .eq('id', actualReceivableId)
+              .single();
+            
+            if (receivableWithDueDate?.due_date) {
+              const currentDueDate = new Date(receivableWithDueDate.due_date);
+              const nextMonth = new Date(currentDueDate);
+              nextMonth.setMonth(nextMonth.getMonth() + 1);
+              
+              console.log('Atualizando next_billing_date (receivable existente) para:', format(nextMonth, 'yyyy-MM-dd'));
+              const { error: serviceUpdateError } = await supabase
+                .from('recurring_services')
+                .update({
+                  next_billing_date: format(nextMonth, 'yyyy-MM-dd')
+                })
+                .eq('id', receivableData.recurring_service_id);
+
+              if (serviceUpdateError) {
+                console.error('Erro ao atualizar next_billing_date:', serviceUpdateError);
+              } else {
+                console.log('✅ next_billing_date atualizado com sucesso');
+              }
+            }
+          }
         }
       } else {
         // Atualizar venda

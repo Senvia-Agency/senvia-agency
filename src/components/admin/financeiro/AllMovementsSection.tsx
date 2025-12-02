@@ -60,7 +60,7 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
     return filterReceivablesByStatus(allReceivables, typeFilter === 'overdue' ? 'overdue' : 'all');
   }, [allReceivables, typeFilter]);
 
-  // Filtrar serviços recorrentes
+  // Filtrar serviços recorrentes com base no período selecionado
   const filteredRecurringServices = useMemo(() => {
     if (!allRecurringServices) return [];
     
@@ -72,6 +72,42 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
       filtered = filterRecurringServicesByType(allRecurringServices, 'expenses');
     } else {
       return [];
+    }
+    
+    // Aplicar filtro de período - mostrar apenas serviços com cobrança no período
+    if (dateRange?.from) {
+      const periodStart = dateRange.from;
+      const periodEnd = dateRange.to || dateRange.from;
+      
+      filtered = filtered.filter(service => {
+        const serviceStart = new Date(service.start_date);
+        const billingDay = service.billing_day;
+        
+        // Verificar se o serviço já existia antes do fim do período
+        if (serviceStart > periodEnd) return false;
+        
+        // Verificar se o serviço não terminou antes do início do período
+        if (service.end_date && new Date(service.end_date) < periodStart) return false;
+        
+        // Verificar se há cobrança no período (baseado em billing_day)
+        // Iterar pelos meses do período
+        let currentDate = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+        const endCheck = new Date(periodEnd.getFullYear(), periodEnd.getMonth() + 1, 0);
+        
+        while (currentDate <= endCheck) {
+          const billingDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), billingDay);
+          
+          // A cobrança está dentro do período E o serviço já tinha começado
+          if (billingDate >= periodStart && billingDate <= periodEnd && billingDate >= serviceStart) {
+            return true;
+          }
+          
+          // Próximo mês
+          currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+        
+        return false;
+      });
     }
     
     // Aplicar busca
@@ -86,7 +122,7 @@ const AllMovementsSection = ({ dateRange, setDateRange, typeFilter = 'all', onCl
     }
     
     return filtered;
-  }, [allRecurringServices, typeFilter, recurringSearch]);
+  }, [allRecurringServices, typeFilter, recurringSearch, dateRange]);
 
   // Calcular total mensal
   const totalMensal = useMemo(() => {

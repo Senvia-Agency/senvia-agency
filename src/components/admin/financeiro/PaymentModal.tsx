@@ -83,28 +83,42 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
         const serviceId = parts.slice(startIdx, uuidEndIdx).join('-');
         const dueDate = parts.slice(uuidEndIdx).join('-');
 
-        console.log('Criando recurring_receivable para serviço:', serviceId, 'com vencimento:', dueDate);
+        console.log('Verificando/criando recurring_receivable para serviço:', serviceId, 'com vencimento:', dueDate);
 
-        // Criar o recurring_receivable
-        const { data: newReceivable, error: createError } = await supabase
+        // CORREÇÃO: Primeiro verificar se já existe um receivable para esta combinação
+        const { data: existingReceivable } = await supabase
           .from('recurring_receivables')
-          .insert({
-            recurring_service_id: serviceId,
-            customer_id: account.customer_id,
-            amount: account.total_value,
-            due_date: dueDate,
-            payment_status: 'pending'
-          })
-          .select()
-          .single();
+          .select('id')
+          .eq('recurring_service_id', serviceId)
+          .eq('due_date', dueDate)
+          .maybeSingle();
 
-        if (createError) {
-          console.error('Erro ao criar recurring_receivable:', createError);
-          throw createError;
+        if (existingReceivable) {
+          // Já existe - usar o ID existente
+          actualReceivableId = existingReceivable.id;
+          console.log('Recurring_receivable já existe, usando ID:', actualReceivableId);
+        } else {
+          // Não existe - criar novo
+          const { data: newReceivable, error: createError } = await supabase
+            .from('recurring_receivables')
+            .insert({
+              recurring_service_id: serviceId,
+              customer_id: account.customer_id,
+              amount: account.total_value,
+              due_date: dueDate,
+              payment_status: 'pending'
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Erro ao criar recurring_receivable:', createError);
+            throw createError;
+          }
+
+          actualReceivableId = newReceivable.id;
+          console.log('Recurring_receivable criado com sucesso:', actualReceivableId);
         }
-
-        actualReceivableId = newReceivable.id;
-        console.log('Recurring_receivable criado com sucesso:', actualReceivableId);
 
         // CORREÇÃO 1: Buscar o sale_id do recurring_service e atualizar a venda original
         const { data: recurringService, error: serviceError } = await supabase

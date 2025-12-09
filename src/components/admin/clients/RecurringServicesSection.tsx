@@ -1,12 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Calendar, DollarSign, Pause, Play, XCircle } from "lucide-react";
+import { RefreshCw, Calendar, DollarSign, Pause, Play, XCircle, Pencil } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useUpdateRecurringService } from "@/hooks/useRecurringServices";
+import { useUpdateRecurringService, RecurringService } from "@/hooks/useRecurringServices";
 import { useToast } from "@/hooks/use-toast";
-
+import { EditRecurringServiceModal } from "@/components/admin/financeiro/EditRecurringServiceModal";
 interface RecurringServicesSectionProps {
   customerId: string;
 }
@@ -14,7 +15,7 @@ interface RecurringServicesSectionProps {
 export const RecurringServicesSection = ({ customerId }: RecurringServicesSectionProps) => {
   const { toast } = useToast();
   const updateService = useUpdateRecurringService();
-
+  const [editingService, setEditingService] = useState<RecurringService | null>(null);
   const { data: services, isLoading } = useQuery({
     queryKey: ['customer-recurring-services', customerId],
     queryFn: async () => {
@@ -152,6 +153,15 @@ export const RecurringServicesSection = ({ customerId }: RecurringServicesSectio
                 <Button
                   size="sm"
                   variant="outline"
+                  onClick={() => setEditingService(service as RecurringService)}
+                  className="flex-1 bg-blue-500/10 border-blue-500/30 text-blue-500 hover:bg-blue-500/20"
+                >
+                  <Pencil className="w-4 h-4 mr-1" />
+                  Editar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
                   onClick={() => handlePause(service.id)}
                   className="flex-1 bg-yellow-500/10 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/20"
                 >
@@ -195,6 +205,12 @@ export const RecurringServicesSection = ({ customerId }: RecurringServicesSectio
           </div>
         ))}
       </CardContent>
+
+      <EditRecurringServiceModal
+        service={editingService}
+        open={!!editingService}
+        onOpenChange={(open) => !open && setEditingService(null)}
+      />
     </Card>
   );
 };

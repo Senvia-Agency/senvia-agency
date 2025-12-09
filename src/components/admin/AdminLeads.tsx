@@ -202,7 +202,8 @@ const AdminLeads = () => {
     const matchesSource = filters.source === "all" || 
       (filters.source === "basic" && lead.source_page === "landing_page_basic") ||
       (filters.source === "premium" && lead.source_page === "landing_page_premium") ||
-      (filters.source === "consultoria" && lead.source_page === "contact_form_consultoria");
+      (filters.source === "consultoria" && lead.source_page === "contact_form_consultoria") ||
+      (filters.source === "agente_whatsapp" && lead.source_page === "promo_agente_whatsapp");
     
     // Filtro de data - só aplica se houver dateRange configurado manualmente
     let matchesDate = true;

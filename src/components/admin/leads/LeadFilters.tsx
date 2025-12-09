@@ -71,6 +71,7 @@ const LeadFilters = ({ filters, dateRange, onFiltersChange, onDateRangeChange }:
                 <SelectItem value="basic">Landing Page €4.99</SelectItem>
                 <SelectItem value="premium">Landing Page Premium</SelectItem>
                 <SelectItem value="consultoria">Agendar Consultoria</SelectItem>
+                <SelectItem value="agente_whatsapp">Promo Agente WhatsApp</SelectItem>
               </SelectContent>
             </Select>
 

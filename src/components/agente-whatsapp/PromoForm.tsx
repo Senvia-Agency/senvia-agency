@@ -75,6 +75,9 @@ const PromoForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    // Prevenir chamadas duplicadas
+    if (isSubmitting) return;
+    
     setIsSubmitting(true);
     try {
       // Get UTM parameters from URL
@@ -86,9 +89,10 @@ const PromoForm = () => {
       // Combine country code with phone number
       const fullWhatsapp = `+${data.countryCode}${data.whatsappNumber.replace(/\D/g, '')}`;
 
+      // Usar upsert para evitar duplicação - se email+source_page já existe, apenas atualiza
       const { error } = await supabase
         .from('leads_ia')
-        .insert({
+        .upsert({
           full_name: data.fullName,
           whatsapp: fullWhatsapp,
           email: data.email,
@@ -100,6 +104,9 @@ const PromoForm = () => {
           utm_source: utmSource,
           utm_medium: utmMedium,
           utm_campaign: utmCampaign
+        }, {
+          onConflict: 'email,source_page',
+          ignoreDuplicates: true
         });
 
       if (error) throw error;

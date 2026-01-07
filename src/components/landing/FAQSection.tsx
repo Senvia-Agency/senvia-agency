@@ -4,46 +4,43 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const FAQSection = () => {
   const faqItems = [
     {
-      question: "A landing page funciona para qualquer tipo de negócio?",
-      answer: "Sim! Criamos landing pages + CRM personalizados para consultores, coaches, clínicas, advogados, arquitetos, e-commerce e qualquer negócio que precise captar leads qualificados."
+      question: "Isto funciona para o meu nicho (B2B/Serviços/Infoprodutos)?",
+      answer: "A psicologia humana é universal. Se o seu negócio precisa de explicar valor para fechar uma venda ou capturar um contacto (lead), este sistema é obrigatório. Adaptamos a \"roupagem\", mas o motor de conversão funciona para qualquer setor que venda online."
     },
     {
-      question: "Preciso saber usar sistemas complicados?",
-      answer: "Não! O CRM é super intuitivo e fornecemos treinamento completo. Você vai conseguir gerir leads, enviar e-mails e acompanhar conversões facilmente."
+      question: "Eu preciso de pagar softwares caros de CRM à parte?",
+      answer: "Nós configuramos a estrutura para se adaptar à sua realidade. Podemos integrar com ferramentas que já usa ou implementar soluções cost-effective que recomendamos. O objetivo é eficiência, não aumentar os seus custos fixos desnecessariamente."
     },
     {
-      question: "Em quanto tempo fica pronto?",
-      answer: "Landing page + CRM completo fica pronto em até 7 dias úteis, incluindo todas as integrações, automação de e-mails e testes de funcionamento."
-    },
-    {
-      question: "Os e-mails são enviados automaticamente?",
-      answer: "Sim! Configuramos e-mails automáticos: você recebe notificação de cada novo lead e o lead recebe boas-vindas personalizadas instantaneamente."
-    },
-    {
-      question: "Posso integrar com meu WhatsApp Business?",
-      answer: "Claro! Colocamos botão flutuante conectado ao seu WhatsApp e integramos com o CRM para ter histórico completo de cada conversa."
-    },
-    {
-      question: "Tenho suporte após a entrega?",
-      answer: "Sim! Incluímos 30 dias de suporte total e treinamento para você dominar o sistema. Depois oferecemos manutenção mensal opcional."
+      question: "Quanto tempo demora até ter a estrutura no ar?",
+      answer: "Ao contrário de agências tradicionais que demoram meses, o nosso foco é velocidade de implementação. Uma estrutura padrão de alta performance costuma estar pronta para receber tráfego entre 7 a 14 dias após a reunião de Kick-off."
     }
   ];
 
   return (
-    <section className="py-12 md:py-20 px-4 bg-card/30">
+    <section className="py-12 md:py-20 px-4">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">
-            <span className="text-gradient">Perguntas Frequentes</span>
+            Perguntas Frequentes sobre{" "}
+            <span className="text-gradient">Estruturas de Alta Conversão</span>
           </h2>
         </div>
 
         <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full space-y-4">
             {faqItems.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left text-sm md:text-base">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-sm md:text-base">{item.answer}</AccordionContent>
+              <AccordionItem 
+                key={index} 
+                value={`item-${index}`}
+                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg px-4 md:px-6"
+              >
+                <AccordionTrigger className="text-left text-sm md:text-base font-semibold hover:text-senvia-400 transition-colors py-4 md:py-5">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm md:text-base text-muted-foreground pb-4 md:pb-5">
+                  {item.answer}
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>

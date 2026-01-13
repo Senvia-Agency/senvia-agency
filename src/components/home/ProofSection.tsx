@@ -67,17 +67,6 @@ const ProofSection = () => {
             ))}
           </div>
 
-          {/* Future testimonials placeholder */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="mt-16 p-8 bg-card border border-dashed border-border rounded-2xl"
-          >
-            <p className="text-muted-foreground text-sm">
-              🚀 Em breve: Casos de estudo e testemunhos de clientes
-            </p>
-          </motion.div>
         </motion.div>
       </div>
     </section>

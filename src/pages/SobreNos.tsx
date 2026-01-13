@@ -33,6 +33,11 @@ const SobreNos = () => {
           content="Conheça a SENVIA: agência nativa de IA que elimina o ruído das vendas. Fundada em 2025, unimos estratégia e tecnologia para entregar leads qualificados." 
         />
         <link rel="canonical" href="https://www.senvia.pt/sobre-nos" />
+        <meta property="og:title" content="Sobre Nós | SENVIA - Nascidos na Era da IA" />
+        <meta property="og:description" content="Agência nativa de IA que elimina o ruído das vendas. Fundada em 2025, unimos estratégia e tecnologia." />
+        <meta property="og:url" content="https://www.senvia.pt/sobre-nos" />
+        <meta property="og:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
+        <meta name="twitter:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
       </Helmet>
 
       <div className="min-h-screen bg-background">

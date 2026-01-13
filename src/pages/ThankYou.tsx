@@ -99,11 +99,11 @@ const ThankYou = () => {
               </Button>
               
               <Button 
-                onClick={() => navigate('/landing-pages')}
+                onClick={() => navigate('/sobre-nos')}
                 variant="outline"
                 className="px-8 py-3 border-senvia-500 text-senvia-500 hover:bg-senvia-500/10"
               >
-                Ver Detalhes do serviço
+                Conhecer a SENVIA
               </Button>
             </div>
           </div>

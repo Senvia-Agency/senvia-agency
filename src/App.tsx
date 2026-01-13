@@ -15,8 +15,6 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 // Lazy load demais páginas
-const LandingPages = lazy(() => import("./pages/LandingPages"));
-const AgenteWhatsApp = lazy(() => import("./pages/AgenteWhatsApp"));
 const DashboardProfile = lazy(() => import("./pages/DashboardProfile"));
 const DashboardProducts = lazy(() => import("./pages/DashboardProducts"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
@@ -34,7 +32,6 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
 const PoliticaCookies = lazy(() => import("./pages/PoliticaCookies"));
 const SobreNos = lazy(() => import("./pages/SobreNos"));
-const ExemplosIAAtendimento = lazy(() => import("./pages/ExemplosIAAtendimento"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading ultra-rápido
@@ -72,15 +69,12 @@ function App() {
           <Suspense fallback={<QuickLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/landing-pages" element={<LandingPages />} />
-              <Route path="/agente-whatsapp" element={<AgenteWhatsApp />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
               <Route path="/termos-servico" element={<TermosServico />} />
-<Route path="/politica-cookies" element={<PoliticaCookies />} />
+              <Route path="/politica-cookies" element={<PoliticaCookies />} />
               <Route path="/sobre-nos" element={<SobreNos />} />
-              <Route path="/exemplos-ia-atendimento" element={<ExemplosIAAtendimento />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/calendar" element={<CalendarConnect />} />
               

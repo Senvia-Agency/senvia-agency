@@ -11,6 +11,8 @@ const TermosServico = () => {
         <link rel="canonical" href="https://www.senvia.pt/termos-servico" />
         <meta property="og:title" content="Termos de Serviço | SENVIA Agency" />
         <meta property="og:url" content="https://www.senvia.pt/termos-servico" />
+        <meta property="og:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
+        <meta name="twitter:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
       </Helmet>
       <div className="min-h-screen">
       <Navbar />

@@ -85,9 +85,7 @@ const ProblemSection = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <span className="glitch" data-text="O problema não é a falta de leads.">
-              O problema não é a falta de leads.
-            </span>
+                O problema não é a falta de leads.
             <br />
             <motion.span 
               className="text-primary gradient-text-animated"

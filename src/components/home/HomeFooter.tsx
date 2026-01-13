@@ -56,12 +56,15 @@ const HomeFooter = () => {
           <div className="grid md:grid-cols-4 gap-8">
             {/* Logo & Description */}
             <div className="md:col-span-2">
-              <a href="/" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="inline-block mb-4">
+              <a href="/" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="inline-flex items-center gap-3 mb-4">
                 <img 
                   src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" 
                   alt="SENVIA" 
                   className="h-8"
                 />
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+                  SENVIA
+                </span>
               </a>
               <p className="text-sm text-muted-foreground max-w-sm">
                 Landing Pages de Alta Conversão + SENVIA OS: O sistema que qualifica leads automaticamente e entrega apenas quem está pronto para comprar.

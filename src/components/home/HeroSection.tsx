@@ -41,13 +41,13 @@ const HeroSection = () => {
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-              Pare de perder tempo
+              Só fale com quem
               <br />
-              <span className="text-primary">com curiosos.</span>
+              <span className="text-primary">quer comprar.</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
-              Nós construímos a sua <strong className="text-foreground">Landing Page de Alta Conversão</strong> e instalamos a Inteligência (<strong className="text-primary">SENVIA OS</strong>) que diz exatamente quem está pronto para comprar.
+              Chega de leads frios. A <strong className="text-primary">SENVIA</strong> cria o seu funil de vendas e integra inteligência artificial para filtrar os curiosos. <strong className="text-foreground">A sua equipa só recebe oportunidades reais.</strong>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

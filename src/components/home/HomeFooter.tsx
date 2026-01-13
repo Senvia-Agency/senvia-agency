@@ -1,7 +1,6 @@
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { ArrowRight, Instagram, Facebook, Linkedin } from 'lucide-react';
+import { ArrowRight, Instagram, Facebook, Linkedin, ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -17,35 +16,76 @@ const HomeFooter = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const socialLinks = [
+    { icon: Instagram, href: "https://www.instagram.com/senvia.pt/", label: "Instagram" },
+    { icon: Facebook, href: "https://www.facebook.com/senvia.pt", label: "Facebook" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/senvia-pt/", label: "LinkedIn" },
+  ];
+
   return (
     <footer className="bg-background relative overflow-hidden" ref={ref}>
       {/* CTA Section */}
-      <div className="border-t border-border">
-        <div className="container mx-auto px-4 md:px-6 py-24 md:py-32">
+      <div className="border-t border-border relative">
+        {/* Aurora effect */}
+        <div className="absolute inset-0 aurora-bg" />
+        
+        <div className="container mx-auto px-4 md:px-6 py-24 md:py-32 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+            <motion.h2 
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
               A sua equipa de vendas
               <br />
-              <span className="text-primary">agradece.</span>
-            </h2>
+              <motion.span 
+                className="gradient-text-animated inline-block"
+                animate={{ 
+                  textShadow: [
+                    '0 0 0px hsl(var(--primary))',
+                    '0 0 20px hsl(var(--primary))',
+                    '0 0 0px hsl(var(--primary))',
+                  ]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                agradece.
+              </motion.span>
+            </motion.h2>
 
-            <p className="text-lg text-muted-foreground mb-8">
-              Vamos construir a sua infraestrutura de vendas inteligente?
-            </p>
-
-            <Button 
-              onClick={handleCTA}
-              size="lg"
-              className="group text-base px-8 py-6 bg-primary hover:bg-primary/90"
+            <motion.p 
+              className="text-lg text-muted-foreground mb-8"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Agendar Consultoria de Implementação
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+              Vamos construir a sua infraestrutura de vendas inteligente?
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button 
+                onClick={handleCTA}
+                size="lg"
+                className="group text-base px-8 py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center">
+                  Agendar Consultoria de Implementação
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+                </span>
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -56,46 +96,43 @@ const HomeFooter = () => {
           <div className="grid md:grid-cols-5 gap-8">
             {/* Logo & Description */}
             <div className="md:col-span-2">
-              <a href="/" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="inline-flex items-center gap-3 mb-4">
+              <motion.a 
+                href="/" 
+                onClick={(e) => { e.preventDefault(); scrollToTop(); }} 
+                className="inline-flex items-center gap-3 mb-4"
+                whileHover={{ scale: 1.05 }}
+              >
                 <img 
                   src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" 
                   alt="SENVIA" 
                   className="h-8"
                 />
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+                <span className="text-xl font-bold gradient-text-animated">
                   SENVIA
                 </span>
-              </a>
+              </motion.a>
               <p className="text-sm text-muted-foreground max-w-sm">
                 Eliminamos o ruído das vendas. Infraestrutura e Inteligência para negócios que querem escalar.
               </p>
 
               {/* Social Links */}
               <div className="flex gap-4 mt-6">
-                <a
-                  href="https://www.instagram.com/senvia.pt/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://www.facebook.com/senvia.pt"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/senvia-pt/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
+                {socialLinks.map((social, index) => (
+                  <motion.a
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-all"
+                    whileHover={{ scale: 1.2, rotate: 10 }}
+                    whileTap={{ scale: 0.9 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                  >
+                    <social.icon className="h-5 w-5" />
+                  </motion.a>
+                ))}
               </div>
             </div>
 
@@ -103,38 +140,34 @@ const HomeFooter = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Soluções</h4>
               <ul className="space-y-3">
-                <li>
-                  <button
-                    onClick={() => document.getElementById('metodo')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                {[
+                  { label: "Landing Pages & Funis", action: () => document.getElementById('metodo')?.scrollIntoView({ behavior: 'smooth' }) },
+                  { label: "SENVIA OS", action: () => document.getElementById('tecnologia')?.scrollIntoView({ behavior: 'smooth' }) },
+                  { label: "Agentes de IA", to: "/ia" },
+                  { label: "Psicólogos", to: "/ia-psicologos" },
+                ].map((item, index) => (
+                  <motion.li
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    Landing Pages & Funis
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => document.getElementById('tecnologia')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    SENVIA OS
-                  </button>
-                </li>
-                <li>
-                  <Link
-                    to="/ia"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Agentes de IA
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/ia-psicologos"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Psicólogos
-                  </Link>
-                </li>
+                    {item.to ? (
+                      <Link
+                        to={item.to}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={item.action}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                  </motion.li>
+                ))}
               </ul>
             </div>
 
@@ -142,37 +175,37 @@ const HomeFooter = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Empresa</h4>
               <ul className="space-y-3">
-<li>
+                <motion.li whileHover={{ x: 5 }}>
                   <Link
                     to="/sobre-nos"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     Sobre Nós
                   </Link>
-                </li>
+                </motion.li>
                 <li>
                   <span className="text-sm text-muted-foreground/50 cursor-default">
                     Carreiras / Parceiros
                   </span>
                 </li>
-                <li>
+                <motion.li whileHover={{ x: 5 }}>
                   <a
                     href="https://app.senvia.pt"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     Área de Cliente
                   </a>
-                </li>
-                <li>
+                </motion.li>
+                <motion.li whileHover={{ x: 5 }}>
                   <button
                     onClick={handleCTA}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     Contacto
                   </button>
-                </li>
+                </motion.li>
               </ul>
             </div>
 
@@ -180,40 +213,32 @@ const HomeFooter = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Legal</h4>
               <ul className="space-y-3">
-                <li>
-                  <Link
-                    to="/termos-servico"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Termos de Uso
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/politica-privacidade"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Política de Privacidade & RGPD
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/politica-cookies"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Política de Cookies
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="https://www.livroreclamacoes.pt/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Livro de Reclamações
-                  </a>
-                </li>
+                {[
+                  { label: "Termos de Uso", to: "/termos-servico" },
+                  { label: "Política de Privacidade & RGPD", to: "/politica-privacidade" },
+                  { label: "Política de Cookies", to: "/politica-cookies" },
+                  { label: "Livro de Reclamações", href: "https://www.livroreclamacoes.pt/" },
+                ].map((item, index) => (
+                  <motion.li key={index} whileHover={{ x: 5 }}>
+                    {item.to ? (
+                      <Link
+                        to={item.to}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </a>
+                    )}
+                  </motion.li>
+                ))}
               </ul>
             </div>
           </div>
@@ -229,12 +254,19 @@ const HomeFooter = () => {
                 Leiria, Portugal
               </p>
             </div>
-            <button
+            <motion.button
               onClick={scrollToTop}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+              whileHover={{ y: -3 }}
             >
-              Voltar ao topo ↑
-            </button>
+              Voltar ao topo 
+              <motion.span
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <ArrowUp className="h-4 w-4" />
+              </motion.span>
+            </motion.button>
           </div>
         </div>
       </div>

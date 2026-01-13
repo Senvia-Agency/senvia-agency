@@ -37,12 +37,15 @@ const HomeNavbar = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-3">
             <img 
               src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" 
               alt="SENVIA" 
               className="h-8 md:h-10"
             />
+            <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-white bg-clip-text text-transparent">
+              SENVIA
+            </span>
           </a>
 
           {/* Desktop Navigation */}

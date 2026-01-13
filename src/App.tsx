@@ -32,6 +32,7 @@ const AdminDespesasMensais = lazy(() => import("./pages/AdminDespesasMensais"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
+const PoliticaCookies = lazy(() => import("./pages/PoliticaCookies"));
 const ExemplosIAAtendimento = lazy(() => import("./pages/ExemplosIAAtendimento"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -74,7 +75,9 @@ function App() {
               <Route path="/agente-whatsapp" element={<AgenteWhatsApp />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
               <Route path="/termos-servico" element={<TermosServico />} />
+              <Route path="/politica-cookies" element={<PoliticaCookies />} />
               <Route path="/exemplos-ia-atendimento" element={<ExemplosIAAtendimento />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/calendar" element={<CalendarConnect />} />

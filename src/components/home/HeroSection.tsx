@@ -130,7 +130,7 @@ const HeroSection = () => {
                         <p className="text-sm text-foreground mb-2">João Silva</p>
                         <div className="flex items-center gap-2">
                           <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full font-medium">
-                            🔥 Temperatura: 90°C (Quente)
+                            🔥 Quente
                           </span>
                         </div>
                       </div>
@@ -161,14 +161,14 @@ const HeroSection = () => {
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary">MS</div>
                       <span className="text-sm text-foreground">Maria Santos</span>
                     </div>
-                    <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-1 rounded-full">85°C</span>
+                    <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full">Morno</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">PC</div>
                       <span className="text-sm text-foreground">Pedro Costa</span>
                     </div>
-                    <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">45°C</span>
+                    <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">Frio</span>
                   </div>
                 </div>
               </div>

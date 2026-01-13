@@ -142,13 +142,13 @@ const HomeFooter = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Empresa</h4>
               <ul className="space-y-3">
-                <li>
-                  <button
-                    onClick={() => document.getElementById('proof')?.scrollIntoView({ behavior: 'smooth' })}
+<li>
+                  <Link
+                    to="/sobre-nos"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Sobre Nós
-                  </button>
+                  </Link>
                 </li>
                 <li>
                   <span className="text-sm text-muted-foreground/50 cursor-default">

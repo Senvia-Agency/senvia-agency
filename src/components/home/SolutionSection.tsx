@@ -31,7 +31,7 @@ const SolutionSection = () => {
       description: "O seu time recebe o lead já classificado.",
       actions: [
         { icon: Flame, label: "Quente: Ligar agora", color: "orange" },
-        { icon: Snowflake, label: "Frio: Automação (nutrição)", color: "blue" }
+        { icon: Snowflake, label: "Frio: Agendar", color: "blue" }
       ],
       color: "primary"
     }

@@ -78,11 +78,11 @@ const HomeFooter = () => {
               <Button 
                 onClick={handleCTA}
                 size="lg"
-                className="group text-base px-8 py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden"
+                className="group text-base px-4 md:px-8 py-4 md:py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden max-w-full"
               >
-                <span className="relative z-10 flex items-center">
-                  Agendar Consultoria de Implementação
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+                <span className="relative z-10 flex items-center justify-center text-center whitespace-normal">
+                  <span>Agendar Consultoria de Implementação</span>
+                  <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
               </Button>
             </motion.div>

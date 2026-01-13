@@ -1,9 +1,18 @@
+import { Helmet } from "react-helmet-async";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const TermosServico = () => {
   return (
-    <div className="min-h-screen">
+    <>
+      <Helmet>
+        <title>Termos de Serviço | SENVIA Agency</title>
+        <meta name="description" content="Termos e condições que regem a utilização dos serviços da SENVIA Agency. Leia os nossos termos de serviço antes de contratar." />
+        <link rel="canonical" href="https://www.senvia.pt/termos-servico" />
+        <meta property="og:title" content="Termos de Serviço | SENVIA Agency" />
+        <meta property="og:url" content="https://www.senvia.pt/termos-servico" />
+      </Helmet>
+      <div className="min-h-screen">
       <Navbar />
       
       {/* Hero Section */}
@@ -134,6 +143,7 @@ const TermosServico = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 

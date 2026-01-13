@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -24,7 +25,16 @@ const ExemplosIAAtendimento = () => {
   const SelectedComponent = selectedCategoryData?.component;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <>
+      <Helmet>
+        <title>Exemplos de IA para Atendimento | SENVIA Agency</title>
+        <meta name="description" content="Veja exemplos práticos de como a Inteligência Artificial pode revolucionar o atendimento ao cliente em diferentes setores. Demonstrações ao vivo de Agentes IA." />
+        <link rel="canonical" href="https://www.senvia.pt/exemplos-ia-atendimento" />
+        <meta property="og:title" content="Exemplos de IA para Atendimento | SENVIA Agency" />
+        <meta property="og:description" content="Demonstrações práticas de Agentes de IA para atendimento ao cliente em diferentes setores." />
+        <meta property="og:url" content="https://www.senvia.pt/exemplos-ia-atendimento" />
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <div className="bg-slate-900/50 backdrop-blur-sm border-b border-slate-700">
         <div className="container mx-auto px-4 py-6">
@@ -75,6 +85,7 @@ const ExemplosIAAtendimento = () => {
         {SelectedComponent && <SelectedComponent />}
       </div>
     </div>
+    </>
   );
 };
 

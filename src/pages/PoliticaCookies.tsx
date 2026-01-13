@@ -9,6 +9,11 @@ const PoliticaCookies = () => {
       <Helmet>
         <title>Política de Cookies | SENVIA</title>
         <meta name="description" content="Política de Cookies da SENVIA - Saiba como utilizamos cookies no nosso website." />
+        <link rel="canonical" href="https://www.senvia.pt/politica-cookies" />
+        <meta property="og:title" content="Política de Cookies | SENVIA" />
+        <meta property="og:url" content="https://www.senvia.pt/politica-cookies" />
+        <meta property="og:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
+        <meta name="twitter:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-16 max-w-4xl">

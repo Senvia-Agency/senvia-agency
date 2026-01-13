@@ -13,16 +13,18 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>SENVIA | Landing Pages de Alta Conversão + IA para Qualificação de Leads</title>
-        <meta name="description" content="Pare de perder tempo com curiosos. Construímos Landing Pages de Alta Conversão e instalamos o SENVIA OS que diz exatamente quem está pronto para comprar." />
+        <title>SENVIA | Só Fale Com Quem Quer Comprar - Funis de Vendas + IA</title>
+        <meta name="description" content="Chega de leads frios. A SENVIA cria o seu funil de vendas e integra inteligência artificial para filtrar os curiosos. A sua equipa só recebe oportunidades reais." />
         <link rel="canonical" href="https://www.senvia.pt/" />
-        <meta property="og:title" content="SENVIA | Máquinas de Vendas Inteligentes" />
-        <meta property="og:description" content="Landing Pages de Alta Conversão + SENVIA OS: IA que qualifica leads automaticamente e entrega apenas quem está pronto para comprar." />
+        <meta property="og:title" content="SENVIA | Só Fale Com Quem Quer Comprar" />
+        <meta property="og:description" content="A SENVIA cria o seu funil de vendas e integra IA para filtrar curiosos. A sua equipa só recebe oportunidades reais." />
         <meta property="og:url" content="https://www.senvia.pt/" />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="SENVIA | Máquinas de Vendas Inteligentes" />
-        <meta name="twitter:description" content="Landing Pages + IA para qualificação de leads. Elimine o ruído, foque no sinal." />
+        <meta name="twitter:title" content="SENVIA | Só Fale Com Quem Quer Comprar" />
+        <meta name="twitter:description" content="Funis de Vendas + IA para qualificação de leads. Elimine o ruído, foque no sinal." />
+        <meta name="twitter:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
       </Helmet>
       <div className="min-h-screen bg-background">
         <HomeNavbar />

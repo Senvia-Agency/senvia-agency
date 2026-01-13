@@ -1,11 +1,10 @@
-
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
 
 const ThankYou = () => {
   const navigate = useNavigate();
@@ -24,9 +23,14 @@ const ThankYou = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      
-      <Navbar />
+    <>
+      <Helmet>
+        <title>Obrigado | SENVIA Agency</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="description" content="Obrigado pelo seu contacto. Entraremos em contacto consigo brevemente." />
+      </Helmet>
+      <div className="min-h-screen bg-background">
+        <Navbar />
       
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto text-center">
@@ -104,10 +108,11 @@ const ThankYou = () => {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 

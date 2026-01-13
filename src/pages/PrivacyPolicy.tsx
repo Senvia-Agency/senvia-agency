@@ -1,19 +1,28 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
-    // Update document title
+    // Fallback for document title
     document.title = "Política de Privacidade | SENVIA Agency";
     // Scroll to top on page load
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <>
+      <Helmet>
+        <title>Política de Privacidade | SENVIA Agency</title>
+        <meta name="description" content="Política de Privacidade da SENVIA Agency. Saiba como protegemos os seus dados pessoais e os seus direitos ao abrigo do RGPD." />
+        <link rel="canonical" href="https://www.senvia.pt/privacy-policy" />
+        <meta property="og:title" content="Política de Privacidade | SENVIA Agency" />
+        <meta property="og:url" content="https://www.senvia.pt/privacy-policy" />
+      </Helmet>
+      <div className="min-h-screen bg-background">
+        <Navbar />
       
       <main className="container mx-auto px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
@@ -135,9 +144,10 @@ const PrivacyPolicy = () => {
         </div>
       </main>
       
-      <Footer />
-      <ScrollToTop />
-    </div>
+        <Footer />
+        <ScrollToTop />
+      </div>
+    </>
   );
 };
 

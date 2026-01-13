@@ -341,38 +341,6 @@ const SobreNos = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-b from-primary/10 to-transparent">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-              className="max-w-3xl mx-auto text-center"
-            >
-              <motion.h2 
-                variants={fadeInUp}
-                className="text-3xl md:text-4xl font-bold text-foreground mb-6"
-              >
-                A sua empresa está pronta para parar de brincar ao marketing e{" "}
-                <span className="text-primary">começar a escalar vendas</span>?
-              </motion.h2>
-
-              <motion.div variants={fadeInUp}>
-                <Button 
-                  size="lg" 
-                  onClick={handleCTAClick}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg group"
-                >
-                  Agendar Consultoria
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
-
         <HomeFooter />
         <ScrollToTop />
       </div>

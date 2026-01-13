@@ -210,7 +210,7 @@ const SobreNos = () => {
                     </p>
                     <p className="text-foreground font-medium mt-4">
                       O resultado? Você deixa de vender para curiosos e passa a fechar negócio com{" "}
-                      <span className="text-primary">leads quentes (90°C+)</span>.
+                      <span className="text-primary">leads quentes</span>.
                     </p>
                   </div>
                 </div>

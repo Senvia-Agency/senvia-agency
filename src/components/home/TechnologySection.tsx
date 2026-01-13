@@ -182,7 +182,7 @@ const TechnologySection = () => {
                       animate={{ textShadow: ['0 0 0px', '0 0 8px hsl(var(--primary))', '0 0 0px'] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      78°C Médio
+                      Médio
                     </motion.span>
                     <span>Quente</span>
                   </div>
@@ -245,7 +245,7 @@ const TechnologySection = () => {
                     whileHover={{ x: 5 }}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Em automação de nutrição</span>
+                      <span className="text-sm text-muted-foreground">Agendar</span>
                     </div>
                     <span className="text-sm font-medium text-muted-foreground">
                       <AnimatedNumber value={11} delay={1600} />

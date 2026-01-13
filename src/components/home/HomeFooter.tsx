@@ -53,7 +53,7 @@ const HomeFooter = () => {
       {/* Footer Links */}
       <div className="border-t border-border bg-muted/20">
         <div className="container mx-auto px-4 md:px-6 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-5 gap-8">
             {/* Logo & Description */}
             <div className="md:col-span-2">
               <a href="/" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="inline-flex items-center gap-3 mb-4">
@@ -67,7 +67,7 @@ const HomeFooter = () => {
                 </span>
               </a>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Landing Pages de Alta Conversão + SENVIA OS: O sistema que qualifica leads automaticamente e entrega apenas quem está pronto para comprar.
+                Eliminamos o ruído das vendas. Infraestrutura e Inteligência para negócios que querem escalar.
               </p>
 
               {/* Social Links */}
@@ -99,26 +99,16 @@ const HomeFooter = () => {
               </div>
             </div>
 
-            {/* Links */}
+            {/* Soluções */}
             <div>
-              <h4 className="font-semibold text-foreground mb-4">Navegação</h4>
+              <h4 className="font-semibold text-foreground mb-4">Soluções</h4>
               <ul className="space-y-3">
-                <li>
-                  <a
-                    href="https://app.senvia.pt"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Login SENVIA OS
-                  </a>
-                </li>
                 <li>
                   <button
                     onClick={() => document.getElementById('metodo')?.scrollIntoView({ behavior: 'smooth' })}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Método
+                    Landing Pages & Funis
                   </button>
                 </li>
                 <li>
@@ -128,6 +118,52 @@ const HomeFooter = () => {
                   >
                     SENVIA OS
                   </button>
+                </li>
+                <li>
+                  <Link
+                    to="/ia"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Agentes de IA
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/ia-psicologos"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Psicólogos
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Empresa */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4">Empresa</h4>
+              <ul className="space-y-3">
+                <li>
+                  <button
+                    onClick={() => document.getElementById('proof')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Sobre Nós
+                  </button>
+                </li>
+                <li>
+                  <span className="text-sm text-muted-foreground/50 cursor-default">
+                    Carreiras / Parceiros
+                  </span>
+                </li>
+                <li>
+                  <a
+                    href="https://app.senvia.pt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Área de Cliente
+                  </a>
                 </li>
                 <li>
                   <button
@@ -146,18 +182,26 @@ const HomeFooter = () => {
               <ul className="space-y-3">
                 <li>
                   <Link
-                    to="/politica-privacidade"
+                    to="/termos-servico"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Política de Privacidade
+                    Termos de Uso
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/termos-servico"
+                    to="/politica-privacidade"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Termos de Serviço
+                    Política de Privacidade & RGPD
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/politica-cookies"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Política de Cookies
                   </Link>
                 </li>
                 <li>
@@ -176,9 +220,15 @@ const HomeFooter = () => {
 
           {/* Bottom bar */}
           <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} SENVIA. Todos os direitos reservados.
-            </p>
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2025 SENVIA. Todos os direitos reservados.
+              </p>
+              <span className="hidden md:inline text-muted-foreground/50">•</span>
+              <p className="text-sm text-muted-foreground">
+                Leiria, Portugal
+              </p>
+            </div>
             <button
               onClick={scrollToTop}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"

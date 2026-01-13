@@ -51,28 +51,16 @@ const HomeNavbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <button
-              onClick={() => scrollToSection('problema')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              O Problema
-            </button>
-            <button
               onClick={() => scrollToSection('metodo')}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Método
+              O Nosso Método
             </button>
             <button
               onClick={() => scrollToSection('tecnologia')}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               SENVIA OS
-            </button>
-            <button
-              onClick={() => scrollToSection('para-quem')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Para Quem
             </button>
             <a
               href="https://app.senvia.pt"
@@ -105,28 +93,16 @@ const HomeNavbar = () => {
           <div className="md:hidden py-4 border-t border-border/20">
             <div className="flex flex-col gap-4">
               <button
-                onClick={() => scrollToSection('problema')}
-                className="text-left text-muted-foreground hover:text-foreground transition-colors py-2"
-              >
-                O Problema
-              </button>
-              <button
                 onClick={() => scrollToSection('metodo')}
                 className="text-left text-muted-foreground hover:text-foreground transition-colors py-2"
               >
-                Método
+                O Nosso Método
               </button>
               <button
                 onClick={() => scrollToSection('tecnologia')}
                 className="text-left text-muted-foreground hover:text-foreground transition-colors py-2"
               >
                 SENVIA OS
-              </button>
-              <button
-                onClick={() => scrollToSection('para-quem')}
-                className="text-left text-muted-foreground hover:text-foreground transition-colors py-2"
-              >
-                Para Quem
               </button>
               <a
                 href="https://app.senvia.pt"

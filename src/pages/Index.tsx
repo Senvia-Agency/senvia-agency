@@ -6,6 +6,7 @@ import SolutionSection from '@/components/home/SolutionSection';
 import TechnologySection from '@/components/home/TechnologySection';
 import QualificationSection from '@/components/home/QualificationSection';
 import ProofSection from '@/components/home/ProofSection';
+import GoogleReviewsSection from '@/components/home/GoogleReviewsSection';
 import HomeFooter from '@/components/home/HomeFooter';
 import ScrollToTop from "../components/ScrollToTop";
 
@@ -34,6 +35,7 @@ const Index = () => {
         <TechnologySection />
         <QualificationSection />
         <ProofSection />
+        <GoogleReviewsSection />
         <HomeFooter />
         <ScrollToTop />
       </div>

@@ -6,29 +6,29 @@ import { Button } from '@/components/ui/button';
 
 const reviews = [
   {
-    name: "João Silva",
-    initials: "JS",
+    name: "Carlos Ferreira",
+    initials: "CF",
     rating: 5,
-    text: "Excelente trabalho! A equipa da SENVIA transformou completamente a presença digital da minha empresa. Profissionais, rápidos e com resultados incríveis.",
+    text: "Excelente trabalho na criação do nosso website. A equipa da SENVIA foi muito profissional e entregou um resultado que superou as nossas expectativas. Recomendo!",
     date: "há 2 semanas"
   },
   {
-    name: "Maria Santos",
-    initials: "MS",
+    name: "Ana Rodrigues",
+    initials: "AR",
     rating: 5,
-    text: "Serviço de primeira qualidade. A automação que implementaram poupou-nos horas de trabalho manual. Recomendo a 100%!",
+    text: "As automações que implementaram na nossa empresa pouparam-nos horas de trabalho por semana. Muito satisfeita com o serviço e o acompanhamento.",
     date: "há 1 mês"
   },
   {
-    name: "Pedro Costa",
-    initials: "PC",
+    name: "Miguel Oliveira",
+    initials: "MO",
     rating: 5,
-    text: "Desde que começámos a trabalhar com a SENVIA, as nossas vendas aumentaram significativamente. Equipa muito competente e atenciosa.",
-    date: "há 1 mês"
+    text: "A solução de IA para atendimento ao cliente transformou o nosso negócio. Resposta rápida, equipa atenciosa e resultados visíveis desde o primeiro dia.",
+    date: "há 3 semanas"
   }
 ];
 
-const GOOGLE_BUSINESS_LINK = "https://g.page/r/YOUR_GOOGLE_BUSINESS_ID/review";
+const GOOGLE_BUSINESS_LINK = "https://www.google.com/maps/place/Senvia/@39.7587917,-8.8055327,17z/data=!3m1!4b1!4m6!3m5!1s0xd2273bf06de7bb5:0xea1f521b3f7d88fc!8m2!3d39.7587876!4d-8.8029578!16s%2Fg%2F11xmfdmng5";
 
 const GoogleReviewsSection = () => {
   const ref = useRef(null);
@@ -83,7 +83,7 @@ const GoogleReviewsSection = () => {
             <div className="h-8 w-px bg-border/50 hidden sm:block" />
             
             <span className="text-muted-foreground text-sm font-medium">
-              10 avaliações verificadas
+              3 avaliações verificadas
             </span>
           </motion.div>
         </motion.div>

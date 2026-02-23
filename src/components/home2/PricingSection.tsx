@@ -117,7 +117,7 @@ const PricingSection = () => {
 
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Button
-                  onClick={() => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank')}
+                  onClick={() => window.open('https://app.senvia.pt/', '_blank')}
                   className={`w-full py-6 text-base font-semibold ${
                     plan.popular
                       ? 'bg-primary hover:bg-primary/90 glow-pulse'

@@ -111,7 +111,7 @@ const SenviaHeroSection = () => {
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }}>
               <span>Inteligência Artificial não é o futuro.</span>
               <br />
-              <motion.span className="gradient-text-animated inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
+              <motion.span className="gradient-text-animated inline-block pb-2 pr-1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
                 É o agora.
               </motion.span>
             </motion.h1>

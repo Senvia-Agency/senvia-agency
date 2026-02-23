@@ -10,6 +10,7 @@ import GTMPageView from "@/components/GTMPageView";
 import CookieConsent from "@/components/CookieConsent";
 
 // Lazy load crítico primeiro
+const Home = lazy(() => import("./pages/Home"));
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -68,7 +69,8 @@ function App() {
           <GTMPageView />
           <Suspense fallback={<QuickLoader />}>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/funis" element={<Index />} />
               <Route path="/obrigado" element={<ThankYou />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/politica-privacidade" element={<PrivacyPolicy />} />

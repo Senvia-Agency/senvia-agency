@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const serviceSubmenus = [
   { label: "Sites & E-commerces", href: "/sites" },
   { label: "Chatbots", href: "/chatbots" },
-  { label: "Softwares", href: "#" },
+  { label: "Softwares", href: "/softwares" },
 ];
 
 const SenviaNavbar = () => {

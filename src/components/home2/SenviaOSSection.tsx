@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Users, UserCheck, FileText, TrendingUp, Wallet, Calendar, Megaphone, ShoppingCart, Receipt, Bot, Zap } from 'lucide-react';
+import { Users, UserCheck, FileText, TrendingUp, Wallet, Calendar, Megaphone, ShoppingCart, Receipt, Bot, Zap, Mail, CreditCard, Link } from 'lucide-react';
 
 const modules = [
   { icon: Users, label: "Leads", desc: "Capture e qualifique automaticamente" },
@@ -11,7 +11,13 @@ const modules = [
   { icon: Calendar, label: "Agenda", desc: "Calendário integrado" },
   { icon: Megaphone, label: "Marketing", desc: "Campanhas e relatórios" },
   { icon: ShoppingCart, label: "E-commerce", desc: "Loja e catálogo online" },
-  { icon: Receipt, label: "Faturação", desc: "InvoiceXpress integrado" },
+  { icon: Receipt, label: "Faturação", desc: "InvoiceXpress & KeyInvoice" },
+];
+
+const integrations = [
+  { icon: Receipt, label: "Faturação", platforms: "InvoiceXpress + KeyInvoice", desc: "Emissão automática de faturas" },
+  { icon: Mail, label: "E-mail Marketing", platforms: "Brevo", desc: "Campanhas e automações de e-mail" },
+  { icon: CreditCard, label: "Pagamentos", platforms: "Stripe", desc: "Cobranças e subscrições online" },
 ];
 
 const SenviaOSSection = () => {
@@ -58,7 +64,31 @@ const SenviaOSSection = () => {
                 </motion.div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{mod.label}</h3>
                 <p className="text-sm text-muted-foreground">{mod.desc}</p>
-              </div>
+        </div>
+
+        {/* Integrações Nativas */}
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.8, duration: 0.6 }} className="mt-16 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 mb-8">
+            <Link className="w-4 h-4 text-accent-foreground" />
+            <span className="text-xs font-medium text-accent-foreground">Integrações Nativas</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            {integrations.map((item, i) => (
+              <motion.div key={item.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ delay: 0.9 + i * 0.1, duration: 0.4 }}
+                whileHover={{ y: -4 }}
+                className="group p-5 rounded-xl bg-card/50 border border-border hover:border-primary/40 transition-all duration-300"
+              >
+                <item.icon className="w-8 h-8 text-primary mx-auto mb-3" />
+                <h4 className="text-sm font-semibold text-foreground mb-1">{item.label}</h4>
+                <p className="text-xs font-medium text-primary mb-1">{item.platforms}</p>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
             </motion.div>
           ))}
         </div>

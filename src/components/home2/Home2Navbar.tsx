@@ -69,11 +69,11 @@ const Home2Navbar = () => {
               </motion.button>
             ))}
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button onClick={() => scrollToSection('pricing')} size="sm" className="bg-primary hover:bg-primary/90 relative overflow-hidden group">
-                <span className="relative z-10 flex items-center gap-2">
+              <Button asChild size="sm" className="bg-primary hover:bg-primary/90 relative overflow-hidden group">
+                <a href="https://app.senvia.pt/" target="_blank" rel="noopener noreferrer" className="relative z-10 flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
                   Começar Teste Grátis
-                </span>
+                </a>
               </Button>
             </motion.div>
           </div>
@@ -99,9 +99,11 @@ const Home2Navbar = () => {
                   </motion.button>
                 ))}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-2">
-                  <Button onClick={() => scrollToSection('pricing')} className="w-full glow-pulse">
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Começar Teste Grátis
+                  <Button asChild className="w-full glow-pulse">
+                    <a href="https://app.senvia.pt/" target="_blank" rel="noopener noreferrer">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Começar Teste Grátis
+                    </a>
                   </Button>
                 </motion.div>
               </div>

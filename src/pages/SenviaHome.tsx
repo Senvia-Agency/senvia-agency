@@ -3,7 +3,7 @@ import SenviaNavbar from '@/components/senvia/SenviaNavbar';
 import SenviaHeroSection from '@/components/senvia/SenviaHeroSection';
 import SenviaServicesSection from '@/components/senvia/SenviaServicesSection';
 import SenviaWhyUsSection from '@/components/senvia/SenviaWhyUsSection';
-import NichosSection from '@/components/home2/NichosSection';
+
 import StatsSection from '@/components/home2/StatsSection';
 import HomeFooter from '@/components/home/HomeFooter';
 
@@ -20,7 +20,7 @@ const SenviaHome = () => {
         <SenviaHeroSection />
         <SenviaServicesSection />
         <SenviaWhyUsSection />
-        <NichosSection />
+        
         <StatsSection />
       </main>
       <HomeFooter />

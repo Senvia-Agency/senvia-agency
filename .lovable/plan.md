@@ -1,39 +1,37 @@
 
-# Atualizar Navbar da Pagina Principal SENVIA
 
-## O que muda
+# Atualizar Hero — Copy Escolhido + Remover SENVIA OS
 
-### Logo
-- Icone SENVIA (imagem atual) + texto "SENVIA" ao lado
-- Abaixo do texto "SENVIA", em tamanho menor: "IA Software House"
-- Layout vertical compacto no bloco da logo
+## Copy Final
 
-### Menu de Navegacao (Desktop)
-| Item | Tipo | Destino |
-|------|------|---------|
-| SENVIA OS | Link | `/senvia-os` |
-| Servicos | Dropdown | Submenus: Sites, Chatbots, E-commerces, Agentes de IA |
-| Sobre Nos | Link | `/sobre-nos` |
-| Blog | Link | `/blog` (rota a criar no futuro, por agora `#`) |
-| Contactos | Scroll/Link | Seccao contactos ou `/contactos` |
-| **Agendar Consultoria** | Botao CTA | Link externo (formulario atual) |
+**Titulo principal:**
+"Inteligencia Artificial nao e o futuro." + "E o agora."
 
-### Menu Mobile
-- Mesmos itens, com "Servicos" expandivel (accordion) mostrando os submenus
-- Botao "Agendar Consultoria" no fundo
+**Subtitulo:**
+"A SENVIA e especializada em Inteligencia Artificial e chegou para transformar a tua empresa. Software, automacoes e solucoes digitais, tudo potenciado por IA."
 
-## Detalhes Tecnicos
+**CTA:** "Agendar Consultoria" (alinhado com a navbar)
 
-### Arquivo modificado
-`src/components/senvia/SenviaNavbar.tsx` - Reescrita completa:
+## Alteracoes no arquivo `src/components/senvia/SenviaHeroSection.tsx`
 
-1. **Logo**: Trocar o layout de `flex items-center gap-3` para um bloco com "SENVIA" em bold e "IA Software House" em texto menor logo abaixo
-2. **Dropdown "Servicos"**: Usar um hover dropdown customizado com `framer-motion` (AnimatePresence) -- sem dependencia nova, nao precisa de Radix DropdownMenu, basta um div com onMouseEnter/onMouseLeave
-3. **Novos navItems**: SENVIA OS (`/senvia-os`), Servicos (dropdown), Sobre Nos (`/sobre-nos`), Blog (`#`), Contactos (scroll ou link)
-4. **Botao CTA**: Texto muda de "Falar com Especialista" para "Agendar Consultoria"
-5. **Mobile**: Servicos com toggle para mostrar/esconder submenus
+### 1. Titulo H1 (linhas 110-117)
+- **De:** "Construimos o / Futuro Digital."
+- **Para:** "Inteligencia Artificial nao e o futuro." / "E o agora." (parte gradient-text-animated)
 
-### Nenhum arquivo novo necessario
-- A rota `/sobre-nos` ja existe
-- Blog pode apontar para `#` por agora (sem pagina criada ainda)
-- O dropdown sera feito com logica de hover + AnimatePresence (ja disponivel)
+### 2. Paragrafo (linhas 119-122)
+- **De:** Menciona "CRM proprietario — SENVIA OS"
+- **Para:** "A SENVIA e especializada em Inteligencia Artificial e chegou para transformar a tua empresa. Software, automacoes e solucoes digitais, tudo potenciado por IA."
+
+### 3. Botao CTA (linha 129)
+- **De:** "Falar com Especialista"
+- **Para:** "Agendar Consultoria"
+
+### 4. Icone orbitante (linha 182)
+- **De:** `{ icon: Rocket, label: "SENVIA OS", angle: 270, radius: 180 }`
+- **Para:** `{ icon: Bot, label: "Chatbots", angle: 270, radius: 180 }` (importar `Bot` do lucide-react)
+
+### Resumo
+- 1 arquivo modificado: `src/components/senvia/SenviaHeroSection.tsx`
+- 4 alteracoes pontuais (titulo, paragrafo, CTA, icone orbitante)
+- Adicionar import `Bot` do lucide-react, remover `Rocket` se nao usado noutro lugar
+

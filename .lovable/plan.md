@@ -1,80 +1,39 @@
 
-# Reestruturacao: SENVIA - AI Software House (Pagina Principal)
+# Atualizar Navbar da Pagina Principal SENVIA
 
-## O Problema
-A pagina atual em `/` esta demasiado focada no SENVIA OS (o produto CRM). O utilizador quer uma pagina principal que represente a **SENVIA como empresa** — uma AI Software House completa — e mover a pagina do SENVIA OS para `/senvia-os`.
+## O que muda
 
-## Nova Estrutura de Rotas
+### Logo
+- Icone SENVIA (imagem atual) + texto "SENVIA" ao lado
+- Abaixo do texto "SENVIA", em tamanho menor: "IA Software House"
+- Layout vertical compacto no bloco da logo
 
-| Rota | Conteudo |
-|------|----------|
-| `/` | **NOVA** - SENVIA AI Software House (empresa) |
-| `/senvia-os` | Pagina atual do SENVIA OS (CRM + Planos) |
-| `/funis` | Landing pages de funis (sem alteracao) |
-| Restantes | Sem alteracoes |
+### Menu de Navegacao (Desktop)
+| Item | Tipo | Destino |
+|------|------|---------|
+| SENVIA OS | Link | `/senvia-os` |
+| Servicos | Dropdown | Submenus: Sites, Chatbots, E-commerces, Agentes de IA |
+| Sobre Nos | Link | `/sobre-nos` |
+| Blog | Link | `/blog` (rota a criar no futuro, por agora `#`) |
+| Contactos | Scroll/Link | Seccao contactos ou `/contactos` |
+| **Agendar Consultoria** | Botao CTA | Link externo (formulario atual) |
 
-## Nova Pagina Principal (`/`) — Foco na EMPRESA
-
-A pagina sera sobre a SENVIA como um todo: quem somos, o que fazemos, porque somos diferentes.
-
-### Seccoes:
-
-**1. Hero Section — "Construimos o Futuro Digital"**
-- Foco na SENVIA como AI Software House
-- Texto forte sobre a empresa (nao sobre um produto especifico)
-- Fundo com particulas, aurora e efeitos 3D
-- CTAs: "Falar com Especialista" + "Ver os Nossos Servicos"
-- Stats animados: +50 Projetos, +120 Automacoes, 95% Satisfacao
-
-**2. Servicos Principais — O que fazemos**
-- 4 blocos grandes com efeitos premium:
-  - **Desenvolvimento de Software a Medida** — Sistemas de gestao, portais, apps
-  - **Sites, Landing Pages & E-commerces** — Design premium, performance de topo
-  - **Automacao de Processos (IA + n8n)** — Chatbots, integracoes, workflows
-  - **SENVIA OS (CRM com IA)** — Link para `/senvia-os` com destaque especial
-- Cada bloco com icone animado, descricao e CTA
-
-**3. Porque a SENVIA — Diferenciais**
-- Secao visual com 3 a 4 pontos fortes:
-  - IA em tudo o que construimos
-  - Entrega rapida (semanas, nao meses)
-  - Equipa dedicada a cada projeto
-  - Suporte continuo pos-entrega
-- Cards com efeitos glass e glow
-
-**4. Nichos que Atendemos**
-- Reutilizar NichosSection existente (Clinicas, Construcao, Telecom, E-commerce, Imobiliario)
-- Mostra versatilidade da empresa
-
-**5. Prova Social / Stats**
-- Reutilizar StatsSection existente
-- Numeros animados
-
-**6. CTA Final + Footer**
-- "Pronto para transformar o seu negocio?"
-- CTA para agendar consultoria
-- Footer com links atualizados incluindo `/senvia-os`
-
-## Arquivos a Criar
-
-1. **`src/pages/SenviaHome.tsx`** — Nova pagina principal da empresa
-2. **`src/components/senvia/SenviaHeroSection.tsx`** — Hero focado na empresa
-3. **`src/components/senvia/SenviaServicesSection.tsx`** — 4 servicos principais (inclui link ao SENVIA OS)
-4. **`src/components/senvia/SenviaWhyUsSection.tsx`** — Diferenciais da empresa
-5. **`src/components/senvia/SenviaNavbar.tsx`** — Navbar com links da empresa
-
-## Arquivos a Modificar
-
-1. **`src/App.tsx`** — Rotas:
-   - `/` aponta para `SenviaHome` (nova)
-   - `/senvia-os` aponta para `Home` (pagina atual do SENVIA OS)
-   - `/funis` continua igual
-2. **`src/components/home/HomeFooter.tsx`** — Adicionar link para `/senvia-os` nas solucoes
+### Menu Mobile
+- Mesmos itens, com "Servicos" expandivel (accordion) mostrando os submenus
+- Botao "Agendar Consultoria" no fundo
 
 ## Detalhes Tecnicos
 
-- Todos os efeitos visuais reutilizam os CSS existentes: `aurora-bg`, `glass-premium`, `gradient-text-animated`, `shimmer`, `glow-pulse`, `floating`
-- Animacoes com `framer-motion` (useInView, scroll-triggered)
-- Componentes `NichosSection` e `StatsSection` reutilizados diretamente
-- Nenhuma nova dependencia necessaria
-- Navbar da nova pagina tera links internos (Servicos, Porque Nos, Nichos) + link externo para `/senvia-os`
+### Arquivo modificado
+`src/components/senvia/SenviaNavbar.tsx` - Reescrita completa:
+
+1. **Logo**: Trocar o layout de `flex items-center gap-3` para um bloco com "SENVIA" em bold e "IA Software House" em texto menor logo abaixo
+2. **Dropdown "Servicos"**: Usar um hover dropdown customizado com `framer-motion` (AnimatePresence) -- sem dependencia nova, nao precisa de Radix DropdownMenu, basta um div com onMouseEnter/onMouseLeave
+3. **Novos navItems**: SENVIA OS (`/senvia-os`), Servicos (dropdown), Sobre Nos (`/sobre-nos`), Blog (`#`), Contactos (scroll ou link)
+4. **Botao CTA**: Texto muda de "Falar com Especialista" para "Agendar Consultoria"
+5. **Mobile**: Servicos com toggle para mostrar/esconder submenus
+
+### Nenhum arquivo novo necessario
+- A rota `/sobre-nos` ja existe
+- Blog pode apontar para `#` por agora (sem pagina criada ainda)
+- O dropdown sera feito com logica de hover + AnimatePresence (ja disponivel)

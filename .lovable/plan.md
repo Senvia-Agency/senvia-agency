@@ -1,13 +1,13 @@
 
-# Remover "Serviços" da Navbar da pagina SENVIA OS
+# Corrigir links dos botoes nos planos da pagina SENVIA OS
 
 ## Alteracao
 
-### `src/components/home2/Home2Navbar.tsx`
+### `src/components/home2/PricingSection.tsx` (linha 120)
 
-Remover o item `{ label: "Serviços", id: "software-house" }` do array `navItems` (linha 33).
+Atualizar o link do `onClick` dos botoes dos 3 planos:
 
-O array passara de 4 para 3 itens:
-- SENVIA OS
-- Planos
-- Nichos
+- De: `https://app.senvia.pt/c/senvia-agency/formulario-lp`
+- Para: `https://app.senvia.pt/`
+
+Isto alinha os botoes dos planos com o mesmo destino ja configurado na navbar.

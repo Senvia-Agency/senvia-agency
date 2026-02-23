@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 const SitesCTASection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-site', '_blank');
 
   return (
     <section className="py-24 md:py-32 relative overflow-hidden" ref={ref}>

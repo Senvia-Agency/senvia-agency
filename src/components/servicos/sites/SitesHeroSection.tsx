@@ -3,7 +3,7 @@ import { ArrowRight, Globe, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SitesHeroSection = () => {
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-site', '_blank');
 
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-background pt-24 aurora-bg">

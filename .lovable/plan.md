@@ -1,20 +1,18 @@
 
-# Adicionar Google Reviews a SenviaHome
-
-## Problema
-A secao de avaliacoes Google (com integracao API real) existe apenas na pagina "Funis" (`Index.tsx`). Deve tambem aparecer na pagina principal (`SenviaHome.tsx`).
+# Atualizar URL do formulario na pagina Sites
 
 ## Alteracao
 
-### Arquivo: `src/pages/SenviaHome.tsx`
-- Importar o componente `GoogleReviewsSection` de `@/components/home/GoogleReviewsSection`
-- Adicionar `<GoogleReviewsSection />` antes do `<HomeFooter />`, depois da `<StatsSection />`
+Substituir o link do formulario generico pelo formulario especifico de sites em 2 ficheiros:
 
-### Resultado
-A pagina ficara com: Navbar > Hero > Services > Why Us > Stats > **Google Reviews** > Footer
+### 1. `src/components/servicos/sites/SitesHeroSection.tsx` (linha 6)
+- **De:** `https://app.senvia.pt/c/senvia-agency/formulario-lp`
+- **Para:** `https://app.senvia.pt/c/senvia-agency/formulario-site`
 
-### Notas
-- O componente `GoogleReviewsSection` ja esta pronto e funcional
-- Usa o hook `useGoogleReviews` que chama a edge function `get-google-reviews`
-- Inclui loading states, fallback data e link para o Google Business
-- Nenhum componente novo precisa ser criado
+### 2. `src/components/servicos/sites/SitesCTASection.tsx` (linha 9)
+- **De:** `https://app.senvia.pt/c/senvia-agency/formulario-lp`
+- **Para:** `https://app.senvia.pt/c/senvia-agency/formulario-site`
+
+## Resumo
+- 2 ficheiros, 2 linhas alteradas
+- Todos os CTAs da pagina `/sites` passam a apontar para o formulario dedicado ao servico de sites

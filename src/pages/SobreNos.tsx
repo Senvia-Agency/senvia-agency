@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Rocket, Database, Target, Quote, ArrowRight, Zap, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import HomeNavbar from "@/components/home/HomeNavbar";
+import SenviaNavbar from "@/components/senvia/SenviaNavbar";
 import HomeFooter from "@/components/home/HomeFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 
@@ -41,7 +41,7 @@ const SobreNos = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        <HomeNavbar />
+        <SenviaNavbar />
 
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 overflow-hidden">

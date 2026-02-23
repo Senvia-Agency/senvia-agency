@@ -141,8 +141,8 @@ const HomeFooter = () => {
               <h4 className="font-semibold text-foreground mb-4">Soluções</h4>
               <ul className="space-y-3">
                 {[
-                  { label: "Landing Pages & Funis", action: () => document.getElementById('metodo')?.scrollIntoView({ behavior: 'smooth' }) },
-                  { label: "SENVIA OS", action: () => document.getElementById('tecnologia')?.scrollIntoView({ behavior: 'smooth' }) },
+                  { label: "SENVIA OS", to: "/senvia-os" },
+                  { label: "Landing Pages & Funis", to: "/funis" },
                   { label: "Agentes de IA", to: "/ia" },
                   { label: "Psicólogos", to: "/ia-psicologos" },
                 ].map((item, index) => (
@@ -151,21 +151,12 @@ const HomeFooter = () => {
                     whileHover={{ x: 5 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {item.to ? (
-                      <Link
-                        to={item.to}
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <button
-                        onClick={item.action}
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        {item.label}
-                      </button>
-                    )}
+                    <Link
+                      to={item.to}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {item.label}
+                    </Link>
                   </motion.li>
                 ))}
               </ul>

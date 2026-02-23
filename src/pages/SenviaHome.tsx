@@ -5,6 +5,7 @@ import SenviaServicesSection from '@/components/senvia/SenviaServicesSection';
 import SenviaWhyUsSection from '@/components/senvia/SenviaWhyUsSection';
 
 import StatsSection from '@/components/home2/StatsSection';
+import GoogleReviewsSection from '@/components/home/GoogleReviewsSection';
 import HomeFooter from '@/components/home/HomeFooter';
 
 const SenviaHome = () => {
@@ -22,6 +23,7 @@ const SenviaHome = () => {
         <SenviaWhyUsSection />
         
         <StatsSection />
+        <GoogleReviewsSection />
       </main>
       <HomeFooter />
     </>

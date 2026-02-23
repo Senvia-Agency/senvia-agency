@@ -1,30 +1,17 @@
 
+# Remover botao "Falar com Especialista" do Hero da pagina SENVIA OS
 
-# Atualizar Footer (HomeFooter) com servicos atuais
+## Alteracao
 
-## Problema
-A secao "Solucoes" do footer lista items desatualizados ("SENVIA OS", "Landing Pages & Funis", "Agentes de IA", "Psicologos") que nao correspondem aos servicos atuais do submenu.
+### `src/components/home2/Hero2Section.tsx` (linhas 129-134)
 
-## Alteracoes
-
-### `src/components/home/HomeFooter.tsx`
-
-**Secao "Solucoes" (linhas 148-168)** - Atualizar os links para refletir os servicos atuais:
-
-De:
-```
-SENVIA OS -> /senvia-os
-Landing Pages & Funis -> /funis
-Agentes de IA -> /ia
-Psicologos -> /ia-psicologos
+Remover o bloco do segundo botao:
+```tsx
+<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+  <Button onClick={scrollToContact} size="lg" variant="outline" className="text-base px-8 py-6 border-primary/30 hover:bg-primary/10">
+    Falar com Especialista
+  </Button>
+</motion.div>
 ```
 
-Para:
-```
-Sites & E-commerces -> /sites
-Chatbots -> /chatbots
-Softwares -> /softwares
-```
-
-Apenas 3 items em vez de 4, alinhados com o submenu "Servicos" da navbar.
-
+O botao "Comecar Teste Gratis" permanece como unico CTA no hero.

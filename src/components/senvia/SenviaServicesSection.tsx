@@ -25,7 +25,7 @@ const services = [
   },
   {
     icon: Cpu,
-    title: "Automação de Processos (IA + n8n)",
+    title: "Automação de Processos com IA",
     desc: "Conectamos os seus sistemas. De chatbots inteligentes a integrações complexas que poupam centenas de horas humanas.",
     features: ["Chatbots com IA", "Workflows Automáticos", "Integrações de Sistemas", "Relatórios Inteligentes"],
     cta: "Agendar Diagnóstico",

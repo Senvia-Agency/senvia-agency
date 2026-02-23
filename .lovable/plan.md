@@ -1,10 +1,13 @@
 
-# Remover secao "Software House & Engenharia" da pagina SENVIA OS
+# Remover CTA "A sua equipa de vendas agradece" da pagina SENVIA OS
 
 ## Alteracao
 
-### `src/pages/Home.tsx`
-- Remover o import do `SoftwareHouseSection` (linha 7)
-- Remover o uso do componente `<SoftwareHouseSection />` (linha 25)
+### `src/pages/Home.tsx` (linha 28)
 
-O ficheiro `src/components/home2/SoftwareHouseSection.tsx` pode ser mantido no projeto caso seja reutilizado noutro lugar futuramente, ou eliminado se preferir.
+O componente `HomeFooter` ja suporta a prop `hideCTA`. Basta passa-la como `true`:
+
+- De: `<HomeFooter />`
+- Para: `<HomeFooter hideCTA />`
+
+Isto remove o bloco de CTA do footer mantendo os links, informacoes legais e redes sociais.

@@ -1,16 +1,15 @@
 
 
-# Remover NichosSection da SenviaHome
-
-## Problema
-A secao "Feito para o seu setor" (NichosSection) fala do "SENVIA OS" e dos seus nichos de produto. Como este site e para a SENVIA empresa no geral, essa secao nao faz sentido aqui.
+# Remover "n8n" do card de Automacoes
 
 ## Alteracao
 
-### Arquivo: `src/pages/SenviaHome.tsx`
-- Remover o import do `NichosSection`
-- Remover o componente `<NichosSection />` do JSX
+### Arquivo: `src/components/senvia/SenviaServicesSection.tsx` (linha 27)
 
-### Resultado
-A pagina ficara com: Navbar > Hero > Services > Why Us > Stats > Footer
+- **De:** `"Automação de Processos (IA + n8n)"`
+- **Para:** `"Automação de Processos com IA"`
+
+### Resumo
+- 1 arquivo, 1 linha alterada
+- Remove a referencia tecnica ao n8n, mantendo o foco na IA como diferencial
 

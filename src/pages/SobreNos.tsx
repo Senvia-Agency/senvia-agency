@@ -338,7 +338,7 @@ const SobreNos = () => {
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-3">Foco na Venda</h3>
                   <p className="text-muted-foreground">
-                    Cliques e likes não pagam salários. O nosso compromisso é com a última linha da sua folha de Excel: o lucro.
+                    Cliques e likes não pagam salários. O nosso compromisso é com o que realmente importa: o lucro do seu negócio.
                   </p>
                 </motion.div>
               </motion.div>

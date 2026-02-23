@@ -1,27 +1,31 @@
 
+# Atualizar Submenu Servicos na Navbar
 
-# Remover secao CTA do HomeFooter na pagina Sites
-
-## Problema
-A pagina `/sites` ja tem o seu proprio CTA (`SitesCTASection`) com "Pronto para ter o site que o seu negocio merece?". O `HomeFooter` adiciona outro CTA generico ("A sua equipa de vendas agradece") que nao e relevante para esta pagina de servico e cria redundancia.
-
-## Solucao
-Adicionar uma prop `hideCTA` ao `HomeFooter` para controlar a visibilidade da secao CTA. Apenas a pagina Sites (e Chatbots, que tambem tem CTA proprio) passarao `hideCTA={true}`.
+## Resumo
+Simplificar o submenu "Servicos" removendo "E-commerces" e "Agentes de IA", agrupando e-commerce junto com sites, e adicionando "Softwares".
 
 ## Alteracoes
 
-### 1. `src/components/home/HomeFooter.tsx`
-- Adicionar prop opcional `hideCTA?: boolean`
-- Envolver a secao CTA (linhas 28-91) num condicional: so renderiza se `hideCTA` nao for `true`
+### `src/components/senvia/SenviaNavbar.tsx` (linhas 7-12)
 
-### 2. `src/pages/ServicoSites.tsx`
-- Passar `<HomeFooter hideCTA />` em vez de `<HomeFooter />`
+Substituir o array `serviceSubmenus` de:
+```
+{ label: "Sites", href: "/sites" },
+{ label: "Chatbots", href: "/chatbots" },
+{ label: "E-commerces", href: "#" },
+{ label: "Agentes de IA", href: "#" },
+```
 
-### 3. `src/pages/ServicoChatbots.tsx`
-- Passar `<HomeFooter hideCTA />` em vez de `<HomeFooter />`
-  (a pagina de chatbots tambem tem o seu proprio CTA)
+Para:
+```
+{ label: "Sites & E-commerces", href: "/sites" },
+{ label: "Chatbots", href: "/chatbots" },
+{ label: "Softwares", href: "#" },
+```
 
-## Impacto
-- Todas as outras paginas que usam `<HomeFooter />` sem props continuam a mostrar o CTA normalmente
-- Apenas as paginas de servico com CTA dedicado escondem o CTA generico do footer
-
+## Resultado
+- "Sites" passa a "Sites & E-commerces" (mesmo link `/sites`)
+- "Chatbots" mantem-se
+- "E-commerces" e "Agentes de IA" removidos
+- "Softwares" adicionado (com `href: "#"` ate ter pagina dedicada)
+- Submenu passa de 4 para 3 itens

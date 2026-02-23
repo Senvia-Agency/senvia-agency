@@ -25,7 +25,7 @@ const Home = () => {
         
         <StatsSection />
       </main>
-      <HomeFooter />
+      <HomeFooter hideCTA />
     </>
   );
 };

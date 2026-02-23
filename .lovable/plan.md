@@ -1,13 +1,13 @@
 
-# Remover CTA "A sua equipa de vendas agradece" da pagina SENVIA OS
+# Remover "Serviços" da Navbar da pagina SENVIA OS
 
 ## Alteracao
 
-### `src/pages/Home.tsx` (linha 28)
+### `src/components/home2/Home2Navbar.tsx`
 
-O componente `HomeFooter` ja suporta a prop `hideCTA`. Basta passa-la como `true`:
+Remover o item `{ label: "Serviços", id: "software-house" }` do array `navItems` (linha 33).
 
-- De: `<HomeFooter />`
-- Para: `<HomeFooter hideCTA />`
-
-Isto remove o bloco de CTA do footer mantendo os links, informacoes legais e redes sociais.
+O array passara de 4 para 3 itens:
+- SENVIA OS
+- Planos
+- Nichos

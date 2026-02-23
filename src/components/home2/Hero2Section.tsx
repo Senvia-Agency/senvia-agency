@@ -127,11 +127,6 @@ const Hero2Section = () => {
                   </span>
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button onClick={scrollToContact} size="lg" variant="outline" className="text-base px-8 py-6 border-primary/30 hover:bg-primary/10">
-                  Falar com Especialista
-                </Button>
-              </motion.div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3 }}

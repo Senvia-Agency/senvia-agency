@@ -23,7 +23,7 @@ const ServicoSites = () => {
         <SitesDifferentialsSection />
         <SitesCTASection />
       </main>
-      <HomeFooter />
+      <HomeFooter hideCTA />
     </>
   );
 };

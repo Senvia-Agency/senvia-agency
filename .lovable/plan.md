@@ -1,37 +1,24 @@
 
 
-# Atualizar Hero — Copy Escolhido + Remover SENVIA OS
+# Corrigir efeito azul cortado no "E o agora."
 
-## Copy Final
+## Problema
+O texto "E o agora." usa a classe `gradient-text-animated` com `inline-block`. O `inline-block` cria uma caixa muito justa ao redor do texto, e combinado com `background-clip: text`, o efeito gradiente fica cortado nas bordas (especialmente em baixo e nos lados).
 
-**Titulo principal:**
-"Inteligencia Artificial nao e o futuro." + "E o agora."
+## Solucao
 
-**Subtitulo:**
-"A SENVIA e especializada em Inteligencia Artificial e chegou para transformar a tua empresa. Software, automacoes e solucoes digitais, tudo potenciado por IA."
+### Arquivo: `src/components/senvia/SenviaHeroSection.tsx` (linha 114)
 
-**CTA:** "Agendar Consultoria" (alinhado com a navbar)
+Adicionar padding ao `motion.span` para dar espaco ao efeito gradiente nao ser cortado:
 
-## Alteracoes no arquivo `src/components/senvia/SenviaHeroSection.tsx`
+- **De:** `className="gradient-text-animated inline-block"`
+- **Para:** `className="gradient-text-animated inline-block pb-2 pr-1"`
 
-### 1. Titulo H1 (linhas 110-117)
-- **De:** "Construimos o / Futuro Digital."
-- **Para:** "Inteligencia Artificial nao e o futuro." / "E o agora." (parte gradient-text-animated)
+O `pb-2` (padding-bottom) evita que o gradiente seja cortado em baixo, e `pr-1` garante que nao corta a direita.
 
-### 2. Paragrafo (linhas 119-122)
-- **De:** Menciona "CRM proprietario — SENVIA OS"
-- **Para:** "A SENVIA e especializada em Inteligencia Artificial e chegou para transformar a tua empresa. Software, automacoes e solucoes digitais, tudo potenciado por IA."
-
-### 3. Botao CTA (linha 129)
-- **De:** "Falar com Especialista"
-- **Para:** "Agendar Consultoria"
-
-### 4. Icone orbitante (linha 182)
-- **De:** `{ icon: Rocket, label: "SENVIA OS", angle: 270, radius: 180 }`
-- **Para:** `{ icon: Bot, label: "Chatbots", angle: 270, radius: 180 }` (importar `Bot` do lucide-react)
+Se o padding sozinho nao resolver completamente, tambem se pode adicionar `overflow-visible` ao estilo do elemento pai (o `h1` na linha 110) para garantir que nada e cortado.
 
 ### Resumo
-- 1 arquivo modificado: `src/components/senvia/SenviaHeroSection.tsx`
-- 4 alteracoes pontuais (titulo, paragrafo, CTA, icone orbitante)
-- Adicionar import `Bot` do lucide-react, remover `Rocket` se nao usado noutro lugar
+- 1 arquivo modificado, 1 linha alterada
+- Adicionar padding ao span do texto animado para evitar o corte do efeito
 

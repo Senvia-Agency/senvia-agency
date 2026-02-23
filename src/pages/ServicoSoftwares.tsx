@@ -13,7 +13,14 @@ const ServicoSoftwares = () => {
       <Helmet>
         <title>Desenvolvimento de Software à Medida | SENVIA</title>
         <meta name="description" content="Desenvolvemos sistemas de gestão, portais, APIs e aplicações web complexas à medida do seu negócio. Tecnologias modernas, código limpo e suporte dedicado." />
-        <link rel="canonical" href="https://senvia-agency.lovable.app/softwares" />
+        <link rel="canonical" href="https://www.senvia.pt/softwares" />
+        <meta property="og:title" content="Desenvolvimento de Software à Medida | SENVIA" />
+        <meta property="og:description" content="Desenvolvemos sistemas de gestão, portais, APIs e aplicações web complexas à medida do seu negócio." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.senvia.pt/softwares" />
+        <meta property="og:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://www.senvia.pt/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png" />
       </Helmet>
       <SenviaNavbar />
       <main>

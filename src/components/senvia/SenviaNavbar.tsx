@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const serviceSubmenus = [
   { label: "Sites", href: "/sites" },
-  { label: "Chatbots", href: "#" },
+  { label: "Chatbots", href: "/chatbots" },
   { label: "E-commerces", href: "#" },
   { label: "Agentes de IA", href: "#" },
 ];

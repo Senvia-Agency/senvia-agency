@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const serviceSubmenus = [
-  { label: "Sites", href: "#" },
+  { label: "Sites", href: "/sites" },
   { label: "Chatbots", href: "#" },
   { label: "E-commerces", href: "#" },
   { label: "Agentes de IA", href: "#" },

@@ -1,16 +1,13 @@
 
-
-# Remover referencia ao Excel na pagina Sobre Nos
+# Usar a navbar da Home (SenviaNavbar) na pagina Sobre Nos
 
 ## Alteracao
 
-### `src/pages/SobreNos.tsx` (linha 341)
+### `src/pages/SobreNos.tsx`
 
-Substituir o texto:
-> "Cliques e likes não pagam salários. O nosso compromisso é com a última linha da sua folha de Excel: o lucro."
+Substituir o import e uso de `HomeNavbar` por `SenviaNavbar`:
 
-Por:
-> "Cliques e likes não pagam salários. O nosso compromisso é com o que realmente importa: o lucro do seu negócio."
+- **Import**: `HomeNavbar` de `@/components/home/HomeNavbar` -> `SenviaNavbar` de `@/components/senvia/SenviaNavbar`
+- **JSX**: `<HomeNavbar />` -> `<SenviaNavbar />`
 
-Mantem a mesma mensagem e tom, sem mencionar Excel.
-
+Isto fara com que a pagina Sobre Nos use a mesma navbar completa da pagina principal, com menu de servicos, links de navegacao e dropdown.

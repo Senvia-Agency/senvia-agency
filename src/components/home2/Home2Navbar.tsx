@@ -26,7 +26,6 @@ const Home2Navbar = () => {
   const navItems = [
     { label: "SENVIA OS", id: "senvia-os" },
     { label: "Planos", id: "pricing" },
-    { label: "Serviços", id: "software-house" },
     { label: "Nichos", id: "nichos" },
   ];
 

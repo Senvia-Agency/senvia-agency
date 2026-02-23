@@ -1,47 +1,27 @@
 
-# Criar Pagina Dedicada ao Servico "Chatbots"
 
-## Resumo
-Criar uma nova pagina `/chatbots` seguindo exatamente o mesmo padrao da pagina `/sites`, focada no servico de Chatbots e Automacao com IA.
+# Remover secao CTA do HomeFooter na pagina Sites
 
-## Estrutura da Pagina
+## Problema
+A pagina `/sites` ja tem o seu proprio CTA (`SitesCTASection`) com "Pronto para ter o site que o seu negocio merece?". O `HomeFooter` adiciona outro CTA generico ("A sua equipa de vendas agradece") que nao e relevante para esta pagina de servico e cria redundancia.
 
-1. **Hero** - Titulo sobre chatbots com IA, subtitulo focado em atendimento 24/7 e automacao, CTA "Agendar Diagnostico"
-2. **Tipos de Chatbots** - Cards para: Atendimento ao Cliente, Qualificacao de Leads, FAQ Inteligente, Assistente de Vendas
-3. **Processo** - 4 passos: Diagnostico, Configuracao, Treino da IA, Lancamento e Otimizacao
-4. **Diferenciais** - IA avancada, respostas naturais, integracao com sistemas, disponibilidade 24/7, analytics, multicanal
-5. **CTA Final** - Chamada para acao com formulario externo
-6. **Footer** - Reutilizar HomeFooter
+## Solucao
+Adicionar uma prop `hideCTA` ao `HomeFooter` para controlar a visibilidade da secao CTA. Apenas a pagina Sites (e Chatbots, que tambem tem CTA proprio) passarao `hideCTA={true}`.
 
-## Ficheiros a Criar
+## Alteracoes
 
-### 1. `src/pages/ServicoChatbots.tsx`
-- Pagina principal com Helmet (SEO), SenviaNavbar, secoes, HomeFooter
-- Estrutura identica ao `ServicoSites.tsx`
+### 1. `src/components/home/HomeFooter.tsx`
+- Adicionar prop opcional `hideCTA?: boolean`
+- Envolver a secao CTA (linhas 28-91) num condicional: so renderiza se `hideCTA` nao for `true`
 
-### 2. Componentes em `src/components/servicos/chatbots/`:
-- `ChatbotsHeroSection.tsx` - Hero com icone Bot/MessageSquare, cores purple/violet, CTA externo
-- `ChatbotsTypesSection.tsx` - Grid 2x2 com tipos de chatbots
-- `ChatbotsProcessSection.tsx` - Timeline 4 passos adaptados a chatbots
-- `ChatbotsDifferentialsSection.tsx` - 6 diferenciais (IA, 24/7, integracao, etc.)
-- `ChatbotsCTASection.tsx` - CTA final
+### 2. `src/pages/ServicoSites.tsx`
+- Passar `<HomeFooter hideCTA />` em vez de `<HomeFooter />`
 
-## Ficheiros a Editar
+### 3. `src/pages/ServicoChatbots.tsx`
+- Passar `<HomeFooter hideCTA />` em vez de `<HomeFooter />`
+  (a pagina de chatbots tambem tem o seu proprio CTA)
 
-### 3. `src/App.tsx`
-- Adicionar lazy load: `const ServicoChatbots = lazy(() => import("./pages/ServicoChatbots"))`
-- Adicionar rota: `<Route path="/chatbots" element={<ServicoChatbots />} />`
+## Impacto
+- Todas as outras paginas que usam `<HomeFooter />` sem props continuam a mostrar o CTA normalmente
+- Apenas as paginas de servico com CTA dedicado escondem o CTA generico do footer
 
-### 4. `src/components/senvia/SenviaNavbar.tsx`
-- Atualizar submenu: `{ label: "Chatbots", href: "/chatbots" }` (substituir o `#`)
-
-### 5. `src/components/senvia/SenviaServicesSection.tsx`
-- No card "Automacao de Processos com IA", adicionar `link: "/chatbots"` e alterar CTA para "Saber Mais" com link interno (mesmo padrao do card Sites)
-
-## Detalhes Tecnicos
-
-- Formulario CTA: `https://app.senvia.pt/c/senvia-agency/formulario-lp` (generico, ate haver um formulario especifico para chatbots)
-- Cores do tema: purple/violet (consistente com o card de automacao na SenviaHome)
-- Mesmo padrao de animacoes framer-motion das outras paginas
-- SEO com react-helmet-async
-- Lazy loading no App.tsx

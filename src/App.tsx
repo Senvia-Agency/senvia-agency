@@ -34,6 +34,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermosServico = lazy(() => import("./pages/TermosServico"));
 const PoliticaCookies = lazy(() => import("./pages/PoliticaCookies"));
 const SobreNos = lazy(() => import("./pages/SobreNos"));
+const ServicoSites = lazy(() => import("./pages/ServicoSites"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading ultra-rápido
@@ -79,6 +80,7 @@ function App() {
               <Route path="/termos-servico" element={<TermosServico />} />
               <Route path="/politica-cookies" element={<PoliticaCookies />} />
               <Route path="/sobre-nos" element={<SobreNos />} />
+              <Route path="/sites" element={<ServicoSites />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/calendar" element={<CalendarConnect />} />
               

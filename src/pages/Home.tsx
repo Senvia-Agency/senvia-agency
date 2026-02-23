@@ -4,7 +4,7 @@ import Hero2Section from '@/components/home2/Hero2Section';
 import SenviaOSSection from '@/components/home2/SenviaOSSection';
 import PricingSection from '@/components/home2/PricingSection';
 import NichosSection from '@/components/home2/NichosSection';
-import SoftwareHouseSection from '@/components/home2/SoftwareHouseSection';
+
 import StatsSection from '@/components/home2/StatsSection';
 import HomeFooter from '@/components/home/HomeFooter';
 
@@ -22,7 +22,7 @@ const Home = () => {
         <SenviaOSSection />
         <PricingSection />
         <NichosSection />
-        <SoftwareHouseSection />
+        
         <StatsSection />
       </main>
       <HomeFooter />

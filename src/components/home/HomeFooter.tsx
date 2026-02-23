@@ -147,10 +147,9 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
               <h4 className="font-semibold text-foreground mb-4">Soluções</h4>
               <ul className="space-y-3">
                 {[
-                  { label: "SENVIA OS", to: "/senvia-os" },
-                  { label: "Landing Pages & Funis", to: "/funis" },
-                  { label: "Agentes de IA", to: "/ia" },
-                  { label: "Psicólogos", to: "/ia-psicologos" },
+                  { label: "Sites & E-commerces", to: "/sites" },
+                  { label: "Chatbots", to: "/chatbots" },
+                  { label: "Softwares", to: "/softwares" },
                 ].map((item, index) => (
                   <motion.li
                     key={index}

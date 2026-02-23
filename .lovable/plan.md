@@ -1,90 +1,80 @@
 
+# Reestruturacao: SENVIA - AI Software House (Pagina Principal)
 
-# Nova Pagina Principal - SENVIA AI Software House
+## O Problema
+A pagina atual em `/` esta demasiado focada no SENVIA OS (o produto CRM). O utilizador quer uma pagina principal que represente a **SENVIA como empresa** — uma AI Software House completa — e mover a pagina do SENVIA OS para `/senvia-os`.
 
-## Resumo
-Criar uma nova pagina principal focada na SENVIA como AI Software House completa, movendo a pagina atual para a rota `/funis`. A nova pagina tera efeitos visuais premium usando framer-motion e os estilos CSS ja existentes no projeto.
+## Nova Estrutura de Rotas
 
-## Estrutura de Rotas
-
-| Rota | Pagina |
-|------|--------|
-| `/` | **Nova** - AI Software House (SENVIA OS + Servicos) |
-| `/funis` | Pagina atual (funis de vendas) |
+| Rota | Conteudo |
+|------|----------|
+| `/` | **NOVA** - SENVIA AI Software House (empresa) |
+| `/senvia-os` | Pagina atual do SENVIA OS (CRM + Planos) |
+| `/funis` | Landing pages de funis (sem alteracao) |
 | Restantes | Sem alteracoes |
 
-## Seccoes da Nova Pagina Principal
+## Nova Pagina Principal (`/`) — Foco na EMPRESA
 
-### 1. Hero Section
-- Titulo principal: "Software Inteligente. Resultados Reais."
-- Subtitulo focado na proposta de valor como AI Software House
-- Destaque do SENVIA OS como produto principal
-- CTA: "Comecar Teste Gratis" + "Falar com Especialista"
-- Mockup 3D animado do SENVIA OS (reutilizando padroes do hero atual)
-- Particulas flutuantes, aurora background, blobs animados
+A pagina sera sobre a SENVIA como um todo: quem somos, o que fazemos, porque somos diferentes.
 
-### 2. SENVIA OS Section (Produto Principal)
-- Apresentacao do CRM completo com todos os modulos
-- Grid visual com icones para cada modulo: Leads, Clientes, Propostas, Vendas, Financeiro, Calendario, Marketing, E-commerce, Faturacao
-- Badge "IA Integrada + Automacoes"
-- Animacoes de scroll reveal
+### Seccoes:
 
-### 3. Pricing Section (SENVIA OS)
-- 3 planos: Starter (49EUR), Pro (99EUR - Mais Popular), Elite (147EUR)
-- Cards com efeitos glass, glow no plano popular
-- Lista de features com checkmarks verdes/cinzas conforme disponibilidade
-- CTA "Comecar Teste Gratis"
+**1. Hero Section — "Construimos o Futuro Digital"**
+- Foco na SENVIA como AI Software House
+- Texto forte sobre a empresa (nao sobre um produto especifico)
+- Fundo com particulas, aurora e efeitos 3D
+- CTAs: "Falar com Especialista" + "Ver os Nossos Servicos"
+- Stats animados: +50 Projetos, +120 Automacoes, 95% Satisfacao
 
-### 4. Nichos Section
-- Cards animados para cada nicho: Clinicas/Saude, Construcao/Obras, Telecomunicacoes, E-commerce, Imobiliario
-- Icones e descricoes especificas
-- Efeito glowing-effect nos cards
+**2. Servicos Principais — O que fazemos**
+- 4 blocos grandes com efeitos premium:
+  - **Desenvolvimento de Software a Medida** — Sistemas de gestao, portais, apps
+  - **Sites, Landing Pages & E-commerces** — Design premium, performance de topo
+  - **Automacao de Processos (IA + n8n)** — Chatbots, integracoes, workflows
+  - **SENVIA OS (CRM com IA)** — Link para `/senvia-os` com destaque especial
+- Cada bloco com icone animado, descricao e CTA
 
-### 5. Software House Section (Servicos High-Ticket)
-- Desenvolvimento de Software a Medida
-- Construcao de Sites, Landing Pages e E-commerces
-- Automacao de Processos Empresariais
-- Cards grandes com parallax/3D hover
-- CTAs: "Pedir Orcamento", "Agendar Diagnostico"
+**3. Porque a SENVIA — Diferenciais**
+- Secao visual com 3 a 4 pontos fortes:
+  - IA em tudo o que construimos
+  - Entrega rapida (semanas, nao meses)
+  - Equipa dedicada a cada projeto
+  - Suporte continuo pos-entrega
+- Cards com efeitos glass e glow
 
-### 6. Social Proof / Stats Section
-- Numeros animados (clientes, projetos, automacoes)
-- Reutilizando o componente AnimatedCounter existente
+**4. Nichos que Atendemos**
+- Reutilizar NichosSection existente (Clinicas, Construcao, Telecom, E-commerce, Imobiliario)
+- Mostra versatilidade da empresa
 
-### 7. CTA Final + Footer
-- Reutilizar HomeFooter com links atualizados
+**5. Prova Social / Stats**
+- Reutilizar StatsSection existente
+- Numeros animados
 
-## Arquivos a Criar/Modificar
+**6. CTA Final + Footer**
+- "Pronto para transformar o seu negocio?"
+- CTA para agendar consultoria
+- Footer com links atualizados incluindo `/senvia-os`
 
-### Novos Arquivos
-1. `src/pages/Home.tsx` - Nova pagina principal
-2. `src/components/home2/Hero2Section.tsx` - Hero da nova pagina
-3. `src/components/home2/SenviaOSSection.tsx` - Secao do produto SENVIA OS
-4. `src/components/home2/PricingSection.tsx` - Planos do SENVIA OS
-5. `src/components/home2/NichosSection.tsx` - Nichos atendidos
-6. `src/components/home2/SoftwareHouseSection.tsx` - Servicos high-ticket
-7. `src/components/home2/StatsSection.tsx` - Numeros/social proof
-8. `src/components/home2/Home2Navbar.tsx` - Navbar adaptada
+## Arquivos a Criar
 
-### Arquivos Modificados
-1. `src/App.tsx` - Rota `/` aponta para `Home`, rota `/funis` aponta para `Index` (pagina atual)
-2. `src/components/home/HomeFooter.tsx` - Adicionar link para `/funis` no footer
+1. **`src/pages/SenviaHome.tsx`** — Nova pagina principal da empresa
+2. **`src/components/senvia/SenviaHeroSection.tsx`** — Hero focado na empresa
+3. **`src/components/senvia/SenviaServicesSection.tsx`** — 4 servicos principais (inclui link ao SENVIA OS)
+4. **`src/components/senvia/SenviaWhyUsSection.tsx`** — Diferenciais da empresa
+5. **`src/components/senvia/SenviaNavbar.tsx`** — Navbar com links da empresa
+
+## Arquivos a Modificar
+
+1. **`src/App.tsx`** — Rotas:
+   - `/` aponta para `SenviaHome` (nova)
+   - `/senvia-os` aponta para `Home` (pagina atual do SENVIA OS)
+   - `/funis` continua igual
+2. **`src/components/home/HomeFooter.tsx`** — Adicionar link para `/senvia-os` nas solucoes
 
 ## Detalhes Tecnicos
 
-### Efeitos Visuais Utilizados
-- `framer-motion`: Animacoes de entrada, hover, scroll-triggered (useInView)
-- CSS existente: `aurora-bg`, `glass-premium`, `gradient-text-animated`, `shimmer`, `glow-pulse`, `floating`, `blob`, `spotlight`
-- `GlowingEffect` component para cards de servicos
-- Parallax 3D com `useMotionValue` e `useSpring` no hero
-- Particulas flutuantes animadas
-
-### Padroes Reutilizados
-- AnimatedCounter do HeroSection atual
-- FloatingParticles do HeroSection atual
-- Layout de cards do SolutionSection/TechnologySection
-- Navbar com scroll-aware background
-
-### Dependencias
-Nenhuma nova dependencia necessaria - tudo ja existe no projeto (framer-motion, lucide-react, etc.)
-
+- Todos os efeitos visuais reutilizam os CSS existentes: `aurora-bg`, `glass-premium`, `gradient-text-animated`, `shimmer`, `glow-pulse`, `floating`
+- Animacoes com `framer-motion` (useInView, scroll-triggered)
+- Componentes `NichosSection` e `StatsSection` reutilizados diretamente
+- Nenhuma nova dependencia necessaria
+- Navbar da nova pagina tera links internos (Servicos, Porque Nos, Nichos) + link externo para `/senvia-os`

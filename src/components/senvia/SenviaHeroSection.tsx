@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ArrowRight, Code2, Cpu, Globe, Rocket } from 'lucide-react';
+import { ArrowRight, Bot, Code2, Cpu, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 
@@ -109,16 +109,16 @@ const SenviaHeroSection = () => {
 
             <motion.h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight mb-6"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }}>
-              <span>Construímos o</span>
+              <span>Inteligência Artificial não é o futuro.</span>
               <br />
               <motion.span className="gradient-text-animated inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
-                Futuro Digital.
+                É o agora.
               </motion.span>
             </motion.h1>
 
             <motion.p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
-              Software à medida, automações inteligentes e o nosso CRM proprietário — <strong className="text-foreground">SENVIA OS</strong>. Tudo potenciado por Inteligência Artificial para escalar o seu negócio.
+              A <strong className="text-foreground">SENVIA</strong> é especializada em Inteligência Artificial e chegou para transformar a tua empresa. Software, automações e soluções digitais, tudo potenciado por IA.
             </motion.p>
 
             <motion.div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
@@ -126,7 +126,7 @@ const SenviaHeroSection = () => {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button onClick={handleCTA} size="lg" className="group text-base px-8 py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden">
                   <span className="relative z-10 flex items-center">
-                    Falar com Especialista
+                    Agendar Consultoria
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
                   </span>
                 </Button>
@@ -179,7 +179,7 @@ const SenviaHeroSection = () => {
                 { icon: Code2, label: "Software", angle: 0, radius: 180 },
                 { icon: Globe, label: "Websites", angle: 90, radius: 180 },
                 { icon: Cpu, label: "Automação", angle: 180, radius: 180 },
-                { icon: Rocket, label: "SENVIA OS", angle: 270, radius: 180 },
+                { icon: Bot, label: "Chatbots", angle: 270, radius: 180 },
               ].map((item, i) => {
                 const rad = (item.angle * Math.PI) / 180;
                 const xPos = Math.cos(rad) * item.radius;

@@ -4,7 +4,11 @@ import { ArrowRight, Instagram, Facebook, Linkedin, ArrowUp } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
-const HomeFooter = () => {
+interface HomeFooterProps {
+  hideCTA?: boolean;
+}
+
+const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -25,70 +29,72 @@ const HomeFooter = () => {
   return (
     <footer className="bg-background relative overflow-hidden" ref={ref}>
       {/* CTA Section */}
-      <div className="border-t border-border relative">
-        {/* Aurora effect */}
-        <div className="absolute inset-0 aurora-bg" />
-        
-        <div className="container mx-auto px-4 md:px-6 py-24 md:py-32 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <motion.h2 
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              A sua equipa de vendas
-              <br />
-              <motion.span 
-                className="gradient-text-animated inline-block"
-                animate={{ 
-                  textShadow: [
-                    '0 0 0px hsl(var(--primary))',
-                    '0 0 20px hsl(var(--primary))',
-                    '0 0 0px hsl(var(--primary))',
-                  ]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                agradece.
-              </motion.span>
-            </motion.h2>
-
-            <motion.p 
-              className="text-lg text-muted-foreground mb-8"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              Vamos construir a sua infraestrutura de vendas inteligente?
-            </motion.p>
-
+      {!hideCTA && (
+        <div className="border-t border-border relative">
+          {/* Aurora effect */}
+          <div className="absolute inset-0 aurora-bg" />
+          
+          <div className="container mx-auto px-4 md:px-6 py-24 md:py-32 relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl mx-auto text-center"
             >
-              <Button 
-                onClick={handleCTA}
-                size="lg"
-                className="group text-base px-4 md:px-8 py-4 md:py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden max-w-full"
+              <motion.h2 
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.1 }}
               >
-                <span className="relative z-10 flex items-center justify-center text-center whitespace-normal">
-                  <span>Agendar Consultoria de Implementação</span>
-                  <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0 group-hover:translate-x-2 transition-transform duration-300" />
-                </span>
-              </Button>
+                A sua equipa de vendas
+                <br />
+                <motion.span 
+                  className="gradient-text-animated inline-block"
+                  animate={{ 
+                    textShadow: [
+                      '0 0 0px hsl(var(--primary))',
+                      '0 0 20px hsl(var(--primary))',
+                      '0 0 0px hsl(var(--primary))',
+                    ]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  agradece.
+                </motion.span>
+              </motion.h2>
+
+              <motion.p 
+                className="text-lg text-muted-foreground mb-8"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                Vamos construir a sua infraestrutura de vendas inteligente?
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button 
+                  onClick={handleCTA}
+                  size="lg"
+                  className="group text-base px-4 md:px-8 py-4 md:py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden max-w-full"
+                >
+                  <span className="relative z-10 flex items-center justify-center text-center whitespace-normal">
+                    <span>Agendar Consultoria de Implementação</span>
+                    <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0 group-hover:translate-x-2 transition-transform duration-300" />
+                  </span>
+                </Button>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Footer Links */}
       <div className="border-t border-border bg-muted/20">

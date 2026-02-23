@@ -23,7 +23,7 @@ const ServicoChatbots = () => {
         <ChatbotsDifferentialsSection />
         <ChatbotsCTASection />
       </main>
-      <HomeFooter />
+      <HomeFooter hideCTA />
     </>
   );
 };

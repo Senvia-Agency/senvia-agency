@@ -1,12 +1,13 @@
+import { lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import SenviaNavbar from '@/components/senvia/SenviaNavbar';
 import SenviaHeroSection from '@/components/senvia/SenviaHeroSection';
 import SenviaServicesSection from '@/components/senvia/SenviaServicesSection';
 import SenviaWhyUsSection from '@/components/senvia/SenviaWhyUsSection';
 
-import StatsSection from '@/components/home2/StatsSection';
-import GoogleReviewsSection from '@/components/home/GoogleReviewsSection';
-import HomeFooter from '@/components/home/HomeFooter';
+const StatsSection = lazy(() => import('@/components/home2/StatsSection'));
+const GoogleReviewsSection = lazy(() => import('@/components/home/GoogleReviewsSection'));
+const HomeFooter = lazy(() => import('@/components/home/HomeFooter'));
 
 const SenviaHome = () => {
   return (
@@ -29,10 +30,14 @@ const SenviaHome = () => {
         <SenviaServicesSection />
         <SenviaWhyUsSection />
         
-        <StatsSection />
-        <GoogleReviewsSection />
+        <Suspense fallback={<div className="h-32" />}>
+          <StatsSection />
+          <GoogleReviewsSection />
+        </Suspense>
       </main>
-      <HomeFooter />
+      <Suspense fallback={<div className="h-32" />}>
+        <HomeFooter />
+      </Suspense>
     </>
   );
 };

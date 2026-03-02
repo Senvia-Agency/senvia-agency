@@ -76,7 +76,6 @@
     @apply bg-background text-foreground font-poppins scroll-smooth;
   }
   
-  /* Admin specific styles for better contrast and elegance */
   .admin-page {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   }
@@ -139,7 +138,6 @@
     transition: transform 0.2s ease-out;
   }
   
-  /* Premium glass effect for admin components */
   .glass-effect {
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
@@ -154,7 +152,6 @@
     );
   }
 
-  /* Modern grid pattern */
   .bg-grid-pattern {
     background-image: 
       linear-gradient(rgba(0, 195, 255, 0.1) 1px, transparent 1px),
@@ -162,12 +159,10 @@
     background-size: 50px 50px;
   }
 
-  /* Smooth scroll */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -185,11 +180,7 @@
     background: hsl(var(--accent));
   }
 
-  /* ============================================
-     PREMIUM VISUAL EFFECTS - INSANE ANIMATIONS
-     ============================================ */
-
-  /* Animated Gradient Background */
+  /* Static gradient background */
   .gradient-animate {
     background: linear-gradient(
       -45deg,
@@ -201,7 +192,7 @@
     background-size: 100% 100%;
   }
 
-  /* Glow Pulse Animation */
+  /* Glow Pulse - static, hover only */
   .glow-pulse {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.4),
                 0 0 40px hsl(var(--primary) / 0.2);
@@ -214,24 +205,7 @@
     transition: box-shadow 0.3s ease;
   }
 
-  /* Text Glow Pulse */
-  .text-glow-pulse {
-    animation: textGlowPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes textGlowPulse {
-    0%, 100% {
-      text-shadow: 0 0 10px hsl(var(--primary) / 0.5),
-                   0 0 20px hsl(var(--primary) / 0.3);
-    }
-    50% {
-      text-shadow: 0 0 20px hsl(var(--primary) / 0.8),
-                   0 0 40px hsl(var(--primary) / 0.5),
-                   0 0 60px hsl(var(--primary) / 0.3);
-    }
-  }
-
-  /* Shimmer Effect */
+  /* Shimmer Effect - composited with transform */
   .shimmer {
     position: relative;
     overflow: hidden;
@@ -289,23 +263,6 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Floating Animation */
-  .floating {
-    animation: floating 6s ease-in-out infinite;
-  }
-
-  .floating-delayed {
-    animation: floating 6s ease-in-out infinite;
-    animation-delay: -3s;
-  }
-
-  @keyframes floating {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25% { transform: translateY(-10px) rotate(1deg); }
-    50% { transform: translateY(-5px) rotate(0deg); }
-    75% { transform: translateY(-15px) rotate(-1deg); }
-  }
-
   /* 3D Card Tilt */
   .card-3d {
     transform-style: preserve-3d;
@@ -320,178 +277,16 @@
     transform: rotateY(5deg) rotateX(5deg);
   }
 
-  /* Magnetic Hover Effect Preparation */
   .magnetic {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Glitch Effect */
-  .glitch {
-    position: relative;
-  }
-
-  .glitch::before,
-  .glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .glitch::before {
-    left: 2px;
-    text-shadow: -2px 0 hsl(0 100% 50%);
-    clip: rect(24px, 550px, 90px, 0);
-    animation: glitch-anim 3s infinite linear alternate-reverse;
-  }
-
-  .glitch::after {
-    left: -2px;
-    text-shadow: -2px 0 hsl(190 100% 50%);
-    clip: rect(85px, 550px, 140px, 0);
-    animation: glitch-anim2 2s infinite linear alternate-reverse;
-  }
-
-  @keyframes glitch-anim {
-    0% { clip: rect(51px, 9999px, 28px, 0); }
-    20% { clip: rect(70px, 9999px, 63px, 0); }
-    40% { clip: rect(26px, 9999px, 97px, 0); }
-    60% { clip: rect(63px, 9999px, 4px, 0); }
-    80% { clip: rect(12px, 9999px, 55px, 0); }
-    100% { clip: rect(32px, 9999px, 84px, 0); }
-  }
-
-  @keyframes glitch-anim2 {
-    0% { clip: rect(12px, 9999px, 59px, 0); }
-    20% { clip: rect(84px, 9999px, 29px, 0); }
-    40% { clip: rect(61px, 9999px, 14px, 0); }
-    60% { clip: rect(69px, 9999px, 91px, 0); }
-    80% { clip: rect(43px, 9999px, 27px, 0); }
-    100% { clip: rect(77px, 9999px, 63px, 0); }
-  }
-
-  /* Spotlight Effect */
-  .spotlight {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .spotlight::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-      circle at center,
-      hsl(var(--primary) / 0.1) 0%,
-      transparent 50%
-    );
-    animation: spotlightMove 8s linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes spotlightMove {
-    0% { transform: translate(-30%, -30%); }
-    25% { transform: translate(30%, -30%); }
-    50% { transform: translate(30%, 30%); }
-    75% { transform: translate(-30%, 30%); }
-    100% { transform: translate(-30%, -30%); }
-  }
-
-  /* Particle Trail (for pseudo elements) */
-  .particle-trail::after {
-    content: '';
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: hsl(var(--primary));
-    border-radius: 50%;
-    box-shadow: 
-      0 0 10px hsl(var(--primary)),
-      0 0 20px hsl(var(--primary) / 0.5);
-    animation: particleFloat 4s ease-in-out infinite;
-  }
-
-  @keyframes particleFloat {
-    0%, 100% { opacity: 0; transform: translate(0, 0) scale(0); }
-    10% { opacity: 1; transform: translate(10px, -20px) scale(1); }
-    90% { opacity: 1; transform: translate(100px, -100px) scale(0.5); }
-    100% { opacity: 0; transform: translate(110px, -110px) scale(0); }
-  }
-
-  /* Ripple Effect */
-  .ripple {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .ripple::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: hsl(var(--primary) / 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .ripple:hover::after {
-    width: 300%;
-    height: 300%;
-  }
-
-  /* Morphing Background Blobs */
+  /* Static blob shape */
   .blob {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    animation: blobMorph 8s ease-in-out infinite;
   }
 
-  @keyframes blobMorph {
-    0% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.05) rotate(5deg); }
-    100% { transform: scale(1) rotate(0deg); }
-  }
-
-  /* Text Reveal Animation */
-  .text-reveal {
-    clip-path: inset(0 100% 0 0);
-    animation: textReveal 1s ease forwards;
-  }
-
-  @keyframes textReveal {
-    to { clip-path: inset(0 0 0 0); }
-  }
-
-  /* Shake Animation (subtle) */
-  .shake-subtle {
-    animation: shakeSubtle 0.5s ease-in-out;
-  }
-
-  @keyframes shakeSubtle {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-  }
-
-  /* Scale Bounce */
-  .scale-bounce {
-    animation: scaleBounce 0.5s ease;
-  }
-
-  @keyframes scaleBounce {
-    0% { transform: scale(0.8); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  /* Gradient Text Animation */
+  /* Gradient Text - static */
   .gradient-text-animated {
     background: linear-gradient(
       90deg,
@@ -503,24 +298,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-
-  /* Neon Flicker */
-  .neon-flicker {
-    animation: neonFlicker 3s infinite;
-  }
-
-  @keyframes neonFlicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      text-shadow: 
-        0 0 4px hsl(var(--primary)),
-        0 0 11px hsl(var(--primary)),
-        0 0 19px hsl(var(--primary)),
-        0 0 40px hsl(var(--primary) / 0.5);
-    }
-    20%, 24%, 55% {
-      text-shadow: none;
-    }
   }
 
   /* Lines Drawing Effect */
@@ -569,7 +346,7 @@
       inset 0 1px 0 hsl(var(--primary) / 0.1);
   }
 
-  /* Aurora Background */
+  /* Aurora Background - static gradient, no animation */
   .aurora-bg {
     position: relative;
     overflow: hidden;
@@ -586,15 +363,7 @@
       radial-gradient(ellipse at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 50%, hsl(var(--accent) / 0.1) 0%, transparent 50%),
       radial-gradient(ellipse at 50% 100%, hsl(190 100% 60% / 0.1) 0%, transparent 50%);
-    animation: auroraMove 20s ease-in-out infinite;
     pointer-events: none;
-  }
-
-  @keyframes auroraMove {
-    0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
-    25% { transform: translate(5%, 5%) rotate(5deg); }
-    50% { transform: translate(0%, 10%) rotate(0deg); }
-    75% { transform: translate(-5%, 5%) rotate(-5deg); }
   }
 
   /* Counter Animation Helper */

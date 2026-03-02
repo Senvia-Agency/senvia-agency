@@ -1,5 +1,4 @@
 import { ArrowRight, Bot, Code2, Cpu, Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 
 const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
@@ -53,15 +52,15 @@ const SenviaHeroSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button onClick={handleCTA} size="lg" className="group text-base px-8 py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden">
+              <button onClick={handleCTA} className="group text-base px-8 py-4 rounded-md font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-pulse relative overflow-hidden inline-flex items-center justify-center">
                 <span className="relative z-10 flex items-center">
                   Agendar Consultoria
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
-              </Button>
-              <Button onClick={scrollToServices} size="lg" variant="outline" className="text-base px-8 py-6 border-primary/30 hover:bg-primary/10">
+              </button>
+              <button onClick={scrollToServices} className="text-base px-8 py-4 rounded-md font-medium border border-primary/30 text-foreground hover:bg-primary/10 inline-flex items-center justify-center">
                 Ver os Nossos Serviços
-              </Button>
+              </button>
             </div>
 
             <div className="flex flex-wrap gap-8 mt-12 justify-center lg:justify-start">

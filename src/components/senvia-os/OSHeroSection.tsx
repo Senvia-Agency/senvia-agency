@@ -45,7 +45,7 @@ const OSHeroSection = () => {
               <img
                 src="/lovable-uploads/foto-senvia-os.png"
                 alt="Fundador SENVIA OS a apresentar o sistema de comissões"
-                className="w-full h-[540px] object-cover object-[center_10%]"
+                className="w-full h-[540px] object-cover object-[center_5%]"
                 loading="eager"
                 decoding="async"
               />

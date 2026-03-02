@@ -1,4 +1,4 @@
-import { motion, useInView } from 'framer-motion';
+import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
 const AnimatedNumber = ({ target, suffix = '' }: { target: number; suffix?: string }) => {
@@ -41,18 +41,17 @@ const StatsSection = () => {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, i) => (
-            <motion.div key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              className="text-center cursor-default"
+            <div key={stat.label}
+              className={`text-center cursor-default transition-all duration-500 ${
+                isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ transitionDelay: `${i * 150}ms` }}
             >
               <p className="text-4xl md:text-5xl font-bold gradient-text-animated mb-2">
                 <AnimatedNumber target={stat.value} suffix={stat.suffix} />
               </p>
               <p className="text-sm md:text-base text-muted-foreground">{stat.label}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

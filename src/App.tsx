@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
 import GTMPageView from "@/components/GTMPageView";
-import CookieConsent from "@/components/CookieConsent";
+const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 
 // Lazy load crítico primeiro
 const SenviaHome = lazy(() => import("./pages/SenviaHome"));
@@ -150,7 +150,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <CookieConsent />
+        <Suspense fallback={null}><CookieConsent /></Suspense>
         <Toaster />
       </Router>
     </TooltipProvider>

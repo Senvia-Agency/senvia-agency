@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Home2Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +25,13 @@ const Home2Navbar = () => {
     { label: "FAQ", id: "faq" },
   ];
 
+  const SparklesIcon = () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+    </svg>
+  );
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -40,6 +47,8 @@ const Home2Navbar = () => {
               src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png"
               alt="SENVIA"
               className="h-8 md:h-10"
+              width={40}
+              height={40}
             />
             <span className="text-xl font-bold gradient-text-animated">SENVIA</span>
           </a>
@@ -60,7 +69,7 @@ const Home2Navbar = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium px-4 py-2 hover:bg-primary/90 transition-colors"
             >
-              <Sparkles className="w-4 h-4" />
+              <SparklesIcon />
               Começar Teste Grátis
             </a>
           </div>
@@ -88,7 +97,7 @@ const Home2Navbar = () => {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full rounded-md bg-primary text-primary-foreground font-medium px-4 py-3 hover:bg-primary/90 transition-colors"
               >
-                <Sparkles className="w-4 h-4" />
+                <SparklesIcon />
                 Começar Teste Grátis
               </a>
             </div>

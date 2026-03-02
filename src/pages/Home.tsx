@@ -1,11 +1,13 @@
+import { lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Home2Navbar from '@/components/home2/Home2Navbar';
 import OSHeroSection from '@/components/senvia-os/OSHeroSection';
-import OSProcessSection from '@/components/senvia-os/OSProcessSection';
-import OSBenefitsSection from '@/components/senvia-os/OSBenefitsSection';
-import OSFAQSection from '@/components/senvia-os/OSFAQSection';
-import OSFinalCTASection from '@/components/senvia-os/OSFinalCTASection';
-import HomeFooter from '@/components/home/HomeFooter';
+
+const OSProcessSection = lazy(() => import('@/components/senvia-os/OSProcessSection'));
+const OSBenefitsSection = lazy(() => import('@/components/senvia-os/OSBenefitsSection'));
+const OSFAQSection = lazy(() => import('@/components/senvia-os/OSFAQSection'));
+const OSFinalCTASection = lazy(() => import('@/components/senvia-os/OSFinalCTASection'));
+const HomeFooter = lazy(() => import('@/components/home/HomeFooter'));
 
 const Home = () => {
   return (
@@ -14,6 +16,7 @@ const Home = () => {
         <title>SENVIA OS — Sistema para Agências de Telecomunicações e Energia</title>
         <meta name="description" content="Calcule comissões, múltiplos e estornos de forma 100% automática. O sistema definitivo para agências de telecomunicações e energia." />
         <link rel="canonical" href="https://www.senvia.pt/senvia-os" />
+        <link rel="preload" as="image" href="/lovable-uploads/foto-senvia-os.png" />
         <meta property="og:title" content="SENVIA OS — Sistema para Agências de Telecomunicações e Energia" />
         <meta property="og:description" content="Calcule comissões, múltiplos e estornos de forma 100% automática. Tranque a sua margem de lucro sem erros humanos." />
         <meta property="og:type" content="website" />
@@ -25,12 +28,16 @@ const Home = () => {
       <Home2Navbar />
       <main>
         <OSHeroSection />
-        <OSProcessSection />
-        <OSBenefitsSection />
-        <OSFAQSection />
-        <OSFinalCTASection />
+        <Suspense fallback={null}>
+          <OSProcessSection />
+          <OSBenefitsSection />
+          <OSFAQSection />
+          <OSFinalCTASection />
+        </Suspense>
       </main>
-      <HomeFooter hideCTA />
+      <Suspense fallback={null}>
+        <HomeFooter hideCTA />
+      </Suspense>
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -67,25 +66,19 @@ const SenviaNavbar = () => {
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`} />
                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
               </button>
-              <AnimatePresence>
-                {isServicesOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-1 w-48 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-xl z-50 overflow-hidden"
-                  >
-                    <div className="py-2">
-                      {serviceSubmenus.map((item) => (
-                        <Link key={item.label} to={item.href} className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors">
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div
+                className={`absolute top-full left-0 mt-1 w-48 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-xl z-50 overflow-hidden transition-all duration-200 origin-top ${
+                  isServicesOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
+                }`}
+              >
+                <div className="py-2">
+                  {serviceSubmenus.map((item) => (
+                    <Link key={item.label} to={item.href} className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-colors">
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <Link to="/sobre-nos" className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 relative group">

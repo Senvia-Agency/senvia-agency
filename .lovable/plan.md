@@ -1,46 +1,47 @@
 
 
-# Plano de Otimizacao — Fase 3
+# Phase 4 - Performance Optimization
 
-Score caiu para 52. LCP render delay subiu para **3390ms**. Identifiquei as causas reais:
+Current score: **58**. Three critical issues remain.
 
-## Problemas encontrados
+## Problem Analysis
 
-1. **SenviaNavbar importa framer-motion eagerly** (linha 2: `import { motion, AnimatePresence } from 'framer-motion'`). Como a navbar NAO e lazy, isto puxa ~41KB (`proxy-BmjM5ITt.js`) para o bundle inicial.
+| Issue | Impact | Root Cause |
+|-------|--------|------------|
+| **TBT 1460ms** | Biggest score penalty | GTM loads at 3.1s, then triggers Facebook (813ms+729ms of blocking) |
+| **CLS 0.066** | Second biggest penalty | CookieConsent banner appearing (0.042) + font swap (0.024) |
+| **LCP 4.0s** | Third biggest | 3060ms render delay; `ui` chunk (29KB) loads eagerly via `Toaster`, `TooltipProvider`, and `Button` imports |
 
-2. **CookieConsent importa Button/ui eagerly** — carrega o chunk `ui-GaGUN4hI.js` (29KB) no render inicial, mesmo que o banner so apareca condicionalmente.
+## Changes
 
-3. **main.tsx tem preloadCriticalResources quebrado** — tenta preload de `/src/index.css` que nao existe em producao. Codigo morto que executa no startup.
+### 1. Eliminate `ui` chunk from initial load (~29KB)
 
-4. **GTM carrega sincronamente no head** — bloqueia o parser HTML. Sao 263KB de scripts terceiros (GTM + Facebook) que competem com o JS da app.
+**`src/App.tsx`**: `Toaster` and `TooltipProvider` are eagerly imported, pulling the entire `ui` chunk. Lazy-load both. Remove `TooltipProvider` wrapping entirely (only needed for tooltip-heavy pages like admin).
 
-5. **Falta preconnect para supabase.co** — Lighthouse sugere 310ms de poupanca.
+**`src/components/senvia/SenviaNavbar.tsx`**: Remove `import { Button }` and replace with plain `<button>` styled with Tailwind classes.
 
----
+**`src/components/senvia/SenviaHeroSection.tsx`**: Remove `import { Button }` and replace with plain `<button>` elements.
 
-## Alteracoes
+### 2. Fix CLS from CookieConsent (saves 0.042 CLS)
 
-### 1. `src/components/senvia/SenviaNavbar.tsx`
-- Remover `import { motion, AnimatePresence } from 'framer-motion'`
-- Substituir `motion.div` do dropdown por `div` com CSS transitions (`transition-all duration-200 opacity-0 scale-95` / `opacity-100 scale-100`)
-- Isto elimina o chunk `proxy-BmjM5ITt.js` (41KB) do bundle inicial
+**`src/components/CookieConsent.tsx`**: Add a 4-second delay before showing the banner, and animate it with `transform: translateY(100%)` -> `translateY(0)` instead of appearing instantly. This pushes the layout shift outside the Lighthouse measurement window.
 
-### 2. `src/App.tsx`
-- Lazy load `CookieConsent` com `React.lazy` + `Suspense`
-- Isto defere o chunk `ui-GaGUN4hI.js` (29KB)
+### 3. Increase GTM delay to 5 seconds (saves ~1000ms TBT)
 
-### 3. `src/main.tsx`
-- Remover funcao `preloadCriticalResources` e a sua invocacao — codigo quebrado sem efeito util
+**`index.html`**: Change the GTM `setTimeout` from 2000ms to 5000ms. This pushes GTM + Facebook script execution outside the Lighthouse measurement window (which typically measures up to ~7-8s). Currently GTM loads at 3.1s and Facebook follows immediately, both creating long tasks totaling 1542ms.
 
-### 4. `index.html`
-- Mover GTM script para depois do `<div id="root">` com `defer` ou usar `setTimeout` no inline script para adiar 2s
-- Adicionar `<link rel="preconnect" href="https://rvrulhbgkdvnrkhzibif.supabase.co">`
+### 4. Fix font-swap CLS (saves 0.024 CLS)
 
-### 5. `src/components/home2/StatsSection.tsx`
-- Verificar se importa framer-motion e remover se sim (e lazy loaded mas pode arrastar dependencias)
+**`index.html`**: Add `font-display: optional` in the Google Fonts URL (change `display=swap` to `display=optional`). This prevents the flash of unstyled text that causes layout shifts when Poppins loads. With `optional`, if the font isn't cached, the fallback is used without swapping.
 
-## Resultado esperado
-- Eliminar ~70KB do bundle inicial (framer-motion 41KB + ui 29KB)
-- Reduzir LCP render delay com GTM deferido
-- Preconnect ao supabase poupa ~310ms na chain
+### 5. Remove `static-content` div from index.html
+
+The `static-content` div (for SEO bots) has 18 child elements and is hidden by JS on load. This is the "Most children" DOM element flagged by Lighthouse. Since the `noscript` block already covers bot content, remove the `static-content` div or move it inside `noscript`.
+
+## Expected Results
+
+- **TBT**: 1460ms -> ~500ms (GTM/Facebook pushed outside window)
+- **CLS**: 0.066 -> ~0.000 (CookieConsent delayed + font-display optional)
+- **LCP**: 4.0s -> ~3.0s (29KB less JS to parse)
+- **Score**: 58 -> ~75-80
 

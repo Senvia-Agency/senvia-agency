@@ -43,9 +43,9 @@ const OSHeroSection = () => {
           <div className="relative hidden lg:block">
             <div className="rounded-2xl overflow-hidden border border-border shadow-2xl">
               <img
-                src="/lovable-uploads/5b66da66-9cb0-43be-842f-ce97b2e2e8e2.png"
-                alt="Dashboard SENVIA OS — gestão de comissões para agências"
-                className="w-full h-auto"
+                src="/lovable-uploads/foto-senvia-os.png"
+                alt="Fundador SENVIA OS a apresentar o sistema de comissões"
+                className="w-full h-[540px] object-cover object-top"
                 loading="eager"
                 decoding="async"
               />

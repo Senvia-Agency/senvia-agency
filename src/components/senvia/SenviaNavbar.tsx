@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const serviceSubmenus = [
@@ -96,9 +95,9 @@ const SenviaNavbar = () => {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </button>
 
-            <Button onClick={() => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank')} size="sm" className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform">
+            <button onClick={() => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank')} className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 transition-transform">
               Agendar Consultoria
-            </Button>
+            </button>
           </div>
 
           {/* Mobile Toggle */}
@@ -149,9 +148,9 @@ const SenviaNavbar = () => {
               </button>
 
               <div className="pt-2">
-                <Button onClick={() => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank')} className="w-full glow-pulse">
+                <button onClick={() => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank')} className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 glow-pulse">
                   Agendar Consultoria
-                </Button>
+                </button>
               </div>
             </div>
           </div>

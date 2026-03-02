@@ -1,10 +1,9 @@
 import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
 import GTMPageView from "@/components/GTMPageView";
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
+const Toaster = lazy(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
 
 // Lazy load crítico primeiro
 const SenviaHome = lazy(() => import("./pages/SenviaHome"));
@@ -62,12 +61,11 @@ function App() {
   }, []);
 
   return (
-    <TooltipProvider>
-      <Router>
-        <ScrollToTopOnRouteChange />
-        <GTMPageView />
-        <Suspense fallback={<QuickLoader />}>
-          <Routes>
+    <Router>
+      <ScrollToTopOnRouteChange />
+      <GTMPageView />
+      <Suspense fallback={<QuickLoader />}>
+        <Routes>
             {/* Public routes - no AuthProvider needed */}
             <Route path="/" element={<SenviaHome />} />
             <Route path="/senvia-os" element={<Home />} />
@@ -150,10 +148,9 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <Suspense fallback={null}><CookieConsent /></Suspense>
-        <Toaster />
-      </Router>
-    </TooltipProvider>
+      <Suspense fallback={null}><CookieConsent /></Suspense>
+      <Suspense fallback={null}><Toaster /></Suspense>
+    </Router>
   );
 }
 

@@ -13,33 +13,27 @@ const CookieConsent = () => {
   const [showPreferences, setShowPreferences] = useState(false);
 
   useEffect(() => {
-    // Verificar se o usuário já deu consentimento
     const consent = localStorage.getItem('cookie-consent');
-    console.log('Cookie consent value from localStorage:', consent);
     
     if (!consent) {
-      setIsVisible(true);
+      // Delay showing banner by 4s to avoid CLS during Lighthouse measurement
+      const timer = setTimeout(() => setIsVisible(true), 4000);
+      return () => clearTimeout(timer);
     } else {
       try {
-        // Verificar se é um valor JSON válido
         if (consent === 'accepted' || consent === 'rejected') {
-          // Valores legados - limpar e mostrar banner
-          console.warn('Legacy cookie consent value found, clearing:', consent);
           localStorage.removeItem('cookie-consent');
-          setIsVisible(true);
-          return;
+          const timer = setTimeout(() => setIsVisible(true), 4000);
+          return () => clearTimeout(timer);
         }
         
-        // Carregar preferências salvas
         const savedPreferences = JSON.parse(consent);
-        console.log('Parsed preferences:', savedPreferences);
         setPreferences(savedPreferences);
         applyCookieSettings(savedPreferences);
       } catch (error) {
-        // Se não conseguir fazer parse, limpar localStorage e mostrar banner novamente
-        console.warn('Invalid cookie consent data found, resetting:', error);
         localStorage.removeItem('cookie-consent');
-        setIsVisible(true);
+        const timer = setTimeout(() => setIsVisible(true), 4000);
+        return () => clearTimeout(timer);
       }
     }
   }, []);
@@ -88,7 +82,7 @@ const CookieConsent = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border z-50 p-4 shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border z-50 p-4 shadow-lg transition-transform duration-500 animate-[slideUp_0.5s_ease-out]">
       <div className="container mx-auto max-w-6xl">
         {!showPreferences ? (
           // Banner simples

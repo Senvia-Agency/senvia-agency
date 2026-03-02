@@ -1,7 +1,6 @@
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Bot, Code2, Cpu, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
@@ -21,26 +20,6 @@ const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: strin
 };
 
 const SenviaHeroSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const x = useSpring(mouseX, { damping: 25, stiffness: 150 });
-  const y = useSpring(mouseY, { damping: 25, stiffness: 150 });
-  const rotateX = useTransform(y, [-300, 300], [3, -3]);
-  const rotateY = useTransform(x, [-300, 300], [-3, 3]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        mouseX.set(e.clientX - (rect.left + rect.width / 2));
-        mouseY.set(e.clientY - (rect.top + rect.height / 2));
-      }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
-
   const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
   const scrollToServices = () => document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -48,14 +27,14 @@ const SenviaHeroSection = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-20 aurora-bg">
       <div className="absolute inset-0 gradient-animate" />
       
-      {/* Static blobs - no framer-motion, CSS-only */}
+      {/* Static blobs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 blob blur-3xl" />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/8 blob blur-3xl" />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10" ref={containerRef}>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left - Content */}
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center lg:text-left">
+          <div className="text-center lg:text-left animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-6 shimmer">
               <Cpu className="w-4 h-4 text-primary" />
               <span className="text-xs font-medium text-primary">AI Software House</span>
@@ -97,54 +76,51 @@ const SenviaHeroSection = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          {/* Right - Orbiting Icons Visual */}
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
-            className="relative hidden lg:flex items-center justify-center" style={{ perspective: 1000, minHeight: 500 }}>
-            <motion.div style={{ rotateX, rotateY }} className="relative w-full h-full flex items-center justify-center">
-              {/* Central element */}
-              <div className="relative z-10 w-40 h-40 rounded-3xl bg-card border border-border glass-premium flex flex-col items-center justify-center">
-                <img
-                  src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png"
-                  alt="SENVIA"
-                  className="h-16 mb-2"
-                  width="64"
-                  height="64"
-                />
-                <span className="text-xs font-bold text-muted-foreground tracking-widest">AI SOFTWARE HOUSE</span>
-              </div>
+          {/* Right - Static Orbiting Icons */}
+          <div className="relative hidden lg:flex items-center justify-center animate-fade-in" style={{ minHeight: 500, animationDelay: '0.2s' }}>
+            {/* Central element */}
+            <div className="relative z-10 w-40 h-40 rounded-3xl bg-card border border-border glass-premium flex flex-col items-center justify-center">
+              <img
+                src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png"
+                alt="SENVIA"
+                className="h-16 mb-2"
+                width="64"
+                height="64"
+              />
+              <span className="text-xs font-bold text-muted-foreground tracking-widest">AI SOFTWARE HOUSE</span>
+            </div>
 
-              {/* Service cards - static positioned */}
-              {[
-                { icon: Code2, label: "Software", angle: 0, radius: 180 },
-                { icon: Globe, label: "Websites", angle: 90, radius: 180 },
-                { icon: Cpu, label: "Automação", angle: 180, radius: 180 },
-                { icon: Bot, label: "Chatbots", angle: 270, radius: 180 },
-              ].map((item, i) => {
-                const rad = (item.angle * Math.PI) / 180;
-                const xPos = Math.cos(rad) * item.radius;
-                const yPos = Math.sin(rad) * item.radius;
-                return (
-                  <div
-                    key={item.label}
-                    className="absolute flex flex-col items-center gap-2"
-                    style={{ top: '50%', left: '50%', transform: `translate(${xPos - 32}px, ${yPos - 32}px)` }}
-                  >
-                    <div className="w-16 h-16 rounded-2xl bg-card/90 border border-primary/20 flex items-center justify-center backdrop-blur-md hover:scale-110 hover:border-primary transition-all duration-300">
-                      <item.icon className="w-7 h-7 text-primary" />
-                    </div>
-                    <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{item.label}</span>
+            {/* Service cards - static */}
+            {[
+              { icon: Code2, label: "Software", angle: 0, radius: 180 },
+              { icon: Globe, label: "Websites", angle: 90, radius: 180 },
+              { icon: Cpu, label: "Automação", angle: 180, radius: 180 },
+              { icon: Bot, label: "Chatbots", angle: 270, radius: 180 },
+            ].map((item) => {
+              const rad = (item.angle * Math.PI) / 180;
+              const xPos = Math.cos(rad) * item.radius;
+              const yPos = Math.sin(rad) * item.radius;
+              return (
+                <div
+                  key={item.label}
+                  className="absolute flex flex-col items-center gap-2"
+                  style={{ top: '50%', left: '50%', transform: `translate(${xPos - 32}px, ${yPos - 32}px)` }}
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-card/90 border border-primary/20 flex items-center justify-center backdrop-blur-md hover:scale-110 hover:border-primary transition-all duration-300">
+                    <item.icon className="w-7 h-7 text-primary" />
                   </div>
-                );
-              })}
+                  <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{item.label}</span>
+                </div>
+              );
+            })}
 
-              {/* Connection circle - static SVG */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                <circle cx="50%" cy="50%" r="180" fill="none" stroke="hsl(var(--primary))" strokeWidth="0.5" strokeDasharray="8 8" opacity="0.15" />
-              </svg>
-            </motion.div>
-          </motion.div>
+            {/* Connection circle - static SVG */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+              <circle cx="50%" cy="50%" r="180" fill="none" stroke="hsl(var(--primary))" strokeWidth="0.5" strokeDasharray="8 8" opacity="0.15" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>

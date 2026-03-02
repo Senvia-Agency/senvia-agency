@@ -2,9 +2,6 @@ import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import AdminRoute from "@/components/AdminRoute";
 import ScrollToTopOnRouteChange from "@/components/ScrollToTopOnRouteChange";
 import GTMPageView from "@/components/GTMPageView";
 import CookieConsent from "@/components/CookieConsent";
@@ -39,6 +36,11 @@ const ServicoChatbots = lazy(() => import("./pages/ServicoChatbots"));
 const ServicoSoftwares = lazy(() => import("./pages/ServicoSoftwares"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Lazy load auth-related wrappers
+const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
+const AdminRoute = lazy(() => import("./components/AdminRoute"));
+const AuthProvider = lazy(() => import("./components/AuthProviderWrapper"));
+
 // Loading ultra-rápido
 const QuickLoader = () => (
   <div className="fixed inset-0 bg-background flex items-center justify-center">
@@ -48,112 +50,109 @@ const QuickLoader = () => (
 
 function App() {
   useEffect(() => {
-    // Initialize dataLayer if not present
     if (typeof window !== 'undefined') {
       if (!(window as any).dataLayer) {
         (window as any).dataLayer = [];
       }
-      
-      // Push initial event to ensure GTM is working
       (window as any).dataLayer.push({
         'event': 'gtm_initialized',
         'gtm_container_id': 'GTM-KL72LGGS'
       });
-      
-      console.log('GTM Debug - dataLayer exists:', !!(window as any).dataLayer);
-      console.log('GTM Debug - script loaded:', !!document.querySelector('script[src*="gtm.js"]'));
     }
   }, []);
 
   return (
     <TooltipProvider>
-      <AuthProvider>
-        <Router>
-          <ScrollToTopOnRouteChange />
-          <GTMPageView />
-          <Suspense fallback={<QuickLoader />}>
-            <Routes>
-              <Route path="/" element={<SenviaHome />} />
-              <Route path="/senvia-os" element={<Home />} />
-              <Route path="/funis" element={<Index />} />
-              <Route path="/obrigado" element={<ThankYou />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
-              <Route path="/termos-servico" element={<TermosServico />} />
-              <Route path="/politica-cookies" element={<PoliticaCookies />} />
-              <Route path="/sobre-nos" element={<SobreNos />} />
-              <Route path="/sites" element={<ServicoSites />} />
-              <Route path="/chatbots" element={<ServicoChatbots />} />
-              <Route path="/softwares" element={<ServicoSoftwares />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/calendar" element={<CalendarConnect />} />
-              
-              {/* Protected Routes for Customers */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard/profile" element={
-                <ProtectedRoute>
-                  <DashboardProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard/products" element={
-                <ProtectedRoute>
-                  <DashboardProducts />
-                </ProtectedRoute>
-              } />
-              <Route path="/dashboard/settings" element={
-                <ProtectedRoute>
-                  <DashboardSettings />
-                </ProtectedRoute>
-              } />
-              
-              {/* Admin Only Routes */}
-              <Route path="/admin" element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              } />
-              <Route path="/admin/contas-receber" element={
-                <AdminRoute>
-                  <AdminContasReceber />
-                </AdminRoute>
-              } />
-              <Route path="/admin/receitas-total" element={
-                <AdminRoute>
-                  <AdminReceitasTotal />
-                </AdminRoute>
-              } />
-              <Route path="/admin/despesas-total" element={
-                <AdminRoute>
-                  <AdminDespesasTotal />
-                </AdminRoute>
-              } />
-              <Route path="/admin/contas-atraso" element={
-                <AdminRoute>
-                  <AdminContasAtraso />
-                </AdminRoute>
-              } />
-              <Route path="/admin/receitas-mensais" element={
-                <AdminRoute>
-                  <AdminReceitasMensais />
-                </AdminRoute>
-              } />
-              <Route path="/admin/despesas-mensais" element={
-                <AdminRoute>
-                  <AdminDespesasMensais />
-                </AdminRoute>
-              } />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-          <CookieConsent />
-          <Toaster />
-        </Router>
-      </AuthProvider>
+      <Router>
+        <ScrollToTopOnRouteChange />
+        <GTMPageView />
+        <Suspense fallback={<QuickLoader />}>
+          <Routes>
+            {/* Public routes - no AuthProvider needed */}
+            <Route path="/" element={<SenviaHome />} />
+            <Route path="/senvia-os" element={<Home />} />
+            <Route path="/funis" element={<Index />} />
+            <Route path="/obrigado" element={<ThankYou />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos-servico" element={<TermosServico />} />
+            <Route path="/politica-cookies" element={<PoliticaCookies />} />
+            <Route path="/sobre-nos" element={<SobreNos />} />
+            <Route path="/sites" element={<ServicoSites />} />
+            <Route path="/chatbots" element={<ServicoChatbots />} />
+            <Route path="/softwares" element={<ServicoSoftwares />} />
+            <Route path="/auth" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><Auth /></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/calendar" element={<CalendarConnect />} />
+            
+            {/* Protected Routes - wrapped in AuthProvider */}
+            <Route path="/dashboard" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><ProtectedRoute><Dashboard /></ProtectedRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/dashboard/profile" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><ProtectedRoute><DashboardProfile /></ProtectedRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/dashboard/products" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><ProtectedRoute><DashboardProducts /></ProtectedRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/dashboard/settings" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><ProtectedRoute><DashboardSettings /></ProtectedRoute></AuthProvider>
+              </Suspense>
+            } />
+            
+            {/* Admin Only Routes */}
+            <Route path="/admin" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminDashboard /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/contas-receber" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminContasReceber /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/receitas-total" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminReceitasTotal /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/despesas-total" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminDespesasTotal /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/contas-atraso" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminContasAtraso /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/receitas-mensais" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminReceitasMensais /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            <Route path="/admin/despesas-mensais" element={
+              <Suspense fallback={<QuickLoader />}>
+                <AuthProvider><AdminRoute><AdminDespesasMensais /></AdminRoute></AuthProvider>
+              </Suspense>
+            } />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+        <CookieConsent />
+        <Toaster />
+      </Router>
     </TooltipProvider>
   );
 }

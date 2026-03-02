@@ -31,7 +31,6 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
       {/* CTA Section */}
       {!hideCTA && (
         <div className="border-t border-border relative">
-          {/* Aurora effect */}
           <div className="absolute inset-0 aurora-bg" />
           
           <div className="container mx-auto px-4 md:px-6 py-24 md:py-32 relative z-10">
@@ -41,56 +40,26 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
               transition={{ duration: 0.6 }}
               className="max-w-3xl mx-auto text-center"
             >
-              <motion.h2 
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
                 A sua equipa de vendas
                 <br />
-                <motion.span 
-                  className="gradient-text-animated inline-block"
-                  animate={{ 
-                    textShadow: [
-                      '0 0 0px hsl(var(--primary))',
-                      '0 0 20px hsl(var(--primary))',
-                      '0 0 0px hsl(var(--primary))',
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  agradece.
-                </motion.span>
-              </motion.h2>
+                <span className="gradient-text-animated inline-block">agradece.</span>
+              </h2>
 
-              <motion.p 
-                className="text-lg text-muted-foreground mb-8"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
+              <p className="text-lg text-muted-foreground mb-8">
                 Vamos construir a sua infraestrutura de vendas inteligente?
-              </motion.p>
+              </p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <Button 
+                onClick={handleCTA}
+                size="lg"
+                className="group text-base px-4 md:px-8 py-4 md:py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden max-w-full hover:scale-[1.02] transition-transform"
               >
-                <Button 
-                  onClick={handleCTA}
-                  size="lg"
-                  className="group text-base px-4 md:px-8 py-4 md:py-6 bg-primary hover:bg-primary/90 glow-pulse relative overflow-hidden max-w-full"
-                >
-                  <span className="relative z-10 flex items-center justify-center text-center whitespace-normal">
-                    <span>Agendar Consultoria de Implementação</span>
-                    <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </Button>
-              </motion.div>
+                <span className="relative z-10 flex items-center justify-center text-center whitespace-normal">
+                  <span>Agendar Consultoria de Implementação</span>
+                  <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0 group-hover:translate-x-2 transition-transform duration-300" />
+                </span>
+              </Button>
             </motion.div>
           </div>
         </div>
@@ -102,21 +71,22 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
           <div className="grid md:grid-cols-5 gap-8">
             {/* Logo & Description */}
             <div className="md:col-span-2">
-              <motion.a 
+              <a 
                 href="/" 
                 onClick={(e) => { e.preventDefault(); scrollToTop(); }} 
-                className="inline-flex items-center gap-3 mb-4"
-                whileHover={{ scale: 1.05 }}
+                className="inline-flex items-center gap-3 mb-4 hover:scale-105 transition-transform"
               >
                 <img 
                   src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" 
                   alt="SENVIA" 
                   className="h-8"
+                  width="32"
+                  height="32"
                 />
                 <span className="text-xl font-bold gradient-text-animated">
                   SENVIA
                 </span>
-              </motion.a>
+              </a>
               <p className="text-sm text-muted-foreground max-w-sm">
                 Eliminamos o ruído das vendas. Infraestrutura e Inteligência para negócios que querem escalar.
               </p>
@@ -124,20 +94,16 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
               {/* Social Links */}
               <div className="flex gap-4 mt-6">
                 {socialLinks.map((social, index) => (
-                  <motion.a
+                  <a
                     key={index}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-all"
-                    whileHover={{ scale: 1.2, rotate: 10 }}
-                    whileTap={{ scale: 0.9 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
+                    aria-label={social.label}
+                    className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-primary/20 hover:scale-110 transition-all"
                   >
                     <social.icon className="h-5 w-5" />
-                  </motion.a>
+                  </a>
                 ))}
               </div>
             </div>
@@ -151,18 +117,11 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
                   { label: "Chatbots", to: "/chatbots" },
                   { label: "Softwares", to: "/softwares" },
                 ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Link
-                      to={item.to}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
+                  <li key={index} className="hover:translate-x-1 transition-transform">
+                    <Link to={item.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                       {item.label}
                     </Link>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -171,37 +130,26 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Empresa</h4>
               <ul className="space-y-3">
-                <motion.li whileHover={{ x: 5 }}>
-                  <Link
-                    to="/sobre-nos"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                <li className="hover:translate-x-1 transition-transform">
+                  <Link to="/sobre-nos" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     Sobre Nós
                   </Link>
-                </motion.li>
+                </li>
                 <li>
                   <span className="text-sm text-muted-foreground/50 cursor-default">
                     Carreiras / Parceiros
                   </span>
                 </li>
-                <motion.li whileHover={{ x: 5 }}>
-                  <a
-                    href="https://app.senvia.pt"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                <li className="hover:translate-x-1 transition-transform">
+                  <a href="https://app.senvia.pt" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     Área de Cliente
                   </a>
-                </motion.li>
-                <motion.li whileHover={{ x: 5 }}>
-                  <button
-                    onClick={handleCTA}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
+                </li>
+                <li className="hover:translate-x-1 transition-transform">
+                  <button onClick={handleCTA} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                     Contacto
                   </button>
-                </motion.li>
+                </li>
               </ul>
             </div>
 
@@ -215,25 +163,17 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
                   { label: "Política de Cookies", to: "/politica-cookies" },
                   { label: "Livro de Reclamações", href: "https://www.livroreclamacoes.pt/" },
                 ].map((item, index) => (
-                  <motion.li key={index} whileHover={{ x: 5 }}>
+                  <li key={index} className="hover:translate-x-1 transition-transform">
                     {item.to ? (
-                      <Link
-                        to={item.to}
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                      >
+                      <Link to={item.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                         {item.label}
                       </Link>
                     ) : (
-                      <a
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                      >
+                      <a href={item.href} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                         {item.label}
                       </a>
                     )}
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -250,19 +190,13 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
                 Leiria, Portugal
               </p>
             </div>
-            <motion.button
+            <button
               onClick={scrollToTop}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
-              whileHover={{ y: -3 }}
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group hover:-translate-y-1"
             >
               Voltar ao topo 
-              <motion.span
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <ArrowUp className="h-4 w-4" />
-              </motion.span>
-            </motion.button>
+              <ArrowUp className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>

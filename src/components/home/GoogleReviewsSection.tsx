@@ -131,9 +131,12 @@ const GoogleReviewsSection = () => {
                 <div className="flex items-center gap-3 mb-4">
                   {review.photoUrl ? (
                     <img 
-                      src={review.photoUrl} 
+                      src={review.photoUrl.replace('=s128', '=s80')} 
                       alt={review.name}
                       className="w-10 h-10 rounded-full object-cover"
+                      width="40"
+                      height="40"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">

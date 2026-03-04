@@ -1,36 +1,41 @@
 
 
-# Otimização de Performance — Página SENVIA OS
+# Passar `fbclid` nos CTAs da página SENVIA OS
 
-A página já segue boas práticas (HTML nativo, sem framer-motion, lazy loading, GTM diferido). Aqui estão as otimizações adicionais que ainda podem ser feitas:
+## Contexto
 
-## 1. Lazy load das secções below-the-fold
+A página `/senvia-os` tem 4 locais com links para `app.senvia.pt`:
+1. **OSHeroSection** — botão "Começar os meus 14 Dias Grátis" (`<a href>`)
+2. **OSFinalCTASection** — botão "Criar a Minha Conta Gratuita Agora" (`<a href>`)
+3. **Home2Navbar** — botão "Começar Teste Grátis" (2x: desktop + mobile) (`<a href>`)
 
-Atualmente todas as 5 secções são importadas estaticamente em `Home.tsx`. Apenas a Hero precisa de estar no bundle inicial — as restantes (Process, Benefits, FAQ, CTA Final) e o Footer podem ser lazy-loaded com `React.lazy`.
+Todos usam `<a href="https://app.senvia.pt/">` estático. É necessário capturar o `fbclid` da URL actual e passá-lo para `app.senvia.pt/?tab=signup&fbclid=...`.
 
-## 2. Eliminar o import de `lucide-react` na Hero
+## Plano
 
-O `CheckCircle` na Hero é um ícone simples. Substituí-lo por um SVG inline elimina o chunk do lucide-react do caminho crítico. O mesmo para `Smartphone`, `Cpu`, `CheckCircle` no ProcessSection e `Users`, `Shield` no BenefitsSection — mas esses já estarão lazy-loaded.
+### 1. Criar helper `getSignupUrl()` (`src/utils/getSignupUrl.ts`)
 
-## 3. Preload da imagem Hero
+Função utilitária reutilizável:
 
-Adicionar `<link rel="preload">` na tag `<Helmet>` para a imagem `foto-senvia-os.png` melhora o LCP, pois o browser começa a descarregar a imagem antes de processar o React.
+```ts
+export const getSignupUrl = (): string => {
+  const fbclid = new URLSearchParams(window.location.search).get('fbclid');
+  const base = 'https://app.senvia.pt/?tab=signup';
+  return fbclid ? `${base}&fbclid=${encodeURIComponent(fbclid)}` : base;
+};
+```
 
-## 4. Adicionar `width` e `height` explícitos à imagem Hero
+### 2. Alterar os 3 componentes
 
-Para evitar CLS (Cumulative Layout Shift), adicionar dimensões explícitas ao `<img>` da Hero e ao logo da Navbar.
+Converter os `<a href="...">` estáticos em `<a>` com `onClick` handler que usa `getSignupUrl()`:
 
-## 5. Remover os blobs de background da Hero
+- **`OSHeroSection.tsx`** — substituir `href` fixo por `onClick={() => window.open(getSignupUrl(), '_blank')}`
+- **`OSFinalCTASection.tsx`** — idem
+- **`Home2Navbar.tsx`** — idem nos 2 links (desktop + mobile)
 
-Os dois `div` com `blur-[120px]` e `blur-[100px]` forçam composite layers caros. Substituí-los por um gradiente CSS simples no próprio `<section>` reduz o trabalho de GPU.
-
-## 6. Navbar — remover o ícone `Sparkles` do lucide
-
-Substituir por um SVG inline ou emoji para evitar carregar lucide no caminho crítico da Navbar.
-
-## Ficheiros a alterar
-
-- `src/pages/Home.tsx` — lazy load das secções below-the-fold + preload da imagem
-- `src/components/senvia-os/OSHeroSection.tsx` — SVG inline para CheckCircle, dimensões na imagem, gradiente em vez de blobs
-- `src/components/home2/Home2Navbar.tsx` — SVG inline para Sparkles
+### Ficheiros alterados
+- `src/utils/getSignupUrl.ts` (novo)
+- `src/components/senvia-os/OSHeroSection.tsx`
+- `src/components/senvia-os/OSFinalCTASection.tsx`
+- `src/components/home2/Home2Navbar.tsx`
 

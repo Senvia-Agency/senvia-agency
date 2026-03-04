@@ -16,7 +16,7 @@ const Home = () => {
         <title>SENVIA OS — Sistema para Agências de Telecomunicações e Energia</title>
         <meta name="description" content="Calcule comissões, múltiplos e estornos de forma 100% automática. O sistema definitivo para agências de telecomunicações e energia." />
         <link rel="canonical" href="https://www.senvia.pt/senvia-os" />
-        <link rel="preload" as="image" href="/lovable-uploads/foto-senvia-os.png" />
+        <link rel="preload" as="image" href="/images/mockup-senvia-os.svg" />
         <meta property="og:title" content="SENVIA OS — Sistema para Agências de Telecomunicações e Energia" />
         <meta property="og:description" content="Calcule comissões, múltiplos e estornos de forma 100% automática. Tranque a sua margem de lucro sem erros humanos." />
         <meta property="og:type" content="website" />

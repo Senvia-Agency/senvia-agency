@@ -1,5 +1,6 @@
 import { ArrowRight, Bot, Code2, Cpu, Globe } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
@@ -19,7 +20,7 @@ const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: strin
 };
 
 const SenviaHeroSection = () => {
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
   const scrollToServices = () => document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' });
 
   return (

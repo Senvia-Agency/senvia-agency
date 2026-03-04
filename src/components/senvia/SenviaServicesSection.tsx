@@ -2,6 +2,7 @@ import { Code2, Globe, Cpu, Rocket, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const services = [
   {
@@ -46,7 +47,7 @@ const services = [
 const SenviaServicesSection = () => {
   const { ref, isIntersecting: isInView } = useIntersectionObserver({ threshold: 0.1 });
 
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
 
   return (
     <section id="servicos" className="py-24 md:py-32 relative overflow-hidden bg-background" ref={ref}>

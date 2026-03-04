@@ -1,5 +1,10 @@
-export const getSignupUrl = (): string => {
+export const getAppUrl = (path: string): string => {
   const fbclid = new URLSearchParams(window.location.search).get('fbclid');
-  const base = 'https://app.senvia.pt/?tab=signup';
-  return fbclid ? `${base}&fbclid=${encodeURIComponent(fbclid)}` : base;
+  const url = new URL(path, 'https://app.senvia.pt');
+  if (fbclid) url.searchParams.set('fbclid', fbclid);
+  return url.toString();
+};
+
+export const getSignupUrl = (): string => {
+  return getAppUrl('/?tab=signup');
 };

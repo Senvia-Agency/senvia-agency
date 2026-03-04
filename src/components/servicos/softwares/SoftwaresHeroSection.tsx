@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Code2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const SoftwaresHeroSection = () => {
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
 
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-background pt-24 aurora-bg">

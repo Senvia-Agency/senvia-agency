@@ -2,6 +2,7 @@ import { ArrowRight, Instagram, Facebook, Linkedin, ArrowUp } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 interface HomeFooterProps {
   hideCTA?: boolean;
@@ -10,7 +11,7 @@ interface HomeFooterProps {
 const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
   const { ref, isIntersecting: isInView } = useIntersectionObserver({ threshold: 0.1 });
 
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+  const handleCTA = () => window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const socialLinks = [
@@ -93,7 +94,7 @@ const HomeFooter = ({ hideCTA = false }: HomeFooterProps) => {
                 </li>
                 <li><span className="text-sm text-muted-foreground/50 cursor-default">Carreiras / Parceiros</span></li>
                 <li className="hover:translate-x-1 transition-transform">
-                  <a href="https://app.senvia.pt" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">Área de Cliente</a>
+                  <a href={getAppUrl('/')} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">Área de Cliente</a>
                 </li>
                 <li className="hover:translate-x-1 transition-transform">
                   <button onClick={handleCTA} className="text-sm text-muted-foreground hover:text-primary transition-colors">Contacto</button>

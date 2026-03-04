@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import SenviaNavbar from "@/components/senvia/SenviaNavbar";
 import HomeFooter from "@/components/home/HomeFooter";
 import ScrollToTop from "@/components/ScrollToTop";
+import { getAppUrl } from "@/utils/getSignupUrl";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -21,7 +22,7 @@ const staggerContainer = {
 
 const SobreNos = () => {
   const handleCTAClick = () => {
-    window.open("https://app.senvia.pt/c/senvia-agency/formulario-lp", "_blank");
+    window.open(getAppUrl("/c/senvia-agency/formulario-lp"), "_blank");
   };
 
   return (

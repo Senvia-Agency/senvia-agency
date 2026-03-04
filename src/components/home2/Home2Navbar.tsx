@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { getSignupUrl } from '@/utils/getSignupUrl';
 
 const Home2Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -64,7 +65,8 @@ const Home2Navbar = () => {
               </button>
             ))}
             <a
-              href="https://app.senvia.pt/"
+              href="https://app.senvia.pt/?tab=signup"
+              onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium px-4 py-2 hover:bg-primary/90 transition-colors"
@@ -92,7 +94,8 @@ const Home2Navbar = () => {
             ))}
             <div className="pt-2">
               <a
-                href="https://app.senvia.pt/"
+                href="https://app.senvia.pt/?tab=signup"
+                onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full rounded-md bg-primary text-primary-foreground font-medium px-4 py-3 hover:bg-primary/90 transition-colors"

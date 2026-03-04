@@ -41,20 +41,18 @@ const OSHeroSection = () => {
             </p>
           </div>
 
-          {/* Right — Image */}
-          <div className="relative hidden lg:block">
-            <div className="rounded-2xl overflow-hidden border border-border shadow-2xl">
-              <img
-                src="/lovable-uploads/foto-senvia-os.png"
-                alt="Fundador SENVIA OS a apresentar o sistema de comissões"
-                className="w-full h-[540px] object-cover object-[center_25%]"
-                width={720}
-                height={540}
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-              />
-            </div>
+          {/* Right — Mockup */}
+          <div className="relative hidden lg:flex items-center justify-center">
+            <img
+              src="/images/mockup-senvia-os.svg"
+              alt="Dashboard do SENVIA OS — sistema de gestão de comissões para agências"
+              className="w-full max-w-[640px] h-auto drop-shadow-2xl"
+              width={640}
+              height={480}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </div>

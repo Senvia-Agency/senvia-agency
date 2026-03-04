@@ -1,3 +1,5 @@
+import { getSignupUrl } from '@/utils/getSignupUrl';
+
 const OSFinalCTASection = () => {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden bg-foreground">
@@ -10,7 +12,8 @@ const OSFinalCTASection = () => {
         </h2>
 
         <a
-          href="https://app.senvia.pt/"
+          href="https://app.senvia.pt/?tab=signup"
+          onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold text-lg px-10 py-5 hover:bg-primary/90 transition-colors"

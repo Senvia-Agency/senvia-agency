@@ -1,3 +1,5 @@
+import { getSignupUrl } from '@/utils/getSignupUrl';
+
 const OSHeroSection = () => {
   return (
     <section
@@ -24,7 +26,8 @@ const OSHeroSection = () => {
             </p>
 
             <a
-              href="https://app.senvia.pt/"
+              href="https://app.senvia.pt/?tab=signup"
+              onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold text-base px-8 py-4 hover:bg-primary/90 transition-colors"

@@ -2,6 +2,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Flame, Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 // Animated Counter Component
 const AnimatedCounter = ({ value, suffix = '' }: { value: string; suffix?: string }) => {
@@ -100,7 +101,7 @@ const HeroSection = () => {
   }, [mouseX, mouseY]);
 
   const handleCTA = () => {
-    window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+    window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
   };
 
   return (

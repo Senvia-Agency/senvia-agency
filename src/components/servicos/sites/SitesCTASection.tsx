@@ -2,11 +2,12 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const SitesCTASection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const handleCTA = () => window.open('https://app.senvia.pt/c/senvia-agency/formulario-site', '_blank');
+  const handleCTA = () => window.open(getAppUrl('/c/senvia-agency/formulario-site'), '_blank');
 
   return (
     <section className="py-24 md:py-32 relative overflow-hidden" ref={ref}>

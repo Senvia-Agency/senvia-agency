@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const HomeNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,7 +27,7 @@ const HomeNavbar = () => {
   };
 
   const handleCTA = () => {
-    window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+    window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
   };
 
   const navItems = [
@@ -94,7 +95,7 @@ const HomeNavbar = () => {
               </motion.button>
             ))}
             <motion.a
-              href="https://app.senvia.pt"
+              href={getAppUrl('/')}
               target="_blank"
               rel="noopener noreferrer"
               className="relative text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
@@ -199,7 +200,7 @@ const HomeNavbar = () => {
                   </motion.button>
                 ))}
                 <motion.a
-                  href="https://app.senvia.pt"
+                  href={getAppUrl('/')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-muted-foreground hover:text-foreground hover:bg-primary/5 transition-all py-3 px-4 rounded-lg"

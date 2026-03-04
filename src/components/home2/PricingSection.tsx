@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Check, X, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 interface Feature {
   name: string;
@@ -117,7 +118,7 @@ const PricingSection = () => {
 
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Button
-                  onClick={() => window.open('https://app.senvia.pt/', '_blank')}
+                  onClick={() => window.open(getAppUrl('/'), '_blank')}
                   className={`w-full py-6 text-base font-semibold ${
                     plan.popular
                       ? 'bg-primary hover:bg-primary/90 glow-pulse'

@@ -1,4 +1,4 @@
-import { getSignupUrl } from '@/utils/getSignupUrl';
+import { getAppUrl, getSignupUrl } from '@/utils/getSignupUrl';
 
 const OSFinalCTASection = () => {
   return (
@@ -12,7 +12,7 @@ const OSFinalCTASection = () => {
         </h2>
 
         <a
-          href="https://app.senvia.pt/?tab=signup"
+          href={getSignupUrl()}
           onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
           target="_blank"
           rel="noopener noreferrer"

@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Code2, Globe, Cpu, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getAppUrl } from '@/utils/getSignupUrl';
 
 const services = [
   {
@@ -29,7 +30,7 @@ const SoftwareHouseSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const handleCTA = () => {
-    window.open('https://app.senvia.pt/c/senvia-agency/formulario-lp', '_blank');
+    window.open(getAppUrl('/c/senvia-agency/formulario-lp'), '_blank');
   };
 
   return (

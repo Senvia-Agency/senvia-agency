@@ -24,37 +24,19 @@ const OSBenefitsSection = () => {
           </h2>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-          {/* Left — Founder photo */}
-          <div className="hidden lg:block">
-            <div className="rounded-2xl overflow-hidden border border-border shadow-xl">
-              <img
-                src="/lovable-uploads/foto-senvia-os.png"
-                alt="Fundador SENVIA OS a apresentar o sistema de comissões"
-                className="w-full h-[480px] object-cover object-[center_25%]"
-                width={560}
-                height={480}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-
-          {/* Right — Benefit cards */}
-          <div className="flex flex-col gap-8">
-            {benefits.map((b) => (
-              <div
-                key={b.title}
-                className="p-8 md:p-10 rounded-2xl border border-border bg-card hover:border-primary/40 transition-colors duration-300"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                  <b.icon className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">{b.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{b.desc}</p>
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {benefits.map((b) => (
+            <div
+              key={b.title}
+              className="p-8 md:p-10 rounded-2xl border border-border bg-card hover:border-primary/40 transition-colors duration-300"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                <b.icon className="w-7 h-7 text-primary" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-2xl font-bold text-foreground mb-4">{b.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{b.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

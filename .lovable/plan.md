@@ -1,41 +1,26 @@
 
 
-# Passar `fbclid` nos CTAs da página SENVIA OS
+# Substituir imagem da Hero por Mockup + Reposicionar foto do fundador
 
-## Contexto
+## O que muda
 
-A página `/senvia-os` tem 4 locais com links para `app.senvia.pt`:
-1. **OSHeroSection** — botão "Começar os meus 14 Dias Grátis" (`<a href>`)
-2. **OSFinalCTASection** — botão "Criar a Minha Conta Gratuita Agora" (`<a href>`)
-3. **Home2Navbar** — botão "Começar Teste Grátis" (2x: desktop + mobile) (`<a href>`)
+### 1. Copiar o mockup para o projeto
+Copiar `user-uploads://mockup.svg` para `public/images/mockup-senvia-os.svg`.
 
-Todos usam `<a href="https://app.senvia.pt/">` estático. É necessário capturar o `fbclid` da URL actual e passá-lo para `app.senvia.pt/?tab=signup&fbclid=...`.
+### 2. Hero Section — usar o mockup
+No `OSHeroSection.tsx`, substituir a imagem actual (`foto-senvia-os.png`) pelo mockup SVG. O mockup ficará no lado direito da Hero, sem crop (`object-contain`), com sombra e sem border-radius excessivo para manter o aspecto de produto/dashboard.
 
-## Plano
+### 3. Nova secção com a foto do fundador
+Criar uma secção de credibilidade/prova social entre a Hero e o ProcessSection — uma secção simples com a foto do homem à esquerda e um bloco de texto à direita (quem é, missão da SENVIA OS). Isto reforça a confiança e aproveita a imagem que já existia.
 
-### 1. Criar helper `getSignupUrl()` (`src/utils/getSignupUrl.ts`)
+Alternativa mais simples: colocar a foto na secção de Benefícios como elemento visual lateral, transformando-a num layout 2 colunas (imagem + cards).
 
-Função utilitária reutilizável:
-
-```ts
-export const getSignupUrl = (): string => {
-  const fbclid = new URLSearchParams(window.location.search).get('fbclid');
-  const base = 'https://app.senvia.pt/?tab=signup';
-  return fbclid ? `${base}&fbclid=${encodeURIComponent(fbclid)}` : base;
-};
-```
-
-### 2. Alterar os 3 componentes
-
-Converter os `<a href="...">` estáticos em `<a>` com `onClick` handler que usa `getSignupUrl()`:
-
-- **`OSHeroSection.tsx`** — substituir `href` fixo por `onClick={() => window.open(getSignupUrl(), '_blank')}`
-- **`OSFinalCTASection.tsx`** — idem
-- **`Home2Navbar.tsx`** — idem nos 2 links (desktop + mobile)
+### 4. Preload
+Atualizar o `<link rel="preload">` em `Home.tsx` para apontar para o novo mockup SVG em vez da foto.
 
 ### Ficheiros alterados
-- `src/utils/getSignupUrl.ts` (novo)
-- `src/components/senvia-os/OSHeroSection.tsx`
-- `src/components/senvia-os/OSFinalCTASection.tsx`
-- `src/components/home2/Home2Navbar.tsx`
+- `public/images/mockup-senvia-os.svg` (novo — cópia do upload)
+- `src/components/senvia-os/OSHeroSection.tsx` — mockup no lugar da foto
+- `src/components/senvia-os/OSBenefitsSection.tsx` — adicionar a foto do fundador como elemento visual (layout 2 colunas: imagem + cards)
+- `src/pages/Home.tsx` — atualizar preload
 

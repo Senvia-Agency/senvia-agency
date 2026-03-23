@@ -132,7 +132,7 @@ export const useRecurringStats = () => {
     queryFn: async () => {
       console.log('Buscando estatísticas de recorrências...');
       
-      const { data, error } = await supabase.rpc('get_recurring_stats');
+      const { data, error } = await supabase.rpc('get_recurring_stats' as any);
 
       if (error) {
         console.error('Erro ao buscar estatísticas:', error);

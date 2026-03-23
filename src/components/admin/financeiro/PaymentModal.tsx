@@ -347,6 +347,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
       const { error: movementError } = await supabase
         .from('financial_movements')
         .insert({
+          type: 'receita',
           movement_type: 'receita',
           category: 'vendas',
           description: movementDescription,
@@ -355,7 +356,7 @@ const PaymentModal = ({ account, isOpen, onClose }: PaymentModalProps) => {
           customer_id: account.customer_id,
           movement_date: paymentDate,
           notes: notes || `Pagamento ${isFullyPaid ? 'total' : 'parcial'} ${referenceNumber ? `da venda ${referenceNumber}` : ''}. Cliente: ${account.customer_name}. Método: ${paymentMethod}${overpayment > 0 ? `. Gorjeta: €${overpayment.toFixed(2)}` : ''}`
-        });
+        } as any);
 
       if (movementError) throw movementError;
 

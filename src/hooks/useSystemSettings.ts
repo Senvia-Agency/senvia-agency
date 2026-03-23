@@ -4,10 +4,12 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface SystemSetting {
   id: string;
-  setting_key: string;
-  setting_value: any;
-  setting_type: string;
-  description: string;
+  key: string;
+  value: any;
+  setting_key?: string;
+  setting_value?: any;
+  setting_type?: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }

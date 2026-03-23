@@ -89,7 +89,7 @@ const WebhookSetup = () => {
         .single();
 
       if (data?.settings_value) {
-        setCustomWebhooks(data.settings_value as WebhookConfig[]);
+        setCustomWebhooks(data.settings_value as unknown as WebhookConfig[]);
       }
     } catch (error) {
       console.log('No webhooks found yet');

@@ -46,9 +46,11 @@ export const useCreateEntityContact = () => {
 
   return useMutation({
     mutationFn: async (contact: Omit<EntityContact, 'id' | 'created_at' | 'updated_at' | 'assigned_at'>) => {
+      const { contact_person, ...rest } = contact;
+      const insertData = { ...rest, contact_name: contact_person || contact.contact_name || '' };
       const { data, error } = await supabase
         .from('entity_contacts')
-        .insert(contact)
+        .insert(insertData as any)
         .select()
         .single();
 

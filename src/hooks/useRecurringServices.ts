@@ -140,7 +140,7 @@ export const useRecurringStats = () => {
       }
 
       console.log('Estatísticas obtidas:', data);
-      return data[0] as RecurringStats;
+      return (data as any)?.[0] as RecurringStats;
     },
     staleTime: 0,
     refetchOnWindowFocus: true,

@@ -132,7 +132,7 @@ export const useRecurringStats = () => {
     queryFn: async () => {
       console.log('Buscando estatísticas de recorrências...');
       
-      const { data, error } = await supabase.rpc('get_recurring_stats');
+      const { data, error } = await supabase.rpc('get_recurring_stats' as any);
 
       if (error) {
         console.error('Erro ao buscar estatísticas:', error);
@@ -140,7 +140,7 @@ export const useRecurringStats = () => {
       }
 
       console.log('Estatísticas obtidas:', data);
-      return data[0] as RecurringStats;
+      return (data as any)?.[0] as RecurringStats;
     },
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -294,7 +294,7 @@ export const useGenerateRecurringReceivables = () => {
     mutationFn: async () => {
       console.log('Gerando contas recorrentes...');
       
-      const { data, error } = await supabase.rpc('generate_recurring_receivables');
+      const { data, error } = await supabase.rpc('generate_recurring_receivables' as any);
 
       if (error) {
         console.error('Erro ao gerar contas recorrentes:', error);

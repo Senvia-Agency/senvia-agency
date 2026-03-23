@@ -42,9 +42,16 @@ export const useCreateActivity = () => {
 
   return useMutation({
     mutationFn: async (activity: Omit<ActivityHistory, 'id' | 'created_at' | 'updated_at'>) => {
+      const { activity_type, title, contact_person, contact_method, created_by, ...rest } = activity;
+      const insertData = {
+        ...rest,
+        action: activity_type || 'note',
+        performed_by: created_by || null,
+        metadata: { ...(activity.metadata || {}), contact_person, contact_method },
+      };
       const { data, error } = await supabase
         .from('activity_history')
-        .insert(activity)
+        .insert(insertData as any)
         .select()
         .single();
 

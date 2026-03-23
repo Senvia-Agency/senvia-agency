@@ -89,7 +89,7 @@ const WebhookSetup = () => {
         .single();
 
       if (data?.settings_value) {
-        setCustomWebhooks(data.settings_value as WebhookConfig[]);
+        setCustomWebhooks(data.settings_value as unknown as WebhookConfig[]);
       }
     } catch (error) {
       console.log('No webhooks found yet');
@@ -103,8 +103,8 @@ const WebhookSetup = () => {
         .upsert({
           admin_user_id: (await supabase.auth.getUser()).data.user?.id,
           settings_key: 'custom_webhooks',
-          settings_value: webhooks
-        });
+          settings_value: webhooks as any
+        } as any);
 
       if (error) throw error;
       setCustomWebhooks(webhooks);

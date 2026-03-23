@@ -4,10 +4,12 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface SystemSetting {
   id: string;
-  setting_key: string;
-  setting_value: any;
-  setting_type: string;
-  description: string;
+  key: string;
+  value: any;
+  setting_key?: string;
+  setting_value?: any;
+  setting_type?: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }
@@ -24,7 +26,7 @@ export const useSystemSettings = () => {
       const { data, error } = await supabase
         .from('system_settings')
         .select('*')
-        .order('setting_type', { ascending: true });
+        .order('key', { ascending: true });
       
       if (error) {
         console.error('Erro ao buscar configurações:', error);
@@ -32,7 +34,7 @@ export const useSystemSettings = () => {
       }
       
       console.log('Configurações encontradas:', data);
-      return data as SystemSetting[];
+      return data as unknown as SystemSetting[];
     },
   });
 
@@ -40,14 +42,14 @@ export const useSystemSettings = () => {
     mutationFn: async ({ key, value }: { key: string; value: any }) => {
       console.log('Atualizando configuração:', key, value);
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('system_settings')
         .update({ 
-          setting_value: typeof value === 'string' ? JSON.stringify(value) : value 
-        })
-        .eq('setting_key', key)
+          value: typeof value === 'string' ? JSON.stringify(value) : value 
+        } as any)
+        .eq('key', key)
         .select()
-        .single();
+        .single());
       
       if (error) {
         console.error('Erro ao atualizar configuração:', error);
@@ -79,12 +81,12 @@ export const useSystemSettings = () => {
       console.log('Atualizando múltiplas configurações:', updates);
       
       const promises = updates.map(({ key, value }) =>
-        supabase
+        (supabase
           .from('system_settings')
           .update({ 
-            setting_value: typeof value === 'string' ? JSON.stringify(value) : value 
-          })
-          .eq('setting_key', key)
+            value: typeof value === 'string' ? JSON.stringify(value) : value 
+          } as any)
+          .eq('key', key))
       );
       
       const results = await Promise.all(promises);
@@ -117,15 +119,14 @@ export const useSystemSettings = () => {
   });
 
   // Helper para obter valor de uma configuração específica
-  const getSetting = (key: string, defaultValue: any = null) => {
-    const setting = settings?.find(s => s.setting_key === key);
+  const getSetting = (settingKey: string, defaultValue: any = null) => {
+    const setting = settings?.find(s => s.key === settingKey || s.setting_key === settingKey);
     if (!setting) return defaultValue;
-    
-    // Parse JSON se necessário
+    const val = setting.value || setting.setting_value;
     try {
-      return JSON.parse(setting.setting_value);
+      return JSON.parse(val);
     } catch {
-      return setting.setting_value;
+      return val;
     }
   };
 

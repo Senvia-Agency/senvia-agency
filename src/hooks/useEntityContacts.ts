@@ -8,12 +8,13 @@ export interface EntityContact {
   id: string;
   entity_type: 'lead' | 'customer';
   entity_id: string;
-  contact_person: string;
+  contact_name: string;
+  contact_person?: string;
   contact_role?: string;
   contact_email?: string;
   contact_phone?: string;
   is_primary: boolean;
-  assigned_at: string;
+  assigned_at?: string;
   assigned_by?: string;
   notes?: string;
   created_at: string;
@@ -45,9 +46,11 @@ export const useCreateEntityContact = () => {
 
   return useMutation({
     mutationFn: async (contact: Omit<EntityContact, 'id' | 'created_at' | 'updated_at' | 'assigned_at'>) => {
+      const { contact_person, ...rest } = contact;
+      const insertData = { ...rest, contact_name: contact_person || contact.contact_name || '' };
       const { data, error } = await supabase
         .from('entity_contacts')
-        .insert(contact)
+        .insert(insertData as any)
         .select()
         .single();
 
@@ -61,12 +64,12 @@ export const useCreateEntityContact = () => {
       
       // Criar atividade no histórico
       createActivity.mutate({
-        entity_type: data.entity_type,
+        entity_type: data.entity_type as 'lead' | 'customer',
         entity_id: data.entity_id,
         activity_type: 'contact',
         title: 'Novo responsável adicionado',
-        description: `Responsável ${data.contact_person}${data.contact_role ? ` (${data.contact_role})` : ''} foi atribuído`,
-        contact_person: data.contact_person,
+        description: `Responsável ${data.contact_name}${data.contact_role ? ` (${data.contact_role})` : ''} foi atribuído`,
+        contact_person: data.contact_name,
         contact_method: 'sistema'
       });
       

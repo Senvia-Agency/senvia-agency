@@ -38,6 +38,7 @@ export const useCreateSale = () => {
         const { error: movementError } = await supabase
           .from('financial_movements')
           .insert({
+            type: 'receita',
             movement_type: 'receita',
             category: 'venda',
             description: `Pagamento venda ${data.sale_number} - ${data.service_name}`,
@@ -45,7 +46,7 @@ export const useCreateSale = () => {
             movement_date: new Date().toISOString().split('T')[0],
             customer_id: data.customer_id,
             notes: data.payment_method ? `Método: ${data.payment_method}` : null
-          });
+          } as any);
         
         if (movementError) {
           console.error('❌ [FINANCIAL] Erro ao criar movimento:', movementError);

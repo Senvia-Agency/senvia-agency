@@ -69,7 +69,7 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
         query = query.eq('email', savedEmail);
       }
 
-      const { data, error } = await query.maybeSingle();
+      const { data, error } = await query.maybeSingle() as any;
 
       if (!error && data) {
         setIsConnected(true);

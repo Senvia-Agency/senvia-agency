@@ -29,8 +29,9 @@ export const AddContactModal = ({ entityType, entityId }: AddContactModalProps) 
     await createContact.mutateAsync({
       entity_type: entityType,
       entity_id: entityId,
+      contact_name: newContact.contact_person,
       ...newContact
-    });
+    } as any);
 
     setNewContact({
       contact_person: '',

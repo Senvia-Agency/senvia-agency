@@ -70,8 +70,8 @@ export const GoogleCalendarConnect = () => {
         }
 
         // Verify the connection was saved in the database
-        const { data: integrationCheck } = await supabase
-          .from('customer_calendar_integrations')
+        const { data: integrationCheck } = await (supabase
+          .from('customer_calendar_integrations') as any)
           .select('id')
           .eq('email', emailToUse)
           .eq('provider', 'google')

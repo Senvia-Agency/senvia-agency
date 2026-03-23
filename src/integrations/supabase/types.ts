@@ -224,6 +224,7 @@ export type Database = {
           calendar_id: string | null
           created_at: string
           id: string
+          last_synced_at: string | null
           provider: string
           refresh_token: string | null
           status: string
@@ -236,6 +237,7 @@ export type Database = {
           calendar_id?: string | null
           created_at?: string
           id?: string
+          last_synced_at?: string | null
           provider?: string
           refresh_token?: string | null
           status?: string
@@ -248,6 +250,7 @@ export type Database = {
           calendar_id?: string | null
           created_at?: string
           id?: string
+          last_synced_at?: string | null
           provider?: string
           refresh_token?: string | null
           status?: string
@@ -388,6 +391,7 @@ export type Database = {
           customer_id: string
           description: string | null
           id: string
+          product_description: string | null
           product_type: string | null
           status: string
           stripe_payment_id: string | null
@@ -400,6 +404,7 @@ export type Database = {
           customer_id: string
           description?: string | null
           id?: string
+          product_description?: string | null
           product_type?: string | null
           status?: string
           stripe_payment_id?: string | null
@@ -412,6 +417,7 @@ export type Database = {
           customer_id?: string
           description?: string | null
           id?: string
+          product_description?: string | null
           product_type?: string | null
           status?: string
           stripe_payment_id?: string | null
@@ -548,6 +554,7 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          currency: string | null
           customer_id: string | null
           date: string
           description: string
@@ -565,6 +572,7 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          currency?: string | null
           customer_id?: string | null
           date?: string
           description: string
@@ -582,6 +590,7 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          currency?: string | null
           customer_id?: string | null
           date?: string
           description?: string
@@ -1360,6 +1369,7 @@ export type Database = {
           created_at: string
           customer_id: string | null
           delivered_at: string | null
+          due_date: string | null
           expected_delivery_date: string | null
           id: string
           internal_notes: string | null
@@ -1392,6 +1402,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivered_at?: string | null
+          due_date?: string | null
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null
@@ -1405,7 +1416,7 @@ export type Database = {
           recurring_start_date?: string | null
           remaining_amount?: number | null
           sale_date?: string
-          sale_number: string
+          sale_number?: string
           sale_status?: string
           service_description?: string | null
           service_id?: string | null
@@ -1424,6 +1435,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivered_at?: string | null
+          due_date?: string | null
           expected_delivery_date?: string | null
           id?: string
           internal_notes?: string | null
@@ -1687,6 +1699,7 @@ export type Database = {
         }
         Returns: string
       }
+      generate_blog_slug: { Args: { title: string }; Returns: string }
       generate_sale_number: { Args: never; Returns: string }
       is_admin: { Args: { user_id: string }; Returns: boolean }
       send_notification: {

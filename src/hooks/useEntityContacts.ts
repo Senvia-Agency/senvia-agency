@@ -8,12 +8,13 @@ export interface EntityContact {
   id: string;
   entity_type: 'lead' | 'customer';
   entity_id: string;
-  contact_person: string;
+  contact_name: string;
+  contact_person?: string;
   contact_role?: string;
   contact_email?: string;
   contact_phone?: string;
   is_primary: boolean;
-  assigned_at: string;
+  assigned_at?: string;
   assigned_by?: string;
   notes?: string;
   created_at: string;

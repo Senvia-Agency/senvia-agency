@@ -1,47 +1,35 @@
 
 
-# Diagnóstico Completo: Build Errors + Acessibilidade para LLMs
+# Carrossel de Logos de Clientes
 
-## 1. Problema Crítico: Build Errors (Bloqueante)
+## O que será feito
 
-Quando o Lovable Cloud foi ativado, foi criada uma **base de dados vazia**. O código existente referencia ~20 tabelas (`unified_leads`, `customers`, `products`, `sales`, `recurring_services`, `payments`, etc.) que não existem neste novo banco. O ficheiro `types.ts` gerado está vazio, causando centenas de erros TypeScript.
+Criar uma secção de logos de clientes com scroll automático infinito (marquee), com fundo branco para os logos ficarem bem visíveis. A secção será colocada na página principal (`SenviaHome.tsx`) entre o `StatsSection` e o `GoogleReviewsSection`.
 
-Existem **62 ficheiros de migração** no repositório (`supabase/migrations/`) que definem todas estas tabelas. Precisam de ser aplicados à nova base de dados do Cloud.
+## Componente
 
-### Solução
+Novo ficheiro: `src/components/home/ClientLogosSection.tsx`
 
-Executar todas as migrações existentes na nova base de dados. Isto irá:
-- Criar todas as tabelas necessárias (`unified_leads`, `customers`, `products`, `sales`, `recurring_services`, `recurring_receivables`, `financial_movements`, `payments`, `profiles`, `blog_posts`, `marketing_reports`, `admin_settings`, `activity_history`, `leads_ia`, `senvia_assistant_subscriptions`, `customer_subscriptions`, `entity_contacts`, `custom_services`, etc.)
-- Criar as funções, triggers e políticas RLS
-- Regenerar o `types.ts` automaticamente
-- **Resolver todos os build errors**
+- Fundo branco (`bg-white`)
+- Título: "Projetos que Confiaram na SENVIA" ou similar
+- Animação marquee CSS infinita (sem JS) — os logos deslizam continuamente da direita para a esquerda
+- Logos com altura fixa (~50-60px), espaçamento generoso
+- Links para os sites dos clientes (`target="_blank"`)
 
-Vou ler as migrações e aplicá-las sequencialmente usando a ferramenta de migração.
+## Logos
 
----
+Copiar os 4 uploads para `public/images/clients/`:
+- `logo-renascer.png` → clinicarenascer.pt
+- `logo-dracristina.png` → dracristinasousa.com
+- `logo-longev.svg` → longevstudio.com
+- `logo-tiago.png` → estudiotiagopereira.pt
 
-## 2. Acessibilidade para LLMs (Não é problema)
+## Integração
 
-Testei o vosso site e **o conteúdo é perfeitamente legível** por crawlers e LLMs:
-- A página principal (`senvia.pt/`) retorna todo o conteúdo (serviços, stats, reviews)
-- A página `/sites` retorna todo o conteúdo (tipos de sites, processo, diferenciais)
-- O `robots.txt` permite todos os crawlers
-- O `sitemap.xml` lista todas as páginas
-- Existe structured data JSON-LD
-- Existe conteúdo `<noscript>` de fallback
+Em `SenviaHome.tsx`, lazy-load o novo componente e colocá-lo entre `StatsSection` e `GoogleReviewsSection`.
 
-O site **já é acessível a LLMs**. Se há algum problema específico, pode ser uma questão de cache ou de um crawler específico que não executa JavaScript — mas os principais (Google, Bing, ChatGPT) leem o conteúdo sem problemas.
-
----
-
-## Plano de Acção
-
-### Passo 1 — Aplicar as migrações existentes
-Ler e executar as 62 migrações SQL na nova base de dados do Cloud, na ordem correcta. Isto é a prioridade máxima para o site voltar a compilar.
-
-### Passo 2 — Verificar que o build passa
-Após as migrações, o `types.ts` será regenerado com todas as tabelas e os erros desaparecerão.
-
-### Ficheiros alterados
-- Nenhum ficheiro de código alterado — apenas migrações SQL aplicadas à base de dados
+## Ficheiros alterados
+- `public/images/clients/` — 4 logos copiados
+- `src/components/home/ClientLogosSection.tsx` (novo)
+- `src/pages/SenviaHome.tsx` — adicionar a secção
 

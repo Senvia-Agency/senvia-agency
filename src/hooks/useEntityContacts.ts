@@ -64,12 +64,12 @@ export const useCreateEntityContact = () => {
       
       // Criar atividade no histórico
       createActivity.mutate({
-        entity_type: data.entity_type,
+        entity_type: data.entity_type as 'lead' | 'customer',
         entity_id: data.entity_id,
         activity_type: 'contact',
         title: 'Novo responsável adicionado',
-        description: `Responsável ${data.contact_person}${data.contact_role ? ` (${data.contact_role})` : ''} foi atribuído`,
-        contact_person: data.contact_person,
+        description: `Responsável ${data.contact_name}${data.contact_role ? ` (${data.contact_role})` : ''} foi atribuído`,
+        contact_person: data.contact_name,
         contact_method: 'sistema'
       });
       

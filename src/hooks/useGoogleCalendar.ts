@@ -125,8 +125,8 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
       if (!user && !savedEmail) throw new Error('No connection found');
 
       // Delete by user_id or email
-      let query = supabase
-        .from('customer_calendar_integrations')
+      let query = (supabase
+        .from('customer_calendar_integrations') as any)
         .delete()
         .eq('provider', 'google');
 

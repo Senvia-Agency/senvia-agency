@@ -42,14 +42,14 @@ export const useSystemSettings = () => {
     mutationFn: async ({ key, value }: { key: string; value: any }) => {
       console.log('Atualizando configuração:', key, value);
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from('system_settings')
         .update({ 
-          setting_value: typeof value === 'string' ? JSON.stringify(value) : value 
-        })
-        .eq('setting_key', key)
+          value: typeof value === 'string' ? JSON.stringify(value) : value 
+        } as any)
+        .eq('key', key)
         .select()
-        .single();
+        .single());
       
       if (error) {
         console.error('Erro ao atualizar configuração:', error);

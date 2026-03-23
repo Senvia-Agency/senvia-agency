@@ -294,7 +294,7 @@ export const useGenerateRecurringReceivables = () => {
     mutationFn: async () => {
       console.log('Gerando contas recorrentes...');
       
-      const { data, error } = await supabase.rpc('generate_recurring_receivables');
+      const { data, error } = await supabase.rpc('generate_recurring_receivables' as any);
 
       if (error) {
         console.error('Erro ao gerar contas recorrentes:', error);

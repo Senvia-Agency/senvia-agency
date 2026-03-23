@@ -24,13 +24,10 @@ const AccountsReceivableList = ({ accounts, onMarkAsPaid }: AccountsReceivableLi
       const { error } = await supabase
         .from('activity_history')
         .insert({
-          entity_type: 'sale',
+          action: 'communication',
           entity_id: account.id,
-          activity_type: 'communication',
-          title: 'Lembrete de Pagamento Enviado',
+          entity_type: 'sale',
           description: `Lembrete de pagamento enviado para ${account.customer_name}`,
-          contact_method: 'email',
-          contact_person: account.customer_name,
           metadata: {
             sale_number: account.sale_number,
             remaining_amount: account.remaining_amount,

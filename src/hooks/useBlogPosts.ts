@@ -83,9 +83,10 @@ export const useCreateBlogPost = () => {
         .from('blog_posts')
         .insert([{
           ...postData,
+          content: postData.content || '',
           slug,
           created_by: user.id
-        }])
+        } as any])
         .select()
         .single();
 

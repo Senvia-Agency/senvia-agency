@@ -232,7 +232,7 @@ export const useFinancialMovements = (dateRange?: { from?: Date; to?: Date }) =>
 
       const { data, error } = await supabase
         .from('financial_movements')
-        .insert([payload])
+        .insert([{ ...payload, type: payload.movement_type } as any])
         .select()
         .single();
 

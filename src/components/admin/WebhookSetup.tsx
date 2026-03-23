@@ -103,8 +103,8 @@ const WebhookSetup = () => {
         .upsert({
           admin_user_id: (await supabase.auth.getUser()).data.user?.id,
           settings_key: 'custom_webhooks',
-          settings_value: webhooks
-        });
+          settings_value: webhooks as any
+        } as any);
 
       if (error) throw error;
       setCustomWebhooks(webhooks);

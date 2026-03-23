@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          settings_key: string
+          settings_value: Json
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          settings_key: string
+          settings_value: Json
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          settings_key?: string
+          settings_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_settings: {
         Row: {
           billing_address: Json | null
@@ -133,6 +190,174 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          customer_id: string
+          description: string | null
+          id: string
+          status: string
+          stripe_payment_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          status?: string
+          stripe_payment_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          status?: string
+          stripe_payment_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          acquisition_date: string
+          acquisition_source: string | null
+          company_name: string | null
+          created_at: string
+          customer_status: string
+          customer_tier: string
+          email: string
+          full_name: string
+          id: string
+          main_product_service: string | null
+          notes: string | null
+          objective: string | null
+          original_lead_id: string | null
+          phone: string | null
+          project_status: string | null
+          stripe_customer_id: string | null
+          total_spent: number | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          acquisition_date?: string
+          acquisition_source?: string | null
+          company_name?: string | null
+          created_at?: string
+          customer_status?: string
+          customer_tier?: string
+          email: string
+          full_name: string
+          id?: string
+          main_product_service?: string | null
+          notes?: string | null
+          objective?: string | null
+          original_lead_id?: string | null
+          phone?: string | null
+          project_status?: string | null
+          stripe_customer_id?: string | null
+          total_spent?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          acquisition_date?: string
+          acquisition_source?: string | null
+          company_name?: string | null
+          created_at?: string
+          customer_status?: string
+          customer_tier?: string
+          email?: string
+          full_name?: string
+          id?: string
+          main_product_service?: string | null
+          notes?: string | null
+          objective?: string | null
+          original_lead_id?: string | null
+          phone?: string | null
+          project_status?: string | null
+          stripe_customer_id?: string | null
+          total_spent?: number | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_original_lead_id_fkey"
+            columns: ["original_lead_id"]
+            isOneToOne: false
+            referencedRelation: "unified_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_movements: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          customer_id: string | null
+          date: string
+          description: string
+          id: string
+          notes: string | null
+          reference_id: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          description: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          customer_id?: string | null
+          date?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_movements_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -283,6 +508,87 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_notes: {
+        Row: {
+          admin_user_id: string | null
+          completed: boolean | null
+          content: string
+          created_at: string
+          id: string
+          lead_id: string
+          lead_type: string
+          note_type: string
+          scheduled_for: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id?: string | null
+          completed?: boolean | null
+          content: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          lead_type: string
+          note_type?: string
+          scheduled_for?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string | null
+          completed?: boolean | null
+          content?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          lead_type?: string
+          note_type?: string
+          scheduled_for?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json | null
+          payment_type: string | null
+          status: string
+          stripe_payment_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: string
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          payment_type?: string | null
+          status?: string
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       product_plans: {
         Row: {
           created_at: string
@@ -344,39 +650,51 @@ export type Database = {
       }
       products: {
         Row: {
+          active: boolean | null
           category: string
           created_at: string
           description: string | null
           features: Json | null
           id: string
+          images: string[] | null
           metadata: Json | null
           name: string
           pricing_model: string
+          service_type: string | null
           status: string
+          stripe_product_id: string | null
           updated_at: string
         }
         Insert: {
+          active?: boolean | null
           category: string
           created_at?: string
           description?: string | null
           features?: Json | null
           id?: string
+          images?: string[] | null
           metadata?: Json | null
           name: string
           pricing_model?: string
+          service_type?: string | null
           status?: string
+          stripe_product_id?: string | null
           updated_at?: string
         }
         Update: {
+          active?: boolean | null
           category?: string
           created_at?: string
           description?: string | null
           features?: Json | null
           id?: string
+          images?: string[] | null
           metadata?: Json | null
           name?: string
           pricing_model?: string
+          service_type?: string | null
           status?: string
+          stripe_product_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -411,6 +729,141 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      unified_leads: {
+        Row: {
+          assigned_to: string | null
+          call_to_action: string | null
+          client_testimonials: string | null
+          company_name: string | null
+          competitive_advantage: string | null
+          contact_channels: Json | null
+          conversion_date: string | null
+          conversion_value: number | null
+          converted: boolean | null
+          country_code: string | null
+          created_at: string
+          data_consent: boolean | null
+          desired_style: string | null
+          email: string
+          full_name: string
+          id: string
+          interest_type: string
+          ip_address: string | null
+          last_contact: string | null
+          lead_status: string
+          logo_images: Json | null
+          main_product_service: string | null
+          next_followup: string | null
+          notes: string | null
+          objective: string | null
+          payment_status: string | null
+          phone: string | null
+          plan: string | null
+          priority: number | null
+          social_networks: string | null
+          source_page: string
+          stripe_customer_id: string | null
+          stripe_payment_id: string | null
+          stripe_session_id: string | null
+          target_audience: string | null
+          temperature: string | null
+          updated_at: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          website: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          call_to_action?: string | null
+          client_testimonials?: string | null
+          company_name?: string | null
+          competitive_advantage?: string | null
+          contact_channels?: Json | null
+          conversion_date?: string | null
+          conversion_value?: number | null
+          converted?: boolean | null
+          country_code?: string | null
+          created_at?: string
+          data_consent?: boolean | null
+          desired_style?: string | null
+          email: string
+          full_name: string
+          id?: string
+          interest_type: string
+          ip_address?: string | null
+          last_contact?: string | null
+          lead_status?: string
+          logo_images?: Json | null
+          main_product_service?: string | null
+          next_followup?: string | null
+          notes?: string | null
+          objective?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          plan?: string | null
+          priority?: number | null
+          social_networks?: string | null
+          source_page: string
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          target_audience?: string | null
+          temperature?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          website?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          call_to_action?: string | null
+          client_testimonials?: string | null
+          company_name?: string | null
+          competitive_advantage?: string | null
+          contact_channels?: Json | null
+          conversion_date?: string | null
+          conversion_value?: number | null
+          converted?: boolean | null
+          country_code?: string | null
+          created_at?: string
+          data_consent?: boolean | null
+          desired_style?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          interest_type?: string
+          ip_address?: string | null
+          last_contact?: string | null
+          lead_status?: string
+          logo_images?: Json | null
+          main_product_service?: string | null
+          next_followup?: string | null
+          notes?: string | null
+          objective?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          plan?: string | null
+          priority?: number | null
+          social_networks?: string | null
+          source_page?: string
+          stripe_customer_id?: string | null
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          target_audience?: string | null
+          temperature?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          website?: string | null
         }
         Relationships: []
       }

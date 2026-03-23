@@ -1,55 +1,47 @@
 
 
-# Passar `fbclid` em TODOS os CTAs do site que apontam para app.senvia.pt
+# Diagnóstico Completo: Build Errors + Acessibilidade para LLMs
 
-## Situação actual
+## 1. Problema Crítico: Build Errors (Bloqueante)
 
-Existem dois tipos de URLs usados nos CTAs:
-- **Formulários**: `https://app.senvia.pt/c/senvia-agency/formulario-lp` e `formulario-site`
-- **Signup/Área cliente**: `https://app.senvia.pt` ou `https://app.senvia.pt/?tab=signup`
+Quando o Lovable Cloud foi ativado, foi criada uma **base de dados vazia**. O código existente referencia ~20 tabelas (`unified_leads`, `customers`, `products`, `sales`, `recurring_services`, `payments`, etc.) que não existem neste novo banco. O ficheiro `types.ts` gerado está vazio, causando centenas de erros TypeScript.
 
-O `fbclid` já é passado nos 3 componentes da SENVIA OS (`OSHeroSection`, `OSFinalCTASection`, `Home2Navbar`). Falta em **15 outros locais** espalhados pelo site.
+Existem **62 ficheiros de migração** no repositório (`supabase/migrations/`) que definem todas estas tabelas. Precisam de ser aplicados à nova base de dados do Cloud.
 
-## Plano
+### Solução
 
-### 1. Criar helper genérico `getAppUrl(path)`
+Executar todas as migrações existentes na nova base de dados. Isto irá:
+- Criar todas as tabelas necessárias (`unified_leads`, `customers`, `products`, `sales`, `recurring_services`, `recurring_receivables`, `financial_movements`, `payments`, `profiles`, `blog_posts`, `marketing_reports`, `admin_settings`, `activity_history`, `leads_ia`, `senvia_assistant_subscriptions`, `customer_subscriptions`, `entity_contacts`, `custom_services`, etc.)
+- Criar as funções, triggers e políticas RLS
+- Regenerar o `types.ts` automaticamente
+- **Resolver todos os build errors**
 
-Refactorizar `getSignupUrl.ts` para expor também uma função genérica:
+Vou ler as migrações e aplicá-las sequencialmente usando a ferramenta de migração.
 
-```ts
-export const getAppUrl = (path: string): string => {
-  const fbclid = new URLSearchParams(window.location.search).get('fbclid');
-  const url = new URL(path, 'https://app.senvia.pt');
-  if (fbclid) url.searchParams.set('fbclid', fbclid);
-  return url.toString();
-};
-```
+---
 
-`getSignupUrl()` continua a existir, usando `getAppUrl` internamente.
+## 2. Acessibilidade para LLMs (Não é problema)
 
-### 2. Actualizar todos os ficheiros com links para app.senvia.pt
+Testei o vosso site e **o conteúdo é perfeitamente legível** por crawlers e LLMs:
+- A página principal (`senvia.pt/`) retorna todo o conteúdo (serviços, stats, reviews)
+- A página `/sites` retorna todo o conteúdo (tipos de sites, processo, diferenciais)
+- O `robots.txt` permite todos os crawlers
+- O `sitemap.xml` lista todas as páginas
+- Existe structured data JSON-LD
+- Existe conteúdo `<noscript>` de fallback
 
-| Ficheiro | Quantos links | URL base |
-|---|---|---|
-| `SitesHeroSection.tsx` | 1 | `formulario-site` |
-| `SitesCTASection.tsx` | 1 | `formulario-site` |
-| `ChatbotsHeroSection.tsx` | 1 | `formulario-lp` |
-| `ChatbotsCTASection.tsx` | 1 | `formulario-lp` |
-| `SoftwaresHeroSection.tsx` | 1 | `formulario-lp` |
-| `SoftwaresCTASection.tsx` | 1 | `formulario-lp` |
-| `SenviaHeroSection.tsx` | 1 | `formulario-lp` |
-| `SenviaServicesSection.tsx` | 1 | `formulario-lp` |
-| `SenviaNavbar.tsx` | 2 | `formulario-lp` |
-| `HomeNavbar.tsx` | 3 | `formulario-lp` + área cliente |
-| `HomeFooter.tsx` | 2 | `formulario-lp` + área cliente |
-| `HeroSection.tsx` (home) | 1 | `formulario-lp` |
-| `SoftwareHouseSection.tsx` | 1 | `formulario-lp` |
-| `PricingSection.tsx` (home2) | 1 | `/` |
-| `SobreNos.tsx` | 1 | `formulario-lp` |
+O site **já é acessível a LLMs**. Se há algum problema específico, pode ser uma questão de cache ou de um crawler específico que não executa JavaScript — mas os principais (Google, Bing, ChatGPT) leem o conteúdo sem problemas.
 
-Em cada um, importar `getAppUrl` e substituir a URL hardcoded por `getAppUrl('/c/senvia-agency/formulario-lp')` (ou o path correspondente).
+---
+
+## Plano de Acção
+
+### Passo 1 — Aplicar as migrações existentes
+Ler e executar as 62 migrações SQL na nova base de dados do Cloud, na ordem correcta. Isto é a prioridade máxima para o site voltar a compilar.
+
+### Passo 2 — Verificar que o build passa
+Após as migrações, o `types.ts` será regenerado com todas as tabelas e os erros desaparecerão.
 
 ### Ficheiros alterados
-- `src/utils/getSignupUrl.ts` — adicionar `getAppUrl()`
-- 15 componentes listados acima — importar e usar `getAppUrl()`
+- Nenhum ficheiro de código alterado — apenas migrações SQL aplicadas à base de dados
 

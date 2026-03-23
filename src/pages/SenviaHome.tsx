@@ -32,6 +32,7 @@ const SenviaHome = () => {
           <SenviaServicesSection />
           <SenviaWhyUsSection />
           <StatsSection />
+          <ClientLogosSection />
           <GoogleReviewsSection />
         </Suspense>
       </main>

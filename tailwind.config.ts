@@ -151,8 +151,9 @@ export default {
 				'slide-in-right': 'slide-in-right 0.8s ease-out',
 				'slide-in-left': 'slide-in-left 0.8s ease-out',
 				'fade-in': 'fade-in 1s ease-out',
-				'rotate-slow': 'rotate-slow 15s linear infinite',
-			}
+			'rotate-slow': 'rotate-slow 15s linear infinite',
+			'marquee': 'marquee 20s linear infinite',
+		}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

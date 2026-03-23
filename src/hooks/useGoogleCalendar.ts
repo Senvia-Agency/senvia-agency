@@ -58,8 +58,8 @@ export const useGoogleCalendar = (): UseGoogleCalendar => {
       if (!user && !savedEmail) return;
 
       // Check by user_id or email
-      let query = supabase
-        .from('customer_calendar_integrations')
+      let query = (supabase
+        .from('customer_calendar_integrations') as any)
         .select('*')
         .eq('provider', 'google');
 

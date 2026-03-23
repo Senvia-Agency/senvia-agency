@@ -129,8 +129,9 @@ export const useFinancialMovements = (dateRange?: { from?: Date; to?: Date }) =>
       if (manualMovements) {
         allMovements.push(...manualMovements.map(m => ({
           ...m,
+          movement_type: m.movement_type as 'receita' | 'despesa',
           customers: m.customers
-        })));
+        } as FinancialMovement)));
       }
 
       // Adicionar transações de clientes como receitas

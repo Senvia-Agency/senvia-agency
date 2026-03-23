@@ -5,14 +5,17 @@ import { useToast } from "@/hooks/use-toast";
 export interface NotificationLog {
   id: string;
   notification_type: string;
-  recipient_email: string;
-  subject: string;
-  sent_at: string;
+  title: string;
+  data?: any;
   status: string;
+  recipient_email?: string;
+  subject?: string;
+  sent_at?: string;
   brevo_message_id?: string;
   error_message?: string;
   entity_id?: string;
   entity_type?: string;
+  created_at: string;
 }
 
 export const useNotifications = () => {

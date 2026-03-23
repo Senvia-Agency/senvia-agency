@@ -26,7 +26,7 @@ export const useSystemSettings = () => {
       const { data, error } = await supabase
         .from('system_settings')
         .select('*')
-        .order('setting_type', { ascending: true });
+        .order('key', { ascending: true });
       
       if (error) {
         console.error('Erro ao buscar configurações:', error);

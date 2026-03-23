@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_history: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+        }
+        Relationships: []
+      }
       admin_metrics: {
         Row: {
           created_at: string
@@ -68,6 +101,150 @@ export type Database = {
           settings_key?: string
           settings_value?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_name: string
+          category: string
+          content: string
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          reading_time: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string
+          category?: string
+          content: string
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      custom_services: {
+        Row: {
+          base_price: number
+          category: string
+          created_at: string
+          description: string | null
+          estimated_hours: number | null
+          id: string
+          includes_features: Json | null
+          name: string
+          pricing_model: string
+          service_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          includes_features?: Json | null
+          name: string
+          pricing_model?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: string
+          includes_features?: Json | null
+          name?: string
+          pricing_model?: string
+          service_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      customer_calendar_integrations: {
+        Row: {
+          access_token: string | null
+          calendar_id: string | null
+          created_at: string
+          id: string
+          provider: string
+          refresh_token: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          provider?: string
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          calendar_id?: string | null
+          created_at?: string
+          id?: string
+          provider?: string
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -312,6 +489,48 @@ export type Database = {
           },
         ]
       }
+      entity_contacts: {
+        Row: {
+          contact_email: string | null
+          contact_name: string
+          contact_phone: string | null
+          contact_role: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          is_primary: boolean | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name: string
+          contact_phone?: string | null
+          contact_role?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string
+          contact_phone?: string | null
+          contact_role?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       financial_movements: {
         Row: {
           amount: number
@@ -547,6 +766,168 @@ export type Database = {
         }
         Relationships: []
       }
+      leads_ia: {
+        Row: {
+          agent_conversation_status: string | null
+          company_name: string | null
+          created_at: string
+          diagnostic_answers: Json | null
+          email: string
+          full_name: string
+          id: string
+          lead_status: string
+          monthly_clients: number | null
+          notes: string | null
+          qualification_score: number | null
+          segment: string | null
+          source_page: string
+          updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          whatsapp: string
+        }
+        Insert: {
+          agent_conversation_status?: string | null
+          company_name?: string | null
+          created_at?: string
+          diagnostic_answers?: Json | null
+          email: string
+          full_name: string
+          id?: string
+          lead_status?: string
+          monthly_clients?: number | null
+          notes?: string | null
+          qualification_score?: number | null
+          segment?: string | null
+          source_page?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          whatsapp: string
+        }
+        Update: {
+          agent_conversation_status?: string | null
+          company_name?: string | null
+          created_at?: string
+          diagnostic_answers?: Json | null
+          email?: string
+          full_name?: string
+          id?: string
+          lead_status?: string
+          monthly_clients?: number | null
+          notes?: string | null
+          qualification_score?: number | null
+          segment?: string | null
+          source_page?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      marketing_reports: {
+        Row: {
+          ad_sets_count: number | null
+          campaign_name: string
+          clicks: number | null
+          client_name: string
+          conversion_rate: number | null
+          conversions: number | null
+          cost_per_conversion: number | null
+          cpc: number | null
+          created_at: string
+          created_by: string | null
+          ctr: number | null
+          id: string
+          impressions: number | null
+          notes: string | null
+          report_period_end: string
+          report_period_start: string
+          report_type: string
+          roas: number | null
+          spend: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ad_sets_count?: number | null
+          campaign_name: string
+          clicks?: number | null
+          client_name: string
+          conversion_rate?: number | null
+          conversions?: number | null
+          cost_per_conversion?: number | null
+          cpc?: number | null
+          created_at?: string
+          created_by?: string | null
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+          notes?: string | null
+          report_period_end: string
+          report_period_start: string
+          report_type?: string
+          roas?: number | null
+          spend?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ad_sets_count?: number | null
+          campaign_name?: string
+          clicks?: number | null
+          client_name?: string
+          conversion_rate?: number | null
+          conversions?: number | null
+          cost_per_conversion?: number | null
+          cpc?: number | null
+          created_at?: string
+          created_by?: string | null
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+          notes?: string | null
+          report_period_end?: string
+          report_period_start?: string
+          report_type?: string
+          roas?: number | null
+          spend?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_logs: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          notification_type: string
+          status: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          notification_type: string
+          status?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          notification_type?: string
+          status?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -732,6 +1113,386 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_receivables: {
+        Row: {
+          amount: number
+          billing_period_end: string | null
+          billing_period_start: string | null
+          created_at: string
+          customer_id: string | null
+          due_date: string
+          id: string
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          paid_date: string | null
+          payment_method: string | null
+          payment_status: string
+          recurring_service_id: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          created_at?: string
+          customer_id?: string | null
+          due_date: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          recurring_service_id: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          created_at?: string
+          customer_id?: string | null
+          due_date?: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          recurring_service_id?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_receivables_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_receivables_recurring_service_id_fkey"
+            columns: ["recurring_service_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recurring_services: {
+        Row: {
+          amount: number
+          billing_day: number
+          created_at: string
+          customer_id: string | null
+          end_date: string | null
+          id: string
+          last_billed_date: string | null
+          metadata: Json | null
+          monthly_amount: number | null
+          next_billing_date: string | null
+          recurrence_type: string
+          sale_id: string | null
+          service_description: string | null
+          service_id: string | null
+          service_name: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          billing_day?: number
+          created_at?: string
+          customer_id?: string | null
+          end_date?: string | null
+          id?: string
+          last_billed_date?: string | null
+          metadata?: Json | null
+          monthly_amount?: number | null
+          next_billing_date?: string | null
+          recurrence_type?: string
+          sale_id?: string | null
+          service_description?: string | null
+          service_id?: string | null
+          service_name: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          billing_day?: number
+          created_at?: string
+          customer_id?: string | null
+          end_date?: string | null
+          id?: string
+          last_billed_date?: string | null
+          metadata?: Json | null
+          monthly_amount?: number | null
+          next_billing_date?: string | null
+          recurrence_type?: string
+          sale_id?: string | null
+          service_description?: string | null
+          service_id?: string | null
+          service_name?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_services_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_services_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "custom_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sale_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string
+          payment_reference: string | null
+          payment_status: string
+          sale_id: string
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method: string
+          payment_reference?: string | null
+          payment_status?: string
+          sale_id: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string
+          payment_reference?: string | null
+          payment_status?: string
+          sale_id?: string
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_payments_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          assigned_to: string | null
+          commission_rate: number | null
+          created_at: string
+          customer_id: string | null
+          delivered_at: string | null
+          expected_delivery_date: string | null
+          id: string
+          internal_notes: string | null
+          is_recurring: boolean | null
+          lead_id: string | null
+          notes: string | null
+          paid_amount: number
+          payment_method: string | null
+          payment_status: string
+          recurring_billing_day: number | null
+          recurring_start_date: string | null
+          remaining_amount: number | null
+          sale_date: string
+          sale_number: string
+          sale_status: string
+          service_description: string | null
+          service_id: string | null
+          service_name: string
+          service_type: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          total_value: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          customer_id?: string | null
+          delivered_at?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          is_recurring?: boolean | null
+          lead_id?: string | null
+          notes?: string | null
+          paid_amount?: number
+          payment_method?: string | null
+          payment_status?: string
+          recurring_billing_day?: number | null
+          recurring_start_date?: string | null
+          remaining_amount?: number | null
+          sale_date?: string
+          sale_number: string
+          sale_status?: string
+          service_description?: string | null
+          service_id?: string | null
+          service_name: string
+          service_type: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          total_value?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          customer_id?: string | null
+          delivered_at?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          internal_notes?: string | null
+          is_recurring?: boolean | null
+          lead_id?: string | null
+          notes?: string | null
+          paid_amount?: number
+          payment_method?: string | null
+          payment_status?: string
+          recurring_billing_day?: number | null
+          recurring_start_date?: string | null
+          remaining_amount?: number | null
+          sale_date?: string
+          sale_number?: string
+          sale_status?: string
+          service_description?: string | null
+          service_id?: string | null
+          service_name?: string
+          service_type?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          total_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      senvia_assistant_subscriptions: {
+        Row: {
+          billing_cycle: string
+          created_at: string
+          email: string
+          end_date: string | null
+          id: string
+          plan_type: string
+          start_date: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle?: string
+          created_at?: string
+          email: string
+          end_date?: string | null
+          id?: string
+          plan_type?: string
+          start_date?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle?: string
+          created_at?: string
+          email?: string
+          end_date?: string | null
+          id?: string
+          plan_type?: string
+          start_date?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      system_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       unified_leads: {
         Row: {
           assigned_to: string | null
@@ -872,6 +1633,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_sale_number: { Args: never; Returns: string }
       is_admin: { Args: { user_id: string }; Returns: boolean }
     }
     Enums: {

@@ -5,6 +5,7 @@ const clients = [
   { name: 'Estúdio Tiago Pereira', logo: '/images/clients/logo-tiago.png', url: 'https://estudiotiagopereira.pt/' },
   { name: 'Longev Studio', logo: '/images/clients/logo-longev.svg', url: 'https://longevstudio.com/' },
   { name: 'Dra. Cristina Sousa', logo: '/images/clients/logo-dracristina.png', url: 'https://dracristinasousa.com/' },
+  { name: 'Viajar pelo Mundo', logo: '/images/clients/logo-viajarpelomundo.png', url: 'https://viajarpelomundo2.senvia.pt/' },
 ];
 
 const doubled = [...clients, ...clients];

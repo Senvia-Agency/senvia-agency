@@ -130,12 +130,16 @@ export default {
 					'0%': { opacity: '0' },
 					'100%': { opacity: '1' }
 				},
-				'rotate-slow': {
-					'0%': { transform: 'rotate(0deg)' },
-					'100%': { transform: 'rotate(360deg)' }
-				}
+			'rotate-slow': {
+				'0%': { transform: 'rotate(0deg)' },
+				'100%': { transform: 'rotate(360deg)' }
 			},
-			animation: {
+			'marquee': {
+				'0%': { transform: 'translateX(0)' },
+				'100%': { transform: 'translateX(-50%)' }
+			}
+		},
+		animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'float': 'float 6s ease-in-out infinite',
@@ -147,8 +151,9 @@ export default {
 				'slide-in-right': 'slide-in-right 0.8s ease-out',
 				'slide-in-left': 'slide-in-left 0.8s ease-out',
 				'fade-in': 'fade-in 1s ease-out',
-				'rotate-slow': 'rotate-slow 15s linear infinite',
-			}
+			'rotate-slow': 'rotate-slow 15s linear infinite',
+			'marquee': 'marquee 20s linear infinite',
+		}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

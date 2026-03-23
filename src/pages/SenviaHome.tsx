@@ -6,6 +6,7 @@ import SenviaHeroSection from '@/components/senvia/SenviaHeroSection';
 const SenviaServicesSection = lazy(() => import('@/components/senvia/SenviaServicesSection'));
 const SenviaWhyUsSection = lazy(() => import('@/components/senvia/SenviaWhyUsSection'));
 const StatsSection = lazy(() => import('@/components/home2/StatsSection'));
+const ClientLogosSection = lazy(() => import('@/components/home/ClientLogosSection'));
 const GoogleReviewsSection = lazy(() => import('@/components/home/GoogleReviewsSection'));
 const HomeFooter = lazy(() => import('@/components/home/HomeFooter'));
 
@@ -31,6 +32,7 @@ const SenviaHome = () => {
           <SenviaServicesSection />
           <SenviaWhyUsSection />
           <StatsSection />
+          <ClientLogosSection />
           <GoogleReviewsSection />
         </Suspense>
       </main>

@@ -17,6 +17,7 @@ export type Database = {
       activity_history: {
         Row: {
           action: string
+          activity_type: string | null
           created_at: string
           description: string | null
           entity_id: string
@@ -24,9 +25,12 @@ export type Database = {
           id: string
           metadata: Json | null
           performed_by: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
           action: string
+          activity_type?: string | null
           created_at?: string
           description?: string | null
           entity_id: string
@@ -34,9 +38,12 @@ export type Database = {
           id?: string
           metadata?: Json | null
           performed_by?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
           action?: string
+          activity_type?: string | null
           created_at?: string
           description?: string | null
           entity_id?: string
@@ -44,6 +51,8 @@ export type Database = {
           id?: string
           metadata?: Json | null
           performed_by?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -379,6 +388,7 @@ export type Database = {
           customer_id: string
           description: string | null
           id: string
+          product_type: string | null
           status: string
           stripe_payment_id: string | null
           updated_at: string
@@ -390,6 +400,7 @@ export type Database = {
           customer_id: string
           description?: string | null
           id?: string
+          product_type?: string | null
           status?: string
           stripe_payment_id?: string | null
           updated_at?: string
@@ -401,6 +412,7 @@ export type Database = {
           customer_id?: string
           description?: string | null
           id?: string
+          product_type?: string | null
           status?: string
           stripe_payment_id?: string | null
           updated_at?: string
@@ -540,7 +552,11 @@ export type Database = {
           date: string
           description: string
           id: string
+          is_recurring: boolean | null
+          movement_date: string | null
+          movement_type: string | null
           notes: string | null
+          payment_method: string | null
           reference_id: string | null
           type: string
           updated_at: string
@@ -553,7 +569,11 @@ export type Database = {
           date?: string
           description: string
           id?: string
+          is_recurring?: boolean | null
+          movement_date?: string | null
+          movement_type?: string | null
           notes?: string | null
+          payment_method?: string | null
           reference_id?: string | null
           type: string
           updated_at?: string
@@ -566,7 +586,11 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          is_recurring?: boolean | null
+          movement_date?: string | null
+          movement_type?: string | null
           notes?: string | null
+          payment_method?: string | null
           reference_id?: string | null
           type?: string
           updated_at?: string
@@ -1084,9 +1108,11 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          date_of_birth: string | null
           email: string | null
           full_name: string | null
           id: string
+          phone: string | null
           role: string | null
           updated_at: string
           user_id: string
@@ -1094,9 +1120,11 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          phone?: string | null
           role?: string | null
           updated_at?: string
           user_id: string
@@ -1104,9 +1132,11 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          phone?: string | null
           role?: string | null
           updated_at?: string
           user_id?: string
@@ -1353,6 +1383,7 @@ export type Database = {
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           total_value: number
+          unified_lead_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1384,6 +1415,7 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           total_value?: number
+          unified_lead_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1415,6 +1447,7 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           total_value?: number
+          unified_lead_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1423,6 +1456,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_unified_lead_id_fkey"
+            columns: ["unified_lead_id"]
+            isOneToOne: false
+            referencedRelation: "unified_leads"
             referencedColumns: ["id"]
           },
         ]
@@ -1434,6 +1474,7 @@ export type Database = {
           email: string
           end_date: string | null
           id: string
+          monthly_price: number | null
           plan_type: string
           start_date: string
           status: string
@@ -1447,6 +1488,7 @@ export type Database = {
           email: string
           end_date?: string | null
           id?: string
+          monthly_price?: number | null
           plan_type?: string
           start_date?: string
           status?: string
@@ -1460,6 +1502,7 @@ export type Database = {
           email?: string
           end_date?: string | null
           id?: string
+          monthly_price?: number | null
           plan_type?: string
           start_date?: string
           status?: string
@@ -1633,8 +1676,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      convert_lead_to_sale: {
+        Args: {
+          p_lead_id: string
+          p_notes?: string
+          p_service_id?: string
+          p_service_name?: string
+          p_service_type?: string
+          p_total_value?: number
+        }
+        Returns: string
+      }
       generate_sale_number: { Args: never; Returns: string }
       is_admin: { Args: { user_id: string }; Returns: boolean }
+      send_notification: {
+        Args: { p_data?: Json; p_title: string; p_type: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

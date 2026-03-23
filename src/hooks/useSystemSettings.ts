@@ -119,15 +119,14 @@ export const useSystemSettings = () => {
   });
 
   // Helper para obter valor de uma configuração específica
-  const getSetting = (key: string, defaultValue: any = null) => {
-    const setting = settings?.find(s => s.setting_key === key);
+  const getSetting = (settingKey: string, defaultValue: any = null) => {
+    const setting = settings?.find(s => s.key === settingKey || s.setting_key === settingKey);
     if (!setting) return defaultValue;
-    
-    // Parse JSON se necessário
+    const val = setting.value || setting.setting_value;
     try {
-      return JSON.parse(setting.setting_value);
+      return JSON.parse(val);
     } catch {
-      return setting.setting_value;
+      return val;
     }
   };
 

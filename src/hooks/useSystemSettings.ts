@@ -34,7 +34,7 @@ export const useSystemSettings = () => {
       }
       
       console.log('Configurações encontradas:', data);
-      return data as SystemSetting[];
+      return data as unknown as SystemSetting[];
     },
   });
 

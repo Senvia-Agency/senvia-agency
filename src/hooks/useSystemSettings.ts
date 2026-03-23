@@ -81,12 +81,12 @@ export const useSystemSettings = () => {
       console.log('Atualizando múltiplas configurações:', updates);
       
       const promises = updates.map(({ key, value }) =>
-        supabase
+        (supabase
           .from('system_settings')
           .update({ 
-            setting_value: typeof value === 'string' ? JSON.stringify(value) : value 
-          })
-          .eq('setting_key', key)
+            value: typeof value === 'string' ? JSON.stringify(value) : value 
+          } as any)
+          .eq('key', key))
       );
       
       const results = await Promise.all(promises);

@@ -4,9 +4,11 @@ import Home2Navbar from '@/components/home2/Home2Navbar';
 import OSHeroSection from '@/components/senvia-os/OSHeroSection';
 
 const OSProcessSection = lazy(() => import('@/components/senvia-os/OSProcessSection'));
+const OSMulticanalSection = lazy(() => import('@/components/senvia-os/OSMulticanalSection'));
 const OSBenefitsSection = lazy(() => import('@/components/senvia-os/OSBenefitsSection'));
 const OSFAQSection = lazy(() => import('@/components/senvia-os/OSFAQSection'));
 const OSFinalCTASection = lazy(() => import('@/components/senvia-os/OSFinalCTASection'));
+const ClientLogosSection = lazy(() => import('@/components/home/ClientLogosSection'));
 const HomeFooter = lazy(() => import('@/components/home/HomeFooter'));
 
 const Home = () => {
@@ -29,7 +31,9 @@ const Home = () => {
       <main>
         <OSHeroSection />
         <Suspense fallback={null}>
+          <ClientLogosSection />
           <OSProcessSection />
+          <OSMulticanalSection />
           <OSBenefitsSection />
           <OSFAQSection />
           <OSFinalCTASection />

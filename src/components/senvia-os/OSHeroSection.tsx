@@ -26,7 +26,7 @@ const OSHeroSection = () => {
             </p>
 
             <a
-              href="https://app.senvia.pt/?tab=signup"
+              href={getSignupUrl()}
               onClick={(e) => { e.preventDefault(); window.open(getSignupUrl(), '_blank', 'noopener,noreferrer'); }}
               target="_blank"
               rel="noopener noreferrer"

@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/reports/(.*)", "destination": "/reports/$1" },
-    { "source": "/((?!reports).*)", "destination": "/index.html" }
+    { "source": "/reports/:path*", "destination": "/reports/:path*" },
+    { "source": "/((?!reports/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

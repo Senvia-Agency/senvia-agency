@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Meta Ads - Conselhos e Gestão</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #F9F9F9;
+    color: #0E1628;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    background: #0E1628;
+    border-radius: 20px;
+    padding: 32px 40px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-logo {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .header-logo img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+  }
+
+  .header-info {
+    flex: 1;
+  }
+
+  .header-info h1 {
+    color: #F9F9F9;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .header-info .subtitle {
+    color: rgba(249, 249, 249, 0.6);
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .header-badge {
+    background: #02C2EB;
+    color: #0E1628;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Cards */
+  .card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(14, 22, 40, 0.06);
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0E1628;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .card-title .icon.blue { background: rgba(2, 194, 235, 0.15); color: #02C2EB; }
+  .card-title .icon.green { background: rgba(34, 197, 94, 0.15); color: #22C55E; }
+  .card-title .icon.orange { background: rgba(255, 159, 28, 0.15); color: #FF9F1C; }
+  .card-title .icon.red { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+  .card-title .icon.purple { background: rgba(168, 85, 247, 0.15); color: #A855F7; }
+
+  /* Metric Grid */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .metric {
+    background: #F9F9F9;
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .metric .value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0E1628;
+    letter-spacing: -0.5px;
+  }
+
+  .metric .value.green { color: #22C55E; }
+  .metric .value.blue { color: #02C2EB; }
+  .metric .value.orange { color: #FF9F1C; }
+  .metric .value.red { color: #EF4444; }
+
+  .metric .label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(14, 22, 40, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(14, 22, 40, 0.4);
+    border-bottom: 1px solid rgba(14, 22, 40, 0.08);
+  }
+
+  tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(14, 22, 40, 0.04);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .status-badge.active { background: rgba(34, 197, 94, 0.12); color: #22C55E; }
+  .status-badge.paused { background: rgba(255, 159, 28, 0.12); color: #FF9F1C; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: rgba(14, 22, 40, 0.06);
+    margin: 20px 0;
+  }
+
+  /* Section */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(14, 22, 40, 0.3);
+    margin-bottom: 12px;
+  }
+
+  /* List */
+  .insight-list {
+    list-style: none;
+  }
+
+  .insight-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(14, 22, 40, 0.04);
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .insight-list li:last-child { border-bottom: none; }
+
+  .insight-list li .bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .insight-list li .bullet.green { background: #22C55E; }
+  .insight-list li .bullet.red { background: #EF4444; }
+  .insight-list li .bullet.blue { background: #02C2EB; }
+  .insight-list li .bullet.orange { background: #FF9F1C; }
+
+  .insight-list li .text { flex: 1; }
+  .insight-list li .text strong { color: #0E1628; }
+
+  /* Verdict */
+  .verdict {
+    background: linear-gradient(135deg, #0E1628 0%, #1a2440 100%);
+    border-radius: 16px;
+    padding: 28px;
+    color: #F9F9F9;
+    margin-top: 16px;
+  }
+
+  .verdict h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .verdict p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(249, 249, 249, 0.85);
+  }
+
+  .verdict .highlight {
+    color: #02C2EB;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: rgba(14, 22, 40, 0.3);
+  }
+
+  .footer span { color: #02C2EB; }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 12px; }
+    .header { padding: 20px; flex-wrap: wrap; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="https://app.senvia.pt/lovable-uploads/a73ec7d1-f1a3-458c-8d12-82bca71d2d34.png" alt="SENVIA" style="filter: brightness(0) invert(1);">
+    </div>
+    <div class="header-info">
+      <h1>Relatório de Campanha</h1>
+      <div class="subtitle">Conselhos e Gestão · Visão Geral — 2 Campanhas Ativas · 29/06 a 06/07/2026</div>
+    </div>
+    <div class="header-badge">Últimos 7 dias</div>
+  </div>
+
+  <!-- Ficha Técnica -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon blue">📋</span> Ficha Técnica
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><td style="font-weight:600;width:140px">Criada em</td><td>01/08/2025 (Seguro Vida) · 23/06/2026 (Crédito Habitação)</td></tr>
+          <tr><td style="font-weight:600">Objetivo</td><td>Geração de Leads (Instant Forms + LP)</td></tr>
+          <tr><td style="font-weight:600">Orçamento</td><td>30€/dia (Seguro Vida) · 40€/dia (Crédito Habitação)</td></tr>
+          <tr><td style="font-weight:600">Gasto Total</td><td><strong>508.43€</strong></td></tr>
+          <tr><td style="font-weight:600">Período</td><td>29/06/2026 a 06/07/2026</td></tr>
+          <tr><td style="font-weight:600">Status</td><td><span class="status-badge active">Ativa</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Métricas Principais -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon green">📈</span> Métricas Principais
+    </div>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="value">508.43€</div>
+        <div class="label">Gasto</div>
+      </div>
+      <div class="metric">
+        <div class="value">59 062</div>
+        <div class="label">Impressões</div>
+      </div>
+      <div class="metric">
+        <div class="value">49 807</div>
+        <div class="label">Alcance</div>
+      </div>
+      <div class="metric">
+        <div class="value blue">1.26%</div>
+        <div class="label">CTR</div>
+      </div>
+      <div class="metric">
+        <div class="value green">0.68€</div>
+        <div class="label">CPC</div>
+      </div>
+      <div class="metric">
+        <div class="value orange">8.61€</div>
+        <div class="label">CPM</div>
+      </div>
+      <div class="metric">
+        <div class="value">1.19</div>
+        <div class="label">Frequência</div>
+      </div>
+      <div class="metric">
+        <div class="value purple">31</div>
+        <div class="label">Leads</div>
+      </div>
+      <div class="metric">
+        <div class="value red">16.40€</div>
+        <div class="label">CPL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estrutura: Ad Sets -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon blue">🎯</span> Campanhas
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ad Set</th>
+            <th>Status</th>
+            <th>Gasto</th>
+            <th>Leads</th>
+            <th>CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td><strong>CAMPANHA SEGURO VIDA CRÉDITO HABITAÇÃO</strong><br><small style="color:rgba(14,22,40,0.4)">Conselhos e Gestão · Seguro de Vida para Crédito Habitação</small></td>
+      <td><span class="status-badge active">Ativa</span></td>
+      <td>222.30€</td>
+      <td>18</td>
+      <td>12.35€</td>
+    </tr><tr>
+      <td><strong>CH | Andromeda | Leads | 40€</strong><br><small style="color:rgba(14,22,40,0.4)">Delta Capital Intermediário de Crédito · Crédito Habitação</small></td>
+      <td><span class="status-badge active">Ativa</span></td>
+      <td>286.13€</td>
+      <td>13</td>
+      <td>22.01€</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <!-- Dispositivos -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon blue">📱</span> Dispositivos
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Dispositivo</th>
+            <th>Gasto</th>
+            <th>% Gasto</th>
+            <th>Impressões</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td>Android Smartphone</td>
+      <td>359.46€</td>
+      <td>70.7%</td>
+      <td>52 254</td>
+    </tr><tr>
+      <td>iPhone</td>
+      <td>118.18€</td>
+      <td>23.2%</td>
+      <td>13 045</td>
+    </tr><tr>
+      <td>Desktop</td>
+      <td>25.26€</td>
+      <td>5.0%</td>
+      <td>3 191</td>
+    </tr><tr>
+      <td>Android Tablet</td>
+      <td>1.45€</td>
+      <td>0.3%</td>
+      <td>294</td>
+    </tr><tr>
+      <td>iPad</td>
+      <td>0.79€</td>
+      <td>0.2%</td>
+      <td>120</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Demografia -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon purple">👥</span> Distribuição por Idade
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Faixa</th>
+            <th>Gasto</th>
+            <th>Impressões</th>
+            <th>Cliques</th>
+            <th>CPC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td>25-34</td>
+      <td>68.86€</td>
+      <td>5 971</td>
+      <td>81</td>
+      <td>0.85€</td>
+    </tr><tr>
+      <td>35-44</td>
+      <td>79.95€</td>
+      <td>8 786</td>
+      <td>104</td>
+      <td>0.77€</td>
+    </tr><tr>
+      <td>45-54</td>
+      <td>149.26€</td>
+      <td>20 866</td>
+      <td>221</td>
+      <td>0.68€</td>
+    </tr><tr>
+      <td>55-64</td>
+      <td>137.15€</td>
+      <td>23 786</td>
+      <td>291</td>
+      <td>0.47€</td>
+    </tr><tr>
+      <td>65+</td>
+      <td>60.55€</td>
+      <td>8 482</td>
+      <td>133</td>
+      <td>0.46€</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <!-- Insights -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon green">💡</span> O Que Está a Funcionar
+    </div>
+    <ul class="insight-list">
+      <li><span class="bullet green"></span><span class="text"><strong>Seguro Vida (Conselhos e Gestão):</strong> 18 leads em 7 dias com CPL de 12.35€. CTR de 1.14% e CPM de 4.82€. Campanha madura e estável.</span></li><li><span class="bullet green"></span><span class="text"><strong>Crédito Habitação (Delta Capital):</strong> 13 leads em 7 dias. CTR de 1.39% (acima da média do setor). Campanha recente (23/06) ainda em fase de otimização.</span></li><li><span class="bullet green"></span><span class="text"><strong>Faixa 55-64 anos</strong> é a que traz mais cliques (291) com CPC de 0.47€ (o mais baixo).</span></li><li><span class="bullet blue"></span><span class="text"><strong>Android Smartphone</strong> representa 71% do gasto e é onde está a maioria dos cliques.</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span class="icon red">🚩</span> O Que Me Preocupa
+    </div>
+    <ul class="insight-list">
+      <li><span class="bullet orange"></span><span class="text"><strong>Seguro Vida:</strong> Frequência de 1.52. Público a começar a ver o mesmo anúncio. Considerar rodar criativos em breve.</span></li><li><span class="bullet orange"></span><span class="text"><strong>Crédito Habitação:</strong> Frequência de 1.65. Campanha recente mas já com alguma fadiga. CPL atual de 22.01€, acima do target de ~20€.</span></li><li><span class="bullet orange"></span><span class="text"><strong>Faixa 25-34</strong> tem CPC de 0.85€ (o mais alto) e poucos cliques. Possível desperdício de orçamento em ambas as campanhas.</span></li>
+    </ul>
+  </div>
+
+  <!-- Recomendações -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon orange">🔧</span> Recomendações
+    </div>
+    <ul class="insight-list">
+      <li><span class="bullet blue"></span><span class="text"><strong>Seguro Vida:</strong> Manter o ritmo. Preparar novos criativos para rodar quando frequência passar 2.0.</span></li><li><span class="bullet orange"></span><span class="text"><strong>Crédito Habitação:</strong> Testar 2-3 novos criativos para baixar frequência e melhorar CPL. Campanha ainda está a aprender.</span></li><li><span class="bullet green"></span><span class="text"><strong>Continuar envio de leads qualificados via CAPI</strong> (Anderson e Inês enviados hoje) para treinar o algoritmo de ambas as campanhas.</span></li><li><span class="bullet blue"></span><span class="text"><strong>Faixa 25-34:</strong> Considerar excluir ou ajustar bid nesta faixa etária para ambas as campanhas.</span></li>
+    </ul>
+  </div>
+
+  <!-- Veredito -->
+  <div class="verdict">
+    <h3>⚡ Veredito Final</h3>
+    <p><strong>Seguro de Vida (Conselhos e Gestão):</strong> Campanha madura e estável. CPL de <span class="highlight">12.35€</span> dentro do target.
+18 leads em 7 dias com boa performance geral. Preparar rotação de criativos para quando a frequência subir.<br><br>
+<strong>Crédito Habitação (Delta Capital):</strong> Campanha recente (desde 23/06) ainda em otimização. CPL atual de <span class="highlight">22.01€</span>, acima do target de ~20€.
+CTR saudável (1.39%) mas CPM alto (12.47€). Necessita novos criativos para baixar frequência e melhorar custo por lead.
+O envio de leads qualificados via CAPI vai ajudar o algoritmo a otimizar mais rápido.</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Relatório gerado por <span>SENVIA</span> · 06/07/2026 10:38
+  </div>
+
+</div>
+</body>
+</html>

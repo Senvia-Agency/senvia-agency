@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/reports/(.*)", "destination": "/reports/$1" },
+    { "source": "/((?!reports).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

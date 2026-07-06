@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/reports/(.*)", "destination": "/reports/$1" },
     { "source": "/((?!reports/|assets/|lovable-uploads/|images/|favicon.ico|robots.txt|sitemap.xml).*)", "destination": "/index.html" }
   ],
   "headers": [

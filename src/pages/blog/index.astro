@@ -16,10 +16,10 @@ const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat
   title={`${SITE.name} Blog`}
   description={SITE.blogDescription}
 >
-  <section class="hero aurora-bg" style="min-height: auto; padding-top: 8rem; padding-bottom: 4rem;">
+  <section class="hero aurora-bg" style="min-height: auto; padding-top: 7rem; padding-bottom: 3rem;">
     <div class="container">
       <span class="badge mb-6">Novo — Atualizado em {new Intl.DateTimeFormat('pt-PT', { month: 'long', year: 'numeric' }).format(new Date())}</span>
-      <h1 style="margin-bottom: 1.5rem;">IA, Seguros, Finanças e PMEs <br /><span class="gradient-text glow">análises que moving-the-needle.</span></h1>
+      <h1 style="margin-bottom: 1.5rem;">IA, Seguros, Finanças e PMEs <br /><span class="gradient-text glow">análises que fazem a diferença.</span></h1>
       <p class="hero__lead" style="max-width: 40rem;">Artigos práticos sobre como inteligência artificial está a mudar a forma como PMEs portuguesas gerem seguros, crédito, contabilidade e operações.</p>
       <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
         <a href="#destaques" class="btn btn--primary">Ver artigos</a>
@@ -40,9 +40,9 @@ const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat
 
       {featured && (
         <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem;" class="featured-grid">
-          <div style="background: linear-gradient(135deg, rgba(0,195,255,0.2), rgba(0,117,153,0.3)); border-radius: var(--radius-lg); padding: 2.5rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 380px; color: #fff; border: 1px solid rgba(0,195,255,0.3);">
+          <div style="background: linear-gradient(135deg, rgba(0,195,255,0.2), rgba(0,117,153,0.3)); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 280px; color: #fff; border: 1px solid rgba(0,195,255,0.3);">
             <span class="badge" style="background: rgba(255,255,255,0.2); color: #fff; align-self: flex-start; margin-bottom: 1rem;">{CATEGORIES[featured.data.category].label}</span>
-            <h3 style="color: #fff; font-size: 1.8rem; margin-bottom: 1rem;">{featured.data.title}</h3>
+            <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">{featured.data.title}</h3>
             <p style="opacity: 0.9; margin-bottom: 1.5rem;">{featured.data.description}</p>
             <a href={`/blog/artigos/${featured.id}/`} class="btn btn--outline" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); color: #fff; align-self: flex-start;">Ler artigo →</a>
           </div>

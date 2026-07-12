@@ -114,6 +114,18 @@ const jsonLd = [articleJsonLd, breadcrumbJsonLd];
       <div class="article-header__category">
         <span class="badge" style={`color:${cat.color}`}>{cat.short}</span>
       </div>
+      {data.coverImage && (
+        <img
+          src={data.coverImage}
+          alt={data.title}
+          class="article-header__cover"
+          width="1200"
+          height="800"
+          loading="eager"
+          decoding="async"
+          style="width:100%;height:auto;border-radius:var(--radius-lg);margin-bottom:var(--space-4);object-fit:cover;aspect-ratio:3/2"
+        />
+      )}
       <h1>{data.title}</h1>
       <p class="article-header__lead lead">{data.description}</p>
       <div class="article-header__meta">

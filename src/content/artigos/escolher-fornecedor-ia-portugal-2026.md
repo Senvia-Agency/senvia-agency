@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["fornecedores", "consultoria", "ai-act", "rgpd", "avaliação"]
 readingTime: 7
+coverImage: /images/artigos/escolher-fornecedor-ia-portugal-2026.jpg
 ---
 
 Escolher um fornecedor de IA é uma das decisões mais arriscadas que uma PME portuguesa pode tomar em 2026.

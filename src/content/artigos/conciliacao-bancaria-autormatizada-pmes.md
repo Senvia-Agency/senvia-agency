@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["conciliação", "psd2", "primavera", "automação", "tesouraria"]
 readingTime: 8
+coverImage: /images/artigos/conciliacao-bancaria-autormatizada-pmes.jpg
 ---
 
 A conciliação bancária é uma das tarefas mais repetitivas e necessárias na contabilidade de uma PME.

@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["automação", "workflows", "pme", "produtividade", "make"]
 readingTime: 8
+coverImage: /images/artigos/automatizar-processos-pme-ia-portugal.jpg
 ---
 
 Automação não é o mesmo que IA. Automação é fazer sistemas diferentes falarem entre si sem intervenção humana. IA é dar a esses sistemas capacidade de interpretar informação ambígua.

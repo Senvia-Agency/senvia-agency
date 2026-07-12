@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["ia-generativa", "finanças", "bancos", "fintech", "compliance"]
 readingTime: 8
+coverImage: /images/artigos/ia-generativa-setor-financeiro-portugal.jpg
 ---
 
 O setor financeiro português tem sido cauteloso com IA generativa: e com razão.

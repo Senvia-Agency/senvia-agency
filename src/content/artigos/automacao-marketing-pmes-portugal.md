@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: pmes
 tags: ["automatização", "email-marketing", "lead-scoring", "rgpd", "workflows"]
 readingTime: 8
+coverImage: /images/artigos/automacao-marketing-pmes-portugal.jpg
 ---
 
 Automação de marketing é o projeto de maior ROI para PME portuguesa em 2026: custo baixo, retorno rápido, ferramentas maduras.

@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: pmes
 tags: ["funis", "vendas", "ia", "marketing", "cac", "ltv"]
 readingTime: 9
+coverImage: /images/artigos/funis-vendas-ia-guia-pmes.jpg
 ---
 
 A maioria das PMEs portuguesas faz marketing e vendas de forma reativa: esperam que alguém apareça, respondem, tentam fechar.

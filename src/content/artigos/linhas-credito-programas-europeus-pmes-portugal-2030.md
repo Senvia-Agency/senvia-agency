@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["fundos-europeus", "portugal-2030", "horizonte-europa", "iapmei", "subsidios"]
 readingTime: 9
+coverImage: /images/artigos/linhas-credito-programas-europeus-pmes-portugal-2030.jpg
 ---
 
 Fundos europeus são frequentemente percebidos como "dinheiro grátis": lendário mas inacessível. Em 2026, com o Portugal 2030 em fase de execução, há efetivamente milhares de milhões disponíveis para PME portuguesas, mas o processo de acesso é burocrático e competitivo.

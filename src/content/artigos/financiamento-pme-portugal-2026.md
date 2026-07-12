@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["financiamento", "ifd", "capital-de-risco", "pme", "bancos"]
 readingTime: 8
+coverImage: /images/artigos/financiamento-pme-portugal-2026.jpg
 featured: true
 ---
 

@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["pme", "obrigatórios", "multirriscos", "rc", "portugal"]
 readingTime: 9
+coverImage: /images/artigos/seguros-pme-portugal-guia-2026.jpg
 featured: true
 ---
 

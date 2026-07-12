@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["modelos", "comparativo", "llm", "gpt", "claude", "gemini", "mistral"]
 readingTime: 9
+coverImage: /images/artigos/modelos-ia-empresas-2026-comparativo.jpg
 ---
 
 Em 2026 existem mais de 20 modelos de IA generativa comerciais com qualidade suficiente para uso empresarial. Para uma PME portuguesa sem equipa técnica para avaliar cada um, a escolha é paralisante.

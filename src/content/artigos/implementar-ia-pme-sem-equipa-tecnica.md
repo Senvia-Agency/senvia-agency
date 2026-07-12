@@ -7,6 +7,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["no-code", "automação", "pme", "implementação", "ferramentas"]
 readingTime: 8
+coverImage: /images/artigos/implementar-ia-pme-sem-equipa-tecnica.jpg
 featured: true
 ---
 

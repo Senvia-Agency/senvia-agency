@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["roi", "ia", "investimento", "métricas", "payback"]
 readingTime: 8
+coverImage: /images/artigos/investir-ia-empresa-roi-calcular.jpg
 ---
 
 O fracasso de muitos projetos de IA em PMEs não vem da tecnologia, mas sim da incapacidade de calcular retorno sobre o investimento. Sem métrica clara, o projeto arrasta-se até ser cancelado na próxima crise de orçamento.

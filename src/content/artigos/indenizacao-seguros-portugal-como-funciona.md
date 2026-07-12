@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["sinistro", "indenização", "isp", "aps", "reclamações"]
 readingTime: 8
+coverImage: /images/artigos/indenizacao-seguros-portugal-como-funciona.jpg
 ---
 
 Quando chega a hora de usar o seguro: depois de anos a pagar prémios sem sinistros: muitas PMEs descobrem que não sabem como funciona o processo.

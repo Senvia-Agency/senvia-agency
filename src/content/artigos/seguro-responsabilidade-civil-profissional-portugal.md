@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["rc-profissional", "advogados", "contabilistas", "médicos", "consultores"]
 readingTime: 8
+coverImage: /images/artigos/seguro-responsabilidade-civil-profissional-portugal.jpg
 ---
 
 O seguro de responsabilidade civil profissional (RC profissional) é um dos menos compreendidos em Portugal. Muitos profissionais sabem que "devem ter", mas não sabem quando é obrigatório, o que cobre realmente e quanto custa.

@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["tesouraria", "dso", "dpo", "factoring", "cash-flow"]
 readingTime: 8
+coverImage: /images/artigos/gestao-tesouraria-pmes-portugal-boas-praticas.jpg
 ---
 
 Gestão de tesouraria é a diferença entre uma empresa lucrativa que fecha e uma empresa mediana que sobrevive.

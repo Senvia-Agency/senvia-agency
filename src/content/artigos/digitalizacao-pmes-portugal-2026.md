@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: pmes
 tags: ["digitalização", "iapmei", "indústria-4.0", "transformação-digital", "portugal-2030"]
 readingTime: 8
+coverImage: /images/artigos/digitalizacao-pmes-portugal-2026.jpg
 ---
 
 Apesar de todos os programas, financiamentos e discurso político, a digitalização das PMEs portuguesas em 2026 ainda está abaixo da média europeia.

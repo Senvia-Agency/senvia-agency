@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["cibersegurança", "ransomware", "nis2", "cyber", "rgpd"]
 readingTime: 8
+coverImage: /images/artigos/seguros-ciberneticos-empresas-portugal.jpg
 ---
 
 Ataques cibernéticos a PMEs portuguesas aumentaram 78% em 2025 (dados do Centro Nacional de Cibersegurança). Ransomware, phishing e business email compromise deixaram de ser problema de grandes empresas.

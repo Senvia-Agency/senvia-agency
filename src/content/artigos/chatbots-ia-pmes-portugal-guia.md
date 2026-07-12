@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["chatbots", "atendimento", "ia", "pme", "roi"]
 readingTime: 9
+coverImage: /images/artigos/chatbots-ia-pmes-portugal-guia.jpg
 ---
 
 Chatbots não são novidade.

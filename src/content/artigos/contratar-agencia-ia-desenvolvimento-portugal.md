@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: pmes
 tags: ["agências", "consultoria", "contratos", "fornecedores", "it"]
 readingTime: 8
+coverImage: /images/artigos/contratar-agencia-ia-desenvolvimento-portugal.jpg
 ---
 
 Contratar uma agência de IA ou desenvolvimento é uma das decisões com maior risco financeiro para uma PME em Portugal. O mercado tem centenas de players, desde boutiques sérias a freelancers com LinkedIn bonito mas sem estrutura. Erro de escolha custa entre €10K e €100K em projetos que nunca chegam a produção, sem falar do tempo interno perdido.

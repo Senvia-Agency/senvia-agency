@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: financas
 tags: ["contabilidade", "ia", "software", "ocr", "automatização"]
 readingTime: 8
+coverImage: /images/artigos/contabilidade-digital-ia-reduzir-custos.jpg
 ---
 
 A contabilidade é uma das áreas onde IA está a ter impacto mais imediato em PMEs portuguesas.

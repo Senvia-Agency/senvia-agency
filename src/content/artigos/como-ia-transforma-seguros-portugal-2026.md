@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: ia
 tags: ["seguros", "automação", "underwriting", "PMEs"]
 readingTime: 8
+coverImage: /images/artigos/como-ia-transforma-seguros-portugal-2026.jpg
 featured: true
 ---
 

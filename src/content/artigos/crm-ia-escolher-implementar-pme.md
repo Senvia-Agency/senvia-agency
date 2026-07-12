@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: pmes
 tags: ["crm", "ia", "salesforce", "hubspot", "vendas"]
 readingTime: 9
+coverImage: /images/artigos/crm-ia-escolher-implementar-pme.jpg
 featured: true
 ---
 

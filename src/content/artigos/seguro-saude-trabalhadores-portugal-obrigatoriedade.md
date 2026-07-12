@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["saúde", "rh", "benefícios", "fiscal", "trabalhadores"]
 readingTime: 8
+coverImage: /images/artigos/seguro-saude-trabalhadores-portugal-obrigatoriedade.jpg
 ---
 
 Muitas PMEs portuguesas confundem seguro de saúde com seguro de acidentes de trabalho. O primeiro é um benefício opcional com vantagens fiscais; o segundo é obrigatório por lei. Confundir os dois leva a decisões erradas, tanto em cobertura como em impostos.

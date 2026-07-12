@@ -6,6 +6,7 @@ author: "Redação SENVIA"
 category: seguros
 tags: ["multirriscos", "prémio", "negociação", "mitigação", "pme"]
 readingTime: 8
+coverImage: /images/artigos/reduzir-premio-seguro-multirricos-empresarial.jpg
 ---
 
 O seguro multirriscos empresarial é tipicamente o segundo ou terceiro maior custo segurável de uma PME portuguesa (depois de acidentes de trabalho e saúde grupo). Muitas empresas aceitam o prémio que lhes é apresentado sem questionar.

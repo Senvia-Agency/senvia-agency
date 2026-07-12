@@ -1,0 +1,419 @@
+---
+import { ADSENSE_CLIENT } from '../config';
+---
+
+<div id="consent-banner" class="consent-banner" hidden>
+  <div class="consent-banner__inner">
+    <div class="consent-banner__content">
+      <div class="consent-banner__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="consent-banner__text">
+        <h3>Consentimento de Cookies</h3>
+        <p>Usamos cookies para personalizar conteúdo e anúncios, fornecer funcionalidades de redes sociais e analisar o nosso tráfego. O seu consentimento é necessário para carregar anúncios do Google AdSense.</p>
+      </div>
+    </div>
+    <div class="consent-banner__actions">
+      <button id="consent-reject" class="consent-btn consent-btn--reject" type="button">
+        Não consentir
+      </button>
+      <button id="consent-manage" class="consent-btn consent-btn--manage" type="button">
+        Gerenciar opções
+      </button>
+      <button id="consent-accept" class="consent-btn consent-btn--accept" type="button">
+        Consentir
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="consent-manage-panel" class="consent-manage" hidden>
+  <div class="consent-manage__inner">
+    <h3>Preferências de Cookies</h3>
+    <p class="consent-manage__desc">Escolha quais tipos de cookies permitir. Os cookies essenciais não podem ser desativados.</p>
+
+    <div class="consent-option">
+      <div class="consent-option__info">
+        <strong>Cookies Essenciais</strong>
+        <span>Necessários para o funcionamento do site. Não podem ser desativados.</span>
+      </div>
+      <span class="consent-toggle consent-toggle--locked">Sempre ativo</span>
+    </div>
+
+    <div class="consent-option">
+      <div class="consent-option__info">
+        <strong>Cookies de Publicidade (Google AdSense)</strong>
+        <span>Usados para exibir anúncios personalizados e medir a performance dos anúncios.</span>
+      </div>
+      <label class="consent-switch">
+        <input type="checkbox" id="opt-ads" checked />
+        <span class="consent-switch__slider"></span>
+      </label>
+    </div>
+
+    <div class="consent-manage__actions">
+      <button id="manage-save" class="consent-btn consent-btn--accept" type="button">Salvar preferências</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ ADSENSE_CLIENT }}>
+  (function() {
+    const CONSENT_KEY = 'senvia_consent_v1';
+    const banner = document.getElementById('consent-banner');
+    const managePanel = document.getElementById('consent-manage-panel');
+    const btnAccept = document.getElementById('consent-accept');
+    const btnReject = document.getElementById('consent-reject');
+    const btnManage = document.getElementById('consent-manage');
+    const btnSave = document.getElementById('manage-save');
+    const optAds = document.getElementById('opt-ads');
+
+    function getConsent() {
+      try {
+        const raw = localStorage.getItem(CONSENT_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setConsent(consent) {
+      const data = {
+        ...consent,
+        timestamp: Date.now(),
+        version: 1,
+      };
+      try {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function loadAdSense() {
+      if (document.getElementById('adsbygoogle-script')) return;
+      const s = document.createElement('script');
+      s.id = 'adsbygoogle-script';
+      s.async = true;
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
+      s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
+    }
+
+    function showBanner() {
+      if (banner) {
+        banner.hidden = false;
+        banner.classList.add('consent-banner--visible');
+      }
+    }
+
+    function hideBanner() {
+      if (banner) {
+        banner.classList.remove('consent-banner--visible');
+        setTimeout(() => { banner.hidden = true; }, 300);
+      }
+    }
+
+    function hideManagePanel() {
+      if (managePanel) {
+        managePanel.hidden = true;
+      }
+    }
+
+    function showManagePanel() {
+      hideBanner();
+      if (managePanel) {
+        managePanel.hidden = false;
+      }
+    }
+
+    function acceptAll() {
+      setConsent({ ads: true });
+      loadAdSense();
+      hideBanner();
+    }
+
+    function rejectAll() {
+      setConsent({ ads: false });
+      hideBanner();
+    }
+
+    function savePreferences() {
+      const ads = optAds ? optAds.checked : false;
+      setConsent({ ads: ads });
+      if (ads) loadAdSense();
+      hideManagePanel();
+    }
+
+    const existing = getConsent();
+    if (existing) {
+      if (existing.ads) {
+        loadAdSense();
+      }
+    } else {
+      showBanner();
+    }
+
+    if (btnAccept) btnAccept.addEventListener('click', acceptAll);
+    if (btnReject) btnReject.addEventListener('click', rejectAll);
+    if (btnManage) btnManage.addEventListener('click', showManagePanel);
+    if (btnSave) btnSave.addEventListener('click', savePreferences);
+  })();
+</script>
+
+<style>
+  .consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: rgba(11, 31, 42, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 195, 255, 0.2);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    transform: translateY(100%);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+
+  .consent-banner--visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .consent-banner__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .consent-banner__content {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .consent-banner__icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(0, 195, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00c3ff;
+  }
+
+  .consent-banner__text h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 0.25rem;
+  }
+
+  .consent-banner__text p {
+    font-size: 0.85rem;
+    color: #cbd6de;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .consent-banner__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .consent-btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .consent-btn--accept {
+    background: #00c3ff;
+    color: #0b1f2a;
+  }
+
+  .consent-btn--accept:hover {
+    background: #33ffe3;
+  }
+
+  .consent-btn--reject {
+    background: transparent;
+    color: #cbd6de;
+    border-color: rgba(148, 163, 184, 0.3);
+  }
+
+  .consent-btn--reject:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+  }
+
+  .consent-btn--manage {
+    background: transparent;
+    color: #00c3ff;
+    border-color: rgba(0, 195, 255, 0.3);
+  }
+
+  .consent-btn--manage:hover {
+    background: rgba(0, 195, 255, 0.1);
+  }
+
+  .consent-manage {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .consent-manage__inner {
+    background: #0f2937;
+    border: 1px solid rgba(0, 195, 255, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .consent-manage__inner h3 {
+    font-size: 1.25rem;
+    color: #f1f5f9;
+    margin-bottom: 0.5rem;
+  }
+
+  .consent-manage__desc {
+    font-size: 0.875rem;
+    color: #8a98a6;
+    margin-bottom: 1.5rem;
+  }
+
+  .consent-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+  }
+
+  .consent-option__info {
+    flex: 1;
+  }
+
+  .consent-option__info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #f1f5f9;
+    margin-bottom: 0.25rem;
+  }
+
+  .consent-option__info span {
+    font-size: 0.8rem;
+    color: #8a98a6;
+  }
+
+  .consent-toggle--locked {
+    font-size: 0.75rem;
+    color: #8a98a6;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .consent-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .consent-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .consent-switch__slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 24px;
+    transition: 0.3s;
+  }
+
+  .consent-switch__slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+
+  .consent-switch input:checked + .consent-switch__slider {
+    background: #00c3ff;
+  }
+
+  .consent-switch input:checked + .consent-switch__slider::before {
+    transform: translateX(20px);
+  }
+
+  .consent-manage__actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 640px) {
+    .consent-banner__inner {
+      padding: 1.25rem 1rem;
+    }
+
+    .consent-banner__actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .consent-btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .consent-banner__content {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .consent-manage__inner {
+      padding: 1.5rem;
+    }
+  }
+</style>

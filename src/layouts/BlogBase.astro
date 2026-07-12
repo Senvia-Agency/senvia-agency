@@ -3,7 +3,8 @@ import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import BlogHeader from '../components/BlogHeader.astro';
 import BlogFooter from '../components/BlogFooter.astro';
-import { SITE, ADSENSE_CLIENT } from '../config';
+import ConsentBanner from '../components/ConsentBanner.astro';
+import { SITE } from '../config';
 
 interface Props {
   title: string;
@@ -44,7 +45,6 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
-    <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script>
     <SEO {...props} />
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
   </head>
@@ -53,5 +53,6 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
     <BlogHeader />
     <main id="main"><slot /></main>
     <BlogFooter />
+    <ConsentBanner />
   </body>
 </html>

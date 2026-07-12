@@ -8,7 +8,10 @@ tags: ["sinistro", "indenização", "isp", "aps", "reclamações"]
 readingTime: 8
 ---
 
-Quando chega a hora de usar o seguro — depois de anos a pagar prémios sem sinistros — muitas PMEs descobrem que não sabem como funciona o processo. Documentação em falta, prazos desconhecidos, recusas inesperadas. Este artigo descreve como deve decorrer um sinistro em Portugal, o que a lei exige das seguradoras e o que fazer quando algo corre mal.
+Quando chega a hora de usar o seguro: depois de anos a pagar prémios sem sinistros: muitas PMEs descobrem que não sabem como funciona o processo.
+Documentação em falta, prazos desconhecidos, recusas inesperadas.
+
+Este artigo descreve como deve decorrer um sinistro em Portugal, o que a lei exige das seguradoras e o que fazer quando algo corre mal.
 
 ## O processo de sinistro: passo a passo
 
@@ -95,7 +98,7 @@ Exemplo: equipamento industrial comprado há 7 anos por €20.000. Valor novo eq
 
 ### Aplicação prática
 
-Em apólice standard, indenização usa valor real — depreciação aplicada. Para equipamentos críticos, exigir cláusula de valor novo.
+Em apólice standard, indenização usa valor real: depreciação aplicada. Para equipamentos críticos, exigir cláusula de valor novo.
 
 ### Regra proporcional
 
@@ -219,7 +222,7 @@ Tentar "arrumar" remove provas que regulador precisa. Manter local intacto até 
 
 ### Admitir responsabilidade em RC
 
-"Pedimos desculpa, foi nosso erro" pode ser interpretado como admissão de culpa. Em sinistros RC, nunca admitir — encaminhar para seguradora.
+"Pedimos desculpa, foi nosso erro" pode ser interpretado como admissão de culpa. Em sinistros RC, nunca admitir: encaminhar para seguradora.
 
 ### Não declarar sinistros pequenos
 
@@ -256,16 +259,22 @@ Algumas apólices excluem ainda:
 
 Dados ISP 2024-2025, ranking por frequência:
 
-1. Danos por água (canalização, aparelhos) — 35% dos sinistros
-2. Furto simples — 22%
-3. Incêndio pequeno — 12%
-4. RC exploração (escorregadelas, etc.) — 11%
-5. Danos elétricos — 9%
-6. Outros — 11%
+1. Danos por água (canalização, aparelhos): 35% dos sinistros
+2. Furto simples: 22%
+3. Incêndio pequeno: 12%
+4. RC exploração (escorregadelas, etc.): 11%
+5. Danos elétricos: 9%
+6. Outros: 11%
+
+
+💡 **Dica prática**: tire fotografias anuais a todos os equipamentos e espaços da empresa. Guarde-as numa pasta segura com a data visível.
+
+No momento de um sinistro, essas imagens são a prova mais eficaz do estado e valor dos bens antes do evento, e aceleram significativamente o processo de indemnização.
 
 ## Conclusão
 
-Processo de sinistro é momento crítico — quando anos de prémios pagos deviam transformar-se em indemnização. Conhecer direitos e obrigações é o que separa empresas que recebem indemnização justa das que aceitam recusas ou valores baixos.
+Processo de sinistro é momento crítico: quando anos de prémios pagos deviam transformar-se em indemnização.
+Conhecer direitos e obrigações é o que separa empresas que recebem indemnização justa das que aceitam recusas ou valores baixos.
 
 Para PMEs, três princípios:
 
@@ -273,6 +282,8 @@ Para PMEs, três princípios:
 2. **Comunicar rápido e completo**: atrasos e informação parcelar prejudicam.
 3. **Questionar recusas**: seguradoras erram. APS e ISP são recursos gratuitos e eficazes.
 
-E acima de tudo: relacionamento com corretor sério vale ouro na altura do sinistro. Bom corretor acompanha processo, preenche formulários, pressiona seguradora quando necessário. Custo do corretor é comissão já paga pela seguradora — uso é grátis.
+E acima de tudo: relacionamento com corretor sério vale ouro na altura do sinistro. Bom corretor acompanha processo, preenche formulários, pressiona seguradora quando necessário.
+Custo do corretor é comissão já paga pela seguradora: uso é grátis.
 
-Em Portugal, sistema segurador é regulado, transparente e com vias de recurso eficazes. Empresas que conhecem o processo recebem indemnizações justas. As que não conhecem ficam frustradas e desconfiadas — e é geralmente evitável.
+Em Portugal, sistema segurador é regulado, transparente e com vias de recurso eficazes. Empresas que conhecem o processo recebem indemnizações justas.
+As que não conhecem ficam frustradas e desconfiadas: e é geralmente evitável.

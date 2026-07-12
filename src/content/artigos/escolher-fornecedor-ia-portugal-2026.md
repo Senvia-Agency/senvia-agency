@@ -8,7 +8,9 @@ tags: ["fornecedores", "consultoria", "ai-act", "rgpd", "avaliação"]
 readingTime: 7
 ---
 
-Escolher um fornecedor de IA é uma das decisões mais arriscadas que uma PME portuguesa pode tomar em 2026. O mercado está cheio de "especialistas em IA" que apareceram nos últimos 12 meses, muitos sem portefólio verificável. Errar a escolha custa entre €10.000 e €50.000 em projetos que nunca chegam a produção, sem falar do tempo interno perdido.
+Escolher um fornecedor de IA é uma das decisões mais arriscadas que uma PME portuguesa pode tomar em 2026.
+O mercado está cheio de "especialistas em IA" que apareceram nos últimos 12 meses, muitos sem portefólio verificável.
+Errar a escolha custa entre €10.000 e €50.000 em projetos que nunca chegam a produção, sem falar do tempo interno perdido.
 
 Este artigo dá um framework concreto para avaliar fornecedores, com checklist de perguntas, sinalizadores de alarme e referências regulatórias que deve confirmar.
 
@@ -20,7 +22,8 @@ Existem quatro categorias no mercado:
 
 **1. Agências digitais tradicionais que adicionaram "IA"**
 
-Anteriormente faziam sites e campanhas de marketing. Em 2024-2025 adicionaram "serviços de IA" sem alterar equipa técnica. Podem ser boas para chatbots de marketing simples, mas carecem de maturidade para integrações profundas.
+Anteriormente faziam sites e campanhas de marketing. Em 2024-2025 adicionaram "serviços de IA" sem alterar equipa técnica.
+Podem ser boas para chatbots de marketing simples, mas carecem de maturidade para integrações profundas.
 
 **2. Consultoras enterprise**
 
@@ -28,7 +31,8 @@ Grandes player internacionais (Accenture, Deloitte, Capgemini) com presença em 
 
 **3. Boutiques especializadas em IA**
 
-Empresas pequenas (5-25 pessoas) fundadas em 2022-2024, focadas em IA e data science. Equilíbrio entre custo (€600-€1.200/dia) e especialização. Maioria dos projetos de PME bem-sucedidos em Portugal passam por aqui.
+Empresas pequenas (5-25 pessoas) fundadas em 2022-2024, focadas em IA e data science. Equilíbrio entre custo (€600-€1.200/dia) e especialização.
+Maioria dos projetos de PME bem-sucedidos em Portugal passam por aqui.
 
 **4. Freelancers e one-man-bands**
 
@@ -38,9 +42,9 @@ Engenheiros individuais que saíram de startups grandes. Flexíveis, baixo custo
 
 Antes de avaliar fornecedor individual, esteja atento a:
 
-- **Case studies sem cliente identificável** — "ajudamos uma empresa do setor retalho a reduzir custos em 30%" não conta nada. Cliente com nome e contacto verificável sim.
-- **Parcerias com Google/Microsoft/OpenAI** — qualquer empresa pode ser partner bronze sem mérito. Só partner status Gold/Platinum tem significado.
-- **"Ex-colaboradores da OpenAI/Google"** — em Portugal, ninguém veio da OpenAI. Se dizem isto, é sinal vermelho.
+- **Case studies sem cliente identificável**: "ajudamos uma empresa do setor retalho a reduzir custos em 30%" não conta nada. Cliente com nome e contacto verificável sim.
+- **Parcerias com Google/Microsoft/OpenAI**: qualquer empresa pode ser partner bronze sem mérito. Só partner status Gold/Platinum tem significado.
+- **"Ex-colaboradores da OpenAI/Google"**: em Portugal, ninguém veio da OpenAI. Se dizem isto, é sinal vermelho.
 
 ## Checklist de avaliação: 7 perguntas obrigatórias
 
@@ -58,7 +62,8 @@ Exija referências com nome e contacto. Se não quiserem partilhar,desconfie.
 
 ### 2. "Qual foi o último projeto que falhou e porque falhou?"
 
-Fornecedores sérios têm falhas. A forma como falam delas revela maturidade. Resposta honesta: "Implementámos X para cliente Y, mas o ROI não apareceu porque o volume de dados era insuficiente. Aprendemos a validar data readiness antes de avançar."
+Fornecedores sérios têm falhas. A forma como falam delas revela maturidade. Resposta honesta: "Implementámos X para cliente Y, mas o ROI não apareceu porque o volume de dados era insuficiente.
+Aprendemos a validar data readiness antes de avançar."
 
 Resposta vermelha: "Nunca tivemos um projeto que falhasse."
 
@@ -116,15 +121,15 @@ Crítico. Por defeito em Portugal (Código do Direito de Autor), obra encomendad
 
 Uma proposta séria tem, no mínimo:
 
-1. **Contexto e objetivos** — reformulação do problema em linguagem técnica
-2. **Abordagem técnica** — arquitetura proposta, modelos, integrações
-3. **Entregáveis por fase** — com definição concreta de "pronto"
-4. **Cronograma** — com marcos e dependências
-5. **Riscos e mitigações** — não só os óbvios, mas edge cases
-6. **Métricas de sucesso** — como medir se o projeto correu bem
-7. **Custos detalhados** — implementação, licenças, manutenção
-8. **Equipa proposta** — nomes e CVs
-9. **Referências** — clientes contactáveis com projetos similares
+1. **Contexto e objetivos**: reformulação do problema em linguagem técnica
+2. **Abordagem técnica**: arquitetura proposta, modelos, integrações
+3. **Entregáveis por fase**: com definição concreta de "pronto"
+4. **Cronograma**: com marcos e dependências
+5. **Riscos e mitigações**: não só os óbvios, mas edge cases
+6. **Métricas de sucesso**: como medir se o projeto correu bem
+7. **Custos detalhados**: implementação, licenças, manutenção
+8. **Equipa proposta**: nomes e CVs
+9. **Referências**: clientes contactáveis com projetos similares
 
 Propostas sem estes elementos são propostas de marketing, não técnicas.
 
@@ -173,7 +178,8 @@ Em IA, "barato" costuma significar: prompt básico num SaaS, sem arquitetura, se
 
 ### Não incluir custo total de propriedade
 
-Fornecedor cobra €15.000 pelo projeto. Esquecem de dizer: custo mensal de APIs €800, manutenção €300/mês, atualizações de modelo cada 6 meses €5.000. TCO em 3 anos: €15.000 + €800×36 + €300×36 + €5.000×6 = €63.000.
+Fornecedor cobra €15.000 pelo projeto. Esquecem de dizer: custo mensal de APIs €800, manutenção €300/mês, atualizações de modelo cada 6 meses €5.000.
+TCO em 3 anos: €15.000 + €800×36 + €300×36 + €5.000×6 = €63.000.
 
 ### Assinar sem revisão legal
 
@@ -185,8 +191,15 @@ Contratos standard de fornecedores costumam ter:
 
 Advogado especializado em IT custa €500-€1.500 para rever contrato. Vale a pena.
 
+
+💡 **Dica prática**: antes de contactar qualquer fornecedor, escreva uma página A4 com o problema concreto que quer resolver, o orçamento disponível e o prazo ideal.
+
+Envie esse documento a 3 fornecedores e compare as propostas com o checklist das 7 perguntas. A clareza do briefing inicial determina 80% do sucesso do projeto.
+
 ## Conclusão
 
-Escolher fornecedor de IA é como escolher sócio técnico — vai estar com a sua empresa durante 2-5 anos. O cortejo inicial (proposta, demos) é o momento mais fácil. O que conta é a relação nos meses seguintes, quando problemas surgem e decisões técnicas precisam de ser tomadas em conjunto.
+Escolher fornecedor de IA é como escolher sócio técnico: vai estar com a sua empresa durante 2-5 anos. O cortejo inicial (proposta, demos) é o momento mais fácil.
+O que conta é a relação nos meses seguintes, quando problemas surgem e decisões técnicas precisam de ser tomadas em conjunto.
 
-Use o checklist das 7 perguntas. Exija referências contactáveis. Inclua custos totais no ROI. E quando em dúvida entre dois fornecedores, escolha o que fala mais claramente dos riscos — é geralmente o mais competente.
+Use o checklist das 7 perguntas. Exija referências contactáveis. Inclua custos totais no ROI.
+E quando em dúvida entre dois fornecedores, escolha o que fala mais claramente dos riscos: é geralmente o mais competente.

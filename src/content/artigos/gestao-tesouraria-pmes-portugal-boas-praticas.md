@@ -8,7 +8,9 @@ tags: ["tesouraria", "dso", "dpo", "factoring", "cash-flow"]
 readingTime: 8
 ---
 
-Gestão de tesouraria é a diferença entre uma empresa lucrativa que fecha e uma empresa mediana que sobrevive. Em Portugal, onde prazos de pagamento B2B são dos piores da Europa (média 75 dias em 2025, dados da Intrum), dominar tesouraria é sobrevivência. Este artigo cobre os indicadores essenciais, ferramentas e práticas que qualquer PME portuguesa deve dominar.
+Gestão de tesouraria é a diferença entre uma empresa lucrativa que fecha e uma empresa mediana que sobrevive.
+Em Portugal, onde prazos de pagamento B2B são dos piores da Europa (média 75 dias em 2025, dados da Intrum), dominar tesouraria é sobrevivência.
+Este artigo cobre os indicadores essenciais, ferramentas e práticas que qualquer PME portuguesa deve dominar.
 
 ## Indicadores fundamentais
 
@@ -32,7 +34,7 @@ DSO = (Contas a receber / Faturação do mês) × 30
 - Razoável: 65-90 dias
 - Problemático: > 90 dias
 
-**Impacto**: cada dia adicional de DSO é um dia de financiamento à custa da empresa. Para empresa com faturação de €1M/ano, DSO de 90 dias representa €246K em contas a receber — capital imobilizado.
+**Impacto**: cada dia adicional de DSO é um dia de financiamento à custa da empresa. Para empresa com faturação de €1M/ano, DSO de 90 dias representa €246K em contas a receber: capital imobilizado.
 
 ### DPO (Days Payable Outstanding)
 
@@ -286,9 +288,15 @@ PMEs aceitam condições bancárias standard. Negociar pode poupar 0,5-2% em jur
 - [ ] Concentração de cliente < 30%
 - [ ] Reserva de tesouraria > 1 mês de despesas
 
+
+💡 **Dica prática**: crie um forecast de tesouraria simples em Excel e atualize-o todas as segundas-feiras de manhã.
+
+Com 30 minutos por semana, consegue antecipar apertos de liquidez com 4 a 6 semanas de antecedência. Tempo suficiente para ativar uma linha de crédito ou renegociar prazos.
+
 ## Conclusão
 
-Em mercado português com prazos de pagamento longos, gestão de tesouraria é tão importante como venda e produção. Empresa com produto excelente mas má tesouraria fecha. Empresa com produto mediano e excelente tesouraria sobrevive.
+Em mercado português com prazos de pagamento longos, gestão de tesouraria é tão importante como venda e produção. Empresa com produto excelente mas má tesouraria fecha.
+Empresa com produto mediano e excelente tesouraria sobrevive.
 
 Para PME portuguesa típica, focar em três frentes dá 80% do benefício:
 
@@ -296,4 +304,5 @@ Para PME portuguesa típica, focar em três frentes dá 80% do benefício:
 2. **Otimizar DPO**: negociar prazos, confirming, calendarização inteligente
 3. **Forecast semanal**: dados atualizados, cenários, antecipação
 
-Com disciplina nestas três áreas, PME opera com conforto financeiro mesmo em mercado adverso. Sem disciplina, empresa fica refém do cliente que paga mais tarde e do fornecedor que cobra mais cedo — posicionamento insustentável a longo prazo.
+Com disciplina nestas três áreas, PME opera com conforto financeiro mesmo em mercado adverso.
+Sem disciplina, empresa fica refém do cliente que paga mais tarde e do fornecedor que cobra mais cedo: posicionamento insustentável a longo prazo.

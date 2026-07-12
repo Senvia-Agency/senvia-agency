@@ -104,6 +104,8 @@ import { ADSENSE_CLIENT } from '../config';
     function showBanner() {
       if (banner) {
         banner.hidden = false;
+        // Force reflow so the initial transform applies before the transition class
+        void banner.offsetWidth;
         banner.classList.add('consent-banner--visible');
       }
     }
@@ -111,13 +113,14 @@ import { ADSENSE_CLIENT } from '../config';
     function hideBanner() {
       if (banner) {
         banner.classList.remove('consent-banner--visible');
-        setTimeout(() => { banner.hidden = true; }, 300);
+        setTimeout(() => { banner.hidden = true; }, 400);
       }
     }
 
     function hideManagePanel() {
       if (managePanel) {
         managePanel.hidden = true;
+        document.body.style.overflow = '';
       }
     }
 
@@ -125,6 +128,7 @@ import { ADSENSE_CLIENT } from '../config';
       hideBanner();
       if (managePanel) {
         managePanel.hidden = false;
+        document.body.style.overflow = 'hidden';
       }
     }
 

@@ -1,22 +1,24 @@
 ---
-import { SITE, BLOG_NAV_LINKS, CATEGORIES, ADSENSE_CLIENT, SOCIAL } from '../config';
-import { getCollection } from 'astro:content';
-
-const all = await getCollection('artigos', ({ data }) => !data.draft);
-const sorted = all.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-const featured = sorted.find((e) => e.data.featured) ?? sorted[0];
-const recent = sorted.filter((e) => e.id !== featured?.id).slice(0, 6);
-const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat).slice(0, 4);
+import { SITE, BLOG_NAV_LINKS } from '../config';
 ---
 
 <header class="site-header site-header--scrolled">
   <div class="container site-header__inner">
-    <a href="/" class="brand">
+    <a href="/blog" class="brand">
       <span class="brand__dot" style="width:9px;height:9px;background:var(--senvia-500);border-radius:999px;box-shadow:0 0 0 4px rgba(0,195,255,0.08);"></span>
       <span class="brand__name">SENVIA</span>
       <span style="opacity:0.6;font-weight:400;font-size:0.9em">·blog</span>
     </a>
-    <nav class="nav" aria-label="Navegação blog">
+
+    <button class="menu-toggle" id="blog-menu-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="blog-nav">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+
+    <nav class="nav" id="blog-nav" data-open="false" aria-label="Navegação blog">
       {BLOG_NAV_LINKS.map((link) => (
         <a href={link.href} class="nav__link">{link.label}</a>
       ))}
@@ -24,3 +26,19 @@ const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat
     </nav>
   </div>
 </header>
+
+<script is:inline>
+  const toggle = document.getElementById('blog-menu-toggle');
+  const nav = document.getElementById('blog-nav');
+  toggle?.addEventListener('click', () => {
+    const open = nav?.getAttribute('data-open') === 'true';
+    nav?.setAttribute('data-open', String(!open));
+    toggle.setAttribute('aria-expanded', String(!open));
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      nav?.setAttribute('data-open', 'false');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>

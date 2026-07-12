@@ -83,7 +83,12 @@ const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat
             <a href={`/blog/categoria/${key}/`} class="btn btn--outline">Ver tudo →</a>
           </div>
           <div class="article-grid">
-            {posts.map((entry) => <ArticleCard entry={entry} />)}
+            {posts.map((entry, i) => (
+              <>
+                <ArticleCard entry={entry} />
+                {i === 1 && <AdSense slot="4646073584" type="in-feed" label={false} />}
+              </>
+            ))}
           </div>
         </div>
       </section>

@@ -1,36 +1,47 @@
 ---
 import { ADSENSE_CLIENT } from '../config';
 
+type AdType = 'display' | 'in-feed' | 'in-article' | 'autorelaxed';
+
 interface Props {
-  slot?: string;
-  format?: string;
-  responsive?: boolean;
-  style?: string;
+  slot: string;
+  type?: AdType;
   label?: boolean;
+  style?: string;
 }
 
 const {
-  slot = '5569262697',
-  format = 'auto',
-  responsive = true,
-  style = 'display:block',
+  slot,
+  type = 'display',
   label = true,
+  style,
 } = Astro.props;
+
+const adStyle = style ?? (type === 'in-article' ? 'display:block; text-align:center;' : 'display:block');
+
+const adAttrs: Record<string, string> = {
+  'class': 'adsbygoogle',
+  'style': adStyle,
+  'data-ad-client': ADSENSE_CLIENT,
+  'data-ad-slot': slot,
+};
+
+if (type === 'in-feed') {
+  adAttrs['data-ad-format'] = 'fluid';
+  adAttrs['data-ad-layout-key'] = '-dg-1v-1g-dr+11k';
+} else if (type === 'in-article') {
+  adAttrs['data-ad-layout'] = 'in-article';
+  adAttrs['data-ad-format'] = 'fluid';
+} else if (type === 'autorelaxed') {
+  adAttrs['data-ad-format'] = 'autorelaxed';
+} else {
+  adAttrs['data-ad-format'] = 'auto';
+  adAttrs['data-full-width-responsive'] = 'true';
+}
 ---
 
-{
-  label && (
-    <span class="ad-slot__label">Publicidade</span>
-  )
-}
-<ins
-  class="adsbygoogle"
-  style={style}
-  data-ad-client={ADSENSE_CLIENT}
-  data-ad-slot={slot}
-  data-ad-format={format}
-  data-full-width-responsive={responsive ? 'true' : 'false'}
-></ins>
+{label && <span class="ad-slot__label">Publicidade</span>}
+<ins {...adAttrs}></ins>
 <script is:inline>
   (function() {
     function pushAd() {

@@ -32,12 +32,12 @@ export const SERVICE_LINKS = [
 ];
 
 export const BLOG_NAV_LINKS = [
-  { label: 'Início', href: '/' },
-  { label: 'IA', href: '/categoria/ia' },
-  { label: 'Seguros', href: '/categoria/seguros' },
-  { label: 'Finanças', href: '/categoria/financas' },
-  { label: 'PMEs', href: '/categoria/pmes' },
-  { label: 'Sobre', href: '/sobre' },
+  { label: 'Início', href: '/blog' },
+  { label: 'IA', href: '/blog/categoria/ia' },
+  { label: 'Seguros', href: '/blog/categoria/seguros' },
+  { label: 'Finanças', href: '/blog/categoria/financas' },
+  { label: 'PMEs', href: '/blog/categoria/pmes' },
+  { label: 'Sobre', href: '/sobre-nos' },
 ] as const;
 
 export const CATEGORIES = {

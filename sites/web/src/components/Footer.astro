@@ -1,0 +1,71 @@
+---
+import { SITE, SOCIAL, SERVICE_LINKS } from '../config';
+const year = new Date().getFullYear();
+
+const socialIcons: Record<string, string> = {
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>',
+  facebook: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+  linkedin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>',
+};
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <a href="/" class="site-footer__brand">
+          <img src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" alt="SENVIA" width="32" height="32" />
+          <span class="brand__name">SENVIA</span>
+        </a>
+        <p class="site-footer__desc">
+          Eliminamos o ruído das vendas. Infraestrutura e Inteligência para negócios que querem escalar.
+        </p>
+        <div class="site-footer__social">
+          {SOCIAL.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener noreferrer" class="site-footer__social-link" aria-label={s.label} set:html={socialIcons[s.icon]} />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h4 class="site-footer__title">Soluções</h4>
+        <ul class="site-footer__list">
+          {SERVICE_LINKS.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="site-footer__title">Empresa</h4>
+        <ul class="site-footer__list">
+          <li><a href="/sobre-nos">Sobre Nós</a></li>
+          <li><a href={SITE.blogUrl} target="_blank" rel="noopener noreferrer">Blog</a></li>
+          <li><a href={SITE.appUrl} target="_blank" rel="noopener noreferrer">Área de Cliente</a></li>
+          <li><a href="/#contactos">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="site-footer__title">Legal</h4>
+        <ul class="site-footer__list">
+          <li><a href="/termos-servico">Termos de Uso</a></li>
+          <li><a href="/politica-privacidade">Política de Privacidade & RGPD</a></li>
+          <li><a href="/politica-cookies">Política de Cookies</a></li>
+          <li><a href="https://www.livroreclamacoes.pt/" target="_blank" rel="noopener noreferrer">Livro de Reclamações</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <div>
+        <span>© {year} SENVIA. Todos os direitos reservados.</span>
+        <span> • </span>
+        <span>{SITE.location}</span>
+      </div>
+      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+        Voltar ao topo ↑
+      </a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,156 @@
+---
+import Base from '../layouts/Base.astro';
+import CTASection from '../components/CTASection.astro';
+import { SITE } from '../config';
+
+const softwareTypes = [
+  { icon: 'database', title: 'Sistemas de Gestão', desc: 'ERPs, CRMs e plataformas internas que centralizam a operação do seu negócio. Automatize processos e ganhe visibilidade total.', features: ['ERP & CRM', 'Gestão de Inventário', 'Faturação Automática', 'Relatórios em Tempo Real'] },
+  { icon: 'layout', title: 'Portais & Dashboards', desc: 'Áreas de cliente, painéis de gestão e dashboards interativos. Interfaces intuitivas com dados em tempo real.', features: ['Área de Cliente', 'Painéis Interativos', 'Métricas & KPIs', 'Multi-Utilizador'] },
+  { icon: 'plug', title: 'APIs & Integrações', desc: 'Conectamos os seus sistemas. APIs robustas, webhooks e integrações com ferramentas de terceiros para um ecossistema unificado.', features: ['APIs RESTful', 'Webhooks', 'Integrações de Terceiros', 'Sincronização de Dados'] },
+  { icon: 'globe', title: 'Apps Web Complexas', desc: 'Plataformas SaaS, marketplaces e aplicações web de alta complexidade. Escaláveis, seguras e prontas para crescer.', features: ['SaaS & Plataformas', 'Marketplaces', 'Real-Time Features', 'Escalabilidade'] },
+];
+
+const steps = [
+  { step: '01', icon: 'clipboard', title: 'Levantamento de Requisitos', desc: 'Mapeamos os seus processos, identificamos bottlenecks e definimos o scope funcional e técnico do projeto.' },
+  { step: '02', icon: 'pen', title: 'Arquitetura & Design', desc: 'Desenhamos a arquitetura do sistema, protótipos de UI/UX e definimos a stack tecnológica ideal.' },
+  { step: '03', icon: 'code', title: 'Desenvolvimento Ágil', desc: 'Sprints quinzenais com entregas incrementais. Código limpo, testes automatizados e revisões contínuas.' },
+  { step: '04', icon: 'rocket', title: 'Deploy & Suporte', desc: 'Lançamento em produção, formação da equipa, monitorização e suporte técnico contínuo incluído.' },
+];
+
+const differentials = [
+  { icon: 'code', title: 'Código Limpo', desc: 'Arquitetura sólida, bem documentada e fácil de manter. Sem dívida técnica escondida.' },
+  { icon: 'trending', title: 'Escalabilidade', desc: 'Sistemas preparados para crescer consigo. De 10 a 10.000 utilizadores sem reescrever.' },
+  { icon: 'shield', title: 'Segurança', desc: 'Encriptação, autenticação robusta e boas práticas de segurança em cada camada.' },
+  { icon: 'cpu', title: 'Tecnologias Modernas', desc: 'React, Node.js, TypeScript, PostgreSQL e cloud. Stack atual e comprovada.' },
+  { icon: 'headset', title: 'Suporte Dedicado', desc: 'Equipa técnica disponível pós-lançamento. Manutenção, atualizações e evolução contínua.' },
+  { icon: 'plug', title: 'Integração Total', desc: 'Conectamos com os seus sistemas existentes: ERPs, CRMs, gateways de pagamento e mais.' },
+];
+
+const icons: Record<string, string> = {
+  database: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
+  layout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+  plug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>',
+  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>',
+  trending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>',
+  headset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+};
+---
+
+<Base
+  title="Software à Medida — Sistemas, Portais e Apps Web"
+  description="Sistemas de gestão, portais de clientes, APIs e aplicações web complexas. Construímos o motor digital que a sua empresa precisa para escalar."
+  canonicalPath="/softwares"
+>
+  <section class="hero aurora-bg" style="min-height: 85vh;">
+    <div class="container">
+      <div style="max-width: 48rem; margin-inline: auto; text-align: center;">
+        <span class="badge mb-6" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Software à Medida
+        </span>
+
+        <h1 class="hero__title">
+          Software que Move
+          <br />
+          <span class="gradient-text glow">o Seu Negócio</span>
+        </h1>
+
+        <p class="hero__lead" style="margin-inline: auto;">
+          Sistemas de gestão, portais de clientes, APIs e aplicações web complexas. Construímos o <strong>motor digital</strong> que a sua empresa precisa para escalar.
+        </p>
+
+        <div class="hero__actions" style="justify-content: center;">
+          <a href={SITE.ctaFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
+            Pedir Orçamento
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Tipos de Software</span>
+        <h2>A solução certa para <span class="gradient-text">o seu desafio</span></h2>
+        <p>Cada negócio tem necessidades únicas. Desenvolvemos o software que se adapta ao seu processo.</p>
+      </div>
+
+      <div class="service-grid">
+        {softwareTypes.map((type) => (
+          <div class="service-card">
+            <div class="service-card__icon" set:html={icons[type.icon]} />
+            <h3>{type.title}</h3>
+            <p class="service-card__desc">{type.desc}</p>
+            <div class="service-card__features">
+              {type.features.map((f) => <span class="service-card__feature">{f}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Como Trabalhamos</span>
+        <h2>Da ideia à <span class="gradient-text">produção</span></h2>
+        <p>Um processo estruturado e transparente em 4 fases.</p>
+      </div>
+
+      <div class="process-grid">
+        {steps.map((step) => (
+          <div class="process-card">
+            <span class="process-card__step">{step.step}</span>
+            <div class="process-card__icon" set:html={icons[step.icon]} />
+            <h3>{step.title}</h3>
+            <p>{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-grid">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Porquê a SENVIA</span>
+        <h2>Engenharia com <span class="gradient-text">excelência</span></h2>
+        <p>Não entregamos apenas software. Entregamos soluções que resolvem problemas reais.</p>
+      </div>
+
+      <div class="differential-grid" style="grid-template-columns: repeat(2, 1fr);">
+        {differentials.map((item) => (
+          <div class="differential-card" style="text-align: left;">
+            <div class="differential-card__icon" style="margin: 0 0 1rem 0;">
+              <div set:html={icons[item.icon]} />
+            </div>
+            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">{item.title}</h3>
+            <p style="font-size: 0.875rem;">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Pronto para digitalizar o seu negócio?"
+    subtitle="Agende uma consultoria gratuita. Vamos analisar os seus processos e desenhar a solução ideal para a sua empresa."
+    ctaText="Agendar Consultoria Gratuita"
+  />
+</Base>
+
+<style>
+  .differential-card .differential-card__icon svg { width: 1.5rem; height: 1.5rem; color: var(--senvia-500); }
+  @media (min-width: 1024px) {
+    .differential-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  }
+</style>

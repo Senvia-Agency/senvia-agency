@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import CTASection from '../components/CTASection.astro';
+import { SITE } from '../config';
+
+const siteTypes = [
+  { icon: 'globe', title: 'Sites Institucionais', desc: 'Presença digital profissional que transmite credibilidade e confiança. Design moderno, responsivo e otimizado para SEO.', features: ['Design Personalizado', '100% Responsivo', 'SEO Otimizado', 'Painel de Gestão'] },
+  { icon: 'rocket', title: 'Landing Pages de Alta Conversão', desc: 'Páginas focadas num único objetivo: converter visitantes em leads ou clientes. Copy persuasiva e CTAs estratégicos.', features: ['Copy Persuasiva', 'A/B Testing', 'Analytics Integrado', 'Formulários Inteligentes'] },
+  { icon: 'cart', title: 'Lojas Online (E-commerce)', desc: 'Plataformas de venda robustas com gestão de inventário, pagamentos seguros e experiência de compra fluida.', features: ['Pagamentos Seguros', 'Gestão de Stock', 'Checkout Otimizado', 'Multi-Moeda'] },
+  { icon: 'pen', title: 'Portfólios & Blogs', desc: 'Mostre o seu trabalho ou partilhe conteúdo com plataformas elegantes, rápidas e fáceis de gerir.', features: ['CMS Integrado', 'Galeria Visual', 'Otimização de Imagem', 'Partilha Social'] },
+];
+
+const steps = [
+  { step: '01', icon: 'message', title: 'Briefing & Estratégia', desc: 'Reunião para entender os seus objetivos, público-alvo e requisitos. Definimos a estratégia e o roadmap do projeto.' },
+  { step: '02', icon: 'palette', title: 'Design & UX', desc: 'Criamos mockups e protótipos interativos. Design focado na experiência do utilizador e na conversão.' },
+  { step: '03', icon: 'code', title: 'Desenvolvimento', desc: 'Programação com tecnologias modernas. Código limpo, performance otimizada e testes rigorosos.' },
+  { step: '04', icon: 'rocket', title: 'Lançamento & Suporte', desc: 'Deploy, configuração de domínio, SSL e monitorização. Suporte contínuo pós-lançamento incluído.' },
+];
+
+const differentials = [
+  { icon: 'zap', title: 'Performance', desc: 'Sites ultra-rápidos com score 90+ no PageSpeed. Cada milissegundo conta para a conversão.' },
+  { icon: 'search', title: 'SEO Técnico', desc: 'Estrutura otimizada para motores de busca desde o primeiro dia. Mais visibilidade orgânica.' },
+  { icon: 'paintbrush', title: 'Design Premium', desc: 'Interfaces únicas e modernas que refletem a identidade da sua marca. Sem templates genéricos.' },
+  { icon: 'smartphone', title: '100% Responsivo', desc: 'Experiência perfeita em todos os dispositivos: desktop, tablet e mobile.' },
+  { icon: 'clock', title: 'Entrega Rápida', desc: 'Processos ágeis que garantem prazos cumpridos sem comprometer a qualidade.' },
+  { icon: 'shield', title: 'Segurança & SSL', desc: 'Certificados SSL, proteção contra ataques e backups automáticos incluídos.' },
+];
+
+const icons: Record<string, string> = {
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>',
+  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
+  message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
+  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  paintbrush: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3z"/><path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7"/><path d="M14.5 17.5 4.5 15"/></svg>',
+  smartphone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+};
+---
+
+<Base
+  title="Criação de Sites, Landing Pages & E-commerces"
+  description="Criamos sites institucionais, landing pages de alta conversão e lojas online com design premium, performance de topo e SEO otimizado. Peça orçamento gratuito."
+  canonicalPath="/sites"
+>
+  <!-- Hero -->
+  <section class="hero aurora-bg" style="min-height: 85vh;">
+    <div class="container">
+      <div style="max-width: 48rem; margin-inline: auto; text-align: center;">
+        <span class="badge mb-6" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+          Sites & E-commerces
+        </span>
+
+        <h1 class="hero__title">
+          Sites que Convertem
+          <br />
+          <span class="gradient-text glow">Cliques em Clientes</span>
+        </h1>
+
+        <p class="hero__lead" style="margin-inline: auto;">
+          Criamos sites institucionais, landing pages de alta conversão e lojas online com <strong>design premium</strong>, performance de topo e SEO otimizado.
+        </p>
+
+        <div class="hero__actions" style="justify-content: center;">
+          <a href={SITE.ctaSiteFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
+            Pedir Orçamento Gratuito
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Types -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Tipos de Sites</span>
+        <h2>O site certo para <span class="gradient-text">o seu negócio</span></h2>
+        <p>Cada projeto é único. Escolha o tipo de site que melhor se adapta aos seus objetivos.</p>
+      </div>
+
+      <div class="service-grid">
+        {siteTypes.map((type) => (
+          <div class="service-card">
+            <div class="service-card__icon" set:html={icons[type.icon]} />
+            <h3>{type.title}</h3>
+            <p class="service-card__desc">{type.desc}</p>
+            <div class="service-card__features">
+              {type.features.map((f) => <span class="service-card__feature">{f}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Como Trabalhamos</span>
+        <h2>Do briefing ao <span class="gradient-text">lançamento</span></h2>
+        <p>Um processo transparente e colaborativo em 4 fases claras.</p>
+      </div>
+
+      <div class="process-grid">
+        {steps.map((step) => (
+          <div class="process-card">
+            <span class="process-card__step">{step.step}</span>
+            <div class="process-card__icon" set:html={icons[step.icon]} />
+            <h3>{step.title}</h3>
+            <p>{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Differentials -->
+  <section class="section bg-grid" style="background-size: 50px 50px;">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Porquê a SENVIA</span>
+        <h2>O que nos <span class="gradient-text">diferencia</span></h2>
+        <p>Não fazemos apenas sites bonitos. Fazemos sites que funcionam e geram resultados.</p>
+      </div>
+
+      <div class="differential-grid" style="grid-template-columns: repeat(2, 1fr);">
+        {differentials.map((item) => (
+          <div class="differential-card" style="text-align: left;">
+            <div class="differential-card__icon" style="margin: 0 0 1rem 0;">
+              <div set:html={icons[item.icon]} />
+            </div>
+            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">{item.title}</h3>
+            <p style="font-size: 0.875rem;">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Pronto para ter o site que o seu negócio merece?"
+    subtitle="Agende uma consultoria gratuita. Vamos analisar o seu projeto e apresentar a melhor solução para os seus objetivos."
+    ctaText="Agendar Consultoria Gratuita"
+    ctaUrl={SITE.ctaSiteFormUrl}
+  />
+</Base>
+
+<style>
+  .differential-card .differential-card__icon svg { width: 1.5rem; height: 1.5rem; color: var(--senvia-500); }
+  @media (min-width: 1024px) {
+    .differential-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  }
+</style>

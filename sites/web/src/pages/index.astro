@@ -1,0 +1,193 @@
+---
+import Base from '../layouts/Base.astro';
+import CTASection from '../components/CTASection.astro';
+import { SITE, STATS } from '../config';
+
+const services = [
+  {
+    icon: 'code',
+    title: 'Desenvolvimento de Software à Medida',
+    desc: 'Sistemas de gestão interna, portais de clientes e aplicações específicas para o seu processo. Nós construímos o motor que a sua empresa precisa.',
+    features: ['Sistemas de Gestão', 'Portais & Dashboards', 'APIs & Integrações', 'Apps Web Complexas'],
+    link: '/softwares',
+    cta: 'Saber Mais',
+  },
+  {
+    icon: 'globe',
+    title: 'Sites, Landing Pages & E-commerces',
+    desc: 'Plataformas robustas, rápidas e desenhadas para converter cliques em dinheiro. Design premium com performance de topo.',
+    features: ['Sites Institucionais', 'Landing Pages de Alta Conversão', 'Lojas Online', 'Otimização SEO'],
+    link: '/sites',
+    cta: 'Saber Mais',
+  },
+  {
+    icon: 'cpu',
+    title: 'Automação de Processos com IA',
+    desc: 'Conectamos os seus sistemas. De chatbots inteligentes a integrações complexas que poupam centenas de horas humanas.',
+    features: ['Chatbots com IA', 'Workflows Automáticos', 'Integrações de Sistemas', 'Relatórios Inteligentes'],
+    link: '/chatbots',
+    cta: 'Saber Mais',
+  },
+  {
+    icon: 'rocket',
+    title: 'SENVIA OS — CRM com IA',
+    desc: 'O nosso produto proprietário. Um CRM completo com módulos de Leads, Clientes, Vendas, Financeiro, Marketing e muito mais. Com Inteligência Artificial integrada.',
+    features: ['CRM Completo', 'IA Integrada', 'Automações', 'Multi-Nicho'],
+    link: '/senvia-os',
+    cta: 'Conhecer o SENVIA OS',
+    highlight: true,
+  },
+];
+
+const differentials = [
+  { icon: 'brain', title: 'IA em Tudo', desc: 'Inteligência Artificial integrada em cada solução que construímos. Não é um add-on — é o DNA do nosso trabalho.', stat: '100%', statLabel: 'AI-powered' },
+  { icon: 'zap', title: 'Entrega Rápida', desc: 'Semanas, não meses. A nossa stack moderna e metodologia ágil permitem entregas até 5x mais rápidas que o tradicional.', stat: '5x', statLabel: 'Mais rápido' },
+  { icon: 'users', title: 'Equipa Dedicada', desc: 'Cada projeto tem uma equipa focada. Nada de recursos partilhados ou atenção diluída. O seu projeto é a nossa prioridade.', stat: '1:1', statLabel: 'Foco total' },
+  { icon: 'headset', title: 'Suporte Contínuo', desc: 'O nosso trabalho não acaba na entrega. Suporte pós-projeto, monitorização e evolução contínua do seu sistema.', stat: '24h', statLabel: 'Tempo de resposta' },
+];
+
+const icons: Record<string, string> = {
+  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>',
+  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 5-.5 5-.5"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62.5-5 .5-5"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>',
+  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  headset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+};
+
+const orbitItems = [
+  { icon: 'code', label: 'Software', angle: 0 },
+  { icon: 'globe', label: 'Websites', angle: 90 },
+  { icon: 'cpu', label: 'Automação', angle: 180 },
+  { icon: 'rocket', label: 'Chatbots', angle: 270 },
+];
+---
+
+<Base
+  title="SENVIA"
+  description="SENVIA é uma AI Software House. Desenvolvimento de software à medida, sites, e-commerces, automações com IA e o nosso CRM proprietário SENVIA OS."
+>
+  <!-- Hero -->
+  <section class="hero aurora-bg">
+    <div class="container">
+      <div class="hero__grid">
+        <div>
+          <span class="badge mb-6">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            AI Software House
+          </span>
+
+          <h1 class="hero__title">
+            Inteligência Artificial não é o futuro.
+            <br />
+            <span class="gradient-text glow">É o agora.</span>
+          </h1>
+
+          <p class="hero__lead">
+            A <strong>SENVIA</strong> é especializada em Inteligência Artificial e chegou para transformar a tua empresa. Software, automações e soluções digitais, tudo potenciado por IA.
+          </p>
+
+          <div class="hero__actions">
+            <a href={SITE.ctaFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
+              Agendar Consultoria
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a href="#servicos" class="btn btn--outline btn--lg">Ver os Nossos Serviços</a>
+          </div>
+
+          <div class="hero__stats">
+            {STATS.map((stat) => (
+              <div>
+                <p class="hero__stat-value">{stat.value}</p>
+                <p class="hero__stat-label">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="hero__visual">
+          <div class="hero__visual-center">
+            <img src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" alt="SENVIA" width="64" height="64" />
+            <span>AI SOFTWARE HOUSE</span>
+          </div>
+
+          {orbitItems.map((item) => {
+            const rad = (item.angle * Math.PI) / 180;
+            const radius = 180;
+            const x = Math.cos(rad) * radius;
+            const y = Math.sin(rad) * radius;
+            return (
+              <div class="hero__orbit-item" style={`transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`}>
+                <div class="hero__orbit-icon" set:html={icons[item.icon]} />
+                <span class="hero__orbit-label">{item.label}</span>
+              </div>
+            );
+          })}
+
+          <svg class="hero__orbit-circle" viewBox="0 0 500 500" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;">
+            <circle cx="250" cy="250" r="180" fill="none" stroke="rgba(0, 195, 255, 0.15)" stroke-width="0.5" stroke-dasharray="8 8" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section" id="servicos">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">O que fazemos</span>
+        <h2>Engenharia de Software <span class="gradient-text">com IA</span></h2>
+        <p>Da ideia à produção. Construímos soluções digitais completas que transformam a operação do seu negócio.</p>
+      </div>
+
+      <div class="service-grid">
+        {services.map((service) => (
+          <div class:list={['service-card', { 'service-card--highlight': service.highlight }]}>
+            {service.highlight && <span class="service-card__badge">Produto Próprio</span>}
+            <div class="service-card__icon" set:html={icons[service.icon]} />
+            <h3>{service.title}</h3>
+            <p class="service-card__desc">{service.desc}</p>
+            <div class="service-card__features">
+              {service.features.map((f) => (
+                <span class="service-card__feature">{f}</span>
+              ))}
+            </div>
+            <a href={service.link} class="btn btn--outline">
+              {service.cta}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Us -->
+  <section class="section aurora-bg" id="porque-nos">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge section-header__badge">Porque a SENVIA</span>
+        <h2>O que nos torna <span class="gradient-text">diferentes</span></h2>
+        <p>Não somos mais uma software house. Somos engenheiros que pensam como empresários.</p>
+      </div>
+
+      <div class="differential-grid">
+        {differentials.map((item) => (
+          <div class="differential-card">
+            <div class="differential-card__icon" set:html={icons[item.icon]} />
+            <p class="differential-card__stat">{item.stat}</p>
+            <p class="differential-card__stat-label">{item.statLabel}</p>
+            <h3>{item.title}</h3>
+            <p>{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection />
+</Base>

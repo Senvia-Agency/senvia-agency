@@ -1,0 +1,36 @@
+---
+import { SITE } from '../config';
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+}
+
+const {
+  title = 'A sua equipa de vendas agradece.',
+  subtitle = 'Vamos construir a sua infraestrutura de vendas inteligente?',
+  badge = 'Consultoria Gratuita',
+  ctaText = 'Agendar Consultoria de Implementação',
+  ctaUrl = SITE.ctaFormUrl,
+} = Astro.props;
+---
+
+<section class="cta-section" id="contactos">
+  <div class="container">
+    <div class="cta-section__inner">
+      <span class="badge">{badge}</span>
+      <h2>{title}</h2>
+      <p>{subtitle}</p>
+      <a href={ctaUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
+        {ctaText}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

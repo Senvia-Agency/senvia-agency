@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+const lastUpdated = '12 de julho de 2026';
+---
+
+<Base
+  title="Política de Cookies"
+  description="Política de cookies da SENVIA."
+  canonicalPath="/politica-cookies"
+  noindex
+>
+  <section class="section" style="padding-top: 10rem;">
+    <div class="container container--narrow">
+      <h1>Política de Cookies</h1>
+      <p class="text-muted">Última atualização: {lastUpdated}</p>
+
+      <div class="prose">
+        <p>Esta política explica que cookies usamos em <a href={SITE.url}>www.senvia.pt</a>, para que servem e como os pode desativar.</p>
+
+        <h2>1. O que são cookies</h2>
+        <p>Cookies são pequenos ficheiros de texto armazenados no seu dispositivo quando visita um site. Permitem reconhecer o seu navegador entre visitas.</p>
+
+        <h2>2. Tipos de cookies que usamos</h2>
+
+        <h3>Cookies essenciais (não requerem consentimento)</h3>
+        <ul>
+          <li><code>cookie_consent</code> — regista a sua escolha no banner de consentimento. Duração: 6 meses.</li>
+        </ul>
+
+        <h3>Cookies analíticos</h3>
+        <ul>
+          <li><strong>Google Analytics</strong> (<code>_ga</code>, <code>_gid</code>) — métricas de uso agregadas. Duração: 24 meses / 24 horas.</li>
+        </ul>
+
+        <h3>Cookies de publicidade</h3>
+        <ul>
+          <li><strong>Google Ads</strong> — medição de conversões de campanhas publicitárias (apenas se ativo).</li>
+        </ul>
+
+        <h2>3. Consentimento</h2>
+        <p>Ao clicar em "Aceitar todos" no banner de cookies, consente o uso de cookies analíticos e publicitários. Pode retirar o consentimento a qualquer momento apagando os cookies no seu navegador.</p>
+
+        <h2>4. Gestão no navegador</h2>
+        <p>Pode bloquear cookies nas definições do seu navegador:</p>
+        <ul>
+          <li><a href="https://support.google.com/chrome/answer/95647" rel="noopener">Chrome</a></li>
+          <li><a href="https://support.mozilla.org/pt-PT/kb/ative-e-desative-os-cookies-que-os-sites-utilizam" rel="noopener">Firefox</a></li>
+          <li><a href="https://support.apple.com/pt-pt/guide/safari/sfri11471/mac" rel="noopener">Safari</a></li>
+          <li><a href="https://support.microsoft.com/pt-pt/microsoft-edge" rel="noopener">Edge</a></li>
+        </ul>
+
+        <h2>5. Cookies de terceiros</h2>
+        <p>Os cookies de Google Analytics e Google Ads são geridos por terceiros. Recomendamos consultar a <a href="https://policies.google.com/technologies/cookies" rel="noopener">política de cookies do Google</a>.</p>
+
+        <h2>6. Contacto</h2>
+        <p>Questões: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>

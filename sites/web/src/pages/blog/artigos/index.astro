@@ -1,6 +1,6 @@
 ---
-import Base from '../../layouts/Base.astro';
-import ArticleCard from '../../components/ArticleCard.astro';
+import Base from '../../../layouts/BlogBase.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 
 const all = await getCollection('artigos', ({ data }) => !data.draft);

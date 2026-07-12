@@ -1,5 +1,5 @@
 ---
-import Base from './Base.astro';
+import Base from './BlogBase.astro';
 import AdSense from '../components/AdSense.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import { CATEGORIES, SITE } from '../config';
@@ -49,7 +49,7 @@ const breadcrumbJsonLd = {
       '@type': 'ListItem',
       position: 2,
       name: cat.label,
-      item: new URL(`/categoria/${data.category}/`, SITE.url).toString(),
+      item: new URL(`/blog/categoria/${data.category}/`, SITE.url).toString(),
     },
     {
       '@type': 'ListItem',
@@ -105,7 +105,7 @@ const jsonLd = [articleJsonLd, breadcrumbJsonLd];
     <nav class="breadcrumbs" aria-label="Navegação estrutural">
       <a href="/">Início</a>
       <span class="breadcrumbs__sep" aria-hidden="true">›</span>
-      <a href={`/categoria/${data.category}/`}>{cat.label}</a>
+      <a href={`/blog/categoria/${data.category}/`}>{cat.label}</a>
       <span class="breadcrumbs__sep" aria-hidden="true">›</span>
       <span style="color:var(--fg)">{data.title}</span>
     </nav>
@@ -148,7 +148,7 @@ const jsonLd = [articleJsonLd, breadcrumbJsonLd];
       <div style="margin-bottom:var(--space-6)">
         <strong style="display:block;margin-bottom:var(--space-3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--fg-muted)">Tags</strong>
         <div>
-          {data.tags.map((t) => <a href={`/categoria/${data.category}/`} class="tag-pill">#{t}</a>)}
+          {data.tags.map((t) => <a href={`/blog/categoria/${data.category}/`} class="tag-pill">#{t}</a>)}
         </div>
       </div>
     )}
@@ -156,7 +156,7 @@ const jsonLd = [articleJsonLd, breadcrumbJsonLd];
     <div style="background:var(--accent-soft);border-radius:var(--radius-lg);padding:var(--space-6);margin-block:var(--space-7);text-align:center">
       <h3 style="margin:0 0 var(--space-3)">Quer automatizar o seu funil de vendas com IA?</h3>
       <p style="margin-bottom:var(--space-5);color:var(--fg-soft)">A SENVIA ajuda PMEs portuguesas a implementar IA na prática — desde chatbots até qualificação de leads.</p>
-      <a href={SITE.mainSiteUrl} class="btn btn--primary" rel="noopener">Conhecer a SENVIA →</a>
+      <a href={SITE.url} class="btn btn--primary" rel="noopener">Conhecer a SENVIA →</a>
     </div>
 
     {related.length > 0 && (

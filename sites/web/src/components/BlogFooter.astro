@@ -1,0 +1,64 @@
+---
+import { SITE, SOCIAL, CATEGORIES } from '../config';
+const year = new Date().getFullYear();
+---
+
+<footer style="background:#0b1f2a;color:#cdd6de;padding-block:4rem 1.5rem;margin-top:6rem;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr;gap:2rem;margin-bottom:3rem;" class="blog-footer-grid">
+      <div>
+        <a href="/" style="color:#fff;display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:1rem;">
+          <span style="width:9px;height:9px;background:var(--senvia-500);border-radius:999px;box-shadow:0 0 0 4px rgba(0,195,255,0.08);"></span>
+          <strong style="font-size:1.15rem;">SENVIA</strong>
+          <span style="opacity:0.6;font-weight:400;font-size:0.9em">·blog</span>
+        </a>
+        <p style="max-width:32ch;color:#8a98a6;font-size:0.95rem;margin-top:0.5rem;">
+          Análises e guias práticos sobre IA, seguros, finanças e gestão de PMEs em Portugal.
+        </p>
+        <a href={SITE.url} style="display:inline-block;margin-top:1rem;color:var(--senvia-400);font-weight:600;">
+          Visitar senvia.pt →
+        </a>
+      </div>
+      <div>
+        <h3 style="color:#fff;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;font-weight:600;">Categorias</h3>
+        <ul style="list-style:none;">
+          <li style="margin-bottom:0.5rem;"><a href="/blog/categoria/ia" style="color:#cdd6de;font-size:0.95rem;">Inteligência Artificial</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/blog/categoria/seguros" style="color:#cdd6de;font-size:0.95rem;">Seguros</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/blog/categoria/financas" style="color:#cdd6de;font-size:0.95rem;">Finanças</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/blog/categoria/pmes" style="color:#cdd6de;font-size:0.95rem;">PMEs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color:#fff;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;font-weight:600;">Recursos</h3>
+        <ul style="list-style:none;">
+          <li style="margin-bottom:0.5rem;"><a href="/sobre" style="color:#cdd6de;font-size:0.95rem;">Sobre</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/contacto" style="color:#cdd6de;font-size:0.95rem;">Contacto</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/blog/rss.xml" style="color:#cdd6de;font-size:0.95rem;">RSS</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/sitemap-index.xml" style="color:#cdd6de;font-size:0.95rem;">Sitemap</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color:#fff;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;font-weight:600;">Legal</h3>
+        <ul style="list-style:none;">
+          <li style="margin-bottom:0.5rem;"><a href="/politica-privacidade" style="color:#cdd6de;font-size:0.95rem;">Política de Privacidade</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/politica-cookies" style="color:#cdd6de;font-size:0.95rem;">Política de Cookies</a></li>
+          <li style="margin-bottom:0.5rem;"><a href="/termos-servico" style="color:#cdd6de;font-size:0.95rem;">Termos de Serviço</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.88rem;color:#8a98a6;flex-wrap:wrap;gap:1rem;">
+      <span>© {year} SENVIA. Todos os direitos reservados.</span>
+      <div style="display:flex;gap:1rem;">
+        {SOCIAL.map((s) => (
+          <a href={s.href} rel="noopener" target="_blank" style="color:#cdd6de;">{s.label}</a>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  @media (min-width: 720px) {
+    .blog-footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr !important; gap: 2rem !important; }
+  }
+</style>

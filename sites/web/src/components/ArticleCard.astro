@@ -8,7 +8,7 @@ interface Props {
 
 const { entry } = Astro.props;
 const { data, id } = entry;
-const href = `/artigos/${id}/`;
+const href = `/blog/artigos/${id}/`;
 const cat = CATEGORIES[data.category];
 const dateLabel = new Intl.DateTimeFormat('pt-PT', {
   day: 'numeric',

@@ -2,24 +2,27 @@ export const SITE = {
   name: 'SENVIA',
   domain: 'senvia.pt',
   url: 'https://www.senvia.pt',
-  blogUrl: 'https://blog.senvia.pt',
+  blogUrl: 'https://www.senvia.pt/blog',
   appUrl: 'https://app.senvia.pt',
   locale: 'pt-PT',
   lang: 'pt',
   description:
     'SENVIA é uma AI Software House. Desenvolvimento de software à medida, sites, e-commerces, automações com IA e o nosso CRM proprietário SENVIA OS.',
+  blogDescription:
+    'Análises e guias práticos sobre Inteligência Artificial, Seguros, Finanças e gestão de PMEs em Portugal.',
   email: 'geral.senvia@gmail.com',
   location: 'Leiria, Portugal',
   ctaFormUrl: 'https://app.senvia.pt/c/senvia-agency/formulario-lp',
   ctaSiteFormUrl: 'https://app.senvia.pt/c/senvia-agency/formulario-site',
+  defaultAuthor: 'Redação SENVIA',
 } as const;
 
 export const NAV_LINKS = [
   { label: 'SENVIA OS', href: '/senvia-os' },
   { label: 'Serviços', href: '/servicos', hasDropdown: true },
   { label: 'Sobre Nós', href: '/sobre-nos' },
-  { label: 'Blog', href: 'external:blog' },
-  { label: 'Contactos', href: '/#contactos' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contactos', href: '/contacto' },
 ] as const;
 
 export const SERVICE_LINKS = [
@@ -27,6 +30,50 @@ export const SERVICE_LINKS = [
   { label: 'Chatbots', href: '/chatbots' },
   { label: 'Softwares', href: '/softwares' },
 ];
+
+export const BLOG_NAV_LINKS = [
+  { label: 'Início', href: '/' },
+  { label: 'IA', href: '/categoria/ia' },
+  { label: 'Seguros', href: '/categoria/seguros' },
+  { label: 'Finanças', href: '/categoria/financas' },
+  { label: 'PMEs', href: '/categoria/pmes' },
+  { label: 'Sobre', href: '/sobre' },
+] as const;
+
+export const CATEGORIES = {
+  ia: {
+    label: 'Inteligência Artificial',
+    short: 'IA',
+    description:
+      'Aplicações práticas de IA em empresas portuguesas: automação, chatbots, generativos e análise preditiva.',
+    color: '#00c3ff',
+  },
+  seguros: {
+    label: 'Seguros',
+    short: 'Seguros',
+    description:
+      'Seguros empresariais, responsabilidade civil profissional, cibernéticos e saúde para colaboradores.',
+    color: '#0099cc',
+  },
+  financas: {
+    label: 'Finanças',
+    short: 'Finanças',
+    description:
+      'Financiamento PME, contabilidade digital, tesouraria, crédito e investimento em tecnologia.',
+    color: '#007599',
+  },
+  pmes: {
+    label: 'PMEs',
+    short: 'PMEs',
+    description:
+      'Produtividade, CRM, marketing, vendas e digitalização para pequenas e médias empresas portuguesas.',
+    color: '#004e66',
+  },
+} as const;
+
+export type CategoryKey = keyof typeof CATEGORIES;
+
+export const ADSENSE_CLIENT = 'ca-pub-0000000000000000';
 
 export const SOCIAL = [
   { label: 'Instagram', href: 'https://www.instagram.com/senvia.pt/', icon: 'instagram' },

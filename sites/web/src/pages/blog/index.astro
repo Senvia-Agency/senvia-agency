@@ -1,0 +1,118 @@
+---
+import BlogBase from '../../layouts/BlogBase.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import AdSense from '../../components/AdSense.astro';
+import { CATEGORIES, SITE } from '../../config';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('artigos', ({ data }) => !data.draft);
+const sorted = all.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const featured = sorted.find((e) => e.data.featured) ?? sorted[0];
+const recent = sorted.filter((e) => e.id !== featured?.id).slice(0, 6);
+const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat).slice(0, 4);
+---
+
+<BlogBase
+  title={`${SITE.name} Blog`}
+  description={SITE.blogDescription}
+>
+  <section class="hero aurora-bg" style="min-height: auto; padding-top: 8rem; padding-bottom: 4rem;">
+    <div class="container">
+      <span class="badge mb-6">Novo — Atualizado em {new Intl.DateTimeFormat('pt-PT', { month: 'long', year: 'numeric' }).format(new Date())}</span>
+      <h1 style="margin-bottom: 1.5rem;">IA, Seguros, Finanças e PMEs <br /><span class="gradient-text glow">análises que moving-the-needle.</span></h1>
+      <p class="hero__lead" style="max-width: 40rem;">Artigos práticos sobre como inteligência artificial está a mudar a forma como PMEs portuguesas gerem seguros, crédito, contabilidade e operações.</p>
+      <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+        <a href="#destaques" class="btn btn--primary">Ver artigos</a>
+        <a href="/blog/categoria/ia" class="btn btn--outline">Explorar IA →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="destaques">
+    <div class="container">
+      <div style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
+        <div>
+          <span class="badge mb-2">Em destaque</span>
+          <h2 style="margin: 0;">Mais recente</h2>
+        </div>
+        <a href="/artigos" class="btn btn--outline">Ver todos →</a>
+      </div>
+
+      {featured && (
+        <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem;" class="featured-grid">
+          <div style="background: linear-gradient(135deg, rgba(0,195,255,0.2), rgba(0,117,153,0.3)); border-radius: var(--radius-lg); padding: 2.5rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 380px; color: #fff; border: 1px solid rgba(0,195,255,0.3);">
+            <span class="badge" style="background: rgba(255,255,255,0.2); color: #fff; align-self: flex-start; margin-bottom: 1rem;">{CATEGORIES[featured.data.category].label}</span>
+            <h3 style="color: #fff; font-size: 1.8rem; margin-bottom: 1rem;">{featured.data.title}</h3>
+            <p style="opacity: 0.9; margin-bottom: 1.5rem;">{featured.data.description}</p>
+            <a href={`/blog/artigos/${featured.id}/`} class="btn btn--outline" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); color: #fff; align-self: flex-start;">Ler artigo →</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {recent.slice(0, 3).map((entry) => (
+              <a href={`/blog/artigos/${entry.id}/`} style="display: flex; gap: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color 0.2s, transform 0.2s;" class="recent-item">
+                <div style="width: 6px; align-self: stretch; background: var(--senvia-500); border-radius: 3px;"></div>
+                <div>
+                  <small style="color: var(--senvia-400); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">{CATEGORIES[entry.data.category].short}</small>
+                  <h4 style="margin: 0.25rem 0; font-size: 1rem; line-height: 1.35;">{entry.data.title}</h4>
+                  <small style="color: var(--fg-muted);">{new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'short' }).format(entry.data.pubDate)}</small>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <div class="container">
+    <div style="margin-block: 2rem; display: flex; justify-content: center;">
+      <AdSense slot="2222222222" label />
+    </div>
+  </div>
+
+  {Object.entries(CATEGORIES).map(([key, cat]) => {
+    const posts = byCategory(key);
+    if (posts.length === 0) return null;
+    return (
+      <section class="section" style="padding-block: 3rem;">
+        <div class="container">
+          <div style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
+            <div>
+              <span class="badge mb-2" style={`color: ${cat.color};`}>{cat.label}</span>
+              <p class="text-muted" style="margin: 0; max-width: 60ch;">{cat.description}</p>
+            </div>
+            <a href={`/blog/categoria/${key}/`} class="btn btn--outline">Ver tudo →</a>
+          </div>
+          <div class="article-grid">
+            {posts.map((entry) => <ArticleCard entry={entry} />)}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="section">
+    <div class="container container--narrow" style="text-align: center; background: linear-gradient(135deg, #0b1f2a, #004e66); border-radius: var(--radius-lg); padding: 4rem 2rem; color: #fff;">
+      <h2 style="color: #fff; margin-top: 0;">Receba novos artigos no email</h2>
+      <p style="opacity: 0.85; margin-bottom: 2rem;">Sem spam. Apenas análises mensais sobre IA, seguros e finanças para PMEs.</p>
+      <form style="display: flex; gap: 0.5rem; max-width: 480px; margin: 0 auto; flex-wrap: wrap;" action="/contacto" method="get">
+        <input type="email" required placeholder="seu@email.pt" style="flex: 1; min-width: 200px; padding: 0.875rem 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff;" />
+        <button type="submit" class="btn btn--primary">Subscrever</button>
+      </form>
+    </div>
+  </section>
+</BlogBase>
+
+<style>
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+  .recent-item:hover {
+    border-color: var(--senvia-500) !important;
+    transform: translateY(-2px);
+  }
+  @media (min-width: 860px) {
+    .featured-grid { grid-template-columns: 1.5fr 1fr !important; }
+  }
+</style>

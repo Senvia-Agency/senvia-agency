@@ -73,7 +73,7 @@ export const CATEGORIES = {
 
 export type CategoryKey = keyof typeof CATEGORIES;
 
-export const ADSENSE_CLIENT = 'ca-pub-0000000000000000';
+export const ADSENSE_CLIENT = 'ca-pub-2464715822662169';
 
 export const SOCIAL = [
   { label: 'Instagram', href: 'https://www.instagram.com/senvia.pt/', icon: 'instagram' },

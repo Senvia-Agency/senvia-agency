@@ -22,4 +22,10 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'viewport',
   },
+  vite: {
+    server: { fs: { allow: ['..'] } },
+  },
+  markdown: {
+    shikiConfig: { theme: 'github-dark' },
+  },
 });

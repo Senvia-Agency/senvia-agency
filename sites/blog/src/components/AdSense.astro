@@ -1,0 +1,36 @@
+---
+import { ADSENSE_CLIENT } from '../config';
+
+interface Props {
+  slot?: string;
+  format?: string;
+  responsive?: boolean;
+  style?: string;
+  label?: boolean;
+}
+
+const {
+  slot = '0000000000',
+  format = 'auto',
+  responsive = true,
+  style = 'display:block',
+  label = true,
+} = Astro.props;
+---
+
+{
+  label && (
+    <span class="ad-slot__label">Publicidade</span>
+  )
+}
+<ins
+  class="adsbygoogle"
+  style={style}
+  data-ad-client={ADSENSE_CLIENT}
+  data-ad-slot={slot}
+  data-ad-format={format}
+  data-full-width-responsive={responsive ? 'true' : 'false'}
+></ins>
+<script is:inline>
+  (window.adsbygoogle = window.adsbygoogle || []).push({});
+</script>

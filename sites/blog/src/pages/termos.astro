@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+const lastUpdated = '12 de julho de 2026';
+---
+
+<Base
+  title="Termos de Serviço"
+  description="Termos de uso do blog SENVIA."
+  noindex
+>
+  <section class="section">
+    <div class="container container--narrow">
+      <h1 style="margin-top:0">Termos de Serviço</h1>
+      <p class="text-muted">Última atualização: {lastUpdated}</p>
+
+      <div class="prose">
+        <p>Ao aceder a <a href={SITE.url}>{SITE.domain}</a>, aceita os termos abaixo. Se não concordar, por favor não utilize o site.</p>
+
+        <h2>1. Uso aceitável</h2>
+        <ul>
+          <li>Não pode usar o site para fins ilegais ou prejudiciais;</li>
+          <li>Não pode tentar perturbar o funcionamento técnico do site;</li>
+          <li>Não pode reproduzir conteúdo sem atribuição (ver secção 3).</li>
+        </ul>
+
+        <h2>2. Conteúdo</h2>
+        <p>Os artigos publicados têm finalidade informativa e não constituem aconselhamento financeiro, fiscal, jurídico ou segurador. Para decisões específicas consulte um profissional qualificado.</p>
+
+        <h2>3. Propriedade intelectual</h2>
+        <p>Os artigos originais do {SITE.shortName} estão licenciados em <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener">CC BY-NC 4.0</a> — pode partilhar e adaptar com atribuição, sem uso comercial. Imagens e citações mantêm a licença da origem.</p>
+
+        <h2>4. Publicidade</h2>
+        <p>Este site exibe anúncios do Google AdSense e pode incluir links de afiliados. Estas parcerias são identificadas e não influenciam o conteúdo editorial.</p>
+
+        <h2>5. Limitação de responsabilidade</h2>
+        <p>O {SITE.shortName} não se responsabiliza por decisões tomadas com base em artigos, nem por danos decorrentes do uso do site.</p>
+
+        <h2>6. Alterações</h2>
+        <p>Os termos podem ser atualizados a qualquer momento. A data no topo indica a última revisão.</p>
+
+        <h2>7. Lei aplicável</h2>
+        <p>Estes termos regem-se pela lei portuguesa. Eventuais litígios são dirimidos nos tribunais de Portugal.</p>
+
+        <h2>8. Contacto</h2>
+        <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      </div>
+    </div>
+  </section>
+</Base>

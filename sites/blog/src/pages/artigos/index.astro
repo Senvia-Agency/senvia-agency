@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('artigos', ({ data }) => !data.draft);
+const sorted = all.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<Base
+  title="Todos os artigos"
+  description="Arquivo completo de artigos sobre IA, seguros, finanças e PMEs."
+>
+  <section class="section">
+    <div class="container">
+      <span class="badge" style="margin-bottom:1rem">Arquivo</span>
+      <h1 style="margin-top:0">Todos os artigos</h1>
+      <p class="lead" style="margin-bottom:var(--space-7)">{sorted.length} artigos publicados.</p>
+
+      <div class="article-grid">
+        {sorted.map((entry) => <ArticleCard entry={entry} />)}
+      </div>
+    </div>
+  </section>
+</Base>

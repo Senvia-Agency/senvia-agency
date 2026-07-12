@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 
+const BLOG_URL = import.meta.env.DEV
+  ? "http://localhost:4321"
+  : "https://blog.senvia.pt";
+
 const Navbar = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -64,6 +68,18 @@ const Navbar = memo(() => {
             >
               Depoimentos
             </button>
+            <a
+              href={BLOG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-senvia-100 transition-colors cursor-pointer font-medium inline-flex items-center gap-1"
+            >
+              Blog
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </a>
             <button 
               onClick={() => scrollToSection('contacto')}
               className="text-white hover:text-senvia-100 transition-colors cursor-pointer font-medium"
@@ -130,6 +146,14 @@ const Navbar = memo(() => {
                 >
                   Depoimentos
                 </button>
+                <a
+                  href={BLOG_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-left px-3 py-2 text-white hover:text-senvia-100 transition-colors rounded-lg hover:bg-white/10"
+                >
+                  Blog ↗
+                </a>
                 <button
                   onClick={() => scrollToSection('contacto')}
                   className="block w-full text-left px-3 py-2 text-white hover:text-senvia-100 transition-colors rounded-lg hover:bg-white/10"

@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES } from '../config';
+
+interface Props {
+  entry: CollectionEntry<'artigos'>;
+}
+
+const { entry } = Astro.props;
+const { data, id } = entry;
+const href = `/artigos/${id}/`;
+const cat = CATEGORIES[data.category];
+const dateLabel = new Intl.DateTimeFormat('pt-PT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(data.pubDate);
+---
+
+<article class="article-card">
+  <a href={href} class="article-card__cover" aria-label={data.title} style={data.coverImage ? `background-image:url(${data.coverImage});background-size:cover;background-position:center` : ''}>
+    {!data.coverImage && <span class="badge" style="position:absolute;top:1rem;left:1rem;background:rgba(255,255,255,0.92);color:#007599">{cat.short}</span>}
+  </a>
+  <div class="article-card__body">
+    <span class="article-card__category">{cat.label}</span>
+    <h3 class="article-card__title">
+      <a href={href}>{data.title}</a>
+    </h3>
+    <p class="article-card__excerpt">{data.description}</p>
+    <div class="article-card__meta">
+      <span>{dateLabel}</span>
+      {data.readingTime && <span>{data.readingTime} min</span>}
+    </div>
+  </div>
+</article>

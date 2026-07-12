@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config';
+---
+
+<Base
+  title="Contacto"
+  description="Contacte a equipa do blog SENVIA."
+  noindex
+>
+  <section class="section">
+    <div class="container container--narrow">
+      <span class="badge" style="margin-bottom:1rem">Contacto</span>
+      <h1 style="margin-top:0">Fale connosco</h1>
+
+      <div class="prose">
+        <p>Tem uma sugestão, correção ou ideia para um artigo? Envia-nos um email para
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a> e respondemos em 2 a 3 dias úteis.</p>
+
+        <h2>Para clientes SENVIA</h2>
+        <p>Se já é cliente da SENVIA e precisa de suporte no seu funil de vendas, chatbot ou
+          dashboard, o contacto correto é o portal de suporte em
+          <a href={SITE.appUrl}>{SITE.appUrl.replace('https://', '')}</a>.</p>
+
+        <h2>Para novos projetos</h2>
+        <p>Interessado em implementar IA na sua empresa? Visite
+          <a href={SITE.mainSiteUrl}>{SITE.mainSiteUrl.replace('https://', '')}</a>
+          para ver os serviços disponíveis e marcar uma chamada de diagnóstico.</p>
+
+        <h2>Parcerias editoriais</h2>
+        <p>Aceitamos guest posts de especialistas com experiência comprovada em IA, seguros,
+          finanças ou gestão de PMEs em Portugal. Inclua no email:</p>
+        <ul>
+          <li>Tópico proposto (mínimo 3 ângulos)</li>
+          <li>Breve biografia e empresa</li>
+          <li>Exemplos de artigos já publicados (se aplicável)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

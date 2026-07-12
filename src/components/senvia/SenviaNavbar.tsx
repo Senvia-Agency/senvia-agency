@@ -3,6 +3,10 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getAppUrl } from '@/utils/getSignupUrl';
 
+const BLOG_URL = import.meta.env.DEV
+  ? "http://localhost:4321"
+  : "https://blog.senvia.pt";
+
 const serviceSubmenus = [
   { label: "Sites & E-commerces", href: "/sites" },
   { label: "Chatbots", href: "/chatbots" },
@@ -86,10 +90,10 @@ const SenviaNavbar = () => {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </Link>
 
-            <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 relative group">
+            <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 relative group">
               Blog
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-            </Link>
+            </a>
 
             <button onClick={() => document.getElementById('contactos')?.scrollIntoView({ behavior: 'smooth' })} className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 relative group">
               Contactos
@@ -141,9 +145,9 @@ const SenviaNavbar = () => {
               <Link to="/sobre-nos" onClick={closeMobile} className="block w-full text-left text-muted-foreground hover:text-foreground hover:bg-primary/5 py-3 px-4 rounded-lg">
                 Sobre Nós
               </Link>
-              <Link to="#" onClick={closeMobile} className="block w-full text-left text-muted-foreground hover:text-foreground hover:bg-primary/5 py-3 px-4 rounded-lg">
-                Blog
-              </Link>
+              <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" onClick={closeMobile} className="block w-full text-left text-muted-foreground hover:text-foreground hover:bg-primary/5 py-3 px-4 rounded-lg">
+                Blog ↗
+              </a>
               <button onClick={() => { document.getElementById('contactos')?.scrollIntoView({ behavior: 'smooth' }); closeMobile(); }} className="block w-full text-left text-muted-foreground hover:text-foreground hover:bg-primary/5 py-3 px-4 rounded-lg">
                 Contactos
               </button>

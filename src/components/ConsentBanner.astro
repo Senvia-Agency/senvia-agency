@@ -183,6 +183,10 @@ import { ADSENSE_CLIENT } from '../config';
     opacity: 0;
   }
 
+  .consent-banner[hidden] {
+    display: none;
+  }
+
   .consent-banner--visible {
     transform: translateY(0);
     opacity: 1;
@@ -287,6 +291,10 @@ import { ADSENSE_CLIENT } from '../config';
     align-items: center;
     justify-content: center;
     padding: 1rem;
+  }
+
+  .consent-manage[hidden] {
+    display: none;
   }
 
   .consent-manage__inner {

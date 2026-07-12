@@ -9,7 +9,8 @@ readingTime: 9
 featured: true
 ---
 
-Um CRM com IA é hoje a alavanca comercial mais acessível para PMEs portuguesas. A tecnologia que há 5 anos era exclusiva de equipas enterprise — scoring de leads, previsão de vendas, sugestões de próximo passo — está hoje disponível em ferramentas que custam €12-€50 por utilizador por mês. O problema deixou de ser custo; passou a ser escolha e implementação.
+Um CRM com IA é hoje a alavanca comercial mais acessível para PMEs portuguesas. A tecnologia que há 5 anos era exclusiva de equipas enterprise, com funcionalidades como scoring de leads, previsão de vendas e sugestões de próximo passo. Está hoje disponível em ferramentas que custam €12-€50 por utilizador por mês.
+O problema deixou de ser custo; passou a ser escolha e implementação.
 
 Este guia cobre os quatro principais CRMs com IA, como escolher entre eles e como implementar sem que a equipa rejeite a ferramenta.
 
@@ -48,7 +49,7 @@ Baseado em o que funcionou com clientes similares.
 
 ### Resumo automático de atividades
 
-Reuniões transcritas, calls gravadas, emails trocados — IA resume em:
+Reuniões transcritas, calls gravadas, emails trocados. IA resume em:
 - Pontos-chave
 - Action items
 - Riscos identificados
@@ -191,27 +192,27 @@ Verificar compatibilidade antes de escolher.
 
 ## Processo de implementação em 8-12 semanas
 
-### Semana 1-2 — Discovery
+### Semana 1-2: Discovery
 
 - Mapear processo comercial atual (lucro canvas, journey map)
 - Identificar momentos de fricção
 - Definir KPIs que CRM vai melhorar
 - Stakeholders identificados
 
-### Semana 3-4 — Setup técnico
+### Semana 3-4: Setup técnico
 
 - Conta criada, utilizadores convidados
 - Importação de contatos (limpeza prévia essencial)
 - Customização de campos e stages do pipeline
 - Integrações com sistemas existentes
 
-### Semana 5-6 — Migration
+### Semana 5-6: Migration
 
 - Migração de dados históricos (clientes, oportunidades)
 - Validação de qualidade de dados
 - Setup de automações básicas (workflows, notificações)
 
-### Semana 7-8 — Formation
+### Semana 7-8: Formation
 
 - Sessions de formation por perfil:
   - Comercial: criação de deals, atividades, forecasts
@@ -219,13 +220,13 @@ Verificar compatibilidade antes de escolher.
   - Gestor: dashboards, relatórios
 - Documentação interna (checklists, vídeos)
 
-### Semana 9-10 — Piloto
+### Semana 9-10: Piloto
 
 - Equipa piloto (2-3 pessoas) usa em produção
 - Feedback recolhido diariamente
 - Ajustes no setup
 
-### Semana 11-12 — Rollout total
+### Semana 11-12: Rollout total
 
 - Todos os utilizadores migrados
 - Processo antigo descontinuado
@@ -345,12 +346,18 @@ Em PT, cada vez mais B2B acontece no WhatsApp. CRMs a integrar nativamente.
 
 ## Conclusão
 
-CRM com IA é investimento estratégico que distingue equipas comerciais profissionais de amadoras. Para PME portuguesa em 2026, escolha certa tem ROI em 3-6 meses e melhoria duradoura na eficiência comercial.
+CRM com IA é investimento estratégico que distingue equipas comerciais profissionais de amadoras.
+Para PME portuguesa em 2026, escolha certa tem ROI em 3-6 meses e melhoria duradoura na eficiência comercial.
 
 Mas CRM não é bala de prata. Implementação cuidada (8-12 semanas), formation séria e owner dedicado são tão importantes como a escolha da ferramenta.
 
-A pior decisão não é escolher o CRM errado — é escolher CRM e não investir na implementação. Melhor ficar em Excel bem feito do que ter Salesforce usado a 10% da capacidade.
+A pior decisão não é escolher o CRM errado. É escolher CRM e não investir na implementação. Melhor ficar em Excel bem feito do que ter Salesforce usado a 10% da capacidade.
 
-Para PME que nunca teve CRM: começar com HubSpot Free ou Pipedrive Essential. Baixo custo, setup rápido, aprende-se o que se precisa. Depois, em 12-18 meses, escolher ferramenta definitiva com experiência acumulada.
+Para PME que nunca teve CRM: começar com HubSpot Free ou Pipedrive Essential. Baixo custo, setup rápido, aprende-se o que se precisa.
+Depois, em 12-18 meses, escolher ferramenta definitiva com experiência acumulada.
 
 Para PME que já tem CRM subutilizado: investimento em formation e owner interno antes de mudar de ferramenta. Mudar de Salesforce para HubSpot sem resolver problemas de processo não resolve nada.
+
+---
+
+**💡 Dica prática:** Durante a implementação do CRM, resista à tentação de migrar todo o histórico de uma só vez. Migre apenas os últimos 12 meses e arquive o resto. O esforço de limpar dados antigos raramente compensa, e a equipa começa a usar o CRM mais rapidamente.

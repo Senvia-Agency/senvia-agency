@@ -9,13 +9,16 @@ readingTime: 8
 featured: true
 ---
 
-A inteligência artificial deixou de ser promessa no setor segurador português. Em 2026, três das quatro maiores seguradoras a operar em Portugal já usam modelos de IA em pelo menos uma fase do seu processo — da **subscrição** à **gestão de sinistros**. Para uma PME que contrata seguros, isto traduz-se em coisas concretas: apólices emitidas em horas em vez de dias, prémios ajustados ao risco real e respostas a sinistros mais rápidas.
+A inteligência artificial deixou de ser promessa no setor segurador português.
+Em 2026, três das quatro maiores seguradoras a operar em Portugal já usam modelos de IA em pelo menos uma fase do seu processo. Da **subscrição** à **gestão de sinistros**.
+Para uma PME que contrata seguros, isto traduz-se em coisas concretas: apólices emitidas em horas em vez de dias, prémios ajustados ao risco real e respostas a sinistros mais rápidas.
 
 Este artigo mapeia as cinco frentes onde a IA está a ter impacto prático, com exemplos do mercado português e o que deve esperar quando for renovar ou contratar um seguro empresarial.
 
 ## 1. Subscrição automatizada (underwriting)
 
-Tradicionalmente, quando uma empresa pede um seguro de responsabilidade civil profissional, um underwriter humano revista o pedido, consulta histórico, decide o prémio. Este processo demora de 3 a 10 dias úteis para coberturas complexas.
+Tradicionalmente, quando uma empresa pede um seguro de responsabilidade civil profissional, um underwriter humano revista o pedido, consulta histórico, decide o prémio.
+Este processo demora de 3 a 10 dias úteis para coberturas complexas.
 
 Com IA, o fluxo é diferente:
 
@@ -38,11 +41,12 @@ A IA permite incorporar **variáveis dinâmicas** no cálculo de prémios:
 
 O resultado é que **duas empresas com o mesmo CAE podem pagar prémios muito diferentes**, baseado em dados concretos em vez de médias setoriais.
 
-Para uma PME isto é duplo-cutelo: se tem bom histórico, paga menos. Se tem sinistralidade alta, paga mais — e o incentivo a melhorar é claro.
+Para uma PME isto é duplo-cutelo: se tem bom histórico, paga menos. Se tem sinistralidade alta, paga mais. E o incentivo a melhorar é claro.
 
 ### Exemplo concreto
 
-Uma empresa de transportes com 12 viaturas pode reduzir o prémio do seguro de frota em 15-25% se instalar telemóvel com score de condução. A Allianz Portugal tem um produto deste tipo (Allianz Drive) que faz exatamente isto.
+Uma empresa de transportes com 12 viaturas pode reduzir o prémio do seguro de frota em 15-25% se instalar telemóvel com score de condução.
+A Allianz Portugal tem um produto deste tipo (Allianz Drive) que faz exatamente isto.
 
 ## 3. Deteção de fraude
 
@@ -59,7 +63,7 @@ Isto reduz os falsos positivos (sinistros legítimos que eram bloqueados) e apan
 
 ## 4. Chatbots para atendimento de sinistros
 
-A fase mais demorativa do processo de sinistro é frequentemente a **primeira comunicação** — preencher formulários, descrever o sucedido, anexar fotos. Chatbots baseados em LLMs podem agora:
+A fase mais demorativa do processo de sinistro é frequentemente a **primeira comunicação**. Preencher formulários, descrever o sucedido, anexar fotos. Chatbots baseados em LLMs podem agora:
 
 - Receber fotos do sinistro e identificar o tipo de dano (cristais, água, roubo)
 - Fazer perguntas contextualizadas em linguagem natural
@@ -82,7 +86,7 @@ As seguradoras usam IA para prever **qual a probabilidade de um cliente não ren
 - Descontos direcionados
 - Chamadas proativas do gestor de conta
 
-Para a PME, isto é uma alavanca de negociação. **Receber uma chamada antes da renovação é sinal de que o sistema identificou a empresa como "em risco de saída"** — e é o momento ideal para pedir melhores condições.
+Para a PME, isto é uma alavanca de negociação. **Receber uma chamada antes da renovação é sinal de que o sistema identificou a empresa como "em risco de saída"**. E é o momento ideal para pedir melhores condições.
 
 ## O que esperar numa cotação em 2026
 
@@ -95,7 +99,7 @@ Quando for renovar o seu seguro empresarial, deve encontrar:
 | Emissão de apólice | 2-3 dias úteis | Algumas horas |
 | Primeira resposta a sinistro | 1-3 dias úteis | 1-4 horas |
 
-Se o seu corretor não consegue entregar estes tempos, é sinal de que trabalha com seguradoras que ainda não modernizaram — e provavelmente está a pagar o overhead desse atraso no prémio.
+Se o seu corretor não consegue entregar estes tempos, é sinal de que trabalha com seguradoras que ainda não modernizaram. E provavelmente está a pagar o overhead desse atraso no prémio.
 
 ## Checklist para a sua PME
 
@@ -109,6 +113,7 @@ Antes de contratar ou renovar:
 
 ## Conclusão
 
-A IA no seguro não é sobre robôs a tomar decisões — é sobre processos mais rápidos, mais justos e mais transparentes. Para uma PME portuguesa, o impacto é direto: menos tempo perdido em burocracia, prémios mais ajustados ao risco real e sinistros resolvidos mais depressa.
+A IA no seguro não é sobre robôs a tomar decisões. É sobre processos mais rápidos, mais justos e mais transparentes.
+Para uma PME portuguesa, o impacto é direto: menos tempo perdido em burocracia, prémios mais ajustados ao risco real e sinistros resolvidos mais depressa.
 
-A questão em 2026 já não é **se** deve trabalhar com seguradoras modernizadas — é identificar quais o estão, e fazer a escolha consciente.
+A questão em 2026 já não é **se** deve trabalhar com seguradoras modernizadas. É identificar quais o estão, e fazer a escolha consciente.

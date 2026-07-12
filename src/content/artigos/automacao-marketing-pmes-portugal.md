@@ -8,7 +8,9 @@ tags: ["automatização", "email-marketing", "lead-scoring", "rgpd", "workflows"
 readingTime: 8
 ---
 
-Automação de marketing é o projeto de maior ROI para PME portuguesa em 2026: custo baixo, retorno rápido, ferramentas maduras. A maioria das PME ainda trata email marketing e lead nurturing como tarefa manual semiautomática. Quem automatiza verdadeiramente opera com escala semelhante a empresas muito maiores, com 50-70% menos esforço.
+Automação de marketing é o projeto de maior ROI para PME portuguesa em 2026: custo baixo, retorno rápido, ferramentas maduras.
+A maioria das PME ainda trata email marketing e lead nurturing como tarefa manual semiautomática.
+Quem automatiza verdadeiramente opera com escala semelhante a empresas muito maiores, com 50-70% menos esforço.
 
 ## O que é automação de marketing
 
@@ -160,9 +162,9 @@ Score = Origem + Comportamento + Demografia
 
 ### Thresholds
 
-- **< 50**: lead frio — nurturing genérico
-- **50-100**: lead morno — nurturing específico
-- **> 100**: lead quente — passa para vendas
+- **< 50**: lead frio. Nurturing genérico
+- **50-100**: lead morno. Nurturing específico
+- **> 100**: lead quente. Passa para vendas
 
 ### Ajuste contínuo
 
@@ -306,6 +308,11 @@ Custo PME média: €200-€600/mês.
 
 Automação de marketing é projeto com melhor relação custo-impacto em PME portuguesa. €100-€500/mês em ferramentas + 200h de trabalho inicial produzem resultado mensurável em 90 dias.
 
-Para PME que ainda envia newsletters manuais para lista não segmentada: começar com HubSpot Free, configurar welcome series e lead scoring básico. Em 60 dias tem-se tração visível. Em 6 meses, automação é parte do DNA.
+Para PME que ainda envia newsletters manuais para lista não segmentada: começar com HubSpot Free, configurar welcome series e lead scoring básico. Em 60 dias tem-se tração visível.
+Em 6 meses, automação é parte do DNA.
 
-A questão em 2026 não é "se" automatizar marketing — é quanto tempo mais se pode esperar enquanto concorrentes já operam com escala e previsibilidade muito maiores.
+A questão em 2026 não é "se" automatizar marketing. É quanto tempo mais se pode esperar enquanto concorrentes já operam com escala e previsibilidade muito maiores.
+
+---
+
+**💡 Dica prática:** Comece por automatizar apenas um workflow, de preferência o welcome series. É o mais simples de configurar e o que dá retorno mais rápido. Depois de ver resultados, expanda para nurturing e reativação.

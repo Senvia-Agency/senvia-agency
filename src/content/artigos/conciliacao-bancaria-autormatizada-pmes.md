@@ -8,11 +8,14 @@ tags: ["conciliação", "psd2", "primavera", "automação", "tesouraria"]
 readingTime: 8
 ---
 
-A conciliação bancária é uma das tarefas mais repetitivas e necessárias na contabilidade de uma PME. Em Portugal, com a chegada da diretiva PSD2 e o amadurecimento dos sistemas de IA, deixou de fazer sentido fazê-la manualmente. Este artigo descreve como implementar conciliação automatizada, que ferramentas usar em Portugal e que resultados reais esperar.
+A conciliação bancária é uma das tarefas mais repetitivas e necessárias na contabilidade de uma PME.
+Em Portugal, com a chegada da diretiva PSD2 e o amadurecimento dos sistemas de IA, deixou de fazer sentido fazê-la manualmente.
+Este artigo descreve como implementar conciliação automatizada, que ferramentas usar em Portugal e que resultados reais esperar.
 
 ## O que é conciliação bancária
 
-Conciliação bancária é o processo de comparar os movimentos do extrato bancário com os lançamentos contabilísticos para garantir que correspondem. Cada movimento bancário deve ter um documento suporte (fatura, recibo, nota de débito/crédito) e estar lançado corretamente no sistema de contabilidade.
+Conciliação bancária é o processo de comparar os movimentos do extrato bancário com os lançamentos contabilísticos para garantir que correspondem.
+Cada movimento bancário deve ter um documento suporte (fatura, recibo, nota de débito/crédito) e estar lançado corretamente no sistema de contabilidade.
 
 ### Porque é crítica
 
@@ -132,27 +135,27 @@ A Diretiva PSD2 (em vigor desde 2019) obriga bancos europeus a disponibilizar AP
 
 Para PME com 50 colaboradores, faturação €3M/ano, 350 movimentos bancários/mês.
 
-### Semana 1 — Diagnóstico
+### Semana 1: Diagnóstico
 
 - Avaliação do software atual (Primavera ERP sem Banking Sync)
 - Mapeamento de tipos de movimento (recorrentes vs únicos)
 - Identificação de faturas duplicadas no histórico (havia ~5/mês)
 
-### Semana 2 — Setup técnico
+### Semana 2: Setup técnico
 
 - Subscrição do Primavera Banking Sync
 - Conexão com conta bancária via PSD2 (CGD, BCP, Santander)
 - Configuração de regras de matching básicas (fornecedor + valor)
 - Formation inicial do contabilista interno (8 horas)
 
-### Semana 3 — Migração e testes
+### Semana 3: Migração e testes
 
 - Importação das últimas 50 faturas para treino do sistema
 - Teste com dados dos últimos 3 meses
 - Ajuste de regras (5-10 casos que não bateram)
 - Marcação de limite de confiança para auto-aprovação (90%)
 
-### Semana 4 — Go-live
+### Semana 4: Go-live
 
 - Ativação em produção
 - Contabilista valida fila diariamente (15 min)
@@ -215,7 +218,7 @@ Se software escolhido descontinua módulo banking, processo todo quebra. Diversi
 ### Não vale a pena se
 
 - Volume < 50 movimentos/mês (overhead técnico não compensa)
-- Empresa ainda trabalha em Excel — migrar para software primeiro
+- Empresa ainda trabalha em Excel: migrar para software primeiro
 - Falta de recursos internos paraFormation e configuração
 
 ## Tendências 2026-2027
@@ -223,7 +226,7 @@ Se software escolhido descontinua módulo banking, processo todo quebra. Diversi
 ### IA generativa para descrições ambíguas
 
 Em vez de regras, LLMs interpretam descrições livres do banco:
-- "TRF SENVIA LDA NIF 514..." → "Transferência recebida de Senvia"
+- "TRF SENVIA LDA NIF 514. " → "Transferência recebida de Senvia"
 - "DD EDP COMERCIAL" → "Débito direto EDP"
 - "POS CAFE CENTRALIS" → "Pagamento cartão Café Central"
 
@@ -260,7 +263,7 @@ Padrões de negócio mudam (novos fornecedores, novos tipos de despesa). Regras 
 - [ ] Volume mensal de movimentos medido
 - [ ] Tempo atual gasto em conciliação medido
 - [ ] Software atual identificado e compatibilidade verificada
-- [ ] Orçamento mensal disponível (incl. addon + setup)
+- [ ] Orçamento mensal disponível (incl. Addon + setup)
 - [ ] Recurso interno designado para Formation
 - [ ] TOC externo consultado e em acordo
 - [ ] Histórico dos últimos 6 meses limpo
@@ -268,8 +271,15 @@ Padrões de negócio mudam (novos fornecedores, novos tipos de despesa). Regras 
 
 ## Conclusão
 
-Para uma PME portuguesa com volume bancário significativo, automatização da conciliação é uma das decisões com melhor ROI financeiro em 2026. Investimento de €40-€100/mês em software adicional, mais custo de setup de algumas horas, liberta entre 8-20 horas/mês de trabalho administrativo.
+Para uma PME portuguesa com volume bancário significativo, automatização da conciliação é uma das decisões com melhor ROI financeiro em 2026.
+Investimento de €40-€100/mês em software adicional, mais custo de setup de algumas horas, liberta entre 8-20 horas/mês de trabalho administrativo.
 
-A questão não é se vale a pena — é se a empresa consegue esperar mais 6-12 meses sem perder competitividade. Concorrentes que automatizaram contabilidade operam com estruturas mais leves e têm visibilidade financeira em tempo real, enquanto os outros ainda esperam pelo extrato mensal em PDF.
+A questão não é se vale a pena. É se a empresa consegue esperar mais 6-12 meses sem perder competitividade.
+Concorrentes que automatizaram contabilidade operam com estruturas mais leves e têm visibilidade financeira em tempo real, enquanto os outros ainda esperam pelo extrato mensal em PDF.
 
-Para começar sem grande risco: contactar o atual fornecedor de software (Primavera, PHC, Jasmin), pedir demo do módulo banking e fazer piloto de 60 dias. Resultados são visíveis em 4 semanas e reversíveis se não convencerem.
+Para começar sem grande risco: contactar o atual fornecedor de software (Primavera, PHC, Jasmin), pedir demo do módulo banking e fazer piloto de 60 dias.
+Resultados são visíveis em 4 semanas e reversíveis se não convencerem.
+
+---
+
+**💡 Dica prática:** Comece com um limite de confiança de 90% para aprovação automática. Nas primeiras semanas, reveja todos os matches manualmente para calibrar o sistema. Ao fim de 2-3 meses, pode subir para 95% com confiança.

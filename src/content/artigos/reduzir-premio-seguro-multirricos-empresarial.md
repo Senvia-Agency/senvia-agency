@@ -8,7 +8,9 @@ tags: ["multirriscos", "prémio", "negociação", "mitigação", "pme"]
 readingTime: 8
 ---
 
-O seguro multirriscos empresarial é tipicamente o segundo ou terceiro maior custo segurável de uma PME portuguesa (depois de acidentes de trabalho e saúde grupo). Muitas empresas aceitam o prémio que lhes é apresentado sem questionar — perdendo oportunidades de reduzir 20-40% sem sacrificar cobertura. Este artigo mostra como.
+O seguro multirriscos empresarial é tipicamente o segundo ou terceiro maior custo segurável de uma PME portuguesa (depois de acidentes de trabalho e saúde grupo). Muitas empresas aceitam o prémio que lhes é apresentado sem questionar.
+
+Perdem oportunidades de reduzir 20-40% sem sacrificar cobertura. Este artigo mostra como.
 
 ## O que influencia o prémio
 
@@ -122,7 +124,9 @@ A francquia é o valor que o segurado suporta em cada sinistro. Maior francquia 
 
 ### Subseguro por economia mal feita
 
-Reduzir capital seguro para baixar prémio parece bom no curto prazo. Em sinistro, aplica-se regra proporcional: indenização reduzida conforme percentagem de subseguro. Empresa com €200K em bens segurados como €100K: em perda total de €100K, recebe apenas €50K.
+Reduzir capital seguro para baixar prémio parece bom no curto prazo. Em caso de sinistro, aplica-se a regra proporcional: a indenização é reduzida conforme a percentagem de subseguro.
+
+Por exemplo: uma empresa com €200K em bens segurados como €100K, em caso de perda total de €100K, recebe apenas €50K.
 
 ### Não atualizar capital seguro
 
@@ -130,7 +134,7 @@ Inflação e investimentos em equipamento aumentam valor real. Apólice de há 3
 
 ### Múltiplas apólices sobrepostas
 
-Algumas coberturas (RC produto) podem estar em múltiplas apólices. Pagar duas vezes por mesma cobertura não duplica indenização — é desperdício.
+Algumas coberturas (RC produto) podem estar em múltiplas apólices. Pagar duas vezes por mesma cobertura não duplica indenização, é desperdício.
 
 ### Não ler sub-limites
 
@@ -182,7 +186,7 @@ Decidir entre renegociar com atual ou mudar. Em caso de mudança, validar que n�
 
 - Implementar medidas de mitigação materialmente (formação, segurança)
 - Documentar tudo
-- Apresentar à seguradora "plano de redução de risco" — pode abrandar aumento de prémio
+- Apresentar à seguradora um "plano de redução de risco", que pode abrandar o aumento de prémio
 - Considerar mudar para seguradora especializada em risco elevado (premium mas aceita)
 
 ### PME com bom histórico

@@ -8,7 +8,9 @@ tags: ["fundos-europeus", "portugal-2030", "horizonte-europa", "iapmei", "subsid
 readingTime: 9
 ---
 
-Fundos europeus são frequentemente percebidos como "dinheiro grátis" — lendário mas inacessível. Em 2026, com o Portugal 2030 em fase de execução, há efetivamente milhares de milhões disponíveis para PME portuguesas, mas o processo de acesso é burocrático e competitivo. Este artigo descomplica o ecossistema, mapeia as oportunidades abertas e identifica os erros que mais rejeitam candidaturas.
+Fundos europeus são frequentemente percebidos como "dinheiro grátis": lendário mas inacessível. Em 2026, com o Portugal 2030 em fase de execução, há efetivamente milhares de milhões disponíveis para PME portuguesas, mas o processo de acesso é burocrático e competitivo.
+
+Este artigo descomplica o ecossistema, mapeia as oportunidades abertas e identifica os erros que mais rejeitam candidaturas.
 
 ## O ecossistema de fundos europeus em Portugal
 
@@ -23,7 +25,7 @@ O QFP é o orçamento de 7 anos da União Europeia. Para Portugal, o envelope to
 
 ### Portugal 2030
 
-Substitui o Portugal 2020. Vigora de 2021 a 2027, com a maioria das candidaturas abertas entre 2023 e 2025. Em 2026, fase intermédia — ainda há dinheiro disponível mas prazos são apertados.
+Substitui o Portugal 2020. Vigora de 2021 a 2027, com a maioria das candidaturas abertas entre 2023 e 2025. Em 2026 estamos em fase intermédia: ainda há dinheiro disponível mas os prazos são apertados.
 
 **Quatro Eixos temáticos**:
 
@@ -270,15 +272,15 @@ Ainda significativo, mas longe dos €120K de messaging público.
 
 ### Portal IAPMEI
 
-`iaps.iapmei.pt` — todos os avisos abertos, regulamentos, formulários.
+`iaps.iapmei.pt` reúne todos os avisos abertos, regulamentos e formulários.
 
 ### Balcão Único Eletrónico
 
 Para certidões e documento únicos necessários.
 
-### Portugal 2030 — site oficial
+### Portugal 2030: site oficial
 
-`portugal2030.pt` — informação estratégica, tipos de projetos financiados.
+`portugal2030.pt` fornece informação estratégica e tipos de projetos financiados.
 
 ### Núcleo de Apoio às PME
 
@@ -294,12 +296,12 @@ Se candidatura rejeitada:
 
 1. **Recandidatar na fase seguinte** com correções
 2. **Linhas de crédito bancário** com mutualidade (Banco de Fomento)
-3. **Sistemas de incentivo fiscal** (SIFIDE — I&D, RFAI — investimento)
+3. **Sistemas de incentivo fiscal** (SIFIDE para I&D, RFAI para investimento)
 4. **Programas regionais** (CCDR-N, CCDR-Algarve, etc.)
 
 ## Conclusão
 
-Portugal 2030 é a maior oportunidade de financiamento não-dilutivo para PME portuguesa nesta década. Mas não é "dinheiro grátis" — é processo competitivo que exige preparação, documentação rigorosa e paciência para 12-24 meses de execução.
+Portugal 2030 é a maior oportunidade de financiamento não-dilutivo para PME portuguesa nesta década. Mas não é "dinheiro grátis": é um processo competitivo que exige preparação, documentação rigorosa e paciência para 12-24 meses de execução.
 
 Para PME com investimento elegível acima de €50K e recursos para gerir processo, vale claramente a pena. Para PME menor ou com urgência de tesouraria, fontes alternativas (linhas Banco de Fomento, banca comercial) são mais realistas.
 

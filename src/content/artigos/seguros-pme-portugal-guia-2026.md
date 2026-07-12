@@ -9,7 +9,9 @@ readingTime: 9
 featured: true
 ---
 
-Seguros empresariais não são um custo — são proteção patrimonial. Em Portugal, onde 99% das empresas são PMEs e muitas não sobrevivem a um sinistro grave por falta de cobertura adequada, contratar o seguro certo é uma decisão estratégica. Este guia cobre o que é obrigatório, o que é recomendado, quanto custa por setor e como escolher bem.
+Seguros empresariais não são um custo, são proteção patrimonial. Em Portugal, onde 99% das empresas são PMEs, muitas não sobrevivem a um sinistro grave por falta de cobertura adequada.
+
+Contratar o seguro certo é uma decisão estratégica. Este guia cobre o que é obrigatório, o que é recomendado, quanto custa por setor e como escolher bem.
 
 ## Seguros obrigatórios por lei em Portugal
 
@@ -21,7 +23,7 @@ Obrigatório para qualquer entidade empregadora, independentemente do número de
 - Acidentes no trajeto casa-trabalho-casa (in itinere)
 - Doenças profissionais
 
-Regulado pelo Decreto-Lei 159/99 e pela Lei 98/2009. Sem seguro, a empresa responde ilimitadamente pelo sinistro — pode levar à falência pessoal dos sócios em casos graves.
+Regulado pelo Decreto-Lei 159/99 e pela Lei 98/2009. Sem seguro, a empresa responde ilimitadamente pelo sinistro, podendo levar à falência pessoal dos sócios em casos graves.
 
 **Custo típico**: 0,5% a 3% da massa salarial, consoante o risco da atividade. Escritório: 0,5-0,8%. Construção: 3-6%.
 
@@ -67,7 +69,7 @@ Coberturas a incluir:
 
 ### Responsabilidade civil geral
 
-Cobre danos a terceiros decorrentes da atividade. Distinta da RC profissional (que cobre danos por erro profissional). Exemplo: cliente escorrega na loja e parte uma perna — RC geral cobre.
+Cobre danos a terceiros decorrentes da atividade. Distinta da RC profissional (que cobre danos por erro profissional). Exemplo: cliente escorrega na loja e parte uma perna, a RC geral cobre.
 
 **Custo**: €200-€800/ano consoante volume de visitantes e tipo de atividade.
 
@@ -98,13 +100,13 @@ Para empresas que vendem a prazo a outros negócios (B2B). Cobre incumprimento. 
 
 ### Seguro de transporte de mercadorias
 
-Para empresas que enviam produtos. Distinto do seguro do transportador — cobre a mercadoria enquanto sua.
+Para empresas que enviam produtos. Distinto do seguro do transportador, cobre a mercadoria enquanto sua.
 
 **Custo**: 0,05%-0,3% do valor declarado.
 
 ## Custos médios por setor (referência 2026)
 
-Valores para PME típica em Portugal continental. Valores aproximados — cotação real varia com histórico, localização, medidas de segurança.
+Valores para PME típica em Portugal continental. Valores aproximados: a cotação real varia com histórico, localização e medidas de segurança.
 
 ### Comércio a retalho
 
@@ -195,7 +197,7 @@ Antes de assinar, exija respostas a:
 
 ### Subseguro
 
-Valor segurado inferior ao valor real. Em caso de sinistro, seguradora aplica regra proporcional: indeniza apenas a percentagem segurada. Exemplo: equipamento vale €100.000, seguro de €50.000 → em caso de perda total, recebe €25.000 (50% de €50.000).
+Valor segurado inferior ao valor real. Em caso de sinistro, a seguradora aplica a regra proporcional: indeniza apenas a percentagem segurada. Exemplo: o equipamento vale €100.000, mas tem seguro de €50.000. Em caso de perda total, recebe apenas €25.000 (50% de €50.000).
 
 ### Não ler exclusões
 
@@ -230,7 +232,7 @@ Comece 60 dias antes do termo:
 - [ ] Multirriscos cobre valor de reinstalação (não valor contabilístico)
 - [ ] RC exploração inclui produtos/serviços específicos
 - [ ] RC profissional contratada se profissão regulamentada
-- [ ] Lista de bens segurados atualizada (com provas — fotos/faturas)
+- [ ] Lista de bens segurados atualizada (com provas: fotos e faturas)
 - [ ] Exclusões lidas e compreendidas
 - [ ] Corretor contactável em caso de sinistro fora de horas
 - [ ] Plano de continuidade de negócio testado (perda de instalação)
@@ -239,6 +241,8 @@ Comece 60 dias antes do termo:
 
 ## Conclusão
 
-Seguros são o Sistema Imunitário da empresa: ninguém repara enquanto funciona, todos sofrem quando falha. Para PME portuguesa típica, investimento entre €3.000 e €15.000/ano em coberturas adequadas é fração mínima do risco coberto. O erro mais comum não é pagar demasiado — é pagar por coberturas erradas, deixando lacunas desconhecidas.
+Seguros são o Sistema Imunitário da empresa: ninguém repara enquanto funciona, todos sofrem quando falha. Para uma PME portuguesa típica, o investimento entre €3.000 e €15.000/ano em coberturas adequadas é uma fração mínima do risco coberto.
+
+O erro mais comum não é pagar demasiado, mas sim pagar por coberturas erradas, deixando lacunas desconhecidas.
 
 Rever apólices anualmente com corretor sério é a única forma de garantir cobertura adequada enquanto o negócio evolui. O custo de uma hora de revisão é infinitamente inferior ao custo de descobrir a lacuna na altura do sinistro.

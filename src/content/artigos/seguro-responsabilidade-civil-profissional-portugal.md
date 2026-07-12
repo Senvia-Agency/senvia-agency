@@ -8,7 +8,9 @@ tags: ["rc-profissional", "advogados", "contabilistas", "médicos", "consultores
 readingTime: 8
 ---
 
-O seguro de responsabilidade civil profissional (RC profissional) é um dos menos compreendidos em Portugal. Muitos profissionais sabem que "devem ter" mas não sabem quando é obrigatório, o que cobre realmente e quanto custa. Este artigo responde às perguntas mais frequentes, com casos reais de sinistro que ilustram a importância.
+O seguro de responsabilidade civil profissional (RC profissional) é um dos menos compreendidos em Portugal. Muitos profissionais sabem que "devem ter", mas não sabem quando é obrigatório, o que cobre realmente e quanto custa.
+
+Este artigo responde às perguntas mais frequentes, com casos reais de sinistro que ilustram a importância.
 
 ## O que é RC profissional
 
@@ -31,32 +33,32 @@ Exemplos do que NÃO cobre:
 
 ### Profissões liberais regulamentadas
 
-**Advogados** — obrigatório pela Lei 51/2018 (Estatuto da OA). Cobertura mínima €250.000 por sinistro. Sem apólice ativa, não pode exercer.
+**Advogados**: obrigatório pela Lei 51/2018 (Estatuto da OA). Cobertura mínima €250.000 por sinistro. Sem apólice ativa, não pode exercer.
 
-**Solicitadores** — obrigatório por lei. Cobertura mínima €150.000.
+**Solicitadores**: obrigatório por lei. Cobertura mínima €150.000.
 
-**Notários** — obrigatório. Coberturas elevadas.
+**Notários**: obrigatório. Coberturas elevadas.
 
-**Médicos e enfermeiros** — obrigatório pela Lei 51/2018 para profissionais em exercício liberal (não aplicável a trabalhadores por conta de outrem cuja entidade patronal tenha cobertura).
+**Médicos e enfermeiros**: obrigatório pela Lei 51/2018 para profissionais em exercício liberal (não aplicável a trabalhadores por conta de outrem cuja entidade patronal tenha cobertura).
 
-**Farmacêuticos** — obrigatório em exercício liberal.
+**Farmacêuticos**: obrigatório em exercício liberal.
 
-**Arquitetos e engenheiros** — obrigatório em obras públicas pela Lei 41/2015. Para obras privadas, frequentemente exigido em contrato.
+**Arquitetos e engenheiros**: obrigatório em obras públicas pela Lei 41/2015. Para obras privadas, frequentemente exigido em contrato.
 
-**Contabilistas certificados** — recomendado pela OCC, exigido em alguns contratos B2B. Tendência para obrigação.
+**Contabilistas certificados**: recomendado pela OCC, exigido em alguns contratos B2B. Tendência para obrigação.
 
-**Auditores** (ROC) — obrigatório para auditoria a sociedades cotadas.
+**Auditores (ROC)**: obrigatório para auditoria a sociedades cotadas.
 
 ### Setores não regulamentados mas contratualmente obrigatórios
 
 Mesmo sem imposição legal, é cada vez mais comum cláusulas contratuais que exigem RC profissional:
 
-- **Consultorias** — grandes clientes exigem apólice de €500K-€2M
-- **Agências de marketing** — contratos com bancos, telco exigem
-- **Empresas de IT** — contratos com setor financeiro exigem
-- **Formadores** — entidades formadoras exigem
-- **Tradutores e intérpretes** — em contratos jurídicos
-- **Mediação imobiliária** — Lei 15/2018
+- **Consultorias**: grandes clientes exigem apólice de €500K-€2M
+- **Agências de marketing**: contratos com bancos, telco exigem
+- **Empresas de IT**: contratos com setor financeiro exigem
+- **Formadores**: entidades formadoras exigem
+- **Tradutores e intérpretes**: em contratos jurídicos
+- **Mediação imobiliária**: Lei 15/2018
 
 ## O que a apólice tipicamente cobre
 
@@ -88,7 +90,7 @@ Cada apólice tem exclusões específicas. Comuns a verificar:
 - **Dano doloso**: não cobre se houve intenção
 - **Punitive damages**: indennizações punitivas (common em EUA, raras em PT)
 - **Multas e coimas**: geralmente não cobertas
-- **Cyber**: frequentemente excluído — apólice separada necessária
+- **Cyber**: frequentemente excluído, sendo necessária uma apólice separada
 - **Poluição gradual**: muitas vezes excluída
 - **Honorários não pagos**: algumas apólices excluem disputas sobre honorários
 
@@ -155,7 +157,7 @@ Total pago pela seguradora: €24.900. Sem apólice, seria fim da sociedade de c
 
 ### Caso 2: diagnóstico incorreto
 
-Médico de clínica privada diagnostica gastroenterite. Paciente volta 48h depois com dor abdominal — apendicite aguda perfurada. Cirurgia de emergência, 12 dias internamento, 2 meses baixa.
+Médico de clínica privada diagnostica gastroenterite. Paciente volta 48h depois com dor abdominal, diagnosticada como apendicite aguda perfurada. Cirurgia de emergência, 12 dias internamento, 2 meses baixa.
 
 Paciente processa por dano (perda de rendimento + dano moral). Acordo extrajudicial: €75.000.
 
@@ -165,7 +167,7 @@ Apólice RC (limite €250K, francquia €1.000): cobriu €74.000. Médico pago
 
 Engenheiro civil projeta estrutura para armazém logístico. Erro de cálculo na fundação. Construção avança, rachas aparecem após 6 meses. Reforço de fundação necessário: €120.000.
 
-Cliente exige indemnização. Apólice RC profissional engenheiro (limite €300K): cobriu €120.000 (sem francquia neste contrato). Engenheiro ficou sem apólice — seguradora recusou renovação.
+Cliente exige indemnização. Apólice RC profissional engenheiro (limite €300K): cobriu €120.000 (sem francquia neste contrato). O engenheiro ficou sem apólice porque a seguradora recusou renovação.
 
 ## Casos típicos NÃO cobertos
 
@@ -179,7 +181,7 @@ Se você subcontrata parte do trabalho a profissional sem apólice própria, seu
 
 ### Trabalho fora do âmbito contratado
 
-Médico dermatologista realiza procedimento cirúrgico fora da sua especialidade — apólice pode recusar cobertura (exclusão de atos fora da competência).
+Médico dermatologista realiza procedimento cirúrgico fora da sua especialidade: a apólice pode recusar cobertura (exclusão de atos fora da competência).
 
 ### Sinistro anterior à data de início
 
@@ -225,9 +227,13 @@ Renovar sem interrupção. Sinistros de anos anteriores só são cobertos se ap�
 | Calúnia/difamação em comunicação | RC media |
 | Defeito em produto vendido | RC produto |
 
+> 💡 **Dica prática**: Antes de contratar RC profissional, peça ao seu corretor uma simulação com e sem franquia. A diferença de prémio entre uma franquia de €250 e €1.000 pode chegar a 30-40%. Se tem capacidade financeira para absorver pequenos sinistros, opte pela franquia mais alta e use a poupança para aumentar o limite de cobertura. É a melhor relação qualidade-preço.
+
 ## Conclusão
 
-RC profissional é investimento, não custo. Para profissionais liberais em Portugal é, em muitos casos, obrigação legal — mas mesmo quando não é, é proteção patrimonial indispensável. Um único sinistro médio (€30K-€100K) pode destruir anos de poupança pessoal.
+RC profissional é investimento, não custo. Para profissionais liberais em Portugal é, em muitos casos, obrigação legal. Mas mesmo quando não é, é proteção patrimonial indispensável.
+
+Um único sinistro médio (€30K-€100K) pode destruir anos de poupança pessoal.
 
 A boa notícia: custos portugueses são baixos comparados com outros mercados europeus. €300-€1.000/ano é fração ínfima do risco coberto. A má notícia: muitos profissionais só descobrem a lacuna depois do primeiro sinistro, quando já é tarde.
 

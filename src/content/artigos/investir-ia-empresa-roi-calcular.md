@@ -8,7 +8,9 @@ tags: ["roi", "ia", "investimento", "métricas", "payback"]
 readingTime: 8
 ---
 
-O fracasso de muitos projetos de IA em PMEs não vem da tecnologia — vem da incapacidade de calcular retorno sobre o investimento. Sem métrica clara, projeto arrasta-se até ser cancelado na próxima crise de orçamento. Este artigo apresenta framework para calcular ROI de iniciativas de IA, com exemplo numérico completo.
+O fracasso de muitos projetos de IA em PMEs não vem da tecnologia, mas sim da incapacidade de calcular retorno sobre o investimento. Sem métrica clara, o projeto arrasta-se até ser cancelado na próxima crise de orçamento.
+
+Este artigo apresenta um framework para calcular ROI de iniciativas de IA, com exemplo numérico completo.
 
 ## Porque é difícil medir ROI de IA
 
@@ -20,7 +22,7 @@ Não é só custo de implementação. Há custos recorrentes: APIs, manutenção
 
 ### Benefícios intangíveis
 
-Melhoria na satisfação do cliente, marca, capacidade de escalar sem crescer headcount — difíceis de quantificar mas reais.
+Melhoria na satisfação do cliente, marca, capacidade de escalar sem crescer headcount são difíceis de quantificar mas reais.
 
 ### Janela de payback variável
 
@@ -160,7 +162,7 @@ Cumprimento automático de obrigações (RGPD, fiscal, laboral). Difícil de qua
 - Capacidade de escalar
 - Agilidade estratégica
 
-Manter estes como "bónus" — não justificar projeto só com eles.
+Manter estes como "bónus". Não justificar projeto só com eles.
 
 ## Caso prático: chatbot de atendimento
 
@@ -227,7 +229,7 @@ ROI ano 1 = (110.400 − 15.840) / 7.200 × 100 = 1.311%
 Payback = 7.200 / (110.400 / 12) = 0,78 meses ≈ 24 dias
 ```
 
-ROI excepcional — típico em automação de atendimento ao cliente.
+ROI excepcional, típico em automação de atendimento ao cliente.
 
 ### Validação conservadora
 
@@ -286,7 +288,7 @@ Mesmo com ROI atraente, não avançar se:
 
 ## Conclusão
 
-Calcular ROI de IA não é exercício académico — é disciplina que separa projetos bem-sucedidos de desperdício de orçamento. Em PMEs portuguesas onde cada euro conta, esta disciplina é crítica.
+Calcular ROI de IA não é exercício académico. É disciplina que separa projetos bem-sucedidos de desperdício de orçamento. Em PMEs portuguesas onde cada euro conta, esta disciplina é crítica.
 
 Para qualquer iniciativa de IA acima de €10K de investimento, exigir:
 

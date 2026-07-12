@@ -8,7 +8,11 @@ tags: ["cibersegurança", "ransomware", "nis2", "cyber", "rgpd"]
 readingTime: 8
 ---
 
-Ataques cibernéticos a PMEs portuguesas aumentaram 78% em 2025 (dados do Centro Nacional de Cibersegurança). Ransomware, phishing e business email compromise deixaram de ser problema de grandes empresas — são a principal ameaça operacional para qualquer negócio com dependência digital. O seguro cibernético é uma das formas de transferir este risco, mas poucas PMEs percebem o que estão realmente a comprar.
+Ataques cibernéticos a PMEs portuguesas aumentaram 78% em 2025 (dados do Centro Nacional de Cibersegurança). Ransomware, phishing e business email compromise deixaram de ser problema de grandes empresas.
+
+São agora a principal ameaça operacional para qualquer negócio com dependência digital.
+
+O seguro cibernético é uma das formas de transferir este risco, mas poucas PMEs percebem o que estão realmente a comprar.
 
 ## O que é seguro cibernético
 
@@ -29,7 +33,7 @@ Apólice que cobre perdas financeiras decorrentes de incidentes cibernéticos. D
 
 **Responsabilidade civil**:
 - Indenizações a clientes por perda de dados
-- Multas RGPD (parcial — algumas apólices excluem multas)
+- Multas RGPD (parcial, algumas apólices excluem multas)
 - Custas judiciais
 
 **Extorsão**:
@@ -140,9 +144,9 @@ Para concretizar, um caso típico em 2025 (detalhes anonimizados):
 **Empresa**: distribuidor têxtil, 28 colaboradores, faturação €4M/ano, sede no Porto.
 
 **Incidente**:
-- Sexta-feira, 18:30 — colaborador abre anexo de email malicioso
-- Sábado, 02:00 — ransomware encripta servidor de ficheiros e ERP
-- Domingo — atacante contacta exigindo €80.000 em Bitcoin
+- Sexta-feira, 18:30: colaborador abre anexo de email malicioso
+- Sábado, 02:00: ransomware encripta servidor de ficheiros e ERP
+- Domingo: atacante contacta exigindo €80.000 em Bitcoin
 
 **Sem seguro**:
 - Tempo de inatividade: 9 dias úteis
@@ -230,9 +234,13 @@ Com 3 propostas em mãos, negoceie. Itens negociáveis:
 
 Se a avaliação identificou lacunas, implemente antes da apólice entrar em vigor. Algumas seguradoras exigem isto como condição.
 
+> 💡 **Dica prática**: Antes de contratar o seguro cibernético, implemente pelo menos 5 das 10 medidas que as seguradoras avaliam (MFA, backups off-site, EDR, formação em phishing e plano de resposta). Cada medida implementada reduz o prémio em 5-15% e elimina cláusulas de exclusão que poderiam deixá-lo sem cobertura na hora do sinistro. Invista primeiro na maturidade, depois no seguro.
+
 ## Conclusão
 
-Seguro cibernético deixou de ser opcional para qualquer PME com dependência digital — o que em 2026 é praticamente todas. Custo baixo (€500-€5.000/ano para PME típica) versus impacto potencial de um único incidente (€50K-€500K) torna o ROI evidente.
+Seguro cibernético deixou de ser opcional para qualquer PME com dependência digital, o que em 2026 é praticamente todas. Custo baixo (€500-€5.000/ano para PME típica) versus impacto potencial de um único incidente (€50K-€500K) torna o ROI evidente.
+
+Mas seguro não substitui maturidade.
 
 Mas seguro não substitui maturidade. PMEs que contratam seguro sem investir em defesas básicas (MFA, backups, formation) descobrem na altura do sinistro que apólice tem cláusulas de manutenção que limitam cobertura.
 

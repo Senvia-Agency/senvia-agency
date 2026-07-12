@@ -8,7 +8,9 @@ tags: ["saúde", "rh", "benefícios", "fiscal", "trabalhadores"]
 readingTime: 8
 ---
 
-Muitas PMEs portuguesas confundem seguro de saúde com seguro de acidentes de trabalho. O primeiro é um benefício opcional com vantagens fiscais; o segundo é obrigatório por lei. Confundir os dois leva a decisões erradas — tanto em cobertura como em impostos. Este artigo clarifica as diferenças, calcula o benefício fiscal real e explica como negociar com seguradoras.
+Muitas PMEs portuguesas confundem seguro de saúde com seguro de acidentes de trabalho. O primeiro é um benefício opcional com vantagens fiscais; o segundo é obrigatório por lei. Confundir os dois leva a decisões erradas, tanto em cobertura como em impostos.
+
+Este artigo clarifica as diferenças, calcula o benefício fiscal real e explica como negociar com seguradoras.
 
 ## A diferença fundamental
 
@@ -33,7 +35,7 @@ Sem este seguro, a empresa responde ilimitadamente. Não contratar é violação
 - Medicamentos
 - Algumas apólices incluem medicina dentária
 
-Não substitui o seguro de acidentes de trabalho nem o SNS — complementa.
+Não substitui o seguro de acidentes de trabalho nem o SNS: complementa.
 
 ### Quadro comparativo
 
@@ -57,7 +59,7 @@ Exemplo: empresa com 10 colaboradores, massa salarial anual €350.000.
 
 - Limite máximo dedutível: €17.500/ano
 - Custo real de seguro de saúde grupo (10 × €400): €4.000/ano
-- Bem dentro do limite — despesa totalmente aceite
+- Bem dentro do limite, despesa totalmente aceite
 
 ### Para o colaborador
 
@@ -112,9 +114,9 @@ Desvantagens:
 
 Estratégia comum em empresas com hierarquia clara:
 
-- **Tier 1** (todos): plano base — consultas, urgentes
-- **Tier 2** (gestores): plano alargado — medicina dentária, psicologia
-- **Tier 3** (direção): plano premium — cobertura internacional
+- **Tier 1** (todos): plano base com consultas e urgentes
+- **Tier 2** (gestores): plano alargado com medicina dentária e psicologia
+- **Tier 3** (direção): plano premium com cobertura internacional
 
 Custo típico:
 - Tier 1: €200-€300/ano
@@ -172,7 +174,7 @@ Apólices com franquia (colaborador paga parte de cada episódio) são mais bara
 
 ### 6. Renovação anual
 
-Pelo menos 60 dias antes da renovação, pedir pelo menos 2 cotações concorrentes. Mostrar à seguradora atual — geralmente baixam o prémio ou melhoram coberturas.
+Pelo menos 60 dias antes da renovação, pedir pelo menos 2 cotações concorrentes. Mostrar à seguradora atual, que geralmente baixa o prémio ou melhora as coberturas.
 
 ## Implementação prática em PME
 
@@ -248,6 +250,8 @@ Seguro de saúde para trabalhadores é dos benefícios extra-salariais com melho
 - Reduz absentismo (colaboradores tratam problemas de saúde mais cedo)
 - Melhora cultura organizacional
 
-Para uma PME típica com 10-20 colaboradores, custo anual de €2.000-€8.000 é investimento com retorno claro em employer branding e produtividade. Em mercado de talento competitivo como o português em 2026, deixar de oferecer este benefício é ficar atrás de concorrentes.
+Para uma PME típica com 10-20 colaboradores, o custo anual de €2.000-€8.000 é um investimento com retorno claro em employer branding e produtividade.
 
-A decisão não é "se" — é "qual seguradora e qual plano".
+Em mercado de talento competitivo como o português em 2026, deixar de oferecer este benefício é ficar atrás de concorrentes.
+
+A decisão não é "se", mas sim "qual seguradora e qual plano".

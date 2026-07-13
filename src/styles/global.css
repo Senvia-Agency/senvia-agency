@@ -1,4 +1,4 @@
-/* SENVIA — Site público estático (tema escuro) */
+/* SENVIA Ã¢â‚¬â€ Site pÃƒÂºblico estÃƒÂ¡tico (tema escuro) */
 
 :root {
   --senvia-50: #e6fffc;
@@ -1303,4 +1303,17 @@ p { margin-bottom: 1rem; }
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

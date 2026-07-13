@@ -16,13 +16,13 @@ import { ADSENSE_CLIENT } from '../config';
       </div>
     </div>
     <div class="consent-banner__actions">
-      <button id="consent-reject" class="consent-btn consent-btn--reject" type="button">
+      <button id="consent-reject" class="consent-btn consent-btn--reject" type="button" aria-label="Não consentir com cookies de publicidade">
         Não consentir
       </button>
-      <button id="consent-manage" class="consent-btn consent-btn--manage" type="button">
+      <button id="consent-manage" class="consent-btn consent-btn--manage" type="button" aria-label="Gerenciar opções de cookies">
         Gerenciar opções
       </button>
-      <button id="consent-accept" class="consent-btn consent-btn--accept" type="button">
+      <button id="consent-accept" class="consent-btn consent-btn--accept" type="button" aria-label="Consentir com todos os cookies">
         Consentir
       </button>
     </div>
@@ -47,14 +47,14 @@ import { ADSENSE_CLIENT } from '../config';
         <strong>Cookies de Publicidade (Google AdSense)</strong>
         <span>Usados para exibir anúncios personalizados e medir a performance dos anúncios.</span>
       </div>
-      <label class="consent-switch">
+      <label class="consent-switch" for="opt-ads">
         <input type="checkbox" id="opt-ads" checked />
         <span class="consent-switch__slider"></span>
       </label>
     </div>
 
     <div class="consent-manage__actions">
-      <button id="manage-save" class="consent-btn consent-btn--accept" type="button">Salvar preferências</button>
+      <button id="manage-save" class="consent-btn consent-btn--accept" type="button" aria-label="Salvar preferências de cookies">Salvar preferências</button>
     </div>
   </div>
 </div>

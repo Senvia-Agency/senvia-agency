@@ -42,9 +42,12 @@ const sorted = all.sort(
           <a href="/" class="btn btn--ghost" style="margin-top:var(--space-4)">← Ver todos os artigos</a>
         </div>
       ) : (
-        <div class="article-grid">
-          {sorted.map((entry) => <ArticleCard entry={entry} />)}
-        </div>
+        <>
+          <h2 class="sr-only">Artigos em {cat.label}</h2>
+          <div class="article-grid">
+            {sorted.map((entry) => <ArticleCard entry={entry} />)}
+          </div>
+        </>
       )}
     </div>
   </section>

@@ -24,7 +24,6 @@ const ogImage = image.startsWith('http') ? image : new URL(image, SITE.url).toSt
 const fullTitle = title === SITE.name ? `${SITE.name} — AI Software House` : `${title} | ${SITE.name}`;
 ---
 
-<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{fullTitle}</title>
 <meta name="description" content={description} />

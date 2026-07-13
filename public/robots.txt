@@ -1,0 +1,18 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: *
+Allow: /
+
+Disallow: /404
+
+Sitemap: https://www.senvia.pt/sitemap-index.xml

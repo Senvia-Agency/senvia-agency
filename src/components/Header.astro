@@ -4,13 +4,6 @@ import { SITE, SERVICE_LINKS } from '../config';
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === '/';
 const isScrolled = !isHome;
-
-const navLinks = [
-  { label: 'SENVIA OS', href: '/senvia-os' },
-  { label: 'Sobre Nós', href: '/sobre-nos' },
-];
-
-const blogUrl = SITE.blogUrl;
 ---
 
 <header class:list={['site-header', { 'site-header--scrolled': isScrolled }]} id="site-header">

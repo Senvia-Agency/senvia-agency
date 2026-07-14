@@ -1,88 +1,16 @@
 ---
-import BlogBase from '../layouts/BlogBase.astro';
-import { SITE } from '../config';
+import BlogBase from "../layouts/BlogBase.astro";
+import { SITE } from "../config";
 ---
 
-<BlogBase title="Página não encontrada" description="Esta página não existe ou foi movida." noindex>
+<BlogBase title="Pagina nao encontrada" description="Esta pagina nao existe ou foi movida." noindex>
   <section style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:4rem 1rem;">
     <span style="font-size:6rem;font-weight:800;color:var(--senvia-500);line-height:1;">404</span>
-    <h1 style="margin:1rem 0 0.5rem;font-size:1.75rem;">Página não encontrada</h1>
-    <p style="color:var(--fg-soft);max-width:28rem;margin-bottom:2rem;">Esta página não existe ou foi movida. Podes voltar ao blog ou ir para o início.</p>
+    <h1 style="margin:1rem 0 0.5rem;font-size:1.75rem;">Pagina nao encontrada</h1>
+    <p style="color:var(--fg-soft);max-width:28rem;margin-bottom:2rem;">Esta pagina nao existe ou foi movida. Podes voltar ao blog ou ir para o inicio.</p>
     <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
       <a href="/blog" class="btn btn--primary">Voltar ao blog</a>
-      <a href={SITE.url} class="btn btn--outline">Ir para o início</a>
+      <a href={SITE.url} class="btn btn--outline">Ir para o inicio</a>
     </div>
   </section>
-</BlogBase><｜end▁of▁thinking｜>
-
-<｜｜DSML｜｜tool_calls>
-<｜｜DSML｜｜invoke name="exec">
-<｜｜DSML｜｜parameter name="command" string="true">cd /tmp/senvia-site-v3
-
-# Tambem criar uma imagem melhor para o artigo de hoje (placeholder melhor)
-python3 << 'PYEOF'
-from PIL import Image, ImageDraw, ImageFont
-import os
-
-# Criar imagem melhor para reembolsos de seguros
-img = Image.new('RGB', (1200, 800), '#0b1f2a')
-draw = ImageDraw.Draw(img)
-
-# Cores
-colors = [(11, 31, 42), (0, 55, 75), (0, 80, 100)]
-for y in range(800):
-    ratio = y / 800
-    r = int(11 * (1-ratio) + 0 * ratio)
-    g = int(31 * (1-ratio) + 195 * ratio * 0.3)
-    b = int(42 * (1-ratio) + 255 * ratio * 0.3)
-    for x in range(1200):
-        pass
-
-# fundo gradiente mais simples
-overlay = Image.new('RGB', (1200, 800))
-for y in range(800):
-    for x in range(1200):
-        r = int(11 + (0 - 11) * y/800)
-        g = int(31 + (150 - 31) * y/800)
-        b = int(42 + (200 - 42) * y/800)
-        overlay.putpixel((x, y), (r, g, b))
-
-img = overlay
-
-# Icone de relogio/seguro (forma basica)
-draw = ImageDraw.Draw(img)
-# Circulo
-draw.ellipse([80, 80, 280, 280], fill=(0, 195, 255, 30), outline=(0, 195, 255, 80), width=3)
-# Shield shape
-draw.polygon([(160, 140), (220, 140), (230, 200), (190, 250), (150, 200)], fill=None, outline=(0, 195, 255), width=2)
-# Check
-draw.line([(170, 195), (185, 210), (205, 185)], fill=(0, 195, 255), width=3)
-
-# Texto
-try:
-    font_title = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 52)
-    font_sub = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
-    font_num = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 80)
-except:
-    font_title = ImageFont.load_default()
-    font_sub = ImageFont.load_default()
-    font_num = ImageFont.load_default()
-
-# Titulo
-draw.text((60, 340), 'Reembolsos de seguros', fill='white', font=font_title)
-draw.text((60, 400), 'mais rapidos com IA', fill='#00c3ff', font=font_title)
-
-# Numeros grandes
-draw.text((60, 490), '15', fill='#ff6b6b', font=font_num)
-draw.text((200, 510), 'dias', fill='#8a98a6', font=font_sub)
-draw.text((300, 490), 'para', fill='#8a98a6', font=font_sub)
-draw.text((380, 490), '3', fill='#00c3ff', font=font_num)
-draw.text((470, 510), 'dias', fill='#8a98a6', font=font_sub)
-
-draw.text((60, 600), 'Como a IA esta a acelerar o processo de reembolso', fill='#cbd6de', font=font_sub)
-draw.text((60, 635), 'em seguradoras portuguesas', fill='#cbd6de', font=font_sub)
-
-path = 'public/images/artigos/reembolsos-seguros-rapidos-ia.jpg'
-img.save(path, quality=90, optimize=True)
-print(f'Imagem criada: {os.path.getsize(path)//1024}KB')
-PYEOF
+</BlogBase>

@@ -1,0 +1,41 @@
+---
+import BlogBase from '../../../layouts/BlogBase.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { CATEGORIES, SITE } from '../../../config';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  return Object.entries(CATEGORIES).map(([key, cat]) => ({
+    params: { category: key },
+    props: { key, cat },
+  }));
+}
+
+const { key, cat } = Astro.props;
+const all = await getCollection('artigos', ({ data }) => !data.draft && data.category === key);
+const sorted = all.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<BlogBase
+  title={`${cat.label} | SENVIA Blog`}
+  description={cat.description}
+>
+  <section class="section" style="padding-top:8rem;">
+    <div class="container">
+      <span class="badge mb-2" style={`color:${cat.color}`}>{cat.short}</span>
+      <h1 style="margin-bottom:0.5rem;">{cat.label}</h1>
+      <p class="lead" style="max-width:32rem;margin-bottom:2rem;">{cat.description}</p>
+
+      <div class="article-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+        {sorted.map((entry) => <ArticleCard entry={entry} />)}
+      </div>
+
+      {sorted.length === 0 && (
+        <div style="text-align:center;padding:3rem 1rem;">
+          <p style="color:var(--fg-muted)">Nenhum artigo publicado nesta categoria ainda.</p>
+          <a href="/blog" class="btn btn--outline" style="margin-top:1rem;">Ver todos os artigos</a>
+        </div>
+      )}
+    </div>
+  </section>
+</BlogBase>

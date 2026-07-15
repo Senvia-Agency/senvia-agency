@@ -110,6 +110,15 @@ p { margin-bottom: 1rem; }
 
 @media (max-width: 768px) {
   .section { padding-block: 4rem; }
+  .cta-section { padding-block: 4rem; }
+  .hero { min-height: auto; padding-bottom: 3rem; }
+  .hero__actions { margin-bottom: 1.5rem; }
+  .hero__stats { gap: 1rem; }
+  .nav .btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .service-card, .differential-card, .process-card { padding: 1.25rem; }
 }
 
 /* Backgrounds decorativos */
@@ -443,6 +452,8 @@ p { margin-bottom: 1rem; }
 
   .menu-toggle__icon {
     position: absolute;
+    inset: 0;
+    margin: auto;
     transition: opacity 0.2s ease;
   }
 

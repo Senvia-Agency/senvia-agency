@@ -100,8 +100,8 @@ const byCategory = (cat: string) => sorted.filter((e) => e.data.category === cat
       <h2 style="color: #fff; margin-top: 0;">Receba novos artigos no email</h2>
       <p style="opacity: 0.85; margin-bottom: 2rem;">Sem spam. Apenas análises mensais sobre IA, seguros e finanças para PMEs.</p>
       <form style="display: flex; gap: 0.5rem; max-width: 480px; margin: 0 auto; flex-wrap: wrap;" action="/contacto" method="get">
-        <input type="email" required placeholder="seu@email.pt" style="flex: 1; min-width: 200px; padding: 0.875rem 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff;" />
-        <button type="submit" class="btn btn--primary">Subscrever</button>
+        <input type="email" required placeholder="seu@email.pt" style="flex: 1; min-width: 200px; padding: 0.875rem 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: #fff; box-sizing: border-box;" />
+        <button type="submit" class="btn btn--primary" style="flex-shrink: 0;">Subscrever</button>
       </form>
     </div>
   </section>

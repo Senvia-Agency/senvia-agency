@@ -394,8 +394,10 @@ p { margin-bottom: 1rem; }
 
 .menu-toggle {
   display: none;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 44px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   color: var(--fg);
@@ -1158,6 +1160,27 @@ p { margin-bottom: 1rem; }
 .tag-pill:hover {
   background: rgba(0, 195, 255, 0.2);
   color: var(--senvia-300);
+}
+
+/* Article body table overflow */
+.article-body table {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .article-body table { font-size: 0.8rem; }
+  .article-body th,
+  .article-body td { padding: 0.5rem; }
+}
+
+/* Focus-visible styles */
+:focus-visible {
+  outline: 2px solid var(--senvia-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Divider */

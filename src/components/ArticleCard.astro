@@ -18,7 +18,7 @@ const dateLabel = new Intl.DateTimeFormat('pt-PT', {
 ---
 
 <article class="article-card">
-  <a href={href} class="article-card__cover" aria-label={data.title} style={data.coverImage ? `background-image:url(${data.coverImage});background-size:cover;background-position:center` : ''}>
+  <a href={href} class="article-card__cover" aria-label={data.title} style={data.coverImage ? `background-image:url(${data.coverImage}),linear-gradient(135deg,#0f2937,#004e66);background-size:cover;background-position:center` : 'background:linear-gradient(135deg,#0f2937,#004e66)'}>
     {!data.coverImage && <span class="badge" style="position:absolute;top:1rem;left:1rem;background:rgba(255,255,255,0.92);color:#007599">{cat.short}</span>}
   </a>
   <div class="article-card__body">

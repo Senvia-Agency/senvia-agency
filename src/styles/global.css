@@ -248,6 +248,7 @@ p { margin-bottom: 1rem; }
   z-index: 100;
   transition: all 0.5s ease;
   background: transparent;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .site-header--scrolled {
@@ -263,7 +264,8 @@ p { margin-bottom: 1rem; }
   align-items: center;
   justify-content: space-between;
   height: 5rem;
-  gap: 1.5rem;
+  gap: 1rem;
+  min-height: 44px;
 }
 
 .brand {
@@ -404,7 +406,7 @@ p { margin-bottom: 1rem; }
 }
 
 @media (max-width: 768px) {
-  .menu-toggle { display: inline-flex; }
+  .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
 
   .nav {
     position: fixed;
@@ -456,7 +458,7 @@ p { margin-bottom: 1rem; }
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 5rem;
+  padding-top: 5.5rem;
   overflow: hidden;
 }
 

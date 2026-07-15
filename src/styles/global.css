@@ -116,8 +116,9 @@ p { margin-bottom: 1rem; }
   .hero__stats { gap: 1rem; }
   .nav .btn { width: 100%; justify-content: center; }
   .site-header__inner {
-    padding-left: calc(env(safe-area-inset-left, 0px) + 1.5rem);
-    padding-right: calc(env(safe-area-inset-right, 0px) + 1.5rem);
+    box-sizing: border-box;
+    padding-left: calc(env(safe-area-inset-left, 0px) + 1rem);
+    padding-right: calc(env(safe-area-inset-right, 0px) + 1rem);
   }
 }
 
@@ -279,11 +280,11 @@ p { margin-bottom: 1rem; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 5rem;
+  height: calc(5rem + env(safe-area-inset-top, 0px));
   gap: 1rem;
   min-height: 44px;
   padding-top: env(safe-area-inset-top, 0px);
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 
 .brand {

@@ -77,7 +77,7 @@ const articleJsonLd = {
     name: SITE.name,
     logo: {
       '@type': 'ImageObject',
-      url: new URL('/favicon.svg', SITE.url).toString(),
+      url: new URL('/favicon.ico', SITE.url).toString(),
     },
   },
   mainEntityOfPage: new URL(Astro.url.pathname, SITE.url).toString(),

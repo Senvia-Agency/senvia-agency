@@ -1,6 +1,8 @@
 ---
 import BlogBase from "../layouts/BlogBase.astro";
 import { SITE } from "../config";
+
+Astro.response.status = 404;
 ---
 
 <BlogBase title="Pagina nao encontrada" description="Esta pagina nao existe ou foi movida." noindex>

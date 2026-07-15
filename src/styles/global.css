@@ -255,9 +255,7 @@ p { margin-bottom: 1rem; }
 }
 
 .site-header--scrolled {
-  background: rgba(11, 31, 42, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }

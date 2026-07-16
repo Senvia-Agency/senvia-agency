@@ -59,7 +59,12 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" /></noscript>
 
-    <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`} crossorigin="anonymous"></script>
+    <!--
+      AdSense script removed from <head> (RGPD compliance).
+      O ConsentBanner.astro carrega o script apenas após consentimento explícito do utilizador.
+      Ver src/components/ConsentBanner.astro:loadAdSense().
+      Auditoria 2026-07-16 CRIT-1.
+    -->
 
     <SEO {...props} />
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />

@@ -4,9 +4,9 @@ import { SITE } from '../../config';
 
 export async function GET(context: { site: URL }) {
   const artigos = await getCollection('artigos', ({ data }) => !data.draft);
-  const sorted = artigos.sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-  );
+  const sorted = artigos
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .slice(0, 50);
 
   return rss({
     title: SITE.name,

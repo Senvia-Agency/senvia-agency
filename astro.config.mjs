@@ -19,11 +19,8 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'viewport',
-  },
-  vite: {
-    server: { fs: { allow: ['..'] } },
+    prefetchAll: false,
+    defaultStrategy: 'hover',
   },
   markdown: {
     shikiConfig: { theme: 'github-dark' },

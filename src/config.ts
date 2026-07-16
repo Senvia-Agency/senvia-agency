@@ -19,7 +19,7 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { label: 'SENVIA OS', href: '/senvia-os' },
-  { label: 'Serviços', href: '/servicos', hasDropdown: true },
+  { label: 'Serviços', hasDropdown: true },
   { label: 'Sobre Nós', href: '/sobre-nos' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contactos', href: '/contacto' },

@@ -1,0 +1,35 @@
+﻿commit 36ce05a797919c2827eada5426b1c8f80f622c76
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Mon Mar 23 15:09:45 2026 +0000
+
+    Changes
+    
+    Co-authored-by: marketingdasprent-alt <265583260+marketingdasprent-alt@users.noreply.github.com>
+
+diff --git a/.env b/.env
+index fca85c4..16d93b0 100644
+--- a/.env
++++ b/.env
+@@ -1,3 +1,3 @@
+-VITE_SUPABASE_PROJECT_ID="rvrulhbgkdvnrkhzibif"
+-VITE_SUPABASE_PUBLISHABLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2cnVsaGJna2R2bnJraHppYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2NjUwNTMsImV4cCI6MjA2NDI0MTA1M30.rdFmwp4AVzRXenUd_bx1-e90m8GPxHGLX_bk9rrzZtU"
+-VITE_SUPABASE_URL="https://rvrulhbgkdvnrkhzibif.supabase.co"
++VITE_SUPABASE_PROJECT_ID="jiirxgdngacfqqohwxyq"
++VITE_SUPABASE_PUBLISHABLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppaXJ4Z2RuZ2FjZnFxb2h3eHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzc0OTYsImV4cCI6MjA4OTg1MzQ5Nn0.04I6SD9X1HL1-vEUeze8RfRyj0U_TLlGo-BXZE6fDoo"
++VITE_SUPABASE_URL="https://jiirxgdngacfqqohwxyq.supabase.co"
+
+commit cf7f76897369e3d24278f05f5a1859d6ecab08fc
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Thu Oct 23 11:15:49 2025 +0000
+
+    feat: Migrate Supabase data to Lovable Cloud
+
+diff --git a/.env b/.env
+new file mode 100644
+index 0000000..fca85c4
+--- /dev/null
++++ b/.env
+@@ -0,0 +1,3 @@
++VITE_SUPABASE_PROJECT_ID="rvrulhbgkdvnrkhzibif"
++VITE_SUPABASE_PUBLISHABLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2cnVsaGJna2R2bnJraHppYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2NjUwNTMsImV4cCI6MjA2NDI0MTA1M30.rdFmwp4AVzRXenUd_bx1-e90m8GPxHGLX_bk9rrzZtU"
++VITE_SUPABASE_URL="https://rvrulhbgkdvnrkhzibif.supabase.co"

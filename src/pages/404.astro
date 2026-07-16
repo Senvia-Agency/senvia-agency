@@ -1,18 +1,22 @@
 ---
-import BlogBase from "../layouts/BlogBase.astro";
+import Base from "../layouts/Base.astro";
 import { SITE } from "../config";
 
 Astro.response.status = 404;
 ---
 
-<BlogBase title="Pagina nao encontrada" description="Esta pagina nao existe ou foi movida." noindex>
+<Base
+  title="Página não encontrada"
+  description="Esta página não existe ou foi movida."
+  noindex
+>
   <section style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:4rem 1rem;">
     <span style="font-size:6rem;font-weight:800;color:var(--senvia-500);line-height:1;">404</span>
-    <h1 style="margin:1rem 0 0.5rem;font-size:1.75rem;">Pagina nao encontrada</h1>
-    <p style="color:var(--fg-soft);max-width:28rem;margin-bottom:2rem;">Esta pagina nao existe ou foi movida. Podes voltar ao blog ou ir para o inicio.</p>
+    <h1 style="margin:1rem 0 0.5rem;font-size:1.75rem;">Página não encontrada</h1>
+    <p style="color:var(--fg-soft);max-width:28rem;margin-bottom:2rem;">A página que procuras não existe ou foi movida. Podes voltar ao início ou explorar o blog.</p>
     <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
-      <a href="/blog" class="btn btn--primary">Voltar ao blog</a>
-      <a href={SITE.url} class="btn btn--outline">Ir para o inicio</a>
+      <a href="/" class="btn btn--primary">Ir para o início</a>
+      <a href="/blog" class="btn btn--outline">Explorar o blog</a>
     </div>
   </section>
-</BlogBase>
+</Base>

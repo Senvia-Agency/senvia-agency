@@ -3,7 +3,7 @@ title: "Seguro de Saúde com IA: O Que Muda em 2026"
 description: "Telemedicina, triagem inteligente e prémios personalizados. Descobre como a IA está a mudar o teu seguro de saúde em Portugal."
 pubDate: "2026-07-16"
 author: "Redação SENVIA"
-category: "Seguros"
+category: seguros
 tags: ["seguro de saúde", "IA", "telemedicina", "portugal", "2026"]
 coverImage: "/images/artigos/seguro-saude-digital-ia-2026-portugal.jpg"
 ---

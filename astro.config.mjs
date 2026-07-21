@@ -11,6 +11,7 @@ export default defineConfig({
         defaultLocale: 'pt',
         locales: { pt: 'pt-PT' },
       },
+      filter: (page) => !page.includes('/blog/artigos/') && !page.includes('/blog/categoria/'),
     }),
     mdx(),
   ],

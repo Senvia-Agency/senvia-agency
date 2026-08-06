@@ -1006,19 +1006,45 @@ const jsonLd = [
      ========================================================= */
 
   #sv-page {
-    --sv-ink: #101214;
-    --sv-ink-soft: #1a1e21;
-    --sv-paper: #f7f8f6;
-    --sv-paper-2: #eff0ec;
+    /* --- Paleta SENVIA --- */
+    --sv-cyan: #00c3ff; /* Primary SENVIA Cyan */
+    --sv-cyan-hover: #33ffe3; /* Hover Cyan */
+    --sv-cyan-mid: #009ccc; /* Mid Cyan Blue */
+    --sv-petrol: #007599; /* Petrol Blue */
+    --sv-petrol-dark: #004e66; /* Dark Petrol */
+    --sv-ink: #0b1f2a; /* Deep Navy — blocos escuros e títulos */
+    --sv-ink-soft: #0f2937; /* Secondary Navy */
+
+    /* Texto sobre superfície escura (paleta SENVIA) */
+    --sv-on-dark: #f1f5f9; /* Text Light */
+    --sv-on-dark-soft: #cbd6de; /* Text Soft */
+    --sv-on-dark-muted: #8a98a6; /* Text Muted */
+    --sv-border-dark: rgba(148, 163, 184, 0.15);
+
+    /* Papéis:
+       o ciano #00c3ff só tem 2.05:1 em fundo claro, por isso nunca é texto
+       aqui — é fundo de botão (8.1:1 com navy por cima) e acento em escuro.
+       Para texto/links em claro usa-se o Petrol Blue. */
+    --sv-accent: var(--sv-cyan); /* superfícies e acentos */
+    --sv-accent-hover: var(--sv-cyan-hover);
+    --sv-accent-ink: var(--sv-petrol); /* texto de acento em claro — 4.9:1 */
+    --sv-accent-strong: var(--sv-petrol-dark); /* texto de acento forte — 8.6:1 */
+    --sv-accent-soft: #e4f4fc;
+    --sv-on-accent: #04212c; /* texto por cima do ciano */
+
+    /* Verde: só semântico (WhatsApp). Nunca como identidade da página. */
+    --sv-whatsapp: #25d366;
+
+    /* Neutros frios, derivados do navy para não destoarem do sistema */
+    --sv-paper: #f4f7f9;
+    --sv-paper-2: #e9eff3;
     --sv-white: #ffffff;
-    --sv-text: #2d3032;
-    --sv-muted: #5c6266;
-    --sv-line: #dadddb;
-    --sv-line-soft: #e7e9e5;
-    --sv-line-ui: #8a8f8b; /* contorno de componentes — 3.09:1 no fundo claro */
-    --sv-green: #22c55e;
-    --sv-green-ink: #0f7a3b;
-    --sv-green-soft: #eaf7ef;
+    --sv-text: #2c3f4b;
+    --sv-muted: #4f6a78;
+    --sv-line: #d3dde4;
+    --sv-line-soft: #e4ebf0;
+    --sv-line-ui: #788d9a; /* contorno de componentes — 3.2:1 no fundo claro */
+
     --sv-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
     background: var(--sv-paper);
@@ -1027,43 +1053,18 @@ const jsonLd = [
 
   /* Fundo da página (evita carvão em overscroll) */
   body:has(#sv-page) {
-    background: #f7f8f6;
+    background: #f4f7f9;
   }
 
-  /* Header e footer alinhados com a paleta desta página (sem tocar noutras) */
+  /* O header e o rodapé partilhados já são navy + ciano, ou seja, já são a
+     identidade SENVIA — nesta rota não se recolorem, só se retira o brilho
+     do botão para acompanhar o registo mais sóbrio da página. */
   body:has(#sv-page) .site-header--scrolled {
-    background: #101214;
-    border-bottom-color: rgba(255, 255, 255, 0.08);
     box-shadow: none;
-  }
-  body:has(#sv-page) .brand__name {
-    background: none;
-    -webkit-text-fill-color: #ffffff;
-    color: #ffffff;
-  }
-  body:has(#sv-page) .nav .btn--primary {
-    background: #22c55e;
-    color: #08210f;
   }
   body:has(#sv-page) .nav .btn--primary:hover {
-    background: #3bd975;
     box-shadow: none;
-  }
-  /* Sem isto o topo e o rodapé ficavam com os azuis da identidade "AI Software
-     House" por cima de uma página carvão + verde. */
-  body:has(#sv-page) .nav__link,
-  body:has(#sv-page) .brand__tagline {
-    color: #a3a9ad;
-  }
-  body:has(#sv-page) .nav__link:hover {
-    color: #ffffff;
-  }
-  body:has(#sv-page) .site-footer__list a:hover,
-  body:has(#sv-page) .site-footer__social-link:hover {
-    color: #22c55e;
-  }
-  body:has(#sv-page) .nav__link::after {
-    background: #22c55e;
+    transform: none;
   }
   /* Entre o burger (≤768px) e o desktop folgado (≥900px) o menu partilhado
      não tem espaço: a marca e o botão partem-se em duas linhas. Aperta-se
@@ -1090,25 +1091,15 @@ const jsonLd = [
     }
   }
 
-  body:has(#sv-page) .site-footer {
-    background: #101214;
-    border-top-color: rgba(255, 255, 255, 0.08);
-  }
-  body:has(#sv-page) .site-footer .brand__name {
-    -webkit-text-fill-color: #ffffff;
-  }
-  /* Sem :has() estas regras caíam todas e o foco voltava ao ciano global
-     (#00c3ff = 1.92:1 no fundo claro). As da própria página não dependem de :has(). */
+  /* O foco global é ciano (#00c3ff): 9.2:1 em navy, mas só 1.9:1 em fundo
+     claro. Nas secções claras passa a Petrol Blue; nas escuras fica ciano.
+     Sem depender de :has(), para não cair em browsers sem suporte. */
   #sv-page :focus-visible {
-    outline-color: #0f7a3b;
+    outline-color: var(--sv-petrol);
   }
   #sv-page .sv-section--dark :focus-visible,
   #sv-page .sv-final :focus-visible {
-    outline-color: #22c55e;
-  }
-  body:has(#sv-page) .site-header :focus-visible,
-  body:has(#sv-page) .site-footer :focus-visible {
-    outline-color: #22c55e;
+    outline-color: var(--sv-cyan);
   }
 
   /* ---------- Base ---------- */
@@ -1141,7 +1132,7 @@ const jsonLd = [
   #sv-page h2 em,
   #sv-page h1 em {
     font-style: normal;
-    color: var(--sv-green-ink);
+    color: var(--sv-accent-ink);
   }
 
   #sv-page p {
@@ -1156,7 +1147,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-lead--onDark {
-    color: rgba(255, 255, 255, 0.68);
+    color: #cbd6de;
   }
 
   #sv-page .sv-eyebrow {
@@ -1175,12 +1166,16 @@ const jsonLd = [
     content: '';
     width: 0.4rem;
     height: 0.4rem;
-    background: var(--sv-green);
+    background: var(--sv-accent-ink);
     flex: none;
   }
 
   #sv-page .sv-eyebrow--onDark {
-    color: rgba(255, 255, 255, 0.6);
+    color: #8a98a6;
+  }
+
+  #sv-page .sv-eyebrow--onDark::before {
+    background: var(--sv-cyan);
   }
 
   #sv-page .sv-fine {
@@ -1242,11 +1237,11 @@ const jsonLd = [
   }
 
   #sv-page .sv-btn--primary {
-    background: var(--sv-green);
-    color: #08210f;
+    background: var(--sv-accent);
+    color: #04212c;
   }
   #sv-page .sv-btn--primary:hover {
-    background: #3bd975;
+    background: #33ffe3;
   }
 
   #sv-page .sv-btn--dark {
@@ -1254,10 +1249,10 @@ const jsonLd = [
     color: #fff;
   }
   #sv-page .sv-btn--dark:hover {
-    background: #2a2f33;
+    background: #16323f;
   }
 
-  /* --sv-line (#dadddb) é para réguas decorativas: 1.28:1 no fundo claro.
+  /* --sv-line (#d3dde4) é para réguas decorativas: 1.28:1 no fundo claro.
      Contornos de componentes precisam de 3:1 (WCAG 1.4.11) → --sv-line-ui. */
   #sv-page .sv-btn--ghost {
     background: transparent;
@@ -1266,12 +1261,12 @@ const jsonLd = [
   }
   #sv-page .sv-btn--ghost:hover {
     border-color: var(--sv-ink);
-    background: rgba(16, 18, 20, 0.04);
+    background: rgba(11, 31, 42, 0.04);
   }
 
   #sv-page .sv-btn--outline {
     background: transparent;
-    border-color: rgba(255, 255, 255, 0.45);
+    border-color: rgba(148, 163, 184, 0.28);
     color: #fff;
   }
   #sv-page .sv-btn--outline:hover {
@@ -1294,7 +1289,7 @@ const jsonLd = [
     align-items: center;
     gap: 0.45rem;
     font-weight: 600;
-    color: var(--sv-green-ink);
+    color: var(--sv-accent-ink);
     border-bottom: 1px solid currentColor;
     padding-bottom: 2px;
     min-height: 44px;
@@ -1384,7 +1379,7 @@ const jsonLd = [
     width: 0.4rem;
     height: 0.4rem;
     border-radius: 50%;
-    background: var(--sv-green);
+    background: var(--sv-accent-ink);
     flex: none;
   }
 
@@ -1439,7 +1434,7 @@ const jsonLd = [
     padding: 0.5rem 0.9rem;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    background: rgba(16, 18, 20, 0.78);
+    background: rgba(11, 31, 42, 0.78);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     color: #fff;
@@ -1453,7 +1448,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-hero__vtoggle:hover {
-    background: rgba(16, 18, 20, 0.92);
+    background: rgba(11, 31, 42, 0.92);
   }
 
   #sv-page .sv-hero__vtoggle svg {
@@ -1477,13 +1472,13 @@ const jsonLd = [
     font-size: 0.86rem;
     font-weight: 600;
     color: var(--sv-ink);
-    box-shadow: 0 10px 24px -14px rgba(16, 18, 20, 0.5);
+    box-shadow: 0 10px 24px -14px rgba(11, 31, 42, 0.5);
   }
 
   #sv-page .sv-hero__wa svg {
     width: 1.15rem;
     height: 1.15rem;
-    color: #22c55e;
+    color: var(--sv-whatsapp);
     flex: none;
   }
 
@@ -1505,7 +1500,7 @@ const jsonLd = [
     background: #fff;
     border: 1px solid var(--sv-line);
     border-radius: 12px;
-    box-shadow: 0 18px 40px -22px rgba(16, 18, 20, 0.55);
+    box-shadow: 0 18px 40px -22px rgba(11, 31, 42, 0.55);
   }
 
   @media (min-width: 1160px) {
@@ -1541,8 +1536,8 @@ const jsonLd = [
     margin-top: 0.7rem;
     padding: 0.4rem;
     border-radius: 6px;
-    background: var(--sv-green);
-    color: #08210f;
+    background: var(--sv-accent);
+    color: #04212c;
     font-size: 0.72rem;
     font-weight: 700;
     text-align: center;
@@ -1586,7 +1581,7 @@ const jsonLd = [
     line-height: 1.5;
     color: var(--sv-muted);
     padding-left: 0.85rem;
-    border-left: 2px solid var(--sv-green);
+    border-left: 2px solid var(--sv-accent-ink);
   }
 
   #sv-page .sv-pain__list {
@@ -1604,7 +1599,7 @@ const jsonLd = [
   #sv-page .sv-pain__num {
     font-family: var(--sv-mono);
     font-size: 0.78rem;
-    color: var(--sv-green-ink);
+    color: var(--sv-accent-ink);
     flex: none;
     padding-top: 0.15rem;
   }
@@ -1673,7 +1668,7 @@ const jsonLd = [
     content: '';
     width: 0.4rem;
     height: 0.4rem;
-    background: var(--sv-green);
+    background: var(--sv-accent-ink);
     flex: none;
     transform: translateY(-0.15rem);
   }
@@ -1726,7 +1721,7 @@ const jsonLd = [
   #sv-page .sv-specimen__wa svg {
     width: 0.85rem;
     height: 0.85rem;
-    color: #22c55e;
+    color: var(--sv-whatsapp);
     flex: none;
   }
 
@@ -1743,7 +1738,7 @@ const jsonLd = [
     width: 0.35rem;
     height: 0.35rem;
     border-radius: 50%;
-    background: var(--sv-green);
+    background: var(--sv-accent-ink);
     flex: none;
   }
 
@@ -1817,7 +1812,7 @@ const jsonLd = [
   #sv-page .sv-plan--feature {
     background: var(--sv-ink);
     border-color: var(--sv-ink);
-    color: rgba(255, 255, 255, 0.75);
+    color: #cbd6de;
   }
 
   @media (min-width: 960px) {
@@ -1827,7 +1822,7 @@ const jsonLd = [
       border-radius: 16px;
       padding: 2.25rem 2rem;
       margin-top: -1.75rem;
-      box-shadow: 0 30px 60px -40px rgba(16, 18, 20, 0.8);
+      box-shadow: 0 30px 60px -40px rgba(11, 31, 42, 0.8);
     }
     /* As colunas sem etiqueta reservam exatamente a mesma altura que ela ocupa,
        para os 3 preços ficarem na mesma linha de base e a escada
@@ -1849,8 +1844,8 @@ const jsonLd = [
     line-height: 1.35rem;
     padding: 0 0.7rem;
     border-radius: 999px;
-    background: var(--sv-green);
-    color: #08210f;
+    background: var(--sv-accent);
+    color: #04212c;
     font-family: var(--sv-mono);
     font-size: 0.63rem;
     font-weight: 700;
@@ -1888,7 +1883,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__vat {
-    color: rgba(255, 255, 255, 0.6);
+    color: #8a98a6;
   }
 
   #sv-page .sv-plan__was {
@@ -1899,7 +1894,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__was {
-    color: rgba(255, 255, 255, 0.58);
+    color: #8a98a6;
   }
 
   #sv-page .sv-plan__promo {
@@ -1910,8 +1905,8 @@ const jsonLd = [
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--sv-green);
-    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: var(--sv-accent);
+    border: 1px solid rgba(0, 195, 255, 0.45);
     border-radius: 999px;
     padding: 0.2rem 0.55rem;
     margin-bottom: 0.9rem;
@@ -1926,7 +1921,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__desc {
-    color: rgba(255, 255, 255, 0.68);
+    color: #cbd6de;
   }
 
   @media (min-width: 960px) {
@@ -1942,7 +1937,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__body {
-    border-top-color: rgba(255, 255, 255, 0.14);
+    border-top-color: rgba(148, 163, 184, 0.16);
   }
 
   #sv-page .sv-plan__incl {
@@ -1955,7 +1950,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__incl {
-    color: rgba(255, 255, 255, 0.5);
+    color: #8a98a6;
   }
 
   #sv-page .sv-plan__list li {
@@ -1969,7 +1964,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan--feature .sv-plan__list li {
-    color: rgba(255, 255, 255, 0.86);
+    color: #f1f5f9;
   }
 
   #sv-page .sv-plan__list svg,
@@ -1980,14 +1975,14 @@ const jsonLd = [
     flex: none;
     margin-top: 0.22rem;
     fill: none;
-    stroke: var(--sv-green-ink);
+    stroke: var(--sv-accent-ink);
     stroke-width: 2.6;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
   #sv-page .sv-plan--feature .sv-plan__list svg {
-    stroke: var(--sv-green);
+    stroke: var(--sv-accent);
   }
 
   #sv-page .sv-plans__note {
@@ -2019,10 +2014,10 @@ const jsonLd = [
   #sv-page .sv-plan__note {
     margin-top: 1rem;
     padding-top: 0.85rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid rgba(148, 163, 184, 0.22);
     font-size: 0.78rem;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.55);
+    color: #8a98a6;
   }
 
   #sv-page .sv-work__cta {
@@ -2047,7 +2042,7 @@ const jsonLd = [
      ========================================================= */
   #sv-page .sv-section--dark {
     background: var(--sv-ink);
-    color: rgba(255, 255, 255, 0.78);
+    color: #cbd6de;
   }
 
   #sv-page .sv-section--dark h2,
@@ -2056,7 +2051,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-section--dark h2 em {
-    color: var(--sv-green);
+    color: var(--sv-accent);
   }
 
   #sv-page .sv-validation__inner {
@@ -2078,20 +2073,20 @@ const jsonLd = [
 
   #sv-page .sv-moments {
     margin: 2.25rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(148, 163, 184, 0.22);
   }
 
   #sv-page .sv-moments li {
     display: flex;
     gap: 1.1rem;
     padding: 1.15rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
   }
 
   #sv-page .sv-moments__n {
     font-family: var(--sv-mono);
     font-size: 0.78rem;
-    color: var(--sv-green);
+    color: var(--sv-accent);
     flex: none;
     padding-top: 0.2rem;
   }
@@ -2105,7 +2100,7 @@ const jsonLd = [
   #sv-page .sv-moments p {
     font-size: 0.92rem;
     line-height: 1.55;
-    color: rgba(255, 255, 255, 0.62);
+    color: #cbd6de;
   }
 
   /* Documento de relatório */
@@ -2210,7 +2205,7 @@ const jsonLd = [
     margin-top: 1rem;
     font-size: 0.85rem;
     line-height: 1.55;
-    color: rgba(255, 255, 255, 0.55);
+    color: #8a98a6;
     max-width: 42ch;
   }
 
@@ -2263,12 +2258,12 @@ const jsonLd = [
 
   #sv-page .sv-step--cond .sv-step__n {
     border-style: dashed;
-    border-color: var(--sv-green);
-    color: var(--sv-green-ink);
+    border-color: var(--sv-accent-ink);
+    color: var(--sv-accent-ink);
   }
 
   #sv-page .sv-step--cond .sv-step__label {
-    color: var(--sv-green-ink);
+    color: var(--sv-accent-ink);
   }
 
   @media (min-width: 900px) {
@@ -2346,8 +2341,8 @@ const jsonLd = [
     font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--sv-green-ink);
-    border: 1px solid rgba(15, 122, 59, 0.3);
+    color: var(--sv-accent-ink);
+    border: 1px solid rgba(0, 117, 153, 0.35);
     border-radius: 999px;
     padding: 0.18rem 0.55rem;
   }
@@ -2440,7 +2435,7 @@ const jsonLd = [
   #sv-page .sv-care__for {
     font-size: 0.88rem;
     line-height: 1.5;
-    color: var(--sv-green-ink);
+    color: var(--sv-accent-ink);
     font-weight: 600;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
@@ -2462,7 +2457,7 @@ const jsonLd = [
     padding: 1.15rem 1.35rem;
     background: var(--sv-white);
     border: 1px solid var(--sv-line);
-    border-left: 3px solid var(--sv-green);
+    border-left: 3px solid var(--sv-accent-ink);
     border-radius: 0 10px 10px 0;
     font-size: 0.97rem;
     line-height: 1.6;
@@ -2547,7 +2542,7 @@ const jsonLd = [
     position: absolute;
     inset: 0;
     margin: auto;
-    background: var(--sv-green-ink);
+    background: var(--sv-accent-ink);
   }
 
   #sv-page .sv-faq__item summary i::before {
@@ -2578,8 +2573,8 @@ const jsonLd = [
      ========================================================= */
   #sv-page .sv-final {
     background: var(--sv-ink);
-    color: rgba(255, 255, 255, 0.72);
-    border-top: 3px solid var(--sv-green);
+    color: #cbd6de;
+    border-top: 3px solid var(--sv-accent);
   }
 
   #sv-page .sv-final__inner {
@@ -2603,7 +2598,7 @@ const jsonLd = [
   #sv-page .sv-final p {
     font-size: 1.05rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.66);
+    color: #cbd6de;
     max-width: 48ch;
   }
 
@@ -2616,7 +2611,7 @@ const jsonLd = [
   #sv-page .sv-final__note {
     flex-basis: 100%;
     font-size: 0.85rem !important;
-    color: rgba(255, 255, 255, 0.58) !important;
+    color: #8a98a6 !important;
     margin-top: 0.25rem;
   }
 

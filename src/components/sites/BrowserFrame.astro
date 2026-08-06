@@ -26,9 +26,9 @@ const { url, tone = 'light', class: className } = Astro.props;
   .sv-frame {
     border-radius: 14px;
     overflow: hidden;
-    border: 1px solid #dadddb;
+    border: 1px solid #d3dde4;
     background: #fff;
-    box-shadow: 0 1px 2px rgba(16, 18, 20, 0.04), 0 18px 40px -24px rgba(16, 18, 20, 0.35);
+    box-shadow: 0 1px 2px rgba(11, 31, 42, 0.04), 0 18px 40px -24px rgba(11, 31, 42, 0.35);
   }
 
   .sv-frame__bar {
@@ -36,8 +36,8 @@ const { url, tone = 'light', class: className } = Astro.props;
     align-items: center;
     gap: 0.75rem;
     padding: 0.6rem 0.85rem;
-    background: #f1f2f0;
-    border-bottom: 1px solid #dadddb;
+    background: #eef3f6;
+    border-bottom: 1px solid #d3dde4;
   }
 
   .sv-frame__dots {
@@ -50,15 +50,15 @@ const { url, tone = 'light', class: className } = Astro.props;
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 50%;
-    background: #cdd0cd;
+    background: #c3ced6;
   }
 
   .sv-frame__url {
     font-size: 0.7rem;
     letter-spacing: 0.01em;
-    color: #6b7175;
+    color: #5b7180;
     background: #fff;
-    border: 1px solid #e2e4e1;
+    border: 1px solid #dee7ed;
     border-radius: 999px;
     padding: 0.2rem 0.7rem;
     white-space: nowrap;
@@ -82,14 +82,14 @@ const { url, tone = 'light', class: className } = Astro.props;
 
   /* Variante escura, para o mockup colocado sobre fundo carvão */
   .sv-frame--dark {
-    border-color: rgba(255, 255, 255, 0.14);
-    background: #16191c;
+    border-color: rgba(148, 163, 184, 0.28);
+    background: #0b1f2a;
     box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
   }
 
   .sv-frame--dark .sv-frame__bar {
-    background: #1c2024;
-    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: #0f2937;
+    border-bottom-color: rgba(148, 163, 184, 0.2);
   }
 
   .sv-frame--dark .sv-frame__dots i {
@@ -98,8 +98,8 @@ const { url, tone = 'light', class: className } = Astro.props;
 
   .sv-frame--dark .sv-frame__url {
     background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.62);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #cbd6de;
   }
 
   @media (max-width: 480px) {

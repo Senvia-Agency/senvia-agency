@@ -25,7 +25,7 @@ const hasHeroVideo = fs.existsSync(path.join(process.cwd(), 'public', 'videos', 
 ------------------------------------------------------------------- */
 const briefingUrl = SITE.ctaSiteFormUrl;
 // Se o número de WhatsApp ainda não estiver configurado em src/config.ts,
-// os CTAs de WhatsApp caem no formulário — nada quebra.
+// os CTAs de WhatsApp caem no formulário, e nada quebra.
 const whatsapp = whatsappUrl('Olá! Queria um diagnóstico rápido para o site do meu negócio.');
 const diagnosticoUrl = whatsapp ?? briefingUrl;
 const isExternal = (url: string) => url.startsWith('http');
@@ -52,7 +52,7 @@ const dores = [
 
 const solucao = [
   { title: 'Oferta clara', desc: 'Organizamos o que vendes, para quem e por que motivo te devem escolher.' },
-  { title: 'Design profissional', desc: 'Layout limpo, legível e coerente com a tua marca — em desktop e telemóvel.' },
+  { title: 'Design profissional', desc: 'Layout limpo, legível e coerente com a tua marca, em desktop e telemóvel.' },
   { title: 'Contacto por WhatsApp ou formulário', desc: 'A mensagem já chega com contexto: serviço, nome e o que a pessoa precisa.' },
   { title: 'SEO básico', desc: 'Títulos, descrições, estrutura e velocidade tratados desde o primeiro dia.' },
   { title: 'Tracking de leads e cliques', desc: 'Para saberes de onde vêm os pedidos, e não andares a adivinhar.' },
@@ -292,7 +292,7 @@ const jsonLd = [
       '@type': 'Offer',
       name: `Pacote ${p.nome}`,
       description: p.desc,
-      // Os preços da página são sem IVA — declarado explicitamente.
+      // Os preços da página são sem IVA, declarado explicitamente.
       priceSpecification: {
         '@type': 'PriceSpecification',
         price: p.preco.replace('€', ''),
@@ -371,7 +371,7 @@ const jsonLd = [
         <div class="sv-hero__visual">
           <BrowserFrame url="o-teu-site.pt">
             {/* A imagem otimizada está sempre presente e é ela o candidato a LCP.
-                O vídeo, quando existe, entra por cima só depois de estar a tocar —
+                O vídeo, quando existe, entra por cima só depois de estar a tocar,
                 assim nunca há um poster sem prioridade a segurar a pintura. */}
             <div class="sv-hero__media">
               <Image
@@ -497,7 +497,7 @@ const jsonLd = [
               />
             </BrowserFrame>
             <figcaption>
-              O oposto disto: um caminho único — entender a oferta, clicar e falar connosco pelo
+              O oposto disto: um caminho único. Entender a oferta, clicar e falar connosco pelo
               WhatsApp ou formulário.
             </figcaption>
           </figure>
@@ -719,7 +719,7 @@ const jsonLd = [
             </ul>
 
             <footer class="sv-report__foot">
-              <p class="sv-report__concl">Recomendação objetiva — uma destas quatro, com justificação:</p>
+              <p class="sv-report__concl">Recomendação objetiva: uma destas quatro, com justificação.</p>
               <div class="sv-report__pills">
                 <span>Matar</span><span>Ajustar</span><span>Continuar</span><span>Escalar</span>
               </div>
@@ -728,7 +728,7 @@ const jsonLd = [
 
           <p class="sv-report__caption">
             Esta é a estrutura do relatório que recebes no fim dos 14 dias. Os números são os da tua
-            campanha — não prometemos resultados antes de os medir.
+            campanha. Não prometemos resultados antes de os medir.
           </p>
         </div>
       </div>
@@ -853,8 +853,8 @@ const jsonLd = [
 
         <p class="sv-rule">
           <strong>Regra simples, sem letra pequena:</strong> websites exigem no mínimo Manutenção
-          Básica. Loja Online exige Manutenção Loja Online. A manutenção é proteção do que pagaste —
-          não é uma taxa escondida.
+          Básica. Loja Online exige Manutenção Loja Online. A manutenção é proteção do que pagaste.
+          Não é uma taxa escondida.
         </p>
       </div>
     </section>
@@ -868,7 +868,7 @@ const jsonLd = [
           <p class="sv-eyebrow">Perguntas frequentes</p>
           <h2>As perguntas que nos fazem sempre.</h2>
           <p class="sv-lead">
-            Se ficar alguma dúvida de fora, escreve-nos — respondemos sem rodeios.
+            Se ficar alguma dúvida de fora, escreve-nos. Respondemos sem rodeios.
           </p>
           <a
             href={diagnosticoUrl}
@@ -1011,7 +1011,7 @@ const jsonLd = [
 
 <style is:global>
   /* =========================================================
-     SENVIA — página /sites
+     SENVIA, página /sites
      Direção: editorial claro, carvão + verde. Sem dark/ciano global.
      Todos os seletores usam o prefixo .sv- ou estão presos a #sv-page,
      por isso este ficheiro não afeta nenhuma outra página.
@@ -1024,7 +1024,7 @@ const jsonLd = [
     --sv-cyan-mid: #009ccc; /* Mid Cyan Blue */
     --sv-petrol: #007599; /* Petrol Blue */
     --sv-petrol-dark: #004e66; /* Dark Petrol */
-    --sv-ink: #0b1f2a; /* Deep Navy — blocos escuros e títulos */
+    --sv-ink: #0b1f2a; /* Deep Navy, para blocos escuros e títulos */
     --sv-ink-soft: #0f2937; /* Secondary Navy */
 
     /* Texto sobre superfície escura (paleta SENVIA) */
@@ -1035,12 +1035,12 @@ const jsonLd = [
 
     /* Papéis:
        o ciano #00c3ff só tem 2.05:1 em fundo claro, por isso nunca é texto
-       aqui — é fundo de botão (8.1:1 com navy por cima) e acento em escuro.
+       aqui. É fundo de botão (8.1:1 com navy por cima) e acento em escuro.
        Para texto/links em claro usa-se o Petrol Blue. */
     --sv-accent: var(--sv-cyan); /* superfícies e acentos */
     --sv-accent-hover: var(--sv-cyan-hover);
-    --sv-accent-ink: var(--sv-petrol); /* texto de acento em claro — 4.9:1 */
-    --sv-accent-strong: var(--sv-petrol-dark); /* texto de acento forte — 8.6:1 */
+    --sv-accent-ink: var(--sv-petrol); /* texto de acento em claro, 4.9:1 */
+    --sv-accent-strong: var(--sv-petrol-dark); /* texto de acento forte, 8.6:1 */
     --sv-accent-soft: #e4f4fc;
     --sv-on-accent: #04212c; /* texto por cima do ciano */
 
@@ -1055,7 +1055,7 @@ const jsonLd = [
     --sv-muted: #4f6a78;
     --sv-line: #d3dde4;
     --sv-line-soft: #e4ebf0;
-    --sv-line-ui: #788d9a; /* contorno de componentes — 3.2:1 no fundo claro */
+    --sv-line-ui: #788d9a; /* contorno de componentes, 3.2:1 no fundo claro */
 
     --sv-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -1069,7 +1069,7 @@ const jsonLd = [
   }
 
   /* O header e o rodapé partilhados já são navy + ciano, ou seja, já são a
-     identidade SENVIA — nesta rota não se recolorem, só se retira o brilho
+     identidade SENVIA. Nesta rota não se recolorem, só se retira o brilho
      do botão para acompanhar o registo mais sóbrio da página. */
   body:has(#sv-page) .site-header--scrolled {
     box-shadow: none;
@@ -1080,7 +1080,7 @@ const jsonLd = [
   }
   /* Entre o burger (≤768px) e o desktop folgado (≥900px) o menu partilhado
      não tem espaço: a marca e o botão partem-se em duas linhas. Aperta-se
-     aqui, só nesta rota — o comportamento das outras páginas fica intacto. */
+     aqui, só nesta rota, e o comportamento das outras páginas fica intacto. */
   @media (min-width: 769px) and (max-width: 899px) {
     body:has(#sv-page) .nav {
       gap: 0.85rem;
@@ -1350,7 +1350,7 @@ const jsonLd = [
     line-height: 1.05;
     letter-spacing: -0.038em;
     margin-bottom: 1.25rem;
-    /* "pretty" evita órfãs sem forçar linhas do mesmo tamanho — "balance"
+    /* "pretty" evita órfãs sem forçar linhas do mesmo tamanho. O "balance"
        deixava "visitantes" sozinho numa linha curta a 1366px+. */
     text-wrap: pretty;
   }
@@ -1494,7 +1494,7 @@ const jsonLd = [
     flex: none;
   }
 
-  /* Sem número configurado não é clicável — por isso também não se veste de botão. */
+  /* Sem número configurado não é clicável, por isso também não se veste de botão. */
   #sv-page .sv-hero__wa--static {
     box-shadow: none;
     background: rgba(255, 255, 255, 0.92);
@@ -2023,7 +2023,7 @@ const jsonLd = [
     color: var(--sv-ink);
   }
 
-  /* Aviso explícito de manutenção, ao lado do preço — não em letra pequena.
+  /* Aviso explícito de manutenção, ao lado do preço, não em letra pequena.
      A manutenção é obrigatória, por isso aparece antes de escolherem. */
   #sv-page .sv-plans__care {
     display: flex;
@@ -2660,7 +2660,7 @@ const jsonLd = [
   }
 
   /* =========================================================
-     Movimento — discreto e diferente por secção
+     Movimento discreto e diferente por secção
      ========================================================= */
   .sv-js #sv-page .sv-anim {
     opacity: 0;

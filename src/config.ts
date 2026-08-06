@@ -25,7 +25,7 @@ export const SITE = {
  *
  * Enquanto `number` estiver vazio, `whatsappUrl()` devolve `null` e os CTAs de
  * WhatsApp fazem fallback automático para o formulário (SITE.ctaSiteFormUrl).
- * Nada quebra — basta preencher o número para os ativar.
+ * Nada quebra: basta preencher o número para os ativar.
  */
 export const WHATSAPP = {
   number: '',

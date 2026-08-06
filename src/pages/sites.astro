@@ -1,162 +1,2705 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import CTASection from '../components/CTASection.astro';
-import { SITE } from '../config';
+import BrowserFrame from '../components/sites/BrowserFrame.astro';
+import { SITE, whatsappUrl } from '../config';
 
-const siteTypes = [
-  { icon: 'globe', title: 'Sites Institucionais', desc: 'Presença digital profissional que transmite credibilidade e confiança. Design moderno, responsivo e otimizado para SEO.', features: ['Design Personalizado', '100% Responsivo', 'SEO Otimizado', 'Painel de Gestão'] },
-  { icon: 'rocket', title: 'Landing Pages de Alta Conversão', desc: 'Páginas focadas num único objetivo: converter visitantes em leads ou clientes. Copy persuasiva e CTAs estratégicos.', features: ['Copy Persuasiva', 'A/B Testing', 'Analytics Integrado', 'Formulários Inteligentes'] },
-  { icon: 'cart', title: 'Lojas Online (E-commerce)', desc: 'Plataformas de venda robustas com gestão de inventário, pagamentos seguros e experiência de compra fluida.', features: ['Pagamentos Seguros', 'Gestão de Stock', 'Checkout Otimizado', 'Multi-Moeda'] },
-  { icon: 'pen', title: 'Portfólios & Blogs', desc: 'Mostre o seu trabalho ou partilhe conteúdo com plataformas elegantes, rápidas e fáceis de gerir.', features: ['CMS Integrado', 'Galeria Visual', 'Otimização de Imagem', 'Partilha Social'] },
+import longevStudio from '../assets/projetos/longev-studio.png';
+import deltaCapital from '../assets/projetos/delta-capital.png';
+import miraWay from '../assets/projetos/mira-way.png';
+
+/* ------------------------------------------------------------------
+   Vídeo da hero
+   Caminho esperado: public/videos/sites-hero.mp4
+   A existência é verificada em build-time: se o ficheiro estiver lá, a
+   hero usa vídeo (com poster); se não, usa o screenshot real como imagem.
+   Ver public/videos/README.md.
+------------------------------------------------------------------- */
+const HERO_VIDEO_SRC = '/videos/sites-hero.mp4';
+const hasHeroVideo = fs.existsSync(path.join(process.cwd(), 'public', 'videos', 'sites-hero.mp4'));
+
+/* ------------------------------------------------------------------
+   Contactos
+------------------------------------------------------------------- */
+const briefingUrl = SITE.ctaSiteFormUrl;
+// Se o número de WhatsApp ainda não estiver configurado em src/config.ts,
+// os CTAs de WhatsApp caem no formulário — nada quebra.
+const whatsapp = whatsappUrl('Olá! Queria um diagnóstico rápido para o site do meu negócio.');
+const diagnosticoUrl = whatsapp ?? briefingUrl;
+const isExternal = (url: string) => url.startsWith('http');
+const pacoteUrl = (slug: string) => `${briefingUrl}?pacote=${slug}`;
+const diagAttrs: Record<string, string> = isExternal(diagnosticoUrl)
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+// Pílula de WhatsApp da hero: link real assim que houver número; até lá é só
+// anotação do mockup e fica escondida da tecnologia de apoio.
+const waAttrs: Record<string, string> = whatsapp
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : { 'aria-hidden': 'true' };
+
+/* ------------------------------------------------------------------
+   Conteúdo
+------------------------------------------------------------------- */
+const dores = [
+  'O Instagram não transmite confiança suficiente.',
+  'As mensagens chegam sem contexto.',
+  'O cliente pergunta preço e desaparece.',
+  'Anúncio sem landing desperdiça dinheiro.',
+  'Site antigo não converte nem passa profissionalismo.',
 ];
 
-const steps = [
-  { step: '01', icon: 'message', title: 'Briefing & Estratégia', desc: 'Reunião para entender os seus objetivos, público-alvo e requisitos. Definimos a estratégia e o roadmap do projeto.' },
-  { step: '02', icon: 'palette', title: 'Design & UX', desc: 'Criamos mockups e protótipos interativos. Design focado na experiência do utilizador e na conversão.' },
-  { step: '03', icon: 'code', title: 'Desenvolvimento', desc: 'Programação com tecnologias modernas. Código limpo, performance otimizada e testes rigorosos.' },
-  { step: '04', icon: 'rocket', title: 'Lançamento & Suporte', desc: 'Deploy, configuração de domínio, SSL e monitorização. Suporte contínuo pós-lançamento incluído.' },
+const solucao = [
+  { title: 'Oferta clara', desc: 'Organizamos o que vendes, para quem e por que motivo te devem escolher.' },
+  { title: 'Design profissional', desc: 'Layout limpo, legível e coerente com a tua marca — em desktop e telemóvel.' },
+  { title: 'Contacto por WhatsApp ou formulário', desc: 'A mensagem já chega com contexto: serviço, nome e o que a pessoa precisa.' },
+  { title: 'SEO básico', desc: 'Títulos, descrições, estrutura e velocidade tratados desde o primeiro dia.' },
+  { title: 'Tracking de leads e cliques', desc: 'Para saberes de onde vêm os pedidos, e não andares a adivinhar.' },
+  { title: 'Publicação e manutenção', desc: 'Domínio, alojamento, SSL e o site a funcionar depois de publicado.' },
 ];
 
-const differentials = [
-  { icon: 'zap', title: 'Performance', desc: 'Sites ultra-rápidos com score 90+ no PageSpeed. Cada milissegundo conta para a conversão.' },
-  { icon: 'search', title: 'SEO Técnico', desc: 'Estrutura otimizada para motores de busca desde o primeiro dia. Mais visibilidade orgânica.' },
-  { icon: 'paintbrush', title: 'Design Premium', desc: 'Interfaces únicas e modernas que refletem a identidade da sua marca. Sem templates genéricos.' },
-  { icon: 'smartphone', title: '100% Responsivo', desc: 'Experiência perfeita em todos os dispositivos: desktop, tablet e mobile.' },
-  { icon: 'clock', title: 'Entrega Rápida', desc: 'Processos ágeis que garantem prazos cumpridos sem comprometer a qualidade.' },
-  { icon: 'shield', title: 'Segurança & SSL', desc: 'Certificados SSL, proteção contra ataques e backups automáticos incluídos.' },
+const pacotes = [
+  {
+    slug: 'presenca',
+    nome: 'Presença',
+    preco: '280€',
+    precoNota: '+ IVA',
+    antes: null as string | null,
+    promo: null as string | null,
+    desc: 'Para negócios que precisam sair do improviso e ter uma página profissional no ar.',
+    inclui: [
+      '1 landing page/site simples',
+      'Até 5 blocos ou página única',
+      'Copy básica baseada em template',
+      'WhatsApp com mensagem organizada',
+      'Formulário simples',
+      'SEO básico',
+      'Publicação',
+      '1 revisão',
+    ],
+    cta: 'Começar com Presença',
+    destaque: false,
+    nota: null as string | null,
+  },
+  {
+    slug: 'validacao-comercial',
+    nome: 'Validação Comercial',
+    preco: '490€',
+    precoNota: '+ IVA',
+    antes: '650€ + IVA',
+    promo: 'Promoção',
+    desc: 'Para negócios que querem site, captação e um teste comercial real com anúncios.',
+    inclui: [
+      'Tudo do Pacote Presença',
+      'Site de 3 a 12 páginas',
+      'Pronto em 14 dias',
+      '14 dias de acompanhamento em Meta Ads',
+      '100€ de investimento incluído para Meta Ads',
+      '3 criativos de imagem',
+      'Configuração de público',
+      'SEO básico',
+      'Tracking de leads e cliques',
+      'Relatório detalhado',
+      'Até 30.000 visualizações*',
+      'Até 300 visitas no site',
+    ],
+    cta: 'Validar meu negócio',
+    destaque: true,
+    // Rodapé do próprio pacote: fica junto de "Até 30.000 visualizações*",
+    // para o asterisco apontar para a nota certa.
+    nota: '*Estimativa potencial baseada em campanha e distribuição. Resultados variam conforme nicho, verba, público, criativos e procura do mercado.',
+  },
+  {
+    slug: 'loja-online',
+    nome: 'Loja Online',
+    preco: '1190€',
+    precoNota: '+ IVA',
+    antes: null as string | null,
+    promo: null as string | null,
+    desc: 'Para negócios que querem vender produtos online com uma loja profissional e pronta para gestão.',
+    inclui: [
+      'Loja online responsiva',
+      'Design profissional personalizado',
+      'Páginas de produto',
+      'Carrinho e checkout',
+      'Métodos de pagamento',
+      'Configuração de envios',
+      'SEO básico para produtos',
+      'Formação para gestão da loja',
+    ],
+    cta: 'Criar loja online',
+    destaque: false,
+    nota: null as string | null,
+  },
 ];
 
-const icons: Record<string, string> = {
-  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>',
-  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
-  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
-  message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
-  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  paintbrush: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3z"/><path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7"/><path d="M14.5 17.5 4.5 15"/></svg>',
-  smartphone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>',
-  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-};
+const momentos = [
+  { n: '01', title: 'Criamos a presença', desc: 'Página, oferta, pontos de contacto e tracking prontos antes de gastar um euro em anúncios.' },
+  { n: '02', title: 'Ativamos a campanha', desc: '3 criativos, público configurado e 100€ de investimento incluído a correr durante 14 dias.' },
+  { n: '03', title: 'Medimos os pedidos', desc: 'No fim recebes o relatório com o que aconteceu e uma recomendação objetiva do próximo passo.' },
+];
+
+const relatorioCampos = [
+  'Investimento total',
+  'Alcance',
+  'Impressões',
+  'Cliques',
+  'CTR',
+  'Leads/contactos gerados',
+  'Custo por lead/contacto',
+  'Comparação dos 3 criativos',
+  'Melhor criativo',
+  'Público usado',
+];
+
+const processo = [
+  { n: '1', label: 'Preenches o briefing' },
+  { n: '2', label: 'Validamos o melhor caminho' },
+  { n: '3', label: 'Pagas o sinal' },
+  { n: '4', label: 'Criamos o site' },
+  { n: '5', label: 'Revisas' },
+  { n: '6', label: 'Publicamos' },
+  { n: '7', label: 'Se for Validação, ativamos os anúncios', condicional: true },
+];
+
+const manutencao = [
+  {
+    nome: 'Manutenção Básica',
+    mes: '29€/mês',
+    ano: '290€/ano',
+    para: 'Obrigatória em qualquer website.',
+    itens: [
+      'Alojamento',
+      'SSL',
+      'Backups',
+      'Atualizações técnicas',
+      'Monitorização básica',
+      'Pequenas correções técnicas',
+      'Site online e funcional',
+    ],
+  },
+  {
+    nome: 'Manutenção Pro',
+    mes: '49€/mês',
+    ano: '490€/ano',
+    para: 'Para quem quer o site a mexer todos os meses.',
+    itens: [
+      'Tudo da Básica',
+      'Até 1 alteração simples por mês',
+      'Revisão mensal de formulário/links',
+      'Relatório simples de visitas/leads',
+      'Suporte prioritário',
+    ],
+  },
+  {
+    nome: 'Manutenção Loja Online',
+    mes: '79€/mês',
+    ano: '790€/ano',
+    para: 'Obrigatória em lojas online.',
+    itens: [
+      'Alojamento',
+      'SSL',
+      'Backups',
+      'Atualizações técnicas',
+      'Segurança',
+      'Verificação de checkout',
+      'Suporte técnico',
+      'Pequenas correções',
+      'Monitorização de erros críticos',
+    ],
+  },
+];
+
+const faqs = [
+  {
+    q: 'O domínio está incluído?',
+    a: 'Sim. Todos os pacotes incluem 1 ano de domínio gratuito como oferta especial, sujeito à disponibilidade do nome.',
+  },
+  {
+    q: 'Tenho de pagar manutenção?',
+    a: 'Sim. Websites exigem no mínimo Manutenção Básica para alojamento, segurança, backups e funcionamento técnico. Loja Online exige Manutenção Loja Online.',
+  },
+  {
+    q: 'O investimento em anúncios está incluído?',
+    a: 'No Pacote Validação Comercial, sim: estão incluídos 100€ de investimento para Meta Ads.',
+  },
+  {
+    q: 'Em quanto tempo fica pronto?',
+    a: 'O Pacote Validação Comercial fica pronto em até 14 dias, dependendo da entrega de materiais e validações.',
+  },
+  {
+    q: 'O Pacote Presença também tem anúncios?',
+    a: 'Não. O Pacote Presença é uma página/site simples de entrada. Para anúncios, tracking e relatório comercial, o pacote certo é o Validação Comercial.',
+  },
+  {
+    q: 'Posso pedir alterações?',
+    a: 'Sim. O Pacote Presença inclui 1 revisão. Alterações adicionais ou acompanhamento contínuo podem entrar na manutenção ou ser orçamentados à parte.',
+  },
+];
+
+const trabalhos = [
+  {
+    img: longevStudio,
+    nome: 'Longev Studio',
+    categoria: 'Website institucional',
+    url: 'longevstudio.pt',
+    alt: 'Website institucional do Longev Studio: menu com Equipa, Serviços e Contactos, hero "Treino de Força e Longevidade" e botão de agendamento.',
+    detalhes: ['Menu multi-página', 'Agendamento de avaliação', 'Versão PT/EN'],
+  },
+  {
+    img: deltaCapital,
+    nome: 'Delta Capital',
+    categoria: 'Landing page',
+    url: 'deltacapital.pt',
+    alt: 'Landing page da Delta Capital, intermediário de crédito: simulador de crédito habitação, botão "Falar connosco" por WhatsApp e selo do Banco de Portugal.',
+    detalhes: ['Simulador de crédito', 'WhatsApp no topo', 'Selo Banco de Portugal'],
+  },
+  {
+    img: miraWay,
+    nome: 'Mira Way',
+    categoria: 'Página de captação',
+    url: 'miraway.pt',
+    alt: 'Página de captação da Mira Way para uma sessão online gratuita, com lista de benefícios, botão de registo e WhatsApp flutuante.',
+    detalhes: ['Registo em sessão', 'WhatsApp flutuante', 'Prova de escassez'],
+  },
+];
+
+/* ------------------------------------------------------------------
+   SEO
+------------------------------------------------------------------- */
+const pageTitle = 'Criação de Sites Profissionais em Portugal';
+const pageDescription =
+  'Sites, landing pages e lojas online com preço fechado, captação por WhatsApp/formulário, SEO básico, tracking e manutenção. Pacotes desde 280€ + IVA.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Criação de sites, landing pages e lojas online',
+    serviceType: 'Desenvolvimento de websites',
+    provider: {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: SITE.url,
+      email: SITE.email,
+      address: { '@type': 'PostalAddress', addressLocality: 'Leiria', addressCountry: 'PT' },
+    },
+    areaServed: { '@type': 'Country', name: 'Portugal' },
+    description: pageDescription,
+    url: new URL('/sites', SITE.url).toString(),
+    offers: pacotes.map((p) => ({
+      '@type': 'Offer',
+      name: `Pacote ${p.nome}`,
+      description: p.desc,
+      // Os preços da página são sem IVA — declarado explicitamente.
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        price: p.preco.replace('€', ''),
+        priceCurrency: 'EUR',
+        valueAddedTaxIncluded: false,
+      },
+      url: new URL('/sites#pacotes', SITE.url).toString(),
+      availability: 'https://schema.org/InStock',
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
 ---
 
 <Base
-  title="Criação de Sites, Landing Pages & E-commerces"
-  description="Criamos sites institucionais, landing pages de alta conversão e lojas online com design premium, performance de topo e SEO otimizado. Peça orçamento gratuito."
+  title={pageTitle}
+  description={pageDescription}
   canonicalPath="/sites"
+  image="/images/og-sites.jpg"
+  jsonLd={jsonLd}
 >
-  <!-- Hero -->
-  <section class="hero aurora-bg" style="min-height: 85vh;">
-    <div class="container">
-      <div style="max-width: 48rem; margin-inline: auto; text-align: center;">
-        <span class="badge mb-6" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-          Sites & E-commerces
-        </span>
+  <!-- Marca o suporte a JS antes de o herói ser processado: sem isto o browser
+       pinta o herói, o script chega ~30 kB depois e o herói pisca ao esconder-se.
+       Aqui não há flash e o LCP não é adiado. -->
+  <script is:inline>document.documentElement.classList.add('sv-js');</script>
 
-        <h1 class="hero__title">
-          Sites que Convertem
-          <br />
-          <span class="gradient-text glow">Cliques em Clientes</span>
-        </h1>
+  <div id="sv-page">
+    <!-- ==========================================================
+         1. HERO
+    =========================================================== -->
+    <section class="sv-hero">
+      <div class="sv-container sv-hero__inner">
+        <div class="sv-hero__copy">
+          <p class="sv-eyebrow sv-anim" style="--d:0ms">Criação de sites · Portugal</p>
 
-        <p class="hero__lead" style="margin-inline: auto;">
-          Criamos sites institucionais, landing pages de alta conversão e lojas online com <strong>design premium</strong>, performance de topo e SEO otimizado.
-        </p>
+          <!-- Sem sv-anim: o h1 e o visual são candidatos a LCP e o Chrome ignora
+               elementos com opacity:0. Aparecem de imediato; o resto assenta a seguir. -->
+          <h1 class="sv-hero__title">
+            Sites profissionais para transformar <em>visitantes em pedidos</em>.
+          </h1>
 
-        <div class="hero__actions" style="justify-content: center;">
-          <a href={SITE.ctaSiteFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
-            Pedir Orçamento Gratuito
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <p class="sv-hero__lead sv-anim" style="--d:60ms">
+            Criamos páginas, sites e lojas online para negócios que precisam parecer profissionais,
+            explicar bem a oferta e receber contactos pelo WhatsApp ou formulário.
+          </p>
+
+          <div class="sv-hero__actions sv-anim" style="--d:120ms">
+            <a href="#pacotes" class="sv-btn sv-btn--primary">
+              Ver pacotes
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+            </a>
+            <a
+              href={diagnosticoUrl}
+              class="sv-btn sv-btn--ghost"
+              {...diagAttrs}
+            >
+              Pedir diagnóstico rápido
+            </a>
+          </div>
+
+          <ul class="sv-trust sv-anim" style="--d:180ms">
+            <li><span>Desde <strong>280€ + IVA</strong></span></li>
+            <li><span>Pronto em até <strong>14 dias</strong></span></li>
+            <li><span>WhatsApp, formulário e tracking</span></li>
+          </ul>
+        </div>
+
+        <div class="sv-hero__visual">
+          <BrowserFrame url="o-teu-site.pt">
+            {/* A imagem otimizada está sempre presente e é ela o candidato a LCP.
+                O vídeo, quando existe, entra por cima só depois de estar a tocar —
+                assim nunca há um poster sem prioridade a segurar a pintura. */}
+            <div class="sv-hero__media">
+              <Image
+                src={longevStudio}
+                alt="Website do Longev Studio criado pela SENVIA, com menu, hero e botão de agendamento de avaliação."
+                widths={[640, 960, 1280]}
+                sizes="(max-width: 1023px) 92vw, 560px"
+                loading="eager"
+                fetchpriority="high"
+                quality={72}
+              />
+              {
+                hasHeroVideo && (
+                  <video
+                    id="sv-hero-video"
+                    class="sv-hero__video"
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    width="1898"
+                    height="906"
+                    data-src={HERO_VIDEO_SRC}
+                    aria-hidden="true"
+                    tabindex="-1"
+                  />
+                )
+              }
+            </div>
+          </BrowserFrame>
+
+          {
+            /* WCAG 2.2.2 (nível A): qualquer movimento automático com mais de 5s
+               precisa de um mecanismo para parar. Só existe quando há vídeo. */
+            hasHeroVideo && (
+              <button
+                type="button"
+                id="sv-hero-video-toggle"
+                class="sv-hero__vtoggle"
+                hidden
+                aria-pressed="false"
+              >
+                <svg class="sv-hero__vtoggle-pause" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="7" y="5" width="3.5" height="14" rx="1" />
+                  <rect x="13.5" y="5" width="3.5" height="14" rx="1" />
+                </svg>
+                <svg class="sv-hero__vtoggle-play" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+                  <path d="M8 5.5v13l11-6.5z" />
+                </svg>
+                <span class="sv-hero__vtoggle-text">Parar animação</span>
+              </button>
+            )
+          }
+
+          <!-- Recorte: formulário (só desktop, para não poluir o mobile) -->
+          <div class="sv-hero__form" aria-hidden="true">
+            <p class="sv-hero__form-title">Pedido de contacto</p>
+            <span class="sv-field"></span>
+            <span class="sv-field sv-field--short"></span>
+            <span class="sv-hero__form-btn">Enviar pedido</span>
+          </div>
+
+          {
+            /* Se o número de WhatsApp estiver configurado, isto é um link a sério.
+               Enquanto não estiver, fica como anotação do mockup (sem sombra, sem
+               ar de botão) para ninguém tentar tocar num elemento morto. */
+          }
+          <a
+            href={whatsapp ?? undefined}
+            class:list={['sv-hero__wa', !whatsapp && 'sv-hero__wa--static']}
+            {...waAttrs}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37s-1.04 1.01-1.04 2.47 1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.5h-.01a9.5 9.5 0 0 1-4.83-1.32l-.35-.2-3.59.94.96-3.5-.23-.36a9.42 9.42 0 0 1-1.45-5.05c0-5.21 4.26-9.46 9.5-9.46 2.54 0 4.92.99 6.71 2.78a9.4 9.4 0 0 1 2.78 6.69c0 5.21-4.26 9.46-9.5 9.46m8.08-17.54A11.36 11.36 0 0 0 12.05 1C5.79 1 .7 6.07.7 12.3c0 1.99.52 3.93 1.51 5.64L.6 24l6.22-1.62a11.4 11.4 0 0 0 5.22 1.33h.01c6.26 0 11.35-5.07 11.35-11.3 0-3.02-1.18-5.86-3.32-8Z"
+              />
+            </svg>
+            <span>Falar connosco</span>
           </a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Types -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Tipos de Sites</span>
-        <h2>O site certo para <span class="gradient-text">o seu negócio</span></h2>
-        <p>Cada projeto é único. Escolha o tipo de site que melhor se adapta aos seus objetivos.</p>
+    <!-- ==========================================================
+         2. DOR
+    =========================================================== -->
+    <section class="sv-section sv-section--pain">
+      <div class="sv-container sv-pain__inner">
+        <div class="sv-pain__copy">
+          <p class="sv-eyebrow">O problema real</p>
+          <h2>
+            O teu negócio não precisa de mais um site. Precisa de uma página que
+            <em>explique, organize e gere contactos</em>.
+          </h2>
+          <p class="sv-lead">
+            Um site bonito não chega. Se a pessoa entra, não entende a oferta e não sabe o que fazer
+            a seguir, o site falhou.
+          </p>
+
+        </div>
+
+        <div class="sv-pain__right">
+          <ul class="sv-pain__list">
+            {
+              dores.map((d, i) => (
+                <li data-reveal style={`--d:${i * 70}ms`}>
+                  <span class="sv-pain__num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="sv-pain__text">{d}</span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <figure class="sv-pain__figure">
+            <BrowserFrame url="miraway.pt">
+              <Image
+                src={miraWay}
+                alt="Página de captação da Mira Way com botão de registo e WhatsApp flutuante no canto inferior direito."
+                widths={[520, 780]}
+                sizes="(max-width: 900px) 88vw, 420px"
+                loading="lazy"
+                quality={68}
+              />
+            </BrowserFrame>
+            <figcaption>
+              O oposto disto: um caminho único — entender a oferta, clicar e falar connosco pelo
+              WhatsApp ou formulário.
+            </figcaption>
+          </figure>
+        </div>
       </div>
+    </section>
 
-      <div class="service-grid">
-        {siteTypes.map((type) => (
-          <div class="service-card">
-            <div class="service-card__icon" set:html={icons[type.icon]} />
-            <h3>{type.title}</h3>
-            <p class="service-card__desc">{type.desc}</p>
-            <div class="service-card__features">
-              {type.features.map((f) => <span class="service-card__feature">{f}</span>)}
+    <!-- ==========================================================
+         3. SOLUÇÃO
+    =========================================================== -->
+    <section class="sv-section sv-section--solution">
+      <div class="sv-container sv-solution__inner">
+        <div class="sv-solution__visual">
+          <BrowserFrame url="deltacapital.pt">
+            <Image
+              src={deltaCapital}
+              alt="Landing page da Delta Capital com simulador de crédito e botão de WhatsApp no menu."
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 1023px) 92vw, 560px"
+              loading="lazy"
+              quality={70}
+            />
+          </BrowserFrame>
+
+          <div class="sv-specimens" aria-hidden="true">
+            <div class="sv-specimen">
+              <p class="sv-specimen__label">Botão de WhatsApp</p>
+              <span class="sv-specimen__wa">
+                <svg viewBox="0 0 24 24" fill="currentColor"
+                  ><path
+                    d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37s-1.04 1.01-1.04 2.47 1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.5h-.01a9.5 9.5 0 0 1-4.83-1.32l-.35-.2-3.59.94.96-3.5-.23-.36a9.42 9.42 0 0 1-1.45-5.05c0-5.21 4.26-9.46 9.5-9.46 2.54 0 4.92.99 6.71 2.78a9.4 9.4 0 0 1 2.78 6.69c0 5.21-4.26 9.46-9.5 9.46m8.08-17.54A11.36 11.36 0 0 0 12.05 1C5.79 1 .7 6.07.7 12.3c0 1.99.52 3.93 1.51 5.64L.6 24l6.22-1.62a11.4 11.4 0 0 0 5.22 1.33h.01c6.26 0 11.35-5.07 11.35-11.3 0-3.02-1.18-5.86-3.32-8Z"
+                  /></svg
+                >
+                Falar connosco
+              </span>
+            </div>
+
+            <div class="sv-specimen">
+              <p class="sv-specimen__label">Formulário</p>
+              <span class="sv-field"></span>
+              <span class="sv-field sv-field--short"></span>
+            </div>
+
+            <div class="sv-specimen">
+              <p class="sv-specimen__label">Tracking</p>
+              <span class="sv-specimen__row"><i></i> Cliques no WhatsApp</span>
+              <span class="sv-specimen__row"><i></i> Formulários enviados</span>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+        </div>
 
-  <!-- Process -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Como Trabalhamos</span>
-        <h2>Do briefing ao <span class="gradient-text">lançamento</span></h2>
-        <p>Um processo transparente e colaborativo em 4 fases claras.</p>
-      </div>
+        <div class="sv-solution__copy">
+          <p class="sv-eyebrow">A solução</p>
+          <h2>Uma presença digital montada para <em>captar pedidos</em>.</h2>
+          <p class="sv-lead">
+            Organizamos a tua oferta, criamos a página certa, ligamos os pontos de contacto e
+            deixamos tudo pronto para acompanhar cliques, leads e próximos passos.
+          </p>
 
-      <div class="process-grid">
-        {steps.map((step) => (
-          <div class="process-card">
-            <span class="process-card__step">{step.step}</span>
-            <div class="process-card__icon" set:html={icons[step.icon]} />
-            <h3>{step.title}</h3>
-            <p>{step.desc}</p>
+          <ul class="sv-solution__list">
+            {
+              solucao.map((s) => (
+                <li>
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         4. PACOTES
+    =========================================================== -->
+    <section class="sv-section sv-section--plans" id="pacotes">
+      <div class="sv-container">
+        <div class="sv-head">
+          <div>
+            <p class="sv-eyebrow">Pacotes</p>
+            <h2>Pacotes com preço fechado e escopo claro.</h2>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+          <p class="sv-head__aside">
+            Escolhe o ponto de partida certo para o teu negócio. Sem proposta confusa, sem conversa
+            infinita, sem surpresas no fim.
+          </p>
+        </div>
 
-  <!-- Differentials -->
-  <section class="section bg-grid" style="background-size: 50px 50px;">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Porquê a SENVIA</span>
-        <h2>O que nos <span class="gradient-text">diferencia</span></h2>
-        <p>Não fazemos apenas sites bonitos. Fazemos sites que funcionam e geram resultados.</p>
-      </div>
+        <div class="sv-plans">
+          {
+            pacotes.map((p) => (
+              <article class:list={['sv-plan', p.destaque && 'sv-plan--feature']}>
+                <div class="sv-plan__top">
+                  {p.destaque && <span class="sv-plan__tag">Recomendado</span>}
+                  <h3 class="sv-plan__name">{p.nome}</h3>
 
-      <div class="differential-grid" style="grid-template-columns: repeat(2, 1fr);">
-        {differentials.map((item) => (
-          <div class="differential-card" style="text-align: left;">
-            <div class="differential-card__icon" style="margin: 0 0 1rem 0;">
-              <div set:html={icons[item.icon]} />
-            </div>
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">{item.title}</h3>
-            <p style="font-size: 0.875rem;">{item.desc}</p>
+                  <p class="sv-plan__price">
+                    <span class="sv-plan__amount">{p.preco}</span>
+                    <span class="sv-plan__vat">{p.precoNota}</span>
+                    {
+                      p.antes && (
+                        <s class="sv-plan__was">
+                          <span class="sr-only">Preço anterior: </span>
+                          {p.antes}
+                        </s>
+                      )
+                    }
+                  </p>
+                  {p.promo && <p class="sv-plan__promo">{p.promo}</p>}
+
+                  <p class="sv-plan__desc">{p.desc}</p>
+
+                  <a
+                    href={pacoteUrl(p.slug)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class:list={['sv-btn', p.destaque ? 'sv-btn--primary' : 'sv-btn--dark', 'sv-btn--block']}
+                  >
+                    {p.cta}
+                  </a>
+                </div>
+
+                <div class="sv-plan__body">
+                  <p class="sv-plan__incl">Inclui</p>
+                  <ul class="sv-plan__list">
+                    {p.inclui.map((item) => (
+                      <li>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {p.nota && <p class="sv-plan__note">{p.nota}</p>}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+
+        <div class="sv-plans__note">
+          <p class="sv-plans__gift">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
+            <span>
+              Todos os pacotes incluem <strong>1 ano de domínio gratuito</strong> como oferta especial.*
+            </span>
+          </p>
+          <p class="sv-fine">*Oferta sujeita à disponibilidade do nome de domínio.</p>
+          <p class="sv-fine sv-plans__reassure">
+            Os botões acima levam-te ao briefing. Não há pagamento nesta fase.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         5. VALIDAÇÃO COMERCIAL EM DESTAQUE
+    =========================================================== -->
+    <section class="sv-section sv-section--dark" id="validacao">
+      <div class="sv-container sv-validation__inner">
+        <div class="sv-validation__copy">
+          <p class="sv-eyebrow sv-eyebrow--onDark">Pacote Validação Comercial</p>
+          <h2>Mais do que um site: um <em>teste comercial com dados</em>.</h2>
+          <p class="sv-lead sv-lead--onDark">
+            O pacote Validação Comercial junta página, criativos, tráfego pago, tracking e relatório
+            para perceber se a oferta gera interesse real.
+          </p>
+
+          <ol class="sv-moments">
+            {
+              momentos.map((m) => (
+                <li>
+                  <span class="sv-moments__n">{m.n}</span>
+                  <div>
+                    <h3>{m.title}</h3>
+                    <p>{m.desc}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+
+          <a href={pacoteUrl('validacao-comercial')} target="_blank" rel="noopener noreferrer" class="sv-btn sv-btn--primary">
+            Validar meu negócio
+          </a>
+        </div>
+
+        <div class="sv-validation__report">
+          <article class="sv-report">
+            <header class="sv-report__head">
+              <div>
+                <p class="sv-report__kicker">Relatório de campanha</p>
+                <p class="sv-report__title">Validação Comercial · 14 dias</p>
+              </div>
+              <span class="sv-report__seal">SENVIA</span>
+            </header>
+
+            <ul class="sv-report__fields">
+              {
+                relatorioCampos.map((c) => (
+                  <li>
+                    <span>{c}</span>
+                    <i aria-hidden="true"></i>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <footer class="sv-report__foot">
+              <p class="sv-report__concl">Recomendação objetiva — uma destas quatro, com justificação:</p>
+              <div class="sv-report__pills">
+                <span>Matar</span><span>Ajustar</span><span>Continuar</span><span>Escalar</span>
+              </div>
+            </footer>
+          </article>
+
+          <p class="sv-report__caption">
+            Esta é a estrutura do relatório que recebes no fim dos 14 dias. Os números são os da tua
+            campanha — não prometemos resultados antes de os medir.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         6. PROCESSO
+    =========================================================== -->
+    <section class="sv-section sv-section--process" id="processo">
+      <div class="sv-container">
+        <div class="sv-head">
+          <div>
+            <p class="sv-eyebrow">Processo</p>
+            <h2>Como funciona</h2>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+          <p class="sv-head__aside">
+            Um processo simples para tirar o site do papel sem arrastar decisões durante meses.
+          </p>
+        </div>
 
-  <CTASection
-    title="Pronto para ter o site que o seu negócio merece?"
-    subtitle="Agende uma consultoria gratuita. Vamos analisar o seu projeto e apresentar a melhor solução para os seus objetivos."
-    ctaText="Agendar Consultoria Gratuita"
-    ctaUrl={SITE.ctaSiteFormUrl}
-  />
+        <ol class="sv-steps">
+          {
+            processo.map((s) => (
+              <li class:list={['sv-step', s.condicional && 'sv-step--cond']}>
+                <span class="sv-step__n">{s.n}</span>
+                <span class="sv-step__label">{s.label}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         7. PROVA E TRABALHOS
+    =========================================================== -->
+    <section class="sv-section sv-section--work" id="trabalhos">
+      <div class="sv-container">
+        <div class="sv-head">
+          <div>
+            <p class="sv-eyebrow">Trabalhos</p>
+            <h2>Trabalho real, não promessa abstrata.</h2>
+          </div>
+          <p class="sv-head__aside">
+            Usamos estrutura, design e tracking para transformar a presença online numa ferramenta
+            comercial.
+          </p>
+        </div>
+
+        <div class="sv-work">
+          {
+            trabalhos.map((t, i) => (
+              <figure class:list={['sv-work__item', i === 0 && 'sv-work__item--lead']} data-reveal>
+                <BrowserFrame url={t.url}>
+                  <Image
+                    src={t.img}
+                    alt={t.alt}
+                    widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
+                    sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
+                    loading="lazy"
+                    quality={72}
+                  />
+                </BrowserFrame>
+                <figcaption>
+                  <span class="sv-work__name">{t.nome}</span>
+                  <span class="sv-work__cat">{t.categoria}</span>
+                  <span class="sv-work__details">{t.detalhes.join(' · ')}</span>
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+
+        <div class="sv-work__cta">
+          <p>Queres uma página assim para o teu negócio?</p>
+          <a href="#pacotes" class="sv-btn sv-btn--dark">
+            Ver pacotes
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         8. MANUTENÇÃO
+    =========================================================== -->
+    <section class="sv-section sv-section--care" id="manutencao">
+      <div class="sv-container">
+        <div class="sv-head">
+          <div>
+            <p class="sv-eyebrow">Manutenção</p>
+            <h2>Depois de publicar, o site precisa continuar seguro e online.</h2>
+          </div>
+          <p class="sv-head__aside">
+            Todos os websites exigem manutenção para garantir alojamento, segurança, backups e
+            suporte técnico desde o lançamento.
+          </p>
+        </div>
+
+        <div class="sv-care">
+          {
+            manutencao.map((m) => (
+              <article class="sv-care__item">
+                <h3>{m.nome}</h3>
+                <p class="sv-care__price">
+                  <strong>{m.mes}</strong> + IVA
+                  <span>ou {m.ano} + IVA</span>
+                </p>
+                <p class="sv-care__for">{m.para}</p>
+                <ul>
+                  {m.itens.map((i) => (
+                    <li>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
+                      <span>{i}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
+        </div>
+
+        <p class="sv-rule">
+          <strong>Regra simples, sem letra pequena:</strong> websites exigem no mínimo Manutenção
+          Básica. Loja Online exige Manutenção Loja Online. A manutenção é proteção do que pagaste —
+          não é uma taxa escondida.
+        </p>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         9. FAQ
+    =========================================================== -->
+    <section class="sv-section sv-section--faq" id="faq">
+      <div class="sv-container sv-faq__inner">
+        <div class="sv-faq__aside">
+          <p class="sv-eyebrow">Perguntas frequentes</p>
+          <h2>As perguntas que nos fazem sempre.</h2>
+          <p class="sv-lead">
+            Se ficar alguma dúvida de fora, escreve-nos — respondemos sem rodeios.
+          </p>
+          <a
+            href={diagnosticoUrl}
+            class="sv-link"
+            {...diagAttrs}
+          >
+            Pedir diagnóstico rápido
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </a>
+        </div>
+
+        <div class="sv-faq__list">
+          {
+            faqs.map((f) => (
+              <details class="sv-faq__item">
+                <summary>
+                  <span>{f.q}</span>
+                  <i aria-hidden="true"></i>
+                </summary>
+                <p>{f.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         10. CTA FINAL
+    =========================================================== -->
+    <section class="sv-section sv-final" id="contacto">
+      <div class="sv-container sv-final__inner">
+        <div>
+          <h2>Queres uma presença online que explique bem o teu negócio e gere pedidos?</h2>
+          <p>
+            Escolhe o pacote certo ou pede um diagnóstico rápido. Em poucos minutos percebemos qual
+            caminho faz mais sentido.
+          </p>
+        </div>
+        <div class="sv-final__actions">
+          <a
+            href={diagnosticoUrl}
+            class="sv-btn sv-btn--primary sv-btn--lg"
+            {...diagAttrs}
+          >
+            Pedir diagnóstico rápido
+          </a>
+          <a href="#pacotes" class="sv-btn sv-btn--outline sv-btn--lg">Ver pacotes</a>
+          <p class="sv-final__note">Resposta em dias úteis · Sem compromisso</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var targets = document.querySelectorAll('[data-reveal]');
+
+      var revealAll = function () {
+        for (var i = 0; i < targets.length; i++) targets[i].setAttribute('data-revealed', '');
+      };
+
+      /* --- Reveal discreto (só onde faz sentido) --- */
+      try {
+        if (reduced || !('IntersectionObserver' in window)) {
+          revealAll();
+        } else {
+          var io = new IntersectionObserver(
+            function (entries) {
+              for (var i = 0; i < entries.length; i++) {
+                if (entries[i].isIntersecting) {
+                  entries[i].target.setAttribute('data-revealed', '');
+                  io.unobserve(entries[i].target);
+                }
+              }
+            },
+            { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
+          );
+          for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
+        }
+      } catch (err) {
+        /* Nada pode ficar invisível por causa de um erro de script. */
+        revealAll();
+      }
+
+      /* --- Vídeo da hero: só carrega quando compensa --- */
+      var video = document.getElementById('sv-hero-video');
+      if (!video) return;
+
+      var saveData = navigator.connection && navigator.connection.saveData === true;
+      var wideEnough = window.innerWidth >= 768;
+
+      if (reduced || saveData || !wideEnough) return; // fica o poster estático
+
+      var start = function () {
+        var source = document.createElement('source');
+        source.src = video.getAttribute('data-src');
+        source.type = 'video/mp4';
+        video.appendChild(source);
+        video.load();
+
+        var toggle = document.getElementById('sv-hero-video-toggle');
+        var p = video.play();
+
+        var enableToggle = function () {
+          video.setAttribute('data-playing', '');
+          if (!toggle) return;
+          toggle.hidden = false;
+          var pauseIcon = toggle.querySelector('.sv-hero__vtoggle-pause');
+          var playIcon = toggle.querySelector('.sv-hero__vtoggle-play');
+          var label = toggle.querySelector('.sv-hero__vtoggle-text');
+
+          var sync = function () {
+            var paused = video.paused;
+            toggle.setAttribute('aria-pressed', String(paused));
+            pauseIcon.style.display = paused ? 'none' : '';
+            playIcon.style.display = paused ? '' : 'none';
+            label.textContent = paused ? 'Retomar animação' : 'Parar animação';
+          };
+
+          toggle.addEventListener('click', function () {
+            if (video.paused) video.play();
+            else video.pause();
+          });
+          video.addEventListener('play', sync);
+          video.addEventListener('pause', sync);
+          sync();
+        };
+
+        if (p && p.then) p.then(enableToggle).catch(function () {});
+        else enableToggle();
+      };
+
+      if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 2000 });
+      else window.setTimeout(start, 600);
+    })();
+  </script>
 </Base>
 
-<style>
-  .differential-card .differential-card__icon svg { width: 1.5rem; height: 1.5rem; color: var(--senvia-500); }
+<style is:global>
+  /* =========================================================
+     SENVIA — página /sites
+     Direção: editorial claro, carvão + verde. Sem dark/ciano global.
+     Todos os seletores usam o prefixo .sv- ou estão presos a #sv-page,
+     por isso este ficheiro não afeta nenhuma outra página.
+     ========================================================= */
+
+  #sv-page {
+    --sv-ink: #101214;
+    --sv-ink-soft: #1a1e21;
+    --sv-paper: #f7f8f6;
+    --sv-paper-2: #eff0ec;
+    --sv-white: #ffffff;
+    --sv-text: #2d3032;
+    --sv-muted: #5c6266;
+    --sv-line: #dadddb;
+    --sv-line-soft: #e7e9e5;
+    --sv-line-ui: #8a8f8b; /* contorno de componentes — 3.09:1 no fundo claro */
+    --sv-green: #22c55e;
+    --sv-green-ink: #0f7a3b;
+    --sv-green-soft: #eaf7ef;
+    --sv-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+    background: var(--sv-paper);
+    color: var(--sv-text);
+  }
+
+  /* Fundo da página (evita carvão em overscroll) */
+  body:has(#sv-page) {
+    background: #f7f8f6;
+  }
+
+  /* Header e footer alinhados com a paleta desta página (sem tocar noutras) */
+  body:has(#sv-page) .site-header--scrolled {
+    background: #101214;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+  }
+  body:has(#sv-page) .brand__name {
+    background: none;
+    -webkit-text-fill-color: #ffffff;
+    color: #ffffff;
+  }
+  body:has(#sv-page) .nav .btn--primary {
+    background: #22c55e;
+    color: #08210f;
+  }
+  body:has(#sv-page) .nav .btn--primary:hover {
+    background: #3bd975;
+    box-shadow: none;
+  }
+  /* Sem isto o topo e o rodapé ficavam com os azuis da identidade "AI Software
+     House" por cima de uma página carvão + verde. */
+  body:has(#sv-page) .nav__link,
+  body:has(#sv-page) .brand__tagline {
+    color: #a3a9ad;
+  }
+  body:has(#sv-page) .nav__link:hover {
+    color: #ffffff;
+  }
+  body:has(#sv-page) .site-footer__list a:hover,
+  body:has(#sv-page) .site-footer__social-link:hover {
+    color: #22c55e;
+  }
+  body:has(#sv-page) .nav__link::after {
+    background: #22c55e;
+  }
+  /* Entre o burger (≤768px) e o desktop folgado (≥900px) o menu partilhado
+     não tem espaço: a marca e o botão partem-se em duas linhas. Aperta-se
+     aqui, só nesta rota — o comportamento das outras páginas fica intacto. */
+  @media (min-width: 769px) and (max-width: 899px) {
+    body:has(#sv-page) .nav {
+      gap: 0.85rem;
+    }
+    body:has(#sv-page) .nav__link {
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    body:has(#sv-page) .nav .btn--primary {
+      padding: 0.7rem 1rem;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+    body:has(#sv-page) .brand__text {
+      white-space: nowrap;
+    }
+    body:has(#sv-page) .brand__logo {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  body:has(#sv-page) .site-footer {
+    background: #101214;
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+  body:has(#sv-page) .site-footer .brand__name {
+    -webkit-text-fill-color: #ffffff;
+  }
+  /* Sem :has() estas regras caíam todas e o foco voltava ao ciano global
+     (#00c3ff = 1.92:1 no fundo claro). As da própria página não dependem de :has(). */
+  #sv-page :focus-visible {
+    outline-color: #0f7a3b;
+  }
+  #sv-page .sv-section--dark :focus-visible,
+  #sv-page .sv-final :focus-visible {
+    outline-color: #22c55e;
+  }
+  body:has(#sv-page) .site-header :focus-visible,
+  body:has(#sv-page) .site-footer :focus-visible {
+    outline-color: #22c55e;
+  }
+
+  /* ---------- Base ---------- */
+  #sv-page .sv-container {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    /* O tablet deixa de levar a mesma goteira de 20px de um telemóvel */
+    padding-inline: clamp(1.25rem, 3.6vw, 2.5rem);
+  }
+
+  #sv-page .sv-section {
+    padding-block: clamp(3.5rem, 7vw, 6.5rem);
+  }
+
+  #sv-page h1,
+  #sv-page h2,
+  #sv-page h3 {
+    color: var(--sv-ink);
+    letter-spacing: -0.032em;
+    font-weight: 700;
+  }
+
+  #sv-page h2 {
+    font-size: clamp(1.6rem, 2.4vw + 0.8rem, 2.4rem);
+    line-height: 1.12;
+    max-width: 20ch;
+  }
+
+  #sv-page h2 em,
+  #sv-page h1 em {
+    font-style: normal;
+    color: var(--sv-green-ink);
+  }
+
+  #sv-page p {
+    margin: 0;
+  }
+
+  #sv-page .sv-lead {
+    font-size: clamp(1.02rem, 0.35vw + 0.95rem, 1.15rem);
+    line-height: 1.6;
+    color: var(--sv-muted);
+    max-width: 46ch;
+  }
+
+  #sv-page .sv-lead--onDark {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  #sv-page .sv-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--sv-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sv-muted);
+    margin-bottom: 1rem;
+  }
+
+  #sv-page .sv-eyebrow::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--sv-green);
+    flex: none;
+  }
+
+  #sv-page .sv-eyebrow--onDark {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  #sv-page .sv-fine {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--sv-muted);
+  }
+
+  /* ---------- Cabeçalho de secção ---------- */
+  #sv-page .sv-head {
+    display: grid;
+    gap: 1rem 3rem;
+    align-items: end;
+    margin-bottom: clamp(2rem, 4vw, 3.25rem);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-head__aside {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--sv-muted);
+    max-width: 44ch;
+  }
+
+  @media (min-width: 900px) {
+    #sv-page .sv-head {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  /* ---------- Botões ---------- */
+  #sv-page .sv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    text-align: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  #sv-page .sv-btn svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #sv-page .sv-btn--primary {
+    background: var(--sv-green);
+    color: #08210f;
+  }
+  #sv-page .sv-btn--primary:hover {
+    background: #3bd975;
+  }
+
+  #sv-page .sv-btn--dark {
+    background: var(--sv-ink);
+    color: #fff;
+  }
+  #sv-page .sv-btn--dark:hover {
+    background: #2a2f33;
+  }
+
+  /* --sv-line (#dadddb) é para réguas decorativas: 1.28:1 no fundo claro.
+     Contornos de componentes precisam de 3:1 (WCAG 1.4.11) → --sv-line-ui. */
+  #sv-page .sv-btn--ghost {
+    background: transparent;
+    border-color: var(--sv-line-ui);
+    color: var(--sv-ink);
+  }
+  #sv-page .sv-btn--ghost:hover {
+    border-color: var(--sv-ink);
+    background: rgba(16, 18, 20, 0.04);
+  }
+
+  #sv-page .sv-btn--outline {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #fff;
+  }
+  #sv-page .sv-btn--outline:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  #sv-page .sv-btn--block {
+    width: 100%;
+  }
+
+  #sv-page .sv-btn--lg {
+    min-height: 54px;
+    padding: 1rem 1.75rem;
+    font-size: 1.02rem;
+  }
+
+  #sv-page .sv-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    color: var(--sv-green-ink);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    min-height: 44px;
+  }
+  #sv-page .sv-link svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease;
+  }
+  #sv-page .sv-link:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* =========================================================
+     1. HERO
+     ========================================================= */
+  #sv-page .sv-hero {
+    padding-top: clamp(7rem, 12vw, 9.5rem);
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    background:
+      linear-gradient(180deg, #ffffff 0%, var(--sv-paper) 62%),
+      var(--sv-paper);
+    border-bottom: 1px solid var(--sv-line-soft);
+  }
+
+  #sv-page .sv-hero__inner {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+
   @media (min-width: 1024px) {
-    .differential-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    #sv-page .sv-hero__inner {
+      grid-template-columns: 1fr 1.02fr;
+      gap: 4.5rem;
+    }
+  }
+
+  #sv-page .sv-hero__title {
+    font-size: clamp(2.1rem, 3.9vw + 0.9rem, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.038em;
+    margin-bottom: 1.25rem;
+    /* "pretty" evita órfãs sem forçar linhas do mesmo tamanho — "balance"
+       deixava "visitantes" sozinho numa linha curta a 1366px+. */
+    text-wrap: pretty;
+  }
+
+  #sv-page .sv-hero__lead {
+    font-size: clamp(1.05rem, 0.45vw + 0.98rem, 1.2rem);
+    line-height: 1.58;
+    color: var(--sv-muted);
+    max-width: 44ch;
+    margin-bottom: 2rem;
+  }
+
+  #sv-page .sv-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2.25rem;
+  }
+
+  #sv-page .sv-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--sv-line);
+    font-size: 0.95rem;
+    color: var(--sv-muted);
+  }
+
+  #sv-page .sv-trust li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  #sv-page .sv-trust li::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--sv-green);
+    flex: none;
+  }
+
+  #sv-page .sv-trust strong {
+    color: var(--sv-ink);
+    font-weight: 600;
+  }
+
+  /* Visual da hero */
+  #sv-page .sv-hero__visual {
+    position: relative;
+    padding-bottom: 2rem;
+  }
+
+  #sv-page .sv-hero__media {
+    position: relative;
+    line-height: 0;
+  }
+
+  #sv-page .sv-hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  #sv-page .sv-hero__video[data-playing] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #sv-page .sv-hero__video {
+      display: none;
+    }
+  }
+
+  /* Controlo de pausa do vídeo da hero (só renderiza se o mp4 existir) */
+  #sv-page .sv-hero__vtoggle {
+    position: absolute;
+    /* canto inferior direito: o recorte do formulário ocupa o superior direito
+       e a pílula de WhatsApp o inferior esquerdo */
+    bottom: 2.6rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(16, 18, 20, 0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  #sv-page .sv-hero__vtoggle[hidden] {
+    display: none;
+  }
+
+  #sv-page .sv-hero__vtoggle:hover {
+    background: rgba(16, 18, 20, 0.92);
+  }
+
+  #sv-page .sv-hero__vtoggle svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: currentColor;
+    flex: none;
+  }
+
+  #sv-page .sv-hero__wa {
+    position: absolute;
+    left: 0.5rem;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem 0.6rem 0.7rem;
+    background: #fff;
+    border: 1px solid var(--sv-line);
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--sv-ink);
+    box-shadow: 0 10px 24px -14px rgba(16, 18, 20, 0.5);
+  }
+
+  #sv-page .sv-hero__wa svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: #22c55e;
+    flex: none;
+  }
+
+  /* Sem número configurado não é clicável — por isso também não se veste de botão. */
+  #sv-page .sv-hero__wa--static {
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--sv-muted);
+    font-weight: 500;
+  }
+
+  #sv-page .sv-hero__form {
+    display: none;
+    position: absolute;
+    right: -1.25rem;
+    top: 14%;
+    width: 12.5rem;
+    padding: 0.9rem;
+    background: #fff;
+    border: 1px solid var(--sv-line);
+    border-radius: 12px;
+    box-shadow: 0 18px 40px -22px rgba(16, 18, 20, 0.55);
+  }
+
+  @media (min-width: 1160px) {
+    #sv-page .sv-hero__form {
+      display: block;
+    }
+  }
+
+  #sv-page .sv-hero__form-title {
+    font-family: var(--sv-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sv-muted);
+    margin-bottom: 0.6rem !important;
+  }
+
+  #sv-page .sv-field {
+    display: block;
+    height: 0.6rem;
+    border-radius: 3px;
+    background: var(--sv-paper-2);
+    border: 1px solid var(--sv-line-soft);
+    margin-bottom: 0.45rem;
+  }
+
+  #sv-page .sv-field--short {
+    width: 62%;
+  }
+
+  #sv-page .sv-hero__form-btn {
+    display: block;
+    margin-top: 0.7rem;
+    padding: 0.4rem;
+    border-radius: 6px;
+    background: var(--sv-green);
+    color: #08210f;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  /* =========================================================
+     2. DOR
+     ========================================================= */
+  #sv-page .sv-section--pain {
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-pain__inner {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 940px) {
+    #sv-page .sv-pain__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+    #sv-page .sv-pain__copy {
+      position: sticky;
+      top: 7.5rem;
+    }
+  }
+
+  #sv-page .sv-pain__copy h2 {
+    max-width: 17ch;
+    margin-bottom: 1.25rem;
+  }
+
+  #sv-page .sv-pain__figure {
+    margin: 2.75rem 0 0;
+  }
+
+  #sv-page .sv-pain__figure figcaption {
+    margin-top: 0.85rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--sv-muted);
+    padding-left: 0.85rem;
+    border-left: 2px solid var(--sv-green);
+  }
+
+  #sv-page .sv-pain__list {
+    border-top: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-pain__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.35rem 0;
+    border-bottom: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-pain__num {
+    font-family: var(--sv-mono);
+    font-size: 0.78rem;
+    color: var(--sv-green-ink);
+    flex: none;
+    padding-top: 0.15rem;
+  }
+
+  #sv-page .sv-pain__text {
+    font-size: clamp(1.05rem, 0.6vw + 0.95rem, 1.3rem);
+    line-height: 1.4;
+    letter-spacing: -0.018em;
+    color: var(--sv-ink);
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     3. SOLUÇÃO
+     ========================================================= */
+  #sv-page .sv-section--solution {
+    background: var(--sv-white);
+    border-block: 1px solid var(--sv-line-soft);
+  }
+
+  #sv-page .sv-solution__inner {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    #sv-page .sv-solution__inner {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+  }
+
+  #sv-page .sv-solution__copy h2 {
+    margin-bottom: 1.1rem;
+  }
+
+  #sv-page .sv-solution__list {
+    display: grid;
+    gap: 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--sv-line);
+  }
+
+  @media (min-width: 620px) {
+    #sv-page .sv-solution__list {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 2rem;
+    }
+  }
+
+  #sv-page .sv-solution__list li {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--sv-line-soft);
+  }
+
+  #sv-page .sv-solution__list h3 {
+    font-size: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  #sv-page .sv-solution__list h3::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--sv-green);
+    flex: none;
+    transform: translateY(-0.15rem);
+  }
+
+  #sv-page .sv-solution__list p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--sv-muted);
+    padding-left: 0.9rem;
+  }
+
+  /* Recortes de UI */
+  #sv-page .sv-specimens {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  #sv-page .sv-specimen {
+    padding: 0.8rem;
+    border: 1px solid var(--sv-line);
+    border-radius: 10px;
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-specimen__label {
+    font-family: var(--sv-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sv-muted);
+    margin-bottom: 0.55rem !important;
+  }
+
+  #sv-page .sv-specimen__wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--sv-line);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--sv-ink);
+    white-space: nowrap;
+  }
+
+  #sv-page .sv-specimen__wa svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    color: #22c55e;
+    flex: none;
+  }
+
+  #sv-page .sv-specimen__row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    color: var(--sv-muted);
+    margin-bottom: 0.3rem;
+  }
+
+  #sv-page .sv-specimen__row i {
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--sv-green);
+    flex: none;
+  }
+
+  @media (max-width: 520px) {
+    #sv-page .sv-specimens {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* =========================================================
+     4. PACOTES
+     ========================================================= */
+  #sv-page .sv-section--plans {
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-plans {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 960px) {
+    #sv-page .sv-plans {
+      grid-template-columns: 1fr 1.14fr 1fr;
+      gap: 0;
+      align-items: stretch;
+    }
+  }
+
+  #sv-page .sv-plan {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem 1.5rem;
+    border: 1px solid var(--sv-line);
+    border-radius: 14px;
+    background: var(--sv-white);
+  }
+
+  /* Empilhado (tablet/telemóvel) não deve esticar até aos 800px de largura */
+  @media (max-width: 959px) {
+    #sv-page .sv-plan {
+      width: 100%;
+      max-width: 34rem;
+      margin-inline: auto;
+    }
+  }
+
+  @media (min-width: 960px) {
+    #sv-page .sv-plan {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0.5rem 2rem 0;
+    }
+    /* As colunas das pontas alinham com a margem da secção */
+    #sv-page .sv-plan:first-child {
+      padding-left: 0;
+    }
+    #sv-page .sv-plan:last-child {
+      padding-right: 0;
+    }
+    #sv-page .sv-plan + .sv-plan {
+      border-left: 1px solid var(--sv-line);
+    }
+    #sv-page .sv-plan--feature,
+    #sv-page .sv-plan--feature + .sv-plan {
+      border-left: 0;
+    }
+  }
+
+  #sv-page .sv-plan--feature {
+    background: var(--sv-ink);
+    border-color: var(--sv-ink);
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  @media (min-width: 960px) {
+    #sv-page .sv-plan--feature {
+      position: relative;
+      background: var(--sv-ink);
+      border-radius: 16px;
+      padding: 2.25rem 2rem;
+      margin-top: -1.75rem;
+      box-shadow: 0 30px 60px -40px rgba(16, 18, 20, 0.8);
+    }
+    /* As colunas sem etiqueta reservam exatamente a mesma altura que ela ocupa,
+       para os 3 preços ficarem na mesma linha de base e a escada
+       280 → 490 → 1190 ler-se de uma só vez, em qualquer largura. */
+    #sv-page .sv-plan:not(.sv-plan--feature) .sv-plan__top {
+      padding-top: calc(1.35rem + 0.85rem);
+    }
+  }
+
+  #sv-page .sv-plan--feature h3,
+  #sv-page .sv-plan--feature .sv-plan__amount {
+    color: #fff;
+  }
+
+  #sv-page .sv-plan__tag {
+    display: block;
+    width: fit-content;
+    height: 1.35rem;
+    line-height: 1.35rem;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    background: var(--sv-green);
+    color: #08210f;
+    font-family: var(--sv-mono);
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+  }
+
+  #sv-page .sv-plan__name {
+    font-size: 1.18rem;
+    margin-bottom: 0.6rem;
+  }
+
+  #sv-page .sv-plan__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
+  }
+
+  #sv-page .sv-plan__amount {
+    font-size: clamp(2.1rem, 1.6vw + 1.6rem, 2.7rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--sv-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  #sv-page .sv-plan__vat {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sv-muted);
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__vat {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  #sv-page .sv-plan__was {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--sv-muted);
+    text-decoration-thickness: 1px;
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__was {
+    color: rgba(255, 255, 255, 0.58);
+  }
+
+  #sv-page .sv-plan__promo {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--sv-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sv-green);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    margin-bottom: 0.9rem;
+  }
+
+  #sv-page .sv-plan__desc {
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--sv-muted);
+    margin-bottom: 1.35rem;
+    min-height: 0;
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__desc {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  @media (min-width: 960px) {
+    #sv-page .sv-plan__desc {
+      min-height: 4.5rem;
+    }
+  }
+
+  #sv-page .sv-plan__body {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__body {
+    border-top-color: rgba(255, 255, 255, 0.14);
+  }
+
+  #sv-page .sv-plan__incl {
+    font-family: var(--sv-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sv-muted);
+    margin-bottom: 0.9rem !important;
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__incl {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  #sv-page .sv-plan__list li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    color: var(--sv-text);
+    padding: 0.42rem 0;
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__list li {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  #sv-page .sv-plan__list svg,
+  #sv-page .sv-care__item svg,
+  #sv-page .sv-plans__gift svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex: none;
+    margin-top: 0.22rem;
+    fill: none;
+    stroke: var(--sv-green-ink);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #sv-page .sv-plan--feature .sv-plan__list svg {
+    stroke: var(--sv-green);
+  }
+
+  #sv-page .sv-plans__note {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sv-line);
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  #sv-page .sv-plans__gift {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--sv-ink);
+    margin-bottom: 0.35rem;
+  }
+
+  #sv-page .sv-plans__gift strong {
+    font-weight: 700;
+  }
+
+  #sv-page .sv-plans__reassure {
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-plan__note {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  #sv-page .sv-work__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-work__cta p {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--sv-ink);
+  }
+
+  /* =========================================================
+     5. VALIDAÇÃO COMERCIAL
+     ========================================================= */
+  #sv-page .sv-section--dark {
+    background: var(--sv-ink);
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  #sv-page .sv-section--dark h2,
+  #sv-page .sv-section--dark h3 {
+    color: #fff;
+  }
+
+  #sv-page .sv-section--dark h2 em {
+    color: var(--sv-green);
+  }
+
+  #sv-page .sv-validation__inner {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  @media (min-width: 980px) {
+    #sv-page .sv-validation__inner {
+      grid-template-columns: 1fr 0.92fr;
+      gap: 4.5rem;
+    }
+  }
+
+  #sv-page .sv-validation__copy h2 {
+    margin-bottom: 1.1rem;
+  }
+
+  #sv-page .sv-moments {
+    margin: 2.25rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  #sv-page .sv-moments li {
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  #sv-page .sv-moments__n {
+    font-family: var(--sv-mono);
+    font-size: 0.78rem;
+    color: var(--sv-green);
+    flex: none;
+    padding-top: 0.2rem;
+  }
+
+  #sv-page .sv-moments h3 {
+    font-size: 1.02rem;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  #sv-page .sv-moments p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  /* Documento de relatório */
+  #sv-page .sv-report {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -50px rgba(0, 0, 0, 0.9);
+  }
+
+  #sv-page .sv-report__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--sv-line);
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-report__kicker {
+    font-family: var(--sv-mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sv-muted);
+    margin-bottom: 0.2rem !important;
+  }
+
+  #sv-page .sv-report__title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--sv-ink);
+    letter-spacing: -0.02em;
+  }
+
+  #sv-page .sv-report__seal {
+    font-family: var(--sv-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--sv-muted);
+    border: 1px solid var(--sv-line);
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    flex: none;
+  }
+
+  #sv-page .sv-report__fields {
+    padding: 0.5rem 1.35rem;
+  }
+
+  #sv-page .sv-report__fields li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.62rem 0;
+    border-bottom: 1px dashed var(--sv-line-soft);
+    font-size: 0.9rem;
+    color: var(--sv-text);
+  }
+
+  #sv-page .sv-report__fields li:last-child {
+    border-bottom: 0;
+  }
+
+  #sv-page .sv-report__fields i {
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--sv-line) 0 6px, transparent 6px 12px);
+    min-width: 2.5rem;
+  }
+
+  #sv-page .sv-report__foot {
+    padding: 1.15rem 1.35rem 1.35rem;
+    border-top: 1px solid var(--sv-line);
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-report__concl {
+    font-size: 0.86rem;
+    color: var(--sv-muted);
+    margin-bottom: 0.7rem !important;
+  }
+
+  #sv-page .sv-report__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  #sv-page .sv-report__pills span {
+    padding: 0.32rem 0.75rem;
+    border: 1px solid var(--sv-line);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-report__caption {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.55);
+    max-width: 42ch;
+  }
+
+  /* =========================================================
+     6. PROCESSO
+     ========================================================= */
+  #sv-page .sv-section--process {
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-steps {
+    display: grid;
+    gap: 0;
+  }
+
+  #sv-page .sv-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.05rem 0 1.05rem 0;
+    border-bottom: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-step:last-child {
+    border-bottom: 0;
+  }
+
+  #sv-page .sv-step__n {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex: none;
+    border-radius: 50%;
+    border: 1px solid var(--sv-line);
+    background: var(--sv-white);
+    font-family: var(--sv-mono);
+    font-size: 0.82rem;
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-step__label {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--sv-ink);
+    font-weight: 500;
+  }
+
+  #sv-page .sv-step--cond .sv-step__n {
+    border-style: dashed;
+    border-color: var(--sv-green);
+    color: var(--sv-green-ink);
+  }
+
+  #sv-page .sv-step--cond .sv-step__label {
+    color: var(--sv-green-ink);
+  }
+
+  @media (min-width: 900px) {
+    #sv-page .sv-steps {
+      grid-template-columns: repeat(7, 1fr);
+    }
+    #sv-page .sv-step {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0 1.1rem 0 0;
+      border: 0;
+    }
+    /* Linha que liga cada passo ao seguinte (nunca ultrapassa o último) */
+    #sv-page .sv-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 1.05rem;
+      left: 2.55rem;
+      right: 0.3rem;
+      height: 1px;
+      background: var(--sv-line);
+    }
+    #sv-page .sv-step__label {
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+  }
+
+  /* =========================================================
+     7. TRABALHOS
+     ========================================================= */
+  #sv-page .sv-section--work {
+    background: var(--sv-white);
+    border-block: 1px solid var(--sv-line-soft);
+  }
+
+  #sv-page .sv-work {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  @media (min-width: 900px) {
+    #sv-page .sv-work {
+      grid-template-columns: 1fr 1fr;
+    }
+    #sv-page .sv-work__item--lead {
+      grid-column: 1 / -1;
+    }
+  }
+
+  #sv-page .sv-work__item {
+    margin: 0;
+  }
+
+  #sv-page .sv-work__item figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.9rem;
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-work__name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-work__cat {
+    font-family: var(--sv-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sv-green-ink);
+    border: 1px solid rgba(15, 122, 59, 0.3);
+    border-radius: 999px;
+    padding: 0.18rem 0.55rem;
+  }
+
+  #sv-page .sv-work__details {
+    flex-basis: 100%;
+    font-size: 0.88rem;
+    color: var(--sv-muted);
+  }
+
+  /* =========================================================
+     8. MANUTENÇÃO
+     ========================================================= */
+  #sv-page .sv-section--care {
+    background: var(--sv-paper-2);
+  }
+
+  #sv-page .sv-care {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 860px) {
+    #sv-page .sv-care {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    #sv-page .sv-care__item {
+      padding-inline: 2rem;
+    }
+    #sv-page .sv-care__item:first-child {
+      padding-left: 0;
+    }
+    #sv-page .sv-care__item:last-child {
+      padding-right: 0;
+    }
+    #sv-page .sv-care__item + .sv-care__item {
+      border-left: 1px solid var(--sv-line);
+    }
+
+    /* Réguas das 3 colunas alinhadas mesmo com frases de alturas diferentes.
+       Fallback (sem subgrid): min-height aproximado. */
+    #sv-page .sv-care__for {
+      min-height: 3.7rem;
+    }
+
+    @supports (grid-template-rows: subgrid) {
+      #sv-page .sv-care {
+        grid-template-rows: auto auto auto auto;
+      }
+      #sv-page .sv-care__item {
+        display: grid;
+        grid-row: span 4;
+        grid-template-rows: subgrid;
+      }
+      #sv-page .sv-care__for {
+        min-height: 0;
+      }
+    }
+  }
+
+  #sv-page .sv-care__item h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+  }
+
+  #sv-page .sv-care__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--sv-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  #sv-page .sv-care__price strong {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    color: var(--sv-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  #sv-page .sv-care__price span {
+    flex-basis: 100%;
+    font-size: 0.85rem;
+  }
+
+  #sv-page .sv-care__for {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--sv-green-ink);
+    font-weight: 600;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-care__item li {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    padding: 0.35rem 0;
+    color: var(--sv-text);
+  }
+
+  #sv-page .sv-rule {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding: 1.15rem 1.35rem;
+    background: var(--sv-white);
+    border: 1px solid var(--sv-line);
+    border-left: 3px solid var(--sv-green);
+    border-radius: 0 10px 10px 0;
+    font-size: 0.97rem;
+    line-height: 1.6;
+    color: var(--sv-text);
+  }
+
+  #sv-page .sv-rule strong {
+    color: var(--sv-ink);
+  }
+
+  /* =========================================================
+     9. FAQ
+     ========================================================= */
+  #sv-page .sv-section--faq {
+    background: var(--sv-paper);
+  }
+
+  #sv-page .sv-faq__inner {
+    display: grid;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  @media (min-width: 940px) {
+    #sv-page .sv-faq__inner {
+      grid-template-columns: 0.8fr 1.2fr;
+    }
+    #sv-page .sv-faq__aside {
+      position: sticky;
+      top: 7.5rem;
+    }
+  }
+
+  #sv-page .sv-faq__aside h2 {
+    margin-bottom: 1rem;
+  }
+
+  #sv-page .sv-faq__aside .sv-link {
+    margin-top: 1.5rem;
+  }
+
+  #sv-page .sv-faq__item {
+    border-bottom: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-faq__item:first-child {
+    border-top: 1px solid var(--sv-line);
+  }
+
+  #sv-page .sv-faq__item:last-child {
+    border-bottom: 0;
+  }
+
+  #sv-page .sv-faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: clamp(1rem, 0.4vw + 0.95rem, 1.12rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #sv-page .sv-faq__item summary i {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+
+  #sv-page .sv-faq__item summary i::before,
+  #sv-page .sv-faq__item summary i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    background: var(--sv-green-ink);
+  }
+
+  #sv-page .sv-faq__item summary i::before {
+    width: 100%;
+    height: 2px;
+  }
+
+  #sv-page .sv-faq__item summary i::after {
+    width: 2px;
+    height: 100%;
+    transition: transform 0.2s ease;
+  }
+
+  #sv-page .sv-faq__item[open] summary i::after {
+    transform: scaleY(0);
+  }
+
+  #sv-page .sv-faq__item p {
+    padding: 0 3rem 1.4rem 0;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--sv-muted);
+    max-width: 62ch;
+  }
+
+  /* =========================================================
+     10. CTA FINAL
+     ========================================================= */
+  #sv-page .sv-final {
+    background: var(--sv-ink);
+    color: rgba(255, 255, 255, 0.72);
+    border-top: 3px solid var(--sv-green);
+  }
+
+  #sv-page .sv-final__inner {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    #sv-page .sv-final__inner {
+      grid-template-columns: 1.25fr 0.75fr;
+    }
+  }
+
+  #sv-page .sv-final h2 {
+    color: #fff;
+    max-width: 22ch;
+    margin-bottom: 1rem;
+  }
+
+  #sv-page .sv-final p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.66);
+    max-width: 48ch;
+  }
+
+  #sv-page .sv-final__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  #sv-page .sv-final__note {
+    flex-basis: 100%;
+    font-size: 0.85rem !important;
+    color: rgba(255, 255, 255, 0.58) !important;
+    margin-top: 0.25rem;
+  }
+
+  /* =========================================================
+     Movimento — discreto e diferente por secção
+     ========================================================= */
+  .sv-js #sv-page .sv-anim {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: sv-rise 0.65s cubic-bezier(0.22, 0.68, 0.36, 1) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .sv-js #sv-page [data-reveal] {
+    opacity: 0;
+    transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 0.68, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+
+  .sv-js #sv-page .sv-pain__list [data-reveal] {
+    transform: translateX(-10px);
+  }
+
+  .sv-js #sv-page .sv-work [data-reveal] {
+    transform: scale(0.985);
+  }
+
+  .sv-js #sv-page [data-reveal][data-revealed] {
+    opacity: 1;
+    transform: none;
+  }
+
+  @keyframes sv-rise {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sv-js #sv-page .sv-anim {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+    .sv-js #sv-page [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* =========================================================
+     Ajustes finos mobile
+     ========================================================= */
+  @media (max-width: 560px) {
+    #sv-page .sv-hero__actions .sv-btn,
+    #sv-page .sv-final__actions .sv-btn,
+    #sv-page .sv-validation__copy .sv-btn,
+    #sv-page .sv-work__cta .sv-btn {
+      width: 100%;
+    }
+    #sv-page .sv-faq__item p {
+      padding-right: 0;
+    }
+    #sv-page .sv-report__fields li {
+      font-size: 0.86rem;
+    }
+    /* Nenhuma micro-etiqueta abaixo de ~11.5px no telemóvel */
+    #sv-page .sv-eyebrow,
+    #sv-page .sv-plan__tag,
+    #sv-page .sv-plan__incl,
+    #sv-page .sv-plan__promo,
+    #sv-page .sv-report__kicker,
+    #sv-page .sv-work__cat,
+    #sv-page .sv-specimen__label,
+    #sv-page .sv-hero__form-title {
+      font-size: 0.74rem;
+      letter-spacing: 0.1em;
+    }
+    #sv-page .sv-plan__tag {
+      height: 1.6rem;
+      line-height: 1.6rem;
+    }
   }
 </style>

@@ -3,7 +3,7 @@ title: "Qualificação de Leads com IA: Separar quem Compra de quem Testa"
 description: "Receber 100 leads num mês e não vender a nenhum é mais comum do que parece. O problema não é a falta de leads é saber quais valem a pena. Vimos na prática como a IA resolve isto."
 pubDate: "2026-07-28"
 author: "Thiago Sousa"
-category: "CRM e Vendas"
+category: "pmes"
 coverImage: "/images/artigos/qualificacao-leads-ia.jpg"
 ---
 

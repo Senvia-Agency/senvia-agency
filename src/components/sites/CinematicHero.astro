@@ -1,0 +1,951 @@
+---
+/**
+ * Hero cinematográfica da /sites.
+ *
+ * Mesmo mecanismo do componente de referência (ScrollTrigger com pin e scrub):
+ * o texto de abertura afasta-se, o cartão sobe e ocupa o ecrã, o mockup entra
+ * em 3D, os recortes e os textos aparecem, e no fim o cartão recua e sai.
+ *
+ * Diferenças em relação à referência, por necessidade:
+ *  - paleta SENVIA (navy + ciano) em vez do índigo;
+ *  - mockup de browser com um site real de cliente, em vez de iPhone;
+ *  - CTAs reais em vez de App Store / Google Play;
+ *  - o estado por omissão do CSS é o estado LEGÍVEL. O GSAP só depois é que
+ *    esconde o que vai animar. Sem JS, ou com prefers-reduced-motion, a hero
+ *    fica estática e completa em vez de ficar em branco.
+ */
+import { Image } from 'astro:assets';
+import BrowserFrame from './BrowserFrame.astro';
+import heroShot from '../../assets/projetos/longev-studio.png';
+
+interface Props {
+  pacotesHref: string;
+  diagnosticoHref: string;
+  diagnosticoAttrs?: Record<string, string>;
+  whatsappHref?: string | null;
+  hasVideo?: boolean;
+  videoSrc?: string;
+}
+
+const {
+  pacotesHref,
+  diagnosticoHref,
+  diagnosticoAttrs = {},
+  whatsappHref = null,
+  hasVideo = false,
+  videoSrc = '/videos/sites-hero.mp4',
+} = Astro.props;
+---
+
+<section class="cine" id="cine" data-cine>
+  <div class="cine__stagewrap">
+    <div class="cine__grain" aria-hidden="true"></div>
+    <div class="cine__grid" aria-hidden="true"></div>
+
+    <!-- ===== Camada 1: abertura ===== -->
+    <div class="cine__intro" data-cine-intro>
+      <p class="cine__eyebrow">Criação de sites · Portugal</p>
+      <h1 class="cine__h1">
+        <span class="cine__l1" data-cine-l1>Sites profissionais para transformar</span>
+        <span class="cine__l2" data-cine-l2>visitantes em pedidos.</span>
+      </h1>
+      <p class="cine__sub">
+        Criamos páginas, sites e lojas online para negócios que precisam parecer profissionais,
+        explicar bem a oferta e receber contactos pelo WhatsApp ou formulário.
+      </p>
+      <ul class="cine__trust">
+        <li><span>Desde <strong>280€ + IVA</strong></span></li>
+        <li><span>Pronto em até <strong>14 dias</strong></span></li>
+        <li><span>WhatsApp, formulário e tracking</span></li>
+      </ul>
+      <p class="cine__hint" aria-hidden="true">
+        <span>Desliza</span>
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+      </p>
+    </div>
+
+    <!-- ===== Camada 2: CTA final ===== -->
+    <div class="cine__cta" data-cine-cta>
+      <h2>Queres uma presença online que gere pedidos?</h2>
+      <p>Escolhe o pacote certo ou pede um diagnóstico rápido.</p>
+      <div class="cine__ctabtns">
+        <a href={diagnosticoHref} class="sv-btn sv-btn--primary sv-btn--lg" {...diagnosticoAttrs}>
+          Pedir diagnóstico rápido
+        </a>
+        <a href={pacotesHref} class="sv-btn sv-btn--outline sv-btn--lg">Ver pacotes</a>
+      </div>
+    </div>
+
+    <!-- ===== Camada 3: o cartão ===== -->
+    <div class="cine__cardlayer">
+      <div class="cine__card" id="cine-card" data-cine-card>
+        <div class="cine__sheen" aria-hidden="true"></div>
+
+        <div class="cine__cardgrid">
+          <!-- esquerda -->
+          <div class="cine__left" data-cine-left>
+            <h2>Uma presença montada para captar pedidos.</h2>
+            <p>
+              Organizamos a oferta, criamos a página certa, ligamos os pontos de contacto e
+              deixamos tudo pronto para acompanhar cliques, leads e próximos passos.
+            </p>
+            <div class="cine__actions">
+              <a href={pacotesHref} class="sv-btn sv-btn--primary">Ver pacotes</a>
+              <a href={diagnosticoHref} class="sv-btn sv-btn--outline" {...diagnosticoAttrs}>
+                Pedir diagnóstico
+              </a>
+            </div>
+          </div>
+
+          <!-- centro: mockup -->
+          <div class="cine__mock" data-cine-mock>
+            <div class="cine__mockinner" data-cine-tilt>
+              <BrowserFrame url="o-teu-site.pt">
+                {/* A imagem otimizada está sempre cá e é ela o candidato a LCP.
+                    O vídeo, quando o mp4 existir, entra por cima já a tocar. */}
+                <div class="cine__media">
+                  <Image
+                    src={heroShot}
+                    alt="Website do Longev Studio criado pela SENVIA, com menu, hero e botão de agendamento de avaliação."
+                    widths={[640, 960, 1280]}
+                    sizes="(max-width: 1023px) 88vw, 620px"
+                    loading="eager"
+                    fetchpriority="high"
+                    quality={72}
+                  />
+                  {
+                    hasVideo && (
+                      <video
+                        id="sv-hero-video"
+                        class="cine__video"
+                        muted
+                        loop
+                        playsinline
+                        preload="none"
+                        width="1898"
+                        height="906"
+                        data-src={videoSrc}
+                        aria-hidden="true"
+                        tabindex="-1"
+                      />
+                    )
+                  }
+                </div>
+              </BrowserFrame>
+
+              {
+                /* WCAG 2.2.2 (nível A): movimento automático com mais de 5s
+                   precisa de um mecanismo para parar. A lógica que liga isto
+                   (mostra o botão, alterna o vídeo) vive no script da página
+                   /sites, que já a tinha e continua a apontar para estes ids. */
+                hasVideo && (
+                  <button
+                    type="button"
+                    id="sv-hero-video-toggle"
+                    class="cine__vtoggle"
+                    hidden
+                    aria-pressed="false"
+                  >
+                    {/* Nomes de classe sv-hero__vtoggle-*: é o que o script da
+                        página (sites.astro) já procura via querySelector. */}
+                    <svg class="sv-hero__vtoggle-pause" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="7" y="5" width="3.5" height="14" rx="1" />
+                      <rect x="13.5" y="5" width="3.5" height="14" rx="1" />
+                    </svg>
+                    <svg class="sv-hero__vtoggle-play" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+                      <path d="M8 5.5v13l11-6.5z" />
+                    </svg>
+                    <span class="sv-hero__vtoggle-text">Parar animação</span>
+                  </button>
+                )
+              }
+            </div>
+
+            <!-- recortes de vidro -->
+            <div class="cine__badge cine__badge--wa" data-cine-badge>
+              {
+                whatsappHref ? (
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer" class="cine__badgeinner">
+                    <span class="cine__ico cine__ico--wa" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37s-1.04 1.01-1.04 2.47 1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.5h-.01a9.5 9.5 0 0 1-4.83-1.32l-.35-.2-3.59.94.96-3.5-.23-.36a9.42 9.42 0 0 1-1.45-5.05c0-5.21 4.26-9.46 9.5-9.46 2.54 0 4.92.99 6.71 2.78a9.4 9.4 0 0 1 2.78 6.69c0 5.21-4.26 9.46-9.5 9.46m8.08-17.54A11.36 11.36 0 0 0 12.05 1C5.79 1 .7 6.07.7 12.3c0 1.99.52 3.93 1.51 5.64L.6 24l6.22-1.62a11.4 11.4 0 0 0 5.22 1.33h.01c6.26 0 11.35-5.07 11.35-11.3 0-3.02-1.18-5.86-3.32-8Z" /></svg>
+                    </span>
+                    <span>
+                      <b>Falar connosco</b>
+                      <i>WhatsApp direto</i>
+                    </span>
+                  </a>
+                ) : (
+                  <span class="cine__badgeinner">
+                    <span class="cine__ico cine__ico--wa" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37s-1.04 1.01-1.04 2.47 1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.5h-.01a9.5 9.5 0 0 1-4.83-1.32l-.35-.2-3.59.94.96-3.5-.23-.36a9.42 9.42 0 0 1-1.45-5.05c0-5.21 4.26-9.46 9.5-9.46 2.54 0 4.92.99 6.71 2.78a9.4 9.4 0 0 1 2.78 6.69c0 5.21-4.26 9.46-9.5 9.46m8.08-17.54A11.36 11.36 0 0 0 12.05 1C5.79 1 .7 6.07.7 12.3c0 1.99.52 3.93 1.51 5.64L.6 24l6.22-1.62a11.4 11.4 0 0 0 5.22 1.33h.01c6.26 0 11.35-5.07 11.35-11.3 0-3.02-1.18-5.86-3.32-8Z" /></svg>
+                    </span>
+                    <span>
+                      <b>Falar connosco</b>
+                      <i>WhatsApp direto</i>
+                    </span>
+                  </span>
+                )
+              }
+            </div>
+
+            <div class="cine__badge cine__badge--form" data-cine-badge aria-hidden="true">
+              <span class="cine__badgeinner">
+                <span class="cine__ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z" /><path d="M8 10h8M8 14h5" /></svg>
+                </span>
+                <span>
+                  <b>Pedido recebido</b>
+                  <i>Formulário do site</i>
+                </span>
+              </span>
+            </div>
+
+            <div class="cine__badge cine__badge--ring" data-cine-badge aria-hidden="true">
+              <span class="cine__badgeinner">
+                <span class="cine__ring">
+                  <svg viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="7" />
+                    <circle
+                      class="cine__ringbar"
+                      data-cine-ring
+                      cx="32"
+                      cy="32"
+                      r="26"
+                      fill="none"
+                      stroke="#00c3ff"
+                      stroke-width="7"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <b data-cine-count>14</b>
+                </span>
+                <span>
+                  <b>dias até publicar</b>
+                  <i>Pacote Validação</i>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- direita: marca -->
+          <div class="cine__right" data-cine-right>
+            <p class="cine__brand">SENVIA</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector<HTMLElement>('[data-cine]');
+  if (root) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduced) {
+      /* Sem animação: fica o estado estático, que já é o do CSS. */
+      root.setAttribute('data-cine-static', '');
+    } else {
+      const card = root.querySelector<HTMLElement>('[data-cine-card]')!;
+      const isMobile = window.innerWidth < 768;
+
+      /* Só agora é que escondemos o que vai ser animado. Se este script não
+         correr, nada disto acontece e a hero fica legível na mesma. */
+      root.setAttribute('data-cine-on', '');
+
+      const ctx = gsap.context(() => {
+        gsap.set('[data-cine-l1]', { autoAlpha: 0, y: 60, scale: 0.9, filter: 'blur(18px)' });
+        gsap.set('[data-cine-l2]', { clipPath: 'inset(0 100% 0 0)' });
+        gsap.set('[data-cine-card]', { yPercent: 118, autoAlpha: 1 });
+        gsap.set(['[data-cine-left]', '[data-cine-right]', '[data-cine-mock]', '[data-cine-badge]'], {
+          autoAlpha: 0,
+        });
+        gsap.set('[data-cine-cta]', { autoAlpha: 0, y: 26, filter: 'blur(6px)' });
+        gsap.set('[data-cine-ring]', { strokeDasharray: 164, strokeDashoffset: 164 });
+
+        /* Abertura, sem depender do scroll */
+        gsap
+          .timeline({ delay: 0.15 })
+          .to('[data-cine-l1]', {
+            autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 1.4, ease: 'expo.out',
+          })
+          .to('[data-cine-l2]', { clipPath: 'inset(0 0% 0 0)', duration: 1.2, ease: 'power4.inOut' }, '-=0.8')
+          .fromTo('[data-cine-sub], .cine__trust, .cine__hint',
+            { autoAlpha: 0, y: 18 },
+            { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, '-=0.7');
+
+        /* Sequência conduzida pelo scroll */
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: root,
+            start: 'top top',
+            end: '+=4600',
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        tl.to(['.cine__intro', '.cine__grid'], {
+            scale: 1.16, filter: 'blur(18px)', autoAlpha: 0.15, ease: 'power2.inOut', duration: 2,
+          }, 0)
+          .to('[data-cine-card]', { yPercent: 0, ease: 'power3.inOut', duration: 2 }, 0)
+          .to('[data-cine-card]', {
+            width: '100%', height: '100%', borderRadius: '0px', ease: 'power3.inOut', duration: 1.5,
+          })
+          .fromTo('[data-cine-mock]',
+            { y: 260, z: -480, rotationX: 46, rotationY: -28, autoAlpha: 0, scale: 0.62 },
+            { y: 0, z: 0, rotationX: 0, rotationY: 0, autoAlpha: 1, scale: 1, ease: 'expo.out', duration: 2.5 },
+            '-=0.8')
+          .to('[data-cine-ring]', { strokeDashoffset: 44, duration: 1.8, ease: 'power3.inOut' }, '-=1.6')
+          .fromTo('[data-cine-badge]',
+            { y: 90, autoAlpha: 0, scale: 0.75, rotationZ: -8 },
+            { y: 0, autoAlpha: 1, scale: 1, rotationZ: 0, ease: 'back.out(1.5)', duration: 1.4, stagger: 0.18 },
+            '-=1.9')
+          .fromTo('[data-cine-left]', { x: -60, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, ease: 'power4.out', duration: 1.4 }, '-=1.4')
+          .fromTo('[data-cine-right]', { x: 60, autoAlpha: 0, scale: 0.85 },
+            { x: 0, autoAlpha: 1, scale: 1, ease: 'expo.out', duration: 1.4 }, '<')
+          .to({}, { duration: 1.0 }) /* pausa para ler o cartão completo */
+          .set('.cine__intro', { autoAlpha: 0 })
+          .to(['[data-cine-mock]', '[data-cine-badge]', '[data-cine-left]', '[data-cine-right]'], {
+            scale: 0.92, y: -30, autoAlpha: 0, ease: 'power3.in', duration: 0.7, stagger: 0.04,
+          })
+          .to('[data-cine-card]', {
+            width: isMobile ? '92vw' : '86vw',
+            height: isMobile ? '90vh' : '84vh',
+            borderRadius: isMobile ? '28px' : '40px',
+            ease: 'power2.inOut', duration: 0.9,
+          }, '-=0.25')
+          /* O cartão SAI por completo antes de o CTA aparecer — de propósito,
+             sem sobreposição. O CTA e o cartão partilham o mesmo ponto
+             central da grelha; tentar revelar o CTA "por baixo" de um cartão
+             ainda parcialmente visível deixava-o sempre coberto pelo fundo
+             opaco (medido: o retângulo do CTA fica inteiro dentro do
+             retângulo do cartão, mesmo já encolhido a 86vw/84vh) — e, se se
+             forçasse o CTA para cima com z-index, o texto escuro ficava
+             ilegível sobre o navy do cartão por baixo. Sequencial resolve
+             os dois problemas de uma vez. */
+          .to('[data-cine-card]', { yPercent: -140, ease: 'power2.in', duration: 0.95 })
+          .fromTo('[data-cine-cta]',
+            { autoAlpha: 0, y: 26, filter: 'blur(6px)' },
+            { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power2.out', duration: 0.9 });
+
+        /* Contador dos dias, ligado ao mesmo scroll */
+        const el = root.querySelector<HTMLElement>('[data-cine-count]');
+        if (el) {
+          const o = { v: 0 };
+          tl.to(o, {
+            v: 14, duration: 1.8, ease: 'expo.out',
+            onUpdate: () => { el.textContent = String(Math.round(o.v)); },
+          }, 2.2);
+        }
+
+        /* Brilho e inclinação com o rato */
+        const tilt = root.querySelector<HTMLElement>('[data-cine-tilt]');
+        if (tilt && window.matchMedia('(pointer: fine)').matches) {
+          let frame = 0;
+          window.addEventListener('mousemove', (e) => {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+              const r = card.getBoundingClientRect();
+              if (!r.width) return;
+              card.style.setProperty('--mx', ((e.clientX - r.left) / r.width) * 100 + '%');
+              card.style.setProperty('--my', ((e.clientY - r.top) / r.height) * 100 + '%');
+              gsap.to(tilt, {
+                rotationY: (e.clientX / window.innerWidth - 0.5) * 20,
+                rotationX: -(e.clientY / window.innerHeight - 0.5) * 16,
+                ease: 'power3.out', duration: 1.1,
+              });
+            });
+          }, { passive: true });
+        }
+      }, root);
+
+      window.addEventListener('beforeunload', () => ctx.revert());
+    }
+  }
+</script>
+
+<style is:global>
+  /* =========================================================
+     Hero cinematográfica — /sites
+     O estado escrito aqui é o estado LEGÍVEL (sem JS).
+     O GSAP só esconde o que vai animar depois de arrancar.
+     ========================================================= */
+  #cine {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--sv-paper, #f4f7f9);
+    padding: calc(5rem + 1.5rem) 1rem 3rem;
+    perspective: 1500px;
+  }
+
+  #cine .cine__stagewrap {
+    position: relative;
+    width: 100%;
+    max-width: 1560px;
+    margin-inline: auto;
+    display: grid;
+    place-items: center;
+  }
+
+  #cine .cine__grain {
+    position: absolute;
+    inset: -50vh -50vw;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  #cine .cine__grid {
+    position: absolute;
+    inset: -50vh -50vw;
+    z-index: 0;
+    pointer-events: none;
+    background-size: 60px 60px;
+    background-image:
+      linear-gradient(to right, rgba(11, 31, 42, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(11, 31, 42, 0.05) 1px, transparent 1px);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
+  }
+
+  /* ---------- abertura ---------- */
+  #cine .cine__intro {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 60rem;
+    padding-inline: 1rem;
+  }
+
+  #cine .cine__eyebrow {
+    font-family: var(--sv-mono, monospace);
+    font-size: 0.74rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sv-muted, #4f6a78);
+    margin-bottom: 1.25rem;
+  }
+
+  #cine .cine__h1 {
+    font-size: clamp(2.2rem, 5.4vw + 0.5rem, 5rem);
+    line-height: 1.03;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+    color: var(--sv-ink, #0b1f2a);
+    margin-bottom: 1.4rem;
+    text-wrap: balance;
+  }
+
+  #cine .cine__l1,
+  #cine .cine__l2 {
+    display: block;
+  }
+
+  #cine .cine__l2 {
+    color: var(--sv-petrol, #007599);
+  }
+
+  #cine .cine__sub {
+    font-size: clamp(1rem, 0.5vw + 0.95rem, 1.2rem);
+    line-height: 1.6;
+    color: var(--sv-muted, #4f6a78);
+    max-width: 44ch;
+    margin: 0 auto 1.75rem;
+  }
+
+  #cine .cine__trust {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem 1.5rem;
+    font-size: 0.95rem;
+    color: var(--sv-muted, #4f6a78);
+    margin-bottom: 2rem;
+  }
+
+  #cine .cine__trust li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  #cine .cine__trust li::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--sv-petrol, #007599);
+    flex: none;
+  }
+
+  #cine .cine__trust strong {
+    color: var(--sv-ink, #0b1f2a);
+    font-weight: 600;
+  }
+
+  #cine .cine__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--sv-mono, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sv-muted, #4f6a78);
+  }
+
+  #cine .cine__hint svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: cine-bob 1.8s ease-in-out infinite;
+  }
+
+  @keyframes cine-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  /* ---------- CTA final ---------- */
+  #cine .cine__cta {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 46rem;
+    padding-inline: 1rem;
+    display: none;
+  }
+
+  #cine[data-cine-on] .cine__cta {
+    display: block;
+  }
+
+  #cine .cine__cta h2 {
+    font-size: clamp(1.9rem, 3.4vw + 0.8rem, 3.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: var(--sv-ink, #0b1f2a);
+    margin-bottom: 1rem;
+  }
+
+  #cine .cine__cta p {
+    font-size: 1.1rem;
+    color: var(--sv-muted, #4f6a78);
+    margin-bottom: 2.25rem;
+  }
+
+  #cine .cine__ctabtns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  #cine .cine__cta .sv-btn--outline {
+    border-color: rgba(11, 31, 42, 0.45);
+    color: var(--sv-ink, #0b1f2a);
+  }
+
+  #cine .cine__cta .sv-btn--outline:hover {
+    border-color: var(--sv-ink, #0b1f2a);
+    background: rgba(11, 31, 42, 0.06);
+  }
+
+  /* ---------- o cartão ---------- */
+  #cine .cine__cardlayer {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 20;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    perspective: 1500px;
+  }
+
+  #cine .cine__card {
+    position: relative;
+    width: min(92vw, 1400px);
+    height: auto;
+    border-radius: 32px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #17435a 0%, #0b1f2a 62%);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow:
+      0 60px 120px -30px rgba(4, 16, 24, 0.7),
+      0 24px 48px -24px rgba(4, 16, 24, 0.6),
+      inset 0 1px 2px rgba(255, 255, 255, 0.16),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.55);
+    will-change: transform, width, height;
+  }
+
+  /* Sem JS o cartão fica por baixo da abertura, não por cima dela */
+  #cine:not([data-cine-on]) .cine__cardlayer {
+    position: static;
+    margin-top: 3rem;
+  }
+  #cine:not([data-cine-on]) .cine__stagewrap {
+    display: block;
+  }
+  #cine:not([data-cine-on]) .cine__intro,
+  #cine:not([data-cine-on]) .cine__cardlayer {
+    grid-area: auto;
+  }
+  #cine:not([data-cine-on]) {
+    min-height: 0;
+    padding-bottom: 4rem;
+  }
+
+  #cine[data-cine-on] .cine__card {
+    height: min(86vh, 880px);
+  }
+
+  #cine .cine__sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+    background: radial-gradient(
+      760px circle at var(--mx, 50%) var(--my, 40%),
+      rgba(0, 195, 255, 0.14) 0%,
+      rgba(0, 195, 255, 0) 55%
+    );
+  }
+
+  #cine .cine__cardgrid {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 3vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    #cine .cine__cardgrid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 0.85fr;
+      align-items: center;
+      gap: clamp(1.5rem, 2.5vw, 3rem);
+    }
+  }
+
+  #cine .cine__left {
+    order: 3;
+    text-align: center;
+  }
+
+  #cine .cine__left h2 {
+    font-size: clamp(1.35rem, 1.4vw + 1rem, 2.1rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 0.85rem;
+  }
+
+  #cine .cine__left p {
+    font-size: clamp(0.95rem, 0.4vw + 0.85rem, 1.05rem);
+    line-height: 1.6;
+    color: #cbd6de;
+    margin-bottom: 1.5rem;
+  }
+
+  #cine .cine__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  #cine .cine__card .sv-btn--outline {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #fff;
+  }
+
+  #cine .cine__card .sv-btn--outline:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (min-width: 1024px) {
+    #cine .cine__left {
+      order: 1;
+      text-align: left;
+    }
+    #cine .cine__actions {
+      justify-content: flex-start;
+    }
+  }
+
+  #cine .cine__mock {
+    order: 2;
+    position: relative;
+    display: grid;
+    place-items: center;
+    perspective: 1100px;
+    transform-style: preserve-3d;
+  }
+
+  #cine .cine__mockinner {
+    width: 100%;
+    max-width: 640px;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  #cine .cine__media {
+    position: relative;
+    line-height: 0;
+  }
+
+  #cine .cine__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  #cine .cine__video[data-playing] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #cine .cine__video {
+      display: none;
+    }
+  }
+
+  /* Botão de pausa do vídeo (WCAG 2.2.2) */
+  #cine .cine__vtoggle {
+    position: absolute;
+    bottom: 0.6rem;
+    right: 0.6rem;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 40px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(11, 31, 42, 0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  #cine .cine__vtoggle[hidden] {
+    display: none;
+  }
+
+  #cine .cine__vtoggle:hover {
+    background: rgba(11, 31, 42, 0.92);
+  }
+
+  #cine .cine__vtoggle svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: currentColor;
+    flex: none;
+  }
+
+  #cine .cine__right {
+    order: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    #cine .cine__right {
+      order: 3;
+      justify-content: flex-end;
+    }
+  }
+
+  #cine .cine__brand {
+    font-size: clamp(2.5rem, 5vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    background: linear-gradient(180deg, #ffffff 0%, #7f97a8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: translateZ(0);
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+  }
+
+  /* ---------- recortes de vidro ---------- */
+  #cine .cine__badge {
+    position: absolute;
+    z-index: 30;
+  }
+
+  #cine .cine__badgeinner {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.95rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+    backdrop-filter: blur(22px) saturate(1.3);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.14),
+      0 25px 50px -14px rgba(0, 0, 0, 0.7),
+      inset 0 1px 1px rgba(255, 255, 255, 0.24);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  #cine a.cine__badgeinner {
+    min-height: 44px;
+  }
+
+  #cine .cine__badgeinner b {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  #cine .cine__badgeinner i {
+    display: block;
+    font-style: normal;
+    font-size: 0.7rem;
+    color: #a8bcc9;
+  }
+
+  #cine .cine__ico {
+    width: 2.1rem;
+    height: 2.1rem;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(0, 195, 255, 0.16);
+    border: 1px solid rgba(0, 195, 255, 0.35);
+    color: #6fdcff;
+  }
+
+  #cine .cine__ico svg {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  #cine .cine__ico--wa {
+    background: rgba(37, 211, 102, 0.16);
+    border-color: rgba(37, 211, 102, 0.4);
+    color: #25d366;
+  }
+
+  #cine .cine__ring {
+    position: relative;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: none;
+    display: grid;
+    place-items: center;
+  }
+
+  #cine .cine__ring svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  #cine .cine__ring b {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  #cine .cine__badge--wa {
+    left: -0.75rem;
+    bottom: 8%;
+  }
+  #cine .cine__badge--form {
+    right: -0.75rem;
+    top: 6%;
+  }
+  #cine .cine__badge--ring {
+    right: 0.5rem;
+    bottom: 4%;
+  }
+
+  @media (min-width: 1280px) {
+    #cine .cine__badge--wa {
+      left: -3.5rem;
+    }
+    #cine .cine__badge--form {
+      right: -3rem;
+    }
+    #cine .cine__badge--ring {
+      right: -1.5rem;
+      bottom: 0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    #cine .cine__badge--ring {
+      display: none;
+    }
+    #cine .cine__badgeinner {
+      padding: 0.55rem 0.75rem;
+    }
+  }
+
+  /* ---------- estático (reduced-motion / sem JS) ---------- */
+  #cine[data-cine-static] .cine__cta {
+    display: none;
+  }
+  #cine[data-cine-static] {
+    min-height: 0;
+    padding-bottom: 4rem;
+  }
+  #cine[data-cine-static] .cine__stagewrap {
+    display: block;
+  }
+  #cine[data-cine-static] .cine__cardlayer {
+    position: static;
+    margin-top: 3rem;
+  }
+  #cine[data-cine-static] .cine__hint {
+    display: none;
+  }
+</style>

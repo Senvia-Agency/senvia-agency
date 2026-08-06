@@ -646,6 +646,18 @@ const jsonLd = [
             </span>
           </p>
           <p class="sv-fine">*Oferta sujeita à disponibilidade do nome de domínio.</p>
+
+          <div class="sv-plans__care">
+            <p>
+              <strong>Todos os websites exigem manutenção</strong> para garantir alojamento,
+              segurança, backups e suporte técnico desde o lançamento.
+            </p>
+            <a href="#manutencao" class="sv-link">
+              Ver manutenção
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+            </a>
+          </div>
+
           <p class="sv-fine sv-plans__reassure">
             Os botões acima levam-te ao briefing. Não há pagamento nesta fase.
           </p>
@@ -2009,6 +2021,38 @@ const jsonLd = [
 
   #sv-page .sv-plans__reassure {
     color: var(--sv-ink);
+  }
+
+  /* Aviso explícito de manutenção, ao lado do preço — não em letra pequena.
+     A manutenção é obrigatória, por isso aparece antes de escolherem. */
+  #sv-page .sv-plans__care {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-top: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--sv-white);
+    border: 1px solid var(--sv-line);
+    border-left: 3px solid var(--sv-accent-ink);
+    border-radius: 0 10px 10px 0;
+  }
+
+  #sv-page .sv-plans__care p {
+    font-size: 0.97rem;
+    line-height: 1.55;
+    color: var(--sv-text);
+    max-width: 62ch;
+  }
+
+  #sv-page .sv-plans__care strong {
+    color: var(--sv-ink);
+    font-weight: 700;
+  }
+
+  #sv-page .sv-plans__care .sv-link {
+    flex: none;
   }
 
   #sv-page .sv-plan__note {

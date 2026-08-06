@@ -332,7 +332,13 @@ const jsonLd = [
          1. HERO
     =========================================================== -->
     <section class="sv-hero">
-      <div class="sv-container sv-hero__inner">
+      {/* A hero é o cartão: um palco navy a ocupar o ecrã, como na referência,
+          mas sem prender o scroll — a oferta continua logo a seguir. */}
+      <div class="sv-hero__card" id="sv-stage">
+        <div class="sv-stage__grain" aria-hidden="true"></div>
+        <div class="sv-stage__sheen" aria-hidden="true"></div>
+
+      <div class="sv-hero__inner">
         <div class="sv-hero__copy">
           <p class="sv-eyebrow sv-anim" style="--d:0ms">Criação de sites · Portugal</p>
 
@@ -369,12 +375,6 @@ const jsonLd = [
         </div>
 
         <div class="sv-hero__visual">
-          {/* Palco em navy: dá profundidade física ao mockup contra o fundo claro.
-              A entrada é só transform (nada de opacity nem blur), porque a imagem
-              lá dentro é o candidato a LCP e o Chrome ignora o que está invisível. */}
-          <div class="sv-stage" id="sv-stage">
-            <div class="sv-stage__grain" aria-hidden="true"></div>
-            <div class="sv-stage__sheen" aria-hidden="true"></div>
             <div class="sv-stage__tilt">
           <BrowserFrame url="o-teu-site.pt">
             {/* A imagem otimizada está sempre presente e é ela o candidato a LCP.
@@ -409,7 +409,6 @@ const jsonLd = [
               }
             </div>
           </BrowserFrame>
-            </div>
           </div>
 
           {
@@ -470,6 +469,7 @@ const jsonLd = [
             <span>Falar connosco</span>
           </a>
         </div>
+      </div>
       </div>
     </section>
 
@@ -1400,25 +1400,90 @@ const jsonLd = [
      1. HERO
      ========================================================= */
   #sv-page .sv-hero {
-    padding-top: clamp(7rem, 12vw, 9.5rem);
-    padding-bottom: clamp(3rem, 6vw, 5rem);
-    background:
-      linear-gradient(180deg, #ffffff 0%, var(--sv-paper) 62%),
-      var(--sv-paper);
-    border-bottom: 1px solid var(--sv-line-soft);
+    padding: calc(5rem + clamp(0.75rem, 2vw, 1.75rem)) clamp(0.75rem, 2.4vw, 1.75rem)
+      clamp(2rem, 4vw, 3.5rem);
+    background: var(--sv-paper);
+  }
+
+  /* O cartão: palco navy que domina o primeiro ecrã */
+  #sv-page .sv-hero__card {
+    position: relative;
+    margin-inline: auto;
+    max-width: 1460px;
+    border-radius: clamp(24px, 3vw, 40px);
+    background: linear-gradient(145deg, #17435a 0%, var(--sv-ink) 62%);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow:
+      0 60px 120px -40px rgba(6, 20, 28, 0.6),
+      0 24px 48px -28px rgba(6, 20, 28, 0.5),
+      inset 0 1px 2px rgba(255, 255, 255, 0.14),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+    perspective: 1400px;
+    overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    #sv-page .sv-hero__card {
+      min-height: min(84vh, 840px);
+      display: flex;
+      align-items: center;
+    }
   }
 
   #sv-page .sv-hero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
     display: grid;
-    gap: clamp(2.5rem, 5vw, 4rem);
+    gap: clamp(2.25rem, 4.5vw, 3.5rem);
     align-items: center;
+    padding: clamp(1.75rem, 4vw, 4rem) clamp(1.25rem, 3.4vw, 3.5rem);
   }
 
   @media (min-width: 1024px) {
     #sv-page .sv-hero__inner {
-      grid-template-columns: 1fr 1.02fr;
-      gap: 4.5rem;
+      grid-template-columns: 1fr 1.06fr;
+      gap: clamp(2.5rem, 4vw, 4rem);
     }
+  }
+
+  /* ---- Texto dentro do cartão ---- */
+  #sv-page .sv-hero__card .sv-eyebrow {
+    /* o topo do gradiente e mais claro: --sv-on-dark-muted so dava 4.14:1 */
+    color: #a8b6c2;
+  }
+  #sv-page .sv-hero__card .sv-eyebrow::before {
+    background: var(--sv-cyan);
+  }
+  #sv-page .sv-hero__title {
+    color: #ffffff;
+  }
+  #sv-page .sv-hero__title em {
+    color: var(--sv-cyan);
+  }
+  #sv-page .sv-hero__lead {
+    color: var(--sv-on-dark-soft);
+  }
+  #sv-page .sv-hero__card .sv-trust {
+    border-top-color: rgba(148, 163, 184, 0.22);
+    color: var(--sv-on-dark-soft);
+  }
+  #sv-page .sv-hero__card .sv-trust li::before {
+    background: var(--sv-cyan);
+  }
+  #sv-page .sv-hero__card .sv-trust strong {
+    color: #ffffff;
+  }
+  #sv-page .sv-hero__card .sv-btn--ghost {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+  }
+  #sv-page .sv-hero__card .sv-btn--ghost:hover {
+    border-color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  #sv-page .sv-hero__card :focus-visible {
+    outline-color: var(--sv-cyan);
   }
 
   #sv-page .sv-hero__title {
@@ -1434,7 +1499,8 @@ const jsonLd = [
   #sv-page .sv-hero__lead {
     font-size: clamp(1.05rem, 0.45vw + 0.98rem, 1.2rem);
     line-height: 1.58;
-    color: var(--sv-muted);
+    /* dentro do cartao navy: 7.2:1 */
+    color: var(--sv-on-dark-soft);
     max-width: 44ch;
     margin-bottom: 2rem;
   }
@@ -1483,22 +1549,7 @@ const jsonLd = [
     padding-bottom: 1.75rem;
   }
 
-  /* ---- Palco navy com profundidade física ---- */
-  #sv-page .sv-stage {
-    position: relative;
-    padding: clamp(0.85rem, 1.8vw, 1.6rem);
-    border-radius: clamp(18px, 2vw, 26px);
-    background: linear-gradient(145deg, #17435a 0%, var(--sv-ink) 68%);
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    box-shadow:
-      0 42px 90px -34px rgba(6, 20, 28, 0.62),
-      0 16px 36px -24px rgba(6, 20, 28, 0.5),
-      inset 0 1px 1px rgba(255, 255, 255, 0.12),
-      inset 0 -2px 5px rgba(0, 0, 0, 0.45);
-    perspective: 1200px;
-  }
-
-  /* Grão de filme: só aqui dentro, onde acrescenta textura em vez de sujar */
+  /* Grão de filme: só dentro do cartão, onde acrescenta textura em vez de sujar */
   #sv-page .sv-stage__grain {
     position: absolute;
     inset: 0;
@@ -1518,13 +1569,14 @@ const jsonLd = [
     opacity: 0;
     transition: opacity 0.45s ease;
     background: radial-gradient(
-      460px circle at var(--mx, 50%) var(--my, 0%),
+      760px circle at var(--mx, 50%) var(--my, 0%),
       rgba(0, 195, 255, 0.18) 0%,
       rgba(0, 195, 255, 0) 58%
     );
   }
 
-  #sv-page .sv-stage[data-hover] .sv-stage__sheen {
+  /* Ancorado ao id, não à classe: o palco passou a ser o próprio cartão */
+  #sv-page #sv-stage[data-hover] .sv-stage__sheen {
     opacity: 1;
   }
 
@@ -1624,8 +1676,8 @@ const jsonLd = [
 
   #sv-page .sv-hero__wa {
     position: absolute;
-    left: -0.35rem;
-    bottom: 0.4rem;
+    left: -0.6rem;
+    bottom: 0.2rem;
     z-index: 3;
     display: inline-flex;
     align-items: center;
@@ -1654,8 +1706,8 @@ const jsonLd = [
   #sv-page .sv-hero__form {
     display: none;
     position: absolute;
-    right: -1.4rem;
-    top: 9%;
+    right: -0.6rem;
+    top: 2%;
     z-index: 3;
     width: 11.5rem;
     padding: 0.9rem;
@@ -1665,8 +1717,8 @@ const jsonLd = [
   #sv-page .sv-hero__track {
     display: none;
     position: absolute;
-    right: -0.9rem;
-    bottom: 15%;
+    right: -0.6rem;
+    bottom: 6%;
     z-index: 3;
     align-items: center;
     gap: 0.6rem;
@@ -2679,7 +2731,8 @@ const jsonLd = [
   #sv-page .sv-care__for {
     font-size: 0.88rem;
     line-height: 1.5;
-    color: var(--sv-accent-ink);
+    /* na banda --sv-paper-2 o petrol normal ficava em cima do limite */
+    color: var(--sv-accent-strong);
     font-weight: 600;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
@@ -2871,7 +2924,7 @@ const jsonLd = [
 
   /* Entrada do palco: só transform. Sem opacity nem blur, porque a imagem
      lá dentro é o candidato a LCP e não pode arrancar invisível. */
-  .sv-js #sv-page .sv-stage {
+  .sv-js #sv-page .sv-hero__card {
     animation: sv-stage-in 1.15s cubic-bezier(0.16, 0.84, 0.32, 1) both;
   }
 
@@ -2949,7 +3002,7 @@ const jsonLd = [
       transform: none;
       transition: none;
     }
-    .sv-js #sv-page .sv-stage,
+    .sv-js #sv-page .sv-hero__card,
     .sv-js #sv-page .sv-hero__form,
     .sv-js #sv-page .sv-hero__track,
     .sv-js #sv-page .sv-hero__wa {

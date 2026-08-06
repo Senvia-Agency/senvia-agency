@@ -1,9 +1,8 @@
 ---
 title: "Como usar IA para controlar gastos"
-slug: "como-usar-ia-para-controlar-gastos"
 description: "Aprende a usar Inteligência Artificial para controlar gastos, criar orçamentos e poupar dinheiro todos os meses. Guia prático com ferramentas reais."
 pubDate: 2026-07-15
-category: "Ferramentas e Reviews"
+category: financas
 tags: ["IA", "financas pessoais", "controlar gastos", "poupar dinheiro", "budgeting"]
 author: "Redação SENVIA"
 coverImage: "/images/artigos/como-usar-ia-para-controlar-gastos.jpg"

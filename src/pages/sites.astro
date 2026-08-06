@@ -362,13 +362,20 @@ const jsonLd = [
           </div>
 
           <ul class="sv-trust sv-anim" style="--d:180ms">
-            <li><span>Desde <strong>280€ + IVA</strong></span></li>
+            <li><span>Desde <strong><span class="sv-count" data-to="280">280</span>€ + IVA</strong></span></li>
             <li><span>Pronto em até <strong>14 dias</strong></span></li>
             <li><span>WhatsApp, formulário e tracking</span></li>
           </ul>
         </div>
 
         <div class="sv-hero__visual">
+          {/* Palco em navy: dá profundidade física ao mockup contra o fundo claro.
+              A entrada é só transform (nada de opacity nem blur), porque a imagem
+              lá dentro é o candidato a LCP e o Chrome ignora o que está invisível. */}
+          <div class="sv-stage" id="sv-stage">
+            <div class="sv-stage__grain" aria-hidden="true"></div>
+            <div class="sv-stage__sheen" aria-hidden="true"></div>
+            <div class="sv-stage__tilt">
           <BrowserFrame url="o-teu-site.pt">
             {/* A imagem otimizada está sempre presente e é ela o candidato a LCP.
                 O vídeo, quando existe, entra por cima só depois de estar a tocar,
@@ -402,6 +409,8 @@ const jsonLd = [
               }
             </div>
           </BrowserFrame>
+            </div>
+          </div>
 
           {
             /* WCAG 2.2.2 (nível A): qualquer movimento automático com mais de 5s
@@ -426,12 +435,21 @@ const jsonLd = [
             )
           }
 
-          <!-- Recorte: formulário (só desktop, para não poluir o mobile) -->
-          <div class="sv-hero__form" aria-hidden="true">
+          <!-- Recortes de vidro. Assentam sobre o palco navy, que é onde o
+               vidro lê bem e o texto branco tem contraste. -->
+          <div class="sv-hero__form sv-glass" aria-hidden="true">
             <p class="sv-hero__form-title">Pedido de contacto</p>
             <span class="sv-field"></span>
             <span class="sv-field sv-field--short"></span>
             <span class="sv-hero__form-btn">Enviar pedido</span>
+          </div>
+
+          <div class="sv-hero__track sv-glass" aria-hidden="true">
+            <span class="sv-hero__track-dot"></span>
+            <div>
+              <p class="sv-hero__track-title">Tracking ativo</p>
+              <p class="sv-hero__track-sub">Cliques e formulários</p>
+            </div>
           </div>
 
           {
@@ -441,7 +459,7 @@ const jsonLd = [
           }
           <a
             href={whatsapp ?? undefined}
-            class:list={['sv-hero__wa', !whatsapp && 'sv-hero__wa--static']}
+            class:list={['sv-hero__wa', 'sv-glass', !whatsapp && 'sv-hero__wa--static']}
             {...waAttrs}
           >
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -955,6 +973,64 @@ const jsonLd = [
         revealAll();
       }
 
+      /* --- Palco da hero: tilt 3D e brilho a seguir o cursor --- */
+      var stage = document.getElementById('sv-stage');
+      var finePointer = window.matchMedia('(pointer: fine)').matches;
+
+      if (stage && finePointer && !reduced) {
+        var tilt = stage.querySelector('.sv-stage__tilt');
+        /* Os recortes de vidro são irmãos do palco e ficam por cima dele.
+           Se ouvíssemos no palco, passar o rato num badge matava o efeito.
+           Ouve-se na zona toda e mede-se sempre em relação ao palco. */
+        var zone = stage.parentElement;
+        var frame = 0;
+        var clamp = function (v) {
+          return v < 0 ? 0 : v > 1 ? 1 : v;
+        };
+
+        zone.addEventListener('pointermove', function (e) {
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(function () {
+            var r = stage.getBoundingClientRect();
+            if (!r.width || !r.height) return;
+            var px = clamp((e.clientX - r.left) / r.width);
+            var py = clamp((e.clientY - r.top) / r.height);
+            stage.style.setProperty('--mx', px * 100 + '%');
+            stage.style.setProperty('--my', py * 100 + '%');
+            tilt.style.transform =
+              'rotateY(' + (px - 0.5) * 13 + 'deg) rotateX(' + (py - 0.5) * -10 + 'deg)';
+          });
+        });
+
+        zone.addEventListener('pointerenter', function () {
+          stage.setAttribute('data-hover', '');
+        });
+
+        zone.addEventListener('pointerleave', function () {
+          cancelAnimationFrame(frame);
+          stage.removeAttribute('data-hover');
+          tilt.style.transform = '';
+        });
+      }
+
+      /* --- Contador do preço de entrada --- */
+      var counter = document.querySelector('.sv-count');
+      if (counter && !reduced) {
+        var target = parseInt(counter.getAttribute('data-to'), 10);
+        if (target > 0) {
+          var t0 = 0;
+          var step = function (now) {
+            if (!t0) t0 = now;
+            var k = Math.min((now - t0) / 900, 1);
+            var eased = 1 - Math.pow(1 - k, 4);
+            counter.textContent = String(Math.round(target * eased));
+            if (k < 1) requestAnimationFrame(step);
+          };
+          counter.textContent = '0';
+          requestAnimationFrame(step);
+        }
+      }
+
       /* --- Vídeo da hero: só carrega quando compensa --- */
       var video = document.getElementById('sv-hero-video');
       if (!video) return;
@@ -1403,7 +1479,83 @@ const jsonLd = [
   /* Visual da hero */
   #sv-page .sv-hero__visual {
     position: relative;
-    padding-bottom: 2rem;
+    /* folga para a pílula de WhatsApp montar na aresta do palco */
+    padding-bottom: 1.75rem;
+  }
+
+  /* ---- Palco navy com profundidade física ---- */
+  #sv-page .sv-stage {
+    position: relative;
+    padding: clamp(0.85rem, 1.8vw, 1.6rem);
+    border-radius: clamp(18px, 2vw, 26px);
+    background: linear-gradient(145deg, #17435a 0%, var(--sv-ink) 68%);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow:
+      0 42px 90px -34px rgba(6, 20, 28, 0.62),
+      0 16px 36px -24px rgba(6, 20, 28, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.12),
+      inset 0 -2px 5px rgba(0, 0, 0, 0.45);
+    perspective: 1200px;
+  }
+
+  /* Grão de filme: só aqui dentro, onde acrescenta textura em vez de sujar */
+  #sv-page .sv-stage__grain {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Brilho que segue o cursor */
+  #sv-page .sv-stage__sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    background: radial-gradient(
+      460px circle at var(--mx, 50%) var(--my, 0%),
+      rgba(0, 195, 255, 0.18) 0%,
+      rgba(0, 195, 255, 0) 58%
+    );
+  }
+
+  #sv-page .sv-stage[data-hover] .sv-stage__sheen {
+    opacity: 1;
+  }
+
+  #sv-page .sv-stage__tilt {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.22, 0.68, 0.36, 1);
+    will-change: transform;
+  }
+
+  /* ---- Vidro dos recortes flutuantes ----
+     Vidro CLARO, não escuro: estes recortes assentam sobre o screenshot do
+     cliente, que é claro. Vidro escuro por cima de claro fica ilegível. */
+  #sv-page .sv-glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.8) 100%);
+    backdrop-filter: blur(18px) saturate(1.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+    border: 0;
+    box-shadow:
+      0 0 0 1px rgba(11, 31, 42, 0.06),
+      0 2px 4px rgba(11, 31, 42, 0.06),
+      0 26px 50px -20px rgba(6, 20, 28, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 1);
+    color: var(--sv-ink);
+  }
+
+  /* Sem backdrop-filter (Firefox antigo) o vidro cairia para semitransparente */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    #sv-page .sv-glass {
+      background: #ffffff;
+    }
   }
 
   #sv-page .sv-hero__media {
@@ -1434,11 +1586,11 @@ const jsonLd = [
   /* Controlo de pausa do vídeo da hero (só renderiza se o mp4 existir) */
   #sv-page .sv-hero__vtoggle {
     position: absolute;
-    /* canto inferior direito: o recorte do formulário ocupa o superior direito
-       e a pílula de WhatsApp o inferior esquerdo */
-    bottom: 2.6rem;
-    right: 0.75rem;
-    z-index: 2;
+    /* canto superior esquerdo do palco: o formulário ocupa o superior direito,
+       o tracking o inferior direito e o WhatsApp o inferior esquerdo */
+    top: 1.4rem;
+    left: 1.4rem;
+    z-index: 4;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -1472,19 +1624,18 @@ const jsonLd = [
 
   #sv-page .sv-hero__wa {
     position: absolute;
-    left: 0.5rem;
-    bottom: 0;
+    left: -0.35rem;
+    bottom: 0.4rem;
+    z-index: 3;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    /* 44px: quando o número estiver configurado isto passa a link a sério */
+    min-height: 44px;
     padding: 0.6rem 1rem 0.6rem 0.7rem;
-    background: #fff;
-    border: 1px solid var(--sv-line);
     border-radius: 999px;
     font-size: 0.86rem;
     font-weight: 600;
-    color: var(--sv-ink);
-    box-shadow: 0 10px 24px -14px rgba(11, 31, 42, 0.5);
   }
 
   #sv-page .sv-hero__wa svg {
@@ -1496,29 +1647,69 @@ const jsonLd = [
 
   /* Sem número configurado não é clicável, por isso também não se veste de botão. */
   #sv-page .sv-hero__wa--static {
-    box-shadow: none;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--sv-muted);
     font-weight: 500;
+    color: var(--sv-muted);
   }
 
   #sv-page .sv-hero__form {
     display: none;
     position: absolute;
-    right: -1.25rem;
-    top: 14%;
-    width: 12.5rem;
+    right: -1.4rem;
+    top: 9%;
+    z-index: 3;
+    width: 11.5rem;
     padding: 0.9rem;
-    background: #fff;
-    border: 1px solid var(--sv-line);
+    border-radius: 14px;
+  }
+
+  #sv-page .sv-hero__track {
+    display: none;
+    position: absolute;
+    right: -0.9rem;
+    bottom: 15%;
+    z-index: 3;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
     border-radius: 12px;
-    box-shadow: 0 18px 40px -22px rgba(11, 31, 42, 0.55);
+  }
+
+  /* Decorativos: não devem apanhar o rato nem o cursor de texto */
+  #sv-page .sv-hero__form,
+  #sv-page .sv-hero__track {
+    pointer-events: none;
+    user-select: none;
   }
 
   @media (min-width: 1160px) {
-    #sv-page .sv-hero__form {
+    #sv-page .sv-hero__form,
+    #sv-page .sv-hero__track {
       display: block;
     }
+    #sv-page .sv-hero__track {
+      display: flex;
+    }
+  }
+
+  #sv-page .sv-hero__track-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--sv-petrol);
+    box-shadow: 0 0 0 4px rgba(0, 117, 153, 0.16);
+  }
+
+  #sv-page .sv-hero__track-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--sv-ink);
+  }
+
+  #sv-page .sv-hero__track-sub {
+    font-size: 0.68rem;
+    color: var(--sv-muted);
   }
 
   #sv-page .sv-hero__form-title {
@@ -1530,6 +1721,7 @@ const jsonLd = [
     margin-bottom: 0.6rem !important;
   }
 
+  /* Variante clara: usada no recorte de UI da secção Solução */
   #sv-page .sv-field {
     display: block;
     height: 0.6rem;
@@ -1553,6 +1745,14 @@ const jsonLd = [
     font-size: 0.72rem;
     font-weight: 700;
     text-align: center;
+    box-shadow:
+      0 6px 14px -6px rgba(0, 195, 255, 0.7),
+      inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+
+  /* Contador do preço: só o dígito, para o "€ + IVA" nunca saltar */
+  #sv-page .sv-count {
+    font-variant-numeric: tabular-nums;
   }
 
   /* =========================================================
@@ -2669,6 +2869,49 @@ const jsonLd = [
     animation-delay: var(--d, 0ms);
   }
 
+  /* Entrada do palco: só transform. Sem opacity nem blur, porque a imagem
+     lá dentro é o candidato a LCP e não pode arrancar invisível. */
+  .sv-js #sv-page .sv-stage {
+    animation: sv-stage-in 1.15s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+  }
+
+  /* Os recortes não são LCP, logo podem entrar com opacity à vontade */
+  .sv-js #sv-page .sv-hero__form,
+  .sv-js #sv-page .sv-hero__track,
+  .sv-js #sv-page .sv-hero__wa {
+    opacity: 0;
+    animation: sv-badge-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .sv-js #sv-page .sv-hero__wa {
+    animation-delay: 0.75s;
+  }
+  .sv-js #sv-page .sv-hero__form {
+    animation-delay: 0.9s;
+  }
+  .sv-js #sv-page .sv-hero__track {
+    animation-delay: 1.05s;
+  }
+
+  @keyframes sv-stage-in {
+    from {
+      transform: perspective(1400px) translateY(46px) scale(0.94) rotateX(9deg);
+    }
+    to {
+      transform: perspective(1400px) translateY(0) scale(1) rotateX(0deg);
+    }
+  }
+
+  @keyframes sv-badge-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   .sv-js #sv-page [data-reveal] {
     opacity: 0;
     transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 0.68, 0.36, 1);
@@ -2705,6 +2948,20 @@ const jsonLd = [
       opacity: 1;
       transform: none;
       transition: none;
+    }
+    .sv-js #sv-page .sv-stage,
+    .sv-js #sv-page .sv-hero__form,
+    .sv-js #sv-page .sv-hero__track,
+    .sv-js #sv-page .sv-hero__wa {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+    #sv-page .sv-stage__tilt {
+      transition: none;
+    }
+    #sv-page .sv-stage__sheen {
+      display: none;
     }
   }
 

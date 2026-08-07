@@ -108,7 +108,8 @@ const {
           <!-- centro: mockup -->
           <div class="cine__mock" data-cine-mock>
             <div class="cine__mockinner" data-cine-tilt>
-              <BrowserFrame url="o-teu-site.pt">
+              {/* Domínio real do cliente: o screenshot é do Longev Studio */}
+              <BrowserFrame url="longevstudio.com">
                 {/* A imagem otimizada está sempre cá e é ela o candidato a LCP.
                     O vídeo, quando o mp4 existir, entra por cima já a tocar. */}
                 <div class="cine__media">
@@ -392,9 +393,13 @@ const {
           const passos = cena.querySelectorAll<HTMLElement>('.sv-solution__list li');
           if (passos.length) {
             /* o título sai para dar lugar aos pontos */
-            tl.to([cena.querySelector('.sv-eyebrow'), cena.querySelector('h2'), cena.querySelector('.sv-lead')], {
-              autoAlpha: 0, y: -24, ease: 'power2.in', duration: 0.5,
-            });
+            /* filtra nulos: nem todas as cenas têm eyebrow */
+            const cabecalho = ['.sv-eyebrow', 'h2', '.sv-lead']
+              .map((s) => cena.querySelector(s))
+              .filter(Boolean);
+            if (cabecalho.length) {
+              tl.to(cabecalho, { autoAlpha: 0, y: -24, ease: 'power2.in', duration: 0.5 });
+            }
             const trilho = cena.querySelector<HTMLElement>('[data-cine-trilho-barra]');
             passos.forEach((passo, j) => {
               tl.fromTo(passo,
@@ -409,6 +414,28 @@ const {
               tl.to({}, { duration: 0.8 });
               if (j < passos.length - 1) {
                 tl.to(passo, { autoAlpha: 0, y: -32, scale: 0.98, ease: 'power2.in', duration: 0.5 });
+              }
+            });
+          }
+
+          /* Processo: cada passo ocupa o cartão sozinho, grande e destacado */
+          const etapas = cena.querySelectorAll<HTMLElement>('.sv-steps .sv-step');
+          if (etapas.length) {
+            /* .sv-head incluído de propósito: é ele que tem o border-bottom,
+               e sem isto ficava uma linha solta a atravessar o cartão. */
+            const cab = ['.sv-head', '.sv-eyebrow', 'h2', '.sv-head__aside']
+              .map((s) => cena.querySelector(s))
+              .filter(Boolean);
+            if (cab.length) {
+              tl.to(cab, { autoAlpha: 0, y: -24, ease: 'power2.in', duration: 0.5 });
+            }
+            etapas.forEach((etapa, j) => {
+              tl.fromTo(etapa,
+                { autoAlpha: 0, y: 40, scale: 0.94 },
+                { autoAlpha: 1, y: 0, scale: 1, ease: 'back.out(1.4)', duration: 0.7 })
+                .to({}, { duration: 0.7 });
+              if (j < etapas.length - 1) {
+                tl.to(etapa, { autoAlpha: 0, y: -36, scale: 0.97, ease: 'power2.in', duration: 0.45 });
               }
             });
           }
@@ -1152,8 +1179,64 @@ const {
     padding-bottom: 0.7rem;
   }
 
+  /* Processo: cada passo ocupa o cartão sozinho, grande */
+  #cine[data-cine-on] .cine__scenes .sv-steps {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-steps::before {
+    display: none;
+  }
+
   #cine[data-cine-on] .cine__scenes .sv-step {
-    padding: 0.5rem 0;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem clamp(1.5rem, 6vw, 5rem);
+    border: 0;
+    opacity: 0;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-step::after {
+    display: none;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-step__n {
+    width: clamp(3.5rem, 9vh, 5.5rem);
+    height: clamp(3.5rem, 9vh, 5.5rem);
+    font-size: clamp(1.3rem, 3.4vh, 2rem);
+    font-weight: 800;
+    color: #04212c;
+    background: linear-gradient(145deg, #33ffe3 0%, #00c3ff 100%);
+    border: 0;
+    box-shadow: 0 18px 40px -14px rgba(0, 195, 255, 0.65);
+    margin-bottom: 1.5rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-step__label {
+    font-size: clamp(1.5rem, 4.4vh + 0.6rem, 2.9rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    color: #fff;
+    max-width: 20ch;
+  }
+
+  /* O passo condicional mantém o sinal de que só se aplica à Validação */
+  #cine[data-cine-on] .cine__scenes .sv-step--cond .sv-step__n {
+    background: linear-gradient(145deg, #0f2937 0%, #17435a 100%);
+    color: #33ffe3;
+    box-shadow: 0 0 0 2px rgba(51, 255, 227, 0.5), 0 18px 40px -14px rgba(0, 0, 0, 0.6);
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-step--cond .sv-step__label {
+    color: #33ffe3;
   }
 
   /* Validação: na cena fica só a mensagem e o CTA. Os 3 momentos e o
@@ -1398,6 +1481,35 @@ const {
     color: #cbd6de;
     max-width: 34ch;
     padding: 0;
+  }
+
+  /* "Desliza" da Solução: convida ao scroll em vez de explicar */
+  #cine[data-cine-on] .cine__scenes .sv-solution__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--sv-mono, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a98a6;
+    margin-top: 1.75rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-solution__hint svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: #00c3ff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: cine-bob 1.8s ease-in-out infinite;
+  }
+
+  /* Na versão estática não há scroll de cena a convidar: fica escondido */
+  #cine:not([data-cine-on]) .sv-solution__hint {
+    display: none;
   }
 
   /* Trilho que liga os pontos da Solução ao longo do scroll */

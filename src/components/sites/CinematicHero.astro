@@ -81,6 +81,14 @@ const {
       <div class="cine__card" id="cine-card" data-cine-card>
         <div class="cine__sheen" aria-hidden="true"></div>
 
+        {/* Momento de impacto: o cartão já ocupa o ecrã mas o mockup ainda
+            não entrou. Sem isto ficava um vazio a meio do scroll. Só existe
+            na experiência animada — decorativo, por isso aria-hidden. */}
+        <p class="cine__focus" data-cine-focus aria-hidden="true">
+          Feito para
+          <span>o teu negócio.</span>
+        </p>
+
         <div class="cine__cardgrid">
           <!-- esquerda -->
           <div class="cine__left" data-cine-left>
@@ -266,6 +274,7 @@ const {
           autoAlpha: 0,
         });
         gsap.set('[data-cine-cta]', { autoAlpha: 0, y: 26, filter: 'blur(6px)' });
+        gsap.set('[data-cine-focus]', { autoAlpha: 0, scale: 0.9, filter: 'blur(14px)' });
         gsap.set('[data-cine-ring]', { strokeDasharray: 164, strokeDashoffset: 164 });
 
         /* Abertura, sem depender do scroll */
@@ -299,15 +308,24 @@ const {
           .to('[data-cine-card]', {
             width: '100%', height: '100%', borderRadius: '0px', ease: 'power3.inOut', duration: 1.5,
           })
+          /* Preenche o vazio: o cartão já é o ecrã todo, o mockup ainda não entrou */
+          .to('[data-cine-focus]', {
+            autoAlpha: 1, scale: 1, filter: 'blur(0px)', ease: 'expo.out', duration: 1.2,
+          }, '-=0.9')
+          .to({}, { duration: 0.9 })
+          .to('[data-cine-focus]', {
+            autoAlpha: 0, scale: 1.08, filter: 'blur(10px)', ease: 'power2.in', duration: 0.8,
+          })
           .fromTo('[data-cine-mock]',
             { y: 260, z: -480, rotationX: 46, rotationY: -28, autoAlpha: 0, scale: 0.62 },
             { y: 0, z: 0, rotationX: 0, rotationY: 0, autoAlpha: 1, scale: 1, ease: 'expo.out', duration: 2.5 },
-            '-=0.8')
+            '-=0.4')
           .to('[data-cine-ring]', { strokeDashoffset: 44, duration: 1.8, ease: 'power3.inOut' }, '-=1.6')
+          /* stagger maior: cada card entra claramente a seu tempo, não em bloco */
           .fromTo('[data-cine-badge]',
             { y: 90, autoAlpha: 0, scale: 0.75, rotationZ: -8 },
-            { y: 0, autoAlpha: 1, scale: 1, rotationZ: 0, ease: 'back.out(1.5)', duration: 1.4, stagger: 0.18 },
-            '-=1.9')
+            { y: 0, autoAlpha: 1, scale: 1, rotationZ: 0, ease: 'back.out(1.5)', duration: 1.2, stagger: 0.55 },
+            '-=1.5')
           .fromTo('[data-cine-left]', { x: -60, autoAlpha: 0 },
             { x: 0, autoAlpha: 1, ease: 'power4.out', duration: 1.4 }, '-=1.4')
           .fromTo('[data-cine-right]', { x: 60, autoAlpha: 0, scale: 0.85 },
@@ -814,19 +832,19 @@ const {
     z-index: 30;
   }
 
+  /* Fundo OPACO, não vidro: estes cards assentam por cima do screenshot do
+     cliente, que é claro e cheio de detalhe. Translúcidos ficavam ilegíveis. */
   #cine .cine__badgeinner {
     display: flex;
     align-items: center;
     gap: 0.7rem;
     padding: 0.7rem 0.95rem;
     border-radius: 14px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-    backdrop-filter: blur(22px) saturate(1.3);
-    -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    background: linear-gradient(145deg, #14384c 0%, #0b1f2a 100%);
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.14),
-      0 25px 50px -14px rgba(0, 0, 0, 0.7),
-      inset 0 1px 1px rgba(255, 255, 255, 0.24);
+      0 0 0 1px rgba(148, 163, 184, 0.28),
+      0 25px 50px -14px rgba(0, 0, 0, 0.75),
+      inset 0 1px 1px rgba(255, 255, 255, 0.14);
     color: #fff;
     white-space: nowrap;
   }
@@ -847,6 +865,39 @@ const {
     font-style: normal;
     font-size: 0.7rem;
     color: #a8bcc9;
+  }
+
+  /* ---------- frase de impacto (meio do scroll) ---------- */
+  #cine .cine__focus {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-inline: 1.5rem;
+    font-size: clamp(2.4rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  /* Só existe na versão animada; sem JS não aparece de todo */
+  #cine[data-cine-on] .cine__focus {
+    display: flex;
+  }
+
+  #cine .cine__focus span {
+    display: block;
+    background: linear-gradient(180deg, #33ffe3 0%, #00c3ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: translateZ(0);
   }
 
   #cine .cine__ico {

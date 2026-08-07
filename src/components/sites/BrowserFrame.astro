@@ -1,0 +1,115 @@
+---
+/**
+ * Moldura de browser usada na página /sites para enquadrar screenshots reais
+ * de projetos. Sem sombras exageradas: apenas cromo neutro + hairline.
+ */
+interface Props {
+  url?: string;
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+
+const { url, tone = 'light', class: className } = Astro.props;
+---
+
+<div class:list={['sv-frame', `sv-frame--${tone}`, className]}>
+  <div class="sv-frame__bar">
+    <span class="sv-frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    {url && <span class="sv-frame__url">{url}</span>}
+  </div>
+  <div class="sv-frame__screen">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .sv-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #d3dde4;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(11, 31, 42, 0.04), 0 18px 40px -24px rgba(11, 31, 42, 0.35);
+  }
+
+  .sv-frame__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: #eef3f6;
+    border-bottom: 1px solid #d3dde4;
+  }
+
+  .sv-frame__dots {
+    display: inline-flex;
+    gap: 0.35rem;
+    flex: none;
+  }
+
+  .sv-frame__dots i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #c3ced6;
+  }
+
+  .sv-frame__url {
+    font-size: 0.7rem;
+    letter-spacing: 0.01em;
+    color: #5b7180;
+    background: #fff;
+    border: 1px solid #dee7ed;
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .sv-frame__screen {
+    position: relative;
+    background: #fff;
+    line-height: 0;
+  }
+
+  .sv-frame__screen :global(img),
+  .sv-frame__screen :global(video) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Variante escura, para o mockup colocado sobre fundo carvão */
+  .sv-frame--dark {
+    border-color: rgba(148, 163, 184, 0.28);
+    background: #0b1f2a;
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  .sv-frame--dark .sv-frame__bar {
+    background: #0f2937;
+    border-bottom-color: rgba(148, 163, 184, 0.2);
+  }
+
+  .sv-frame--dark .sv-frame__dots i {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .sv-frame--dark .sv-frame__url {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #cbd6de;
+  }
+
+  @media (max-width: 480px) {
+    .sv-frame__bar {
+      padding: 0.5rem 0.65rem;
+      gap: 0.5rem;
+    }
+    .sv-frame__url {
+      /* 12px minimo: 0.65rem dava 10.4px, ilegivel no telemovel */
+      font-size: 0.78rem;
+    }
+  }
+</style>

@@ -17,6 +17,27 @@ export const SITE = {
   defaultAuthor: 'Redação SENVIA',
 } as const;
 
+/**
+ * Contacto direto por WhatsApp.
+ *
+ * Preencher `number` com o número em formato internacional, apenas dígitos,
+ * sem "+" nem espaços (ex.: '351912345678').
+ *
+ * Enquanto `number` estiver vazio, `whatsappUrl()` devolve `null` e os CTAs de
+ * WhatsApp fazem fallback automático para o formulário (SITE.ctaSiteFormUrl).
+ * Nada quebra: basta preencher o número para os ativar.
+ */
+export const WHATSAPP = {
+  number: '',
+  defaultMessage: 'Olá! Vim pela página de sites da SENVIA e queria falar sobre o meu projeto.',
+} as const;
+
+export function whatsappUrl(message: string = WHATSAPP.defaultMessage): string | null {
+  const digits = WHATSAPP.number.replace(/\D/g, '');
+  if (!digits) return null;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+}
+
 export const NAV_LINKS = [
   { label: 'SENVIA OS', href: '/senvia-os' },
   { label: 'Serviços', hasDropdown: true },

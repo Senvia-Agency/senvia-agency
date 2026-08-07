@@ -3,7 +3,7 @@ title: "Learning Phase do Meta Ads: Como Sair Rápido"
 description: "A learning phase do Meta Ads custa-te dinheiro todos os dias que ela dura. Vimos na prática como sair dela mais rápido e parar de queimar budget."
 pubDate: "2026-07-23"
 author: "Thiago Sousa"
-category: "Meta Ads"
+category: "pmes"
 coverImage: "/images/artigos/learning-phase-meta-ads-como-sair-rapido.jpg"
 ---
 

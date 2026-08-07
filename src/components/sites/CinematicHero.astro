@@ -240,6 +240,13 @@ const {
             <p class="cine__brand">SENVIA</p>
           </div>
         </div>
+
+        {/* As restantes secções da página vivem aqui dentro, como cenas que
+            se substituem ao fazer scroll. Sem JS ficam em fluxo normal, uma
+            a seguir à outra, e a página lê-se como sempre. */}
+        <div class="cine__scenes" data-cine-scenes>
+          <slot />
+        </div>
       </div>
     </div>
   </div>
@@ -288,12 +295,18 @@ const {
             { autoAlpha: 0, y: 18 },
             { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, '-=0.7');
 
-        /* Sequência conduzida pelo scroll */
+        /* Sequência conduzida pelo scroll.
+           O pin cresce com o nº de cenas: ~700px por cena, mais 4600px da
+           abertura. Sem isto, 9 cenas ficavam espremidas nos mesmos 4600px
+           e passavam todas de uma vez. */
+        const nCenas = root.querySelectorAll('[data-cine-scenes] > *').length;
+        const comprimento = 4600 + nCenas * 700;
+
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: root,
             start: 'top top',
-            end: '+=4600',
+            end: '+=' + comprimento,
             pin: true,
             scrub: 1,
             anticipatePin: 1,
@@ -341,19 +354,53 @@ const {
             borderRadius: isMobile ? '28px' : '40px',
             ease: 'power2.inOut', duration: 0.9,
           }, '-=0.25')
-          /* O cartão SAI por completo antes de o CTA aparecer — de propósito,
-             sem sobreposição. O CTA e o cartão partilham o mesmo ponto
-             central da grelha; tentar revelar o CTA "por baixo" de um cartão
-             ainda parcialmente visível deixava-o sempre coberto pelo fundo
-             opaco (medido: o retângulo do CTA fica inteiro dentro do
-             retângulo do cartão, mesmo já encolhido a 86vw/84vh) — e, se se
-             forçasse o CTA para cima com z-index, o texto escuro ficava
-             ilegível sobre o navy do cartão por baixo. Sequencial resolve
-             os dois problemas de uma vez. */
-          .to('[data-cine-card]', { yPercent: -140, ease: 'power2.in', duration: 0.95 })
-          .fromTo('[data-cine-cta]',
-            { autoAlpha: 0, y: 26, filter: 'blur(6px)' },
-            { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power2.out', duration: 0.9 });
+          /* A partir daqui o cartão FICA. As secções da página passam a
+             substituir-se lá dentro, cena a cena, conduzidas pelo scroll. */
+          .set('[data-cine-scenes]', { autoAlpha: 1 });
+
+        /* Cada cena entra, fica, e sai para dar lugar à seguinte.
+           O comprimento total do pin é calculado a partir do nº de cenas. */
+        const cenas = Array.from(
+          root.querySelectorAll<HTMLElement>('[data-cine-scenes] > *')
+        );
+
+        gsap.set(cenas, { autoAlpha: 0, y: 40 });
+
+        cenas.forEach((cena, i) => {
+          tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
+            .to({}, { duration: 1.1 }); /* tempo de leitura */
+          if (i < cenas.length - 1) {
+            tl.to(cena, { autoAlpha: 0, y: -40, ease: 'power2.in', duration: 0.7 });
+          }
+        });
+
+        /* Os links #pacotes / #manutencao / #faq deixariam de funcionar dentro
+           de um pin. Recalculam-se para a posição de scroll da cena certa. */
+        const st = tl.scrollTrigger;
+        if (st) {
+          const total = st.end - st.start;
+          const dur = tl.duration();
+          document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+            const alvo = a.getAttribute('href')!.slice(1);
+            if (!alvo) return;
+            const cena = cenas.find((c) => c.id === alvo);
+            if (!cena) return;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              /* Instante em que esta cena está totalmente visível.
+                 ABERTURA_ATE_CENAS = tempo da timeline até a 1ª cena entrar;
+                 cada cena ocupa 0.9 (entrada) + 1.1 (leitura) + 0.7 (saída). */
+              const ABERTURA_ATE_CENAS = 12.1;
+              const POR_CENA = 2.7;
+              const i = cenas.indexOf(cena);
+              const instante = ABERTURA_ATE_CENAS + i * POR_CENA + 0.9;
+              window.scrollTo({
+                top: st.start + (instante / dur) * total,
+                behavior: 'smooth',
+              });
+            });
+          });
+        }
 
         /* Contador dos dias, ligado ao mesmo scroll */
         const el = root.querySelector<HTMLElement>('[data-cine-count]');
@@ -865,6 +912,256 @@ const {
     font-style: normal;
     font-size: 0.7rem;
     color: #a8bcc9;
+  }
+
+  /* =========================================================
+     CENAS: as secções da página dentro do cartão
+     ========================================================= */
+
+  /* Sem JS: fluxo normal, uma secção a seguir à outra, tudo legível. */
+  #cine .cine__scenes {
+    position: relative;
+  }
+
+  /* Com JS: cada secção é uma cena empilhada que o scroll troca.
+     A inversão de tokens abaixo é o que permite reaproveitar todo o CSS
+     das secções (escrito para fundo claro) dentro do cartão navy. */
+  #cine[data-cine-on] .cine__scenes {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+
+    --sv-paper: transparent;
+    --sv-paper-2: transparent;
+    --sv-white: transparent;
+    --sv-ink: #ffffff;
+    --sv-text: #cbd6de;
+    --sv-muted: #8a98a6;
+    --sv-line: rgba(148, 163, 184, 0.24);
+    --sv-line-soft: rgba(148, 163, 184, 0.14);
+    --sv-line-ui: rgba(255, 255, 255, 0.45);
+    --sv-accent-ink: #00c3ff;
+    --sv-accent-strong: #33ffe3;
+    --sv-accent-soft: rgba(0, 195, 255, 0.12);
+  }
+
+  #cine[data-cine-on] .cine__scenes > * {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-block: clamp(1.5rem, 4vh, 3rem) !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  /* As secções escuras já eram navy: dentro do cartão não precisam de fundo */
+  #cine[data-cine-on] .cine__scenes .sv-section--dark,
+  #cine[data-cine-on] .cine__scenes .sv-final {
+    background: transparent !important;
+  }
+
+  /* Superfícies que precisam de continuar a ler-se como "cartão dentro da cena" */
+  #cine[data-cine-on] .cine__scenes .sv-plan--feature,
+  #cine[data-cine-on] .cine__scenes .sv-report,
+  #cine[data-cine-on] .cine__scenes .sv-rule,
+  #cine[data-cine-on] .cine__scenes .sv-plans__care {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+  }
+
+  /* O relatório era papel branco; dentro do cartão passa a superfície escura */
+  #cine[data-cine-on] .cine__scenes .sv-report,
+  #cine[data-cine-on] .cine__scenes .sv-report__head,
+  #cine[data-cine-on] .cine__scenes .sv-report__foot {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #cbd6de;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-report__title,
+  #cine[data-cine-on] .cine__scenes .sv-report__pills span {
+    color: #ffffff;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-report__pills span {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(148, 163, 184, 0.3);
+  }
+
+  /* Botões escuros ficariam invisíveis sobre navy */
+  #cine[data-cine-on] .cine__scenes .sv-btn--dark {
+    background: var(--sv-cyan);
+    color: #04212c;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-btn--ghost {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+  }
+
+  /* ---------- compressão: o conteúdo tem de caber na altura do cartão ----------
+     As secções foram desenhadas para uma página com scroll livre. Dentro de
+     uma cena de ~84vh precisam de encolher, senão ficam cortadas em cima e
+     em baixo (verificado: pacotes e trabalhos transbordavam). */
+  #cine[data-cine-on] .cine__scenes .sv-container {
+    max-width: 1240px;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-head {
+    margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+    padding-bottom: 0.75rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes h2 {
+    font-size: clamp(1.3rem, 2.2vh + 0.7rem, 1.9rem);
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-head__aside,
+  #cine[data-cine-on] .cine__scenes .sv-lead {
+    font-size: 0.92rem;
+  }
+
+  /* Pacotes: a lista de features é o que mais cresce */
+  #cine[data-cine-on] .cine__scenes .sv-plan__list li,
+  #cine[data-cine-on] .cine__scenes .sv-care__item li {
+    padding: 0.2rem 0;
+    font-size: 0.84rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-plan__desc,
+  #cine[data-cine-on] .cine__scenes .sv-care__for {
+    font-size: 0.82rem;
+    margin-bottom: 0.6rem;
+    min-height: 0 !important;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-plan__amount {
+    font-size: clamp(1.6rem, 3vh, 2.1rem);
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-plan--feature {
+    margin-top: 0 !important;
+    padding-block: 1rem !important;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-plans__note {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  /* Trabalhos: 7 projetos não cabem em 2 colunas — passam a 3, mais baixos */
+  @media (min-width: 900px) {
+    #cine[data-cine-on] .cine__scenes .sv-work {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    #cine[data-cine-on] .cine__scenes .sv-work__item--lead {
+      grid-column: auto;
+    }
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-work__item figcaption {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    gap: 0.25rem 0.5rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-work__name {
+    font-size: 0.88rem;
+    min-height: 0;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-work__details {
+    display: none; /* o detalhe fica no site real, que está a um clique */
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-work__cta {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+
+  /* FAQ e processo */
+  #cine[data-cine-on] .cine__scenes .sv-faq__item summary {
+    padding: 0.7rem 0;
+    font-size: 0.95rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-faq__item p {
+    font-size: 0.88rem;
+    padding-bottom: 0.7rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-step {
+    padding: 0.5rem 0;
+  }
+
+  /* Relatório e momentos da validação */
+  #cine[data-cine-on] .cine__scenes .sv-report__fields li {
+    padding: 0.3rem 0;
+    font-size: 0.82rem;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-moments li {
+    padding: 0.6rem 0;
+  }
+
+  #cine[data-cine-on] .cine__scenes .sv-moments p {
+    font-size: 0.85rem;
+  }
+
+  /* Aperto final nas 3 cenas que ainda transbordavam (medido: dor +61px,
+     pacotes +208px, trabalhos +188px). */
+
+  /* Dor: a figura do mockup é o que sobra */
+  #cine[data-cine-on] .cine__scenes .sv-pain__figure {
+    display: none;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-pain__list li {
+    padding: 0.7rem 0;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-pain__text {
+    font-size: clamp(0.95rem, 1.6vh, 1.1rem);
+  }
+
+  /* Pacotes: nota de rodapé e reforço saem — vivem na versão estática */
+  #cine[data-cine-on] .cine__scenes .sv-plans__reassure,
+  #cine[data-cine-on] .cine__scenes .sv-plan__note {
+    display: none;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-plan__list li {
+    padding: 0.13rem 0;
+    font-size: 0.8rem;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-plan__incl {
+    margin-bottom: 0.4rem !important;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-plan__body {
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+  }
+
+  /* Trabalhos: 6 projetos na cena, o 7º só na versão estática */
+  #cine[data-cine-on] .cine__scenes .sv-work__item:nth-child(7) {
+    display: none;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-work {
+    gap: 0.6rem;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-work__cta p {
+    font-size: 0.9rem;
+  }
+
+  /* Pacotes: o aviso de manutenção e a oferta de domínio ficam na versão
+     estática, onde há espaço para os ler com calma. */
+  #cine[data-cine-on] .cine__scenes .sv-plans__care,
+  #cine[data-cine-on] .cine__scenes .sv-plans__note .sv-fine {
+    display: none;
+  }
+  #cine[data-cine-on] .cine__scenes .sv-plans__gift {
+    font-size: 0.85rem;
+    margin-bottom: 0;
   }
 
   /* ---------- frase de impacto (meio do scroll) ---------- */

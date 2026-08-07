@@ -950,8 +950,12 @@ const {
     inset: 0;
     display: flex;
     align-items: center;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    /* NUNCA overflow-y:auto aqui. A cena passava a ter scroll próprio e
+       engolia a roda do rato: com o cursor sobre o cartão a página deixava
+       de avançar (medido: parava aos 3600px; fora do cartão ia aos 4800px).
+       As cenas são dimensionadas para caber — se não couberem, corta-se
+       conteúdo, não se acrescenta scroll. */
+    overflow: hidden;
     padding-block: clamp(1.5rem, 4vh, 3rem) !important;
     border: 0 !important;
     background: transparent !important;

@@ -42,23 +42,6 @@ const {
     <div class="cine__grain" aria-hidden="true"></div>
     <div class="cine__grid" aria-hidden="true"></div>
 
-    {/* Uma seta grossa que desce a página, deixando rasto do caminho já
-        percorrido. Vive ATRÁS do cartão: passa por trás dele e reaparece na
-        margem clara, sem nunca tapar texto. */}
-    <svg
-      class="cine__rota"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <path
-        data-cine-rota
-        d="M 4,-6 C 0,8 8,16 3,27 S 8,41 2,52 S 8,66 3,77 S 7,92 5,108"
-      />
-    </svg>
-    <div class="cine__flecha" data-cine-flecha aria-hidden="true">
-      <svg viewBox="0 0 40 44"><path d="M20 44 L2 14 L20 22 L38 14 Z" /></svg>
-    </div>
     <!-- ===== Camada 1: abertura ===== -->
     <div class="cine__intro" data-cine-intro>
       <p class="cine__eyebrow">Criação de sites · Portugal</p>
@@ -96,6 +79,27 @@ const {
     <!-- ===== Camada 3: o cartão ===== -->
     <div class="cine__cardlayer">
       <div class="cine__card" id="cine-card" data-cine-card>
+        {/* Seta grossa que atravessa o cartão deixando rasto.
+            Vive DENTRO do cartão, em z-index 1: fica por cima do fundo navy
+            mas por baixo de todo o conteúdo (grelha z2, cenas z4). Fora do
+            cartão isto era impossível — o cartão cria um contexto de
+            empilhamento, portanto qualquer z-index acima dele ficaria também
+            acima do texto. */}
+        <svg
+          class="cine__rota"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            data-cine-rota
+            d="M 12,-8 C 40,6 68,14 58,30 S 10,44 22,58 S 82,70 66,84 S 20,96 34,110"
+          />
+        </svg>
+        <div class="cine__flecha" data-cine-flecha aria-hidden="true">
+          <svg viewBox="0 0 40 44"><path d="M20 44 L2 14 L20 22 L38 14 Z" /></svg>
+        </div>
+
         <div class="cine__sheen" aria-hidden="true"></div>
 
         {/* Momento de impacto: o cartão já ocupa o ecrã mas o mockup ainda
@@ -679,26 +683,26 @@ const {
     z-index: 1;
     pointer-events: none;
     fill: none;
-    overflow: visible;
   }
 
   #cine .cine__rota path {
-    stroke: #00c3ff;
-    stroke-width: 14;
+    stroke: #33ffe3;
+    stroke-width: 34;
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
-    opacity: 0.4;
+    opacity: 0.16;
   }
 
   #cine .cine__flecha {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 2;
-    width: 40px;
-    height: 44px;
-    margin: -22px 0 0 -20px;
+    /* 1, tal como o rasto: acima do fundo navy, abaixo do conteudo (z2+) */
+    z-index: 1;
+    width: 76px;
+    height: 84px;
+    margin: -42px 0 0 -38px;
     pointer-events: none;
     opacity: 0;
     will-change: transform;
@@ -718,10 +722,14 @@ const {
   }
 
   @media (max-width: 767px) {
-    /* margem clara quase nula: a seta só sujaria */
-    #cine .cine__rota,
+    /* mais discreta no telemóvel, mas continua presente */
+    #cine .cine__rota path {
+      stroke-width: 20;
+    }
     #cine .cine__flecha {
-      display: none;
+      width: 48px;
+      height: 54px;
+      margin: -27px 0 0 -24px;
     }
   }
 

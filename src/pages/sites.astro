@@ -843,6 +843,30 @@ const jsonLd = [
     <section class="sv-section sv-final" id="contacto">
       <div class="sv-container sv-final__inner">
         <div>
+          {/* Selo de marca a fechar a página. Deliberadamente pequeno: esta
+              secção existe para converter, e o vídeo não pode competir com
+              o botão. preload="none" — 4,7 MB só se descarregam se alguém
+              chegar aqui, e nunca com reduced-motion. */}
+          <div class="sv-final__selo" data-sv-selo>
+            <video
+              id="sv-logo-video"
+              muted
+              loop
+              playsinline
+              preload="none"
+              width="1284"
+              height="716"
+              data-src="/videos/logo-senvia.mp4"
+              aria-hidden="true"
+              tabindex="-1"
+            ></video>
+            <button type="button" id="sv-logo-toggle" class="sv-final__selo-btn" hidden aria-pressed="false">
+              <span class="sv-logo-pausa" aria-hidden="true">❚❚</span>
+              <span class="sv-logo-play" aria-hidden="true" style="display:none">▶</span>
+              <span class="sr-only sv-logo-txt">Parar animação do logótipo</span>
+            </button>
+          </div>
+
           <h2>Queres uma presença online que explique bem o teu negócio e gere pedidos?</h2>
           <p>
             Escolhe o pacote certo ou pede um diagnóstico rápido. Em poucos minutos percebemos qual
@@ -895,6 +919,72 @@ const jsonLd = [
       } catch (err) {
         /* Nada pode ficar invisível por causa de um erro de script. */
         revealAll();
+      }
+
+      /* --- Selo de marca do CTA final ---
+         4,7 MB: só se descarrega quando o selo entra no ecrã, e nunca com
+         reduced-motion. Loop infinito precisa de mecanismo de pausa
+         (WCAG 2.2.2, nível A). */
+      var selo = document.querySelector('[data-sv-selo]');
+      var logoV = document.getElementById('sv-logo-video');
+
+      if (selo && logoV && !reduced) {
+        /* A cena do CTA está sempre dentro do ecrã (posicionada absoluta),
+           só com opacity 0 — um IntersectionObserver disparava logo ao abrir
+           a página e descarregava os 4,7 MB a todos. O gatilho é a opacidade
+           real da cena. */
+        var cenaSelo = selo.closest('[data-cine-scenes] > *') || selo;
+        var carregado = false;
+
+        var talvezCarregar = function () {
+          if (carregado) return;
+          if (parseFloat(getComputedStyle(cenaSelo).opacity) < 0.5) return;
+          carregado = true;
+          window.removeEventListener('scroll', talvezCarregar);
+
+          (function () {
+            var src = document.createElement('source');
+            src.src = logoV.getAttribute('data-src');
+            src.type = 'video/mp4';
+            logoV.appendChild(src);
+            logoV.load();
+
+            var pr = logoV.play();
+            var ligar = function () {
+              logoV.setAttribute('data-playing', '');
+              var bt = document.getElementById('sv-logo-toggle');
+              if (!bt) return;
+              bt.hidden = false;
+              var ic1 = bt.querySelector('.sv-logo-pausa');
+              var ic2 = bt.querySelector('.sv-logo-play');
+              var txt = bt.querySelector('.sv-logo-txt');
+              var sinc = function () {
+                var pausado = logoV.paused;
+                bt.setAttribute('aria-pressed', String(pausado));
+                ic1.style.display = pausado ? 'none' : '';
+                ic2.style.display = pausado ? '' : 'none';
+                txt.textContent = pausado
+                  ? 'Retomar animação do logótipo'
+                  : 'Parar animação do logótipo';
+              };
+              bt.addEventListener('click', function () {
+                if (logoV.paused) logoV.play();
+                else logoV.pause();
+              });
+              logoV.addEventListener('play', sinc);
+              logoV.addEventListener('pause', sinc);
+              sinc();
+            };
+            if (pr && pr.then) pr.then(ligar).catch(function () {});
+            else ligar();
+          })();
+        };
+
+        /* Sem chamada imediata: este script corre ANTES do módulo do
+           componente, portanto as cenas ainda estão a opacity 1 e o vídeo
+           era descarregado logo ao abrir a página. Só o scroll o dispara,
+           e para chegar ao CTA é sempre preciso fazer scroll. */
+        window.addEventListener('scroll', talvezCarregar, { passive: true });
       }
 
       /* --- Vídeo da hero: só carrega quando compensa ---
@@ -2406,6 +2496,52 @@ const jsonLd = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
+  }
+
+  /* Selo de marca do CTA final */
+  #sv-page .sv-final__selo {
+    position: relative;
+    width: clamp(88px, 12vh, 132px);
+    aspect-ratio: 1;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  #sv-page .sv-final__selo video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* o vídeo é ciano sobre preto: o modo screen funde-o com o navy */
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  #sv-page .sv-final__selo video[data-playing] {
+    opacity: 1;
+  }
+
+  #sv-page .sv-final__selo-btn {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    font-size: 0.6rem;
+    color: #fff;
+    background: rgba(11, 31, 42, 0.75);
+    cursor: pointer;
+  }
+
+  #sv-page .sv-final__selo-btn[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #sv-page .sv-final__selo {
+      display: none;
+    }
   }
 
   #sv-page .sv-final__note {

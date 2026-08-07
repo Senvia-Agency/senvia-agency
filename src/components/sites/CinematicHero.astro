@@ -364,7 +364,24 @@ const {
           root.querySelectorAll<HTMLElement>('[data-cine-scenes] > *')
         );
 
+        /* Trilho da Solução: dá continuidade visual aos 6 pontos, que sem
+           isto apareciam soltos, sem relação uns com os outros. */
+        const cenaSolucao = cenas.find((c) => c.querySelector('.sv-solution__list'));
+        if (cenaSolucao && !cenaSolucao.querySelector('[data-cine-trilho]')) {
+          const trilho = document.createElement('div');
+          trilho.className = 'cine__trilho';
+          trilho.setAttribute('data-cine-trilho', '');
+          trilho.setAttribute('aria-hidden', 'true');
+          trilho.innerHTML = '<span data-cine-trilho-barra></span>';
+          cenaSolucao.appendChild(trilho);
+        }
+
         gsap.set(cenas, { autoAlpha: 0, y: 40 });
+        /* Estado inicial dos elementos que entram um a um dentro da cena */
+        gsap.set(root.querySelectorAll('.sv-plan'), { autoAlpha: 0 });
+        gsap.set(root.querySelectorAll('[data-cine-trilho-barra]'), {
+          scaleX: 0, transformOrigin: 'left center',
+        });
 
         cenas.forEach((cena, i) => {
           tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
@@ -374,21 +391,37 @@ const {
              Usado na Solução, para os 6 pontos não aparecerem todos de uma vez. */
           const passos = cena.querySelectorAll<HTMLElement>('.sv-solution__list li');
           if (passos.length) {
-            const copy = cena.querySelector('.sv-solution__copy > .sv-eyebrow')?.parentElement;
             /* o título sai para dar lugar aos pontos */
             tl.to([cena.querySelector('.sv-eyebrow'), cena.querySelector('h2'), cena.querySelector('.sv-lead')], {
               autoAlpha: 0, y: -24, ease: 'power2.in', duration: 0.5,
             });
+            const trilho = cena.querySelector<HTMLElement>('[data-cine-trilho-barra]');
             passos.forEach((passo, j) => {
               tl.fromTo(passo,
                 { autoAlpha: 0, y: 32, scale: 0.96 },
-                { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 })
-                .to({}, { duration: 0.8 });
+                { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 });
+              /* a linha cresce ao ritmo dos pontos, para eles não ficarem soltos */
+              if (trilho) {
+                tl.to(trilho, {
+                  scaleX: (j + 1) / passos.length, ease: 'power2.out', duration: 0.7,
+                }, '<');
+              }
+              tl.to({}, { duration: 0.8 });
               if (j < passos.length - 1) {
                 tl.to(passo, { autoAlpha: 0, y: -32, scale: 0.98, ease: 'power2.in', duration: 0.5 });
               }
             });
-            void copy;
+          }
+
+          /* Pacotes: cada coluna entra com o seu próprio scroll */
+          const planos = cena.querySelectorAll<HTMLElement>('.sv-plan');
+          if (planos.length) {
+            planos.forEach((plano) => {
+              tl.fromTo(plano,
+                { autoAlpha: 0, y: 40, scale: 0.97 },
+                { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 })
+                .to({}, { duration: 0.7 });
+            });
           }
 
           if (i < cenas.length - 1) {
@@ -1365,6 +1398,28 @@ const {
     color: #cbd6de;
     max-width: 34ch;
     padding: 0;
+  }
+
+  /* Trilho que liga os pontos da Solução ao longo do scroll */
+  #cine .cine__trilho {
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 12%;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(148, 163, 184, 0.2);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  #cine .cine__trilho span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #007599 0%, #00c3ff 60%, #33ffe3 100%);
+    box-shadow: 0 0 14px rgba(0, 195, 255, 0.5);
   }
 
   /* ---------- frase de impacto (meio do scroll) ---------- */

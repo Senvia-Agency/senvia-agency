@@ -504,6 +504,75 @@ const jsonLd = [
     </section>
 
     <!-- ==========================================================
+         5. VALIDAÇÃO COMERCIAL EM DESTAQUE
+    =========================================================== -->
+    <section class="sv-section sv-section--dark" id="validacao">
+      <div class="sv-container sv-validation__inner">
+        <div class="sv-validation__copy">
+          <p class="sv-eyebrow sv-eyebrow--onDark">Pacote Validação Comercial</p>
+          <h2>Mais do que um site: um <em>teste comercial com dados</em>.</h2>
+          <p class="sv-lead sv-lead--onDark">
+            O pacote Validação Comercial junta página, criativos, tráfego pago, tracking e relatório
+            para perceber se a oferta gera interesse real.
+          </p>
+
+          <ol class="sv-moments">
+            {
+              momentos.map((m) => (
+                <li>
+                  <span class="sv-moments__n">{m.n}</span>
+                  <div>
+                    <h3>{m.title}</h3>
+                    <p>{m.desc}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+
+          <a href={pacoteUrl('validacao-comercial')} target="_blank" rel="noopener noreferrer" class="sv-btn sv-btn--primary">
+            Validar meu negócio
+          </a>
+        </div>
+
+        <div class="sv-validation__report">
+          <article class="sv-report">
+            <header class="sv-report__head">
+              <div>
+                <p class="sv-report__kicker">Relatório de campanha</p>
+                <p class="sv-report__title">Validação Comercial · 14 dias</p>
+              </div>
+              <span class="sv-report__seal">SENVIA</span>
+            </header>
+
+            <ul class="sv-report__fields">
+              {
+                relatorioCampos.map((c) => (
+                  <li>
+                    <span>{c}</span>
+                    <i aria-hidden="true"></i>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <footer class="sv-report__foot">
+              <p class="sv-report__concl">Recomendação objetiva: uma destas quatro, com justificação.</p>
+              <div class="sv-report__pills">
+                <span>Matar</span><span>Ajustar</span><span>Continuar</span><span>Escalar</span>
+              </div>
+            </footer>
+          </article>
+
+          <p class="sv-report__caption">
+            Esta é a estrutura do relatório que recebes no fim dos 14 dias. Os números são os da tua
+            campanha. Não prometemos resultados antes de os medir.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
          4. PACOTES
     =========================================================== -->
     <section class="sv-section sv-section--plans" id="pacotes">
@@ -592,75 +661,6 @@ const jsonLd = [
 
           <p class="sv-fine sv-plans__reassure">
             Os botões acima levam-te ao briefing. Não há pagamento nesta fase.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         5. VALIDAÇÃO COMERCIAL EM DESTAQUE
-    =========================================================== -->
-    <section class="sv-section sv-section--dark" id="validacao">
-      <div class="sv-container sv-validation__inner">
-        <div class="sv-validation__copy">
-          <p class="sv-eyebrow sv-eyebrow--onDark">Pacote Validação Comercial</p>
-          <h2>Mais do que um site: um <em>teste comercial com dados</em>.</h2>
-          <p class="sv-lead sv-lead--onDark">
-            O pacote Validação Comercial junta página, criativos, tráfego pago, tracking e relatório
-            para perceber se a oferta gera interesse real.
-          </p>
-
-          <ol class="sv-moments">
-            {
-              momentos.map((m) => (
-                <li>
-                  <span class="sv-moments__n">{m.n}</span>
-                  <div>
-                    <h3>{m.title}</h3>
-                    <p>{m.desc}</p>
-                  </div>
-                </li>
-              ))
-            }
-          </ol>
-
-          <a href={pacoteUrl('validacao-comercial')} target="_blank" rel="noopener noreferrer" class="sv-btn sv-btn--primary">
-            Validar meu negócio
-          </a>
-        </div>
-
-        <div class="sv-validation__report">
-          <article class="sv-report">
-            <header class="sv-report__head">
-              <div>
-                <p class="sv-report__kicker">Relatório de campanha</p>
-                <p class="sv-report__title">Validação Comercial · 14 dias</p>
-              </div>
-              <span class="sv-report__seal">SENVIA</span>
-            </header>
-
-            <ul class="sv-report__fields">
-              {
-                relatorioCampos.map((c) => (
-                  <li>
-                    <span>{c}</span>
-                    <i aria-hidden="true"></i>
-                  </li>
-                ))
-              }
-            </ul>
-
-            <footer class="sv-report__foot">
-              <p class="sv-report__concl">Recomendação objetiva: uma destas quatro, com justificação.</p>
-              <div class="sv-report__pills">
-                <span>Matar</span><span>Ajustar</span><span>Continuar</span><span>Escalar</span>
-              </div>
-            </footer>
-          </article>
-
-          <p class="sv-report__caption">
-            Esta é a estrutura do relatório que recebes no fim dos 14 dias. Os números são os da tua
-            campanha. Não prometemos resultados antes de os medir.
           </p>
         </div>
       </div>

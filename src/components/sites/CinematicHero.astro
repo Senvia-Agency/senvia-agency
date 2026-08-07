@@ -105,8 +105,14 @@ const {
             d="M 8,-10 C 46,2 74,10 62,26 C 52,39 6,38 14,54 C 21,68 88,62 72,80 C 62,91 24,88 30,104 C 33,111 44,114 46,120"
           />
         </svg>
-        <div class="cine__flecha" data-cine-flecha aria-hidden="true">
-          <svg viewBox="0 0 40 44"><path d="M20 44 L2 14 L20 22 L38 14 Z" /></svg>
+        {/* Núcleo luminoso na ponta do rasto, em vez de uma seta.
+            É um círculo: não tem orientação, portanto não pode aparecer
+            virado ao contrário, e centra-se exatamente no ponto do caminho
+            — a seta anterior ficava 42px afastada porque a ponta do
+            triângulo estava no fundo da própria caixa. */}
+        <div class="cine__nucleo" data-cine-flecha aria-hidden="true">
+          <span class="cine__nucleo-halo"></span>
+          <span class="cine__nucleo-core"></span>
         </div>
 
         <div class="cine__sheen" aria-hidden="true"></div>
@@ -422,13 +428,14 @@ const {
           '#1ad0ff', '#33ffe3', '#33ffe3', '#2ae0d0', '#33ffe3',
         ];
         const rotaCor = root.querySelector<SVGPathElement>('[data-cine-rota]');
-        const flechaCor = root.querySelector<HTMLElement>('[data-cine-flecha] path');
+        /* o nucleo herda a cor por currentColor: basta animar 'color' */
+        const flechaCor = root.querySelector<HTMLElement>('[data-cine-flecha]');
 
         cenas.forEach((cena, i) => {
           if (rotaCor) {
             const cor = CORES[i % CORES.length];
             tl.to(rotaCor, { stroke: cor, ease: 'none', duration: 0.6 }, '<');
-            if (flechaCor) tl.to(flechaCor, { fill: cor, ease: 'none', duration: 0.6 }, '<');
+            if (flechaCor) tl.to(flechaCor, { color: cor, ease: 'none', duration: 0.6 }, '<');
           }
           tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
             .to({}, { duration: 1.1 }); /* tempo de leitura */
@@ -542,29 +549,25 @@ const {
           medir();
           window.addEventListener('resize', medir);
 
-          const caixa = () => root.getBoundingClientRect();
+          /* Referência = o CARTÃO, não a secção. O núcleo vive dentro do
+             cartão, portanto é essa a sua caixa de posicionamento. Medir
+             contra a secção deixava-o 143px fora da ponta do rasto. */
+          const caixa = () => (flecha.offsetParent ?? card).getBoundingClientRect();
           let sentido = 1; /* 1 desce, -1 sobe */
-          let giro = 0; /* voltas acumuladas, para o 360 na inversão */
 
           const posicionar = (p: number) => {
             const n = rota.getTotalLength();
             const d = Math.max(0.001, Math.min(n - 0.001, n * p));
             const r = caixa();
             const aqui = emEcra(d);
-            /* tangente: dois pontos próximos, já em espaço de ecrã */
-            const passo = n * 0.004;
-            const a = emEcra(Math.max(0, d - passo));
-            const b = emEcra(Math.min(n, d + passo));
-            const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
 
             gsap.set(flecha, {
               x: aqui.x - r.left,
               y: aqui.y - r.top,
-              /* +90: o SVG da seta aponta para BAIXO em repouso */
-              /* -90 e não +90: a ponta do SVG está em BAIXO (y=44), portanto
-                 a seta já aponta para baixo em repouso. Com +90 ficava
-                 virada ao contrário. */
-              rotation: ang - 90 + giro * 360 + (sentido === -1 ? 180 : 0),
+              /* Sem rotação: um círculo não tem orientação, portanto não pode
+                 aparecer virado ao contrário. A inversão de sentido mostra-se
+                 por uma pulsação de escala. */
+              scale: sentido === -1 ? 1.25 : 1,
               autoAlpha: p > 0.004 && p < 0.996 ? 1 : 0,
             });
 
@@ -587,7 +590,7 @@ const {
             const st2 = tl.scrollTrigger;
             if (st2 && st2.direction !== sentido) {
               sentido = st2.direction;
-              giro += 1; /* a volta de 360 ao trocar de sentido */
+              /* o núcleo reage à inversão pela escala, em posicionar() */
             }
             const p = tl.progress();
             posicionar(p);
@@ -777,30 +780,52 @@ const {
     opacity: 0.16;
   }
 
-  #cine .cine__flecha {
+  /* Quadrado com o ponto exatamente ao centro: metade da largura em
+     margem negativa. Assim assenta sempre na ponta do rasto. */
+  #cine .cine__nucleo {
     position: absolute;
     top: 0;
     left: 0;
     /* 1, tal como o rasto: acima do fundo navy, abaixo do conteudo (z2+) */
     z-index: 1;
-    width: 76px;
-    height: 84px;
-    margin: -42px 0 0 -38px;
+    width: 88px;
+    height: 88px;
+    margin: -44px 0 0 -44px;
+    display: grid;
+    place-items: center;
     pointer-events: none;
     opacity: 0;
     will-change: transform;
   }
 
-  #cine .cine__flecha svg {
-    width: 100%;
-    height: 100%;
-    fill: #00c3ff;
-    filter: drop-shadow(0 6px 18px rgba(0, 195, 255, 0.6));
+  #cine .cine__nucleo-halo,
+  #cine .cine__nucleo-core {
+    grid-area: 1 / 1;
+    border-radius: 50%;
   }
+
+  #cine .cine__nucleo-halo {
+    width: 88px;
+    height: 88px;
+    background: radial-gradient(circle, currentColor 0%, transparent 68%);
+    opacity: 0.4;
+  }
+
+  #cine .cine__nucleo-core {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    box-shadow:
+      0 0 0 5px currentColor,
+      0 0 22px 8px currentColor,
+      0 0 46px 18px currentColor;
+  }
+
+
 
   /* Sem JS não há scroll a mover nada */
   #cine:not([data-cine-on]) .cine__rota,
-  #cine:not([data-cine-on]) .cine__flecha {
+  #cine:not([data-cine-on]) .cine__nucleo {
     display: none;
   }
 
@@ -809,10 +834,18 @@ const {
     #cine .cine__rota path {
       stroke-width: 20;
     }
-    #cine .cine__flecha {
-      width: 48px;
-      height: 54px;
-      margin: -27px 0 0 -24px;
+    #cine .cine__nucleo {
+      width: 60px;
+      height: 60px;
+      margin: -30px 0 0 -30px;
+    }
+    #cine .cine__nucleo-halo {
+      width: 60px;
+      height: 60px;
+    }
+    #cine .cine__nucleo-core {
+      width: 14px;
+      height: 14px;
     }
   }
 

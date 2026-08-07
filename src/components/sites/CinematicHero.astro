@@ -42,6 +42,13 @@ const {
     <div class="cine__grain" aria-hidden="true"></div>
     <div class="cine__grid" aria-hidden="true"></div>
 
+    {/* Com o scroll preso, ninguém sabe quanto falta e desiste. Esta barra
+        resolve isso. Fica fixa por baixo do header, e só existe enquanto a
+        sequência está ativa. */}
+    <div class="cine__progresso" data-cine-progresso aria-hidden="true">
+      <span data-cine-progresso-barra></span>
+    </div>
+
     <!-- ===== Camada 1: abertura ===== -->
     <div class="cine__intro" data-cine-intro>
       <p class="cine__eyebrow">Criação de sites · Portugal</p>
@@ -91,9 +98,11 @@ const {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
+          {/* Curva assimétrica de propósito: amplitudes e comprimentos
+              diferentes em cada volta, para não ler como um S repetido. */}
           <path
             data-cine-rota
-            d="M 12,-8 C 40,6 68,14 58,30 S 10,44 22,58 S 82,70 66,84 S 20,96 34,110"
+            d="M 8,-10 C 46,2 74,10 62,26 C 52,39 6,38 14,54 C 21,68 88,62 72,80 C 62,91 24,88 30,104 C 33,111 44,114 46,120"
           />
         </svg>
         <div class="cine__flecha" data-cine-flecha aria-hidden="true">
@@ -405,7 +414,22 @@ const {
           scaleX: 0, transformOrigin: 'left center',
         });
 
+        /* O rasto muda de cor conforme a secção: dá leitura de progresso
+           sem ser preciso ler nada. Petróleo no problema, ciano na oferta,
+           verde-água a fechar. */
+        const CORES = [
+          '#007599', '#0090b8', '#00a8d6', '#00c3ff',
+          '#1ad0ff', '#33ffe3', '#33ffe3', '#2ae0d0', '#33ffe3',
+        ];
+        const rotaCor = root.querySelector<SVGPathElement>('[data-cine-rota]');
+        const flechaCor = root.querySelector<HTMLElement>('[data-cine-flecha] path');
+
         cenas.forEach((cena, i) => {
+          if (rotaCor) {
+            const cor = CORES[i % CORES.length];
+            tl.to(rotaCor, { stroke: cor, ease: 'none', duration: 0.6 }, '<');
+            if (flechaCor) tl.to(flechaCor, { fill: cor, ease: 'none', duration: 0.6 }, '<');
+          }
           tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
             .to({}, { duration: 1.1 }); /* tempo de leitura */
 
@@ -537,7 +561,10 @@ const {
               x: aqui.x - r.left,
               y: aqui.y - r.top,
               /* +90: o SVG da seta aponta para BAIXO em repouso */
-              rotation: ang + 90 + giro * 360 + (sentido === -1 ? 180 : 0),
+              /* -90 e não +90: a ponta do SVG está em BAIXO (y=44), portanto
+                 a seta já aponta para baixo em repouso. Com +90 ficava
+                 virada ao contrário. */
+              rotation: ang - 90 + giro * 360 + (sentido === -1 ? 180 : 0),
               autoAlpha: p > 0.004 && p < 0.996 ? 1 : 0,
             });
 
@@ -547,14 +574,38 @@ const {
 
           posicionar(0);
 
+          /* Parallax: o rasto deriva devagar enquanto as cenas trocam.
+             Camadas a velocidades diferentes leem-se como profundidade. */
+          tl.fromTo(rota,
+            { yPercent: 4, scale: 1.06 },
+            { yPercent: -5, scale: 1, ease: 'none', duration: tl.duration() },
+            0);
+
+          const barra = root.querySelector<HTMLElement>('[data-cine-progresso-barra]');
+
           tl.eventCallback('onUpdate', () => {
             const st2 = tl.scrollTrigger;
             if (st2 && st2.direction !== sentido) {
               sentido = st2.direction;
               giro += 1; /* a volta de 360 ao trocar de sentido */
             }
-            posicionar(tl.progress());
+            const p = tl.progress();
+            posicionar(p);
+            if (barra) gsap.set(barra, { scaleX: p });
           });
+
+          /* A barra só existe enquanto a sequência está a decorrer.
+             O ScrollTrigger não tem eventCallback (isso é das timelines):
+             o onToggle declara-se na criação, por isso marca-se aqui em
+             cada atualização, que é barato e não precisa de listener. */
+          const marcar = () => {
+            const st2 = tl.scrollTrigger;
+            if (!st2) return;
+            if (st2.isActive) root.setAttribute('data-cine-ativo', '');
+            else root.removeAttribute('data-cine-ativo');
+          };
+          marcar();
+          window.addEventListener('scroll', marcar, { passive: true });
         }
 
         /* Os links #pacotes / #manutencao / #faq deixariam de funcionar dentro
@@ -670,6 +721,38 @@ const {
       linear-gradient(to bottom, rgba(11, 31, 42, 0.05) 1px, transparent 1px);
     -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
     mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
+  }
+
+  /* ---------- barra de progresso da sequência ---------- */
+  #cine .cine__progresso {
+    position: fixed;
+    top: 5rem; /* logo abaixo do header fixo */
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 60;
+    background: rgba(11, 31, 42, 0.12);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+
+  #cine .cine__progresso span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(90deg, #007599 0%, #00c3ff 55%, #33ffe3 100%);
+    box-shadow: 0 0 12px rgba(0, 195, 255, 0.6);
+  }
+
+  #cine[data-cine-ativo] .cine__progresso {
+    opacity: 1;
+  }
+
+  #cine:not([data-cine-on]) .cine__progresso {
+    display: none;
   }
 
   /* ---------- seta que desce a página, com rasto ---------- */

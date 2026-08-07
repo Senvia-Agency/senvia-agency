@@ -105,15 +105,6 @@ const {
             d="M 8,-10 C 46,2 74,10 62,26 C 52,39 6,38 14,54 C 21,68 88,62 72,80 C 62,91 24,88 30,104 C 33,111 44,114 46,120"
           />
         </svg>
-        {/* Núcleo luminoso na ponta do rasto, em vez de uma seta.
-            É um círculo: não tem orientação, portanto não pode aparecer
-            virado ao contrário, e centra-se exatamente no ponto do caminho
-            — a seta anterior ficava 42px afastada porque a ponta do
-            triângulo estava no fundo da própria caixa. */}
-        <div class="cine__nucleo" data-cine-flecha aria-hidden="true">
-          <span class="cine__nucleo-halo"></span>
-          <span class="cine__nucleo-core"></span>
-        </div>
 
         <div class="cine__sheen" aria-hidden="true"></div>
 
@@ -299,12 +290,20 @@ const {
   if (root) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (reduced) {
+    /* Abaixo de 768px a sequência de cenas não cabe: medido no iPhone SE,
+       a cena dos pacotes tinha 1893px numa caixa de 598px; no iPad mini (768)
+       ainda eram 1775px numa de 858. O limiar e 1024, nao 768. Empilhados, os 3 pacotes e os 3 planos não
+       entram num ecrã, e apertar margens não resolve uma diferença de 3x.
+       No telemóvel a página fica no layout normal, que já está desenhado
+       e validado: tudo legível, scroll natural, sem cortes. */
+    const estreito = window.innerWidth < 1024;
+
+    if (reduced || estreito) {
       /* Sem animação: fica o estado estático, que já é o do CSS. */
       root.setAttribute('data-cine-static', '');
     } else {
       const card = root.querySelector<HTMLElement>('[data-cine-card]')!;
-      const isMobile = window.innerWidth < 768;
+      const isMobile = false;
 
       /* Só agora é que escondemos o que vai ser animado. Se este script não
          correr, nada disto acontece e a hero fica legível na mesma. */
@@ -429,13 +428,11 @@ const {
         ];
         const rotaCor = root.querySelector<SVGPathElement>('[data-cine-rota]');
         /* o nucleo herda a cor por currentColor: basta animar 'color' */
-        const flechaCor = root.querySelector<HTMLElement>('[data-cine-flecha]');
 
         cenas.forEach((cena, i) => {
           if (rotaCor) {
             const cor = CORES[i % CORES.length];
             tl.to(rotaCor, { stroke: cor, ease: 'none', duration: 0.6 }, '<');
-            if (flechaCor) tl.to(flechaCor, { color: cor, ease: 'none', duration: 0.6 }, '<');
           }
           tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
             .to({}, { duration: 1.1 }); /* tempo de leitura */
@@ -512,13 +509,11 @@ const {
            Num ScrollTrigger próprio, e não no `tl` das cenas, para o ritmo
            do traço ser contínuo em vez de saltar de cena em cena. */
         /* ---- Seta que desce a página, deixando rasto ----
-           O rasto é o troço já percorrido do caminho; a seta senta-se na
-           ponta dele e roda para acompanhar a curva. Ao inverter o scroll
-           dá uma volta de 360º e passa a apontar para cima. */
+           Só o rasto: o núcleo luminoso foi removido por chamar demasiada
+           atenção. O traço sozinho dá o movimento sem competir com o texto. */
         const rota = root.querySelector<SVGPathElement>('[data-cine-rota]');
-        const flecha = root.querySelector<HTMLElement>('[data-cine-flecha]');
 
-        if (rota && flecha) {
+        if (rota) {
           /* Comprimento medido em PIXELS DE ECRÃ: com non-scaling-stroke o
              tracejado é calculado em espaço de ecrã, mas preserveAspectRatio
              "none" estica o viewBox, por isso getTotalLength() (unidades do
@@ -549,29 +544,9 @@ const {
           medir();
           window.addEventListener('resize', medir);
 
-          /* Referência = o CARTÃO, não a secção. O núcleo vive dentro do
-             cartão, portanto é essa a sua caixa de posicionamento. Medir
-             contra a secção deixava-o 143px fora da ponta do rasto. */
-          const caixa = () => (flecha.offsetParent ?? card).getBoundingClientRect();
-          let sentido = 1; /* 1 desce, -1 sobe */
 
+          /* o rasto revela o troço já percorrido */
           const posicionar = (p: number) => {
-            const n = rota.getTotalLength();
-            const d = Math.max(0.001, Math.min(n - 0.001, n * p));
-            const r = caixa();
-            const aqui = emEcra(d);
-
-            gsap.set(flecha, {
-              x: aqui.x - r.left,
-              y: aqui.y - r.top,
-              /* Sem rotação: um círculo não tem orientação, portanto não pode
-                 aparecer virado ao contrário. A inversão de sentido mostra-se
-                 por uma pulsação de escala. */
-              scale: sentido === -1 ? 1.25 : 1,
-              autoAlpha: p > 0.004 && p < 0.996 ? 1 : 0,
-            });
-
-            /* o rasto revela o troço já percorrido */
             gsap.set(rota, { strokeDashoffset: comprimentoEcra * (1 - p) });
           };
 
@@ -587,11 +562,6 @@ const {
           const barra = root.querySelector<HTMLElement>('[data-cine-progresso-barra]');
 
           tl.eventCallback('onUpdate', () => {
-            const st2 = tl.scrollTrigger;
-            if (st2 && st2.direction !== sentido) {
-              sentido = st2.direction;
-              /* o núcleo reage à inversão pela escala, em posicionar() */
-            }
             const p = tl.progress();
             posicionar(p);
             if (barra) gsap.set(barra, { scaleX: p });
@@ -780,72 +750,16 @@ const {
     opacity: 0.16;
   }
 
-  /* Quadrado com o ponto exatamente ao centro: metade da largura em
-     margem negativa. Assim assenta sempre na ponta do rasto. */
-  #cine .cine__nucleo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* 1, tal como o rasto: acima do fundo navy, abaixo do conteudo (z2+) */
-    z-index: 1;
-    width: 88px;
-    height: 88px;
-    margin: -44px 0 0 -44px;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-    opacity: 0;
-    will-change: transform;
-  }
-
-  #cine .cine__nucleo-halo,
-  #cine .cine__nucleo-core {
-    grid-area: 1 / 1;
-    border-radius: 50%;
-  }
-
-  #cine .cine__nucleo-halo {
-    width: 88px;
-    height: 88px;
-    background: radial-gradient(circle, currentColor 0%, transparent 68%);
-    opacity: 0.4;
-  }
-
-  #cine .cine__nucleo-core {
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    box-shadow:
-      0 0 0 5px currentColor,
-      0 0 22px 8px currentColor,
-      0 0 46px 18px currentColor;
-  }
 
 
 
   /* Sem JS não há scroll a mover nada */
   #cine:not([data-cine-on]) .cine__rota,
-  #cine:not([data-cine-on]) .cine__nucleo {
-    display: none;
-  }
 
   @media (max-width: 767px) {
     /* mais discreta no telemóvel, mas continua presente */
     #cine .cine__rota path {
       stroke-width: 20;
-    }
-    #cine .cine__nucleo {
-      width: 60px;
-      height: 60px;
-      margin: -30px 0 0 -30px;
-    }
-    #cine .cine__nucleo-halo {
-      width: 60px;
-      height: 60px;
-    }
-    #cine .cine__nucleo-core {
-      width: 14px;
-      height: 14px;
     }
   }
 
@@ -1943,5 +1857,26 @@ const {
   }
   #cine[data-cine-static] .cine__hint {
     display: none;
+  }
+
+  /* ------------------------------------------------------------------
+     Texto minimo no telemovel e tablet.
+     Medido: 10.4 a 11.8px no eyebrow, no 'Desliza', no URL do mockup e
+     nos recortes. Este bloco fica no FIM de proposito: com a mesma
+     especificidade das regras base, ganha quem vem depois.
+     ------------------------------------------------------------------ */
+  @media (max-width: 1023px) {
+    #cine .cine__eyebrow,
+    #cine .cine__hint,
+    #cine .cine__badgeinner i {
+      font-size: 0.78rem;
+    }
+    #cine .cine__badgeinner b {
+      font-size: 0.9rem;
+    }
+    #sv-page .sv-specimen__label,
+    #sv-page .sv-hero__form-title {
+      font-size: 0.78rem;
+    }
   }
 </style>

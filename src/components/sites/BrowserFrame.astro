@@ -108,7 +108,8 @@ const { url, tone = 'light', class: className } = Astro.props;
       gap: 0.5rem;
     }
     .sv-frame__url {
-      font-size: 0.65rem;
+      /* 12px minimo: 0.65rem dava 10.4px, ilegivel no telemovel */
+      font-size: 0.78rem;
     }
   }
 </style>

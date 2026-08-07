@@ -851,7 +851,6 @@ const jsonLd = [
             <video
               id="sv-logo-video"
               muted
-              loop
               playsinline
               preload="none"
               width="1284"
@@ -860,11 +859,6 @@ const jsonLd = [
               aria-hidden="true"
               tabindex="-1"
             ></video>
-            <button type="button" id="sv-logo-toggle" class="sv-final__selo-btn" hidden aria-pressed="false">
-              <span class="sv-logo-pausa" aria-hidden="true">❚❚</span>
-              <span class="sv-logo-play" aria-hidden="true" style="display:none">▶</span>
-              <span class="sr-only sv-logo-txt">Parar animação do logótipo</span>
-            </button>
           </div>
 
           <h2>Queres uma presença online que explique bem o teu negócio e gere pedidos?</h2>
@@ -949,31 +943,12 @@ const jsonLd = [
             logoV.appendChild(src);
             logoV.load();
 
+            /* Toca uma vez até ao fim e fica parado no último fotograma.
+               Sem loop, portanto não precisa de botão de pausa: o movimento
+               termina sozinho e não se repete. */
             var pr = logoV.play();
             var ligar = function () {
               logoV.setAttribute('data-playing', '');
-              var bt = document.getElementById('sv-logo-toggle');
-              if (!bt) return;
-              bt.hidden = false;
-              var ic1 = bt.querySelector('.sv-logo-pausa');
-              var ic2 = bt.querySelector('.sv-logo-play');
-              var txt = bt.querySelector('.sv-logo-txt');
-              var sinc = function () {
-                var pausado = logoV.paused;
-                bt.setAttribute('aria-pressed', String(pausado));
-                ic1.style.display = pausado ? 'none' : '';
-                ic2.style.display = pausado ? '' : 'none';
-                txt.textContent = pausado
-                  ? 'Retomar animação do logótipo'
-                  : 'Parar animação do logótipo';
-              };
-              bt.addEventListener('click', function () {
-                if (logoV.paused) logoV.play();
-                else logoV.pause();
-              });
-              logoV.addEventListener('play', sinc);
-              logoV.addEventListener('pause', sinc);
-              sinc();
             };
             if (pr && pr.then) pr.then(ligar).catch(function () {});
             else ligar();
@@ -2522,21 +2497,6 @@ const jsonLd = [
     opacity: 1;
   }
 
-  #sv-page .sv-final__selo-btn {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 22px;
-    display: grid;
-    place-items: center;
-    font-size: 0.6rem;
-    color: #fff;
-    background: rgba(11, 31, 42, 0.75);
-    cursor: pointer;
-  }
-
-  #sv-page .sv-final__selo-btn[hidden] {
-    display: none;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     #sv-page .sv-final__selo {

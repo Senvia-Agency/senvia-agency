@@ -42,6 +42,42 @@ const {
     <div class="cine__grain" aria-hidden="true"></div>
     <div class="cine__grid" aria-hidden="true"></div>
 
+    {/* Traçado geométrico que liga as secções. Duas camadas: uma ATRÁS do
+        cartão (vive na zona clara) e outra À FRENTE, para as setas entrarem
+        por cima do azul. Desenha-se progressivamente com o scroll.
+        viewBox 0..100 + preserveAspectRatio="none" = coordenadas em % da
+        secção; vector-effect impede a espessura de distorcer com o esticão. */}
+    <svg
+      class="cine__tracado cine__tracado--tras"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path data-cine-linha d="M -3,17 C 16,11 27,29 45,26 S 76,41 103,31" />
+      <path data-cine-linha d="M -3,84 C 20,91 31,71 53,76 S 83,62 103,71" />
+      <path data-cine-linha d="M 5,-3 C 10,22 3,41 8,63 S 3,86 6,103" />
+      <path data-cine-linha d="M 95,-3 C 90,26 97,45 92,67 S 97,88 94,103" />
+      <circle data-cine-ponto cx="45" cy="26" r="0.7" />
+      <circle data-cine-ponto cx="53" cy="76" r="0.7" />
+      <circle data-cine-ponto cx="8" cy="63" r="0.7" />
+      <circle data-cine-ponto cx="92" cy="67" r="0.7" />
+    </svg>
+
+    <svg
+      class="cine__tracado cine__tracado--frente"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      {/* setas curtas que atravessam a aresta do cartão */}
+      <path data-cine-seta d="M 1,44 L 19,44" />
+      <path data-cine-seta d="M 15,41 L 19,44 L 15,47" />
+      <path data-cine-seta d="M 99,61 L 81,61" />
+      <path data-cine-seta d="M 85,58 L 81,61 L 85,64" />
+      <path data-cine-seta d="M 50,2 L 50,13" />
+      <path data-cine-seta d="M 47,9 L 50,13 L 53,9" />
+    </svg>
+
     <!-- ===== Camada 1: abertura ===== -->
     <div class="cine__intro" data-cine-intro>
       <p class="cine__eyebrow">Criação de sites · Portugal</p>
@@ -456,6 +492,76 @@ const {
           }
         });
 
+        /* ---- Traçado geométrico: desenha-se ao longo de todo o scroll ----
+           Num ScrollTrigger próprio, e não no `tl` das cenas, para o ritmo
+           do traço ser contínuo em vez de saltar de cena em cena. */
+        const tracos = Array.from(
+          root.querySelectorAll<SVGPathElement>('[data-cine-linha], [data-cine-seta]')
+        );
+        const pontos = Array.from(root.querySelectorAll<SVGCircleElement>('[data-cine-ponto]'));
+
+        if (tracos.length) {
+          /* Comprimento medido em PIXELS DE ECRÃ, não em unidades do viewBox.
+             Com vector-effect:non-scaling-stroke o tracejado é calculado em
+             espaço de ecrã, mas preserveAspectRatio="none" estica o viewBox
+             ~14x na horizontal: usar getTotalLength() dava um dasharray
+             pequeno de mais e as linhas saíam tracejadas em vez de sólidas. */
+          const compEmEcra = (t: SVGPathElement) => {
+            const m = t.getScreenCTM();
+            const n = t.getTotalLength();
+            if (!m || !n) return n;
+            let total = 0;
+            let ant: DOMPoint | null = null;
+            const svg = t.ownerSVGElement!;
+            for (let i = 0; i <= 24; i++) {
+              const u = t.getPointAtLength((n * i) / 24);
+              const pt = svg.createSVGPoint();
+              pt.x = u.x;
+              pt.y = u.y;
+              const s = pt.matrixTransform(m);
+              if (ant) total += Math.hypot(s.x - ant.x, s.y - ant.y);
+              ant = s;
+            }
+            return total || n;
+          };
+
+          const medir = () => {
+            tracos.forEach((t) => {
+              const comp = compEmEcra(t);
+              t.dataset.comp = String(comp);
+              gsap.set(t, { strokeDasharray: comp });
+            });
+          };
+          medir();
+          gsap.set(tracos, { strokeDashoffset: (i: number, alvo: SVGPathElement) => Number(alvo.dataset.comp) });
+          gsap.set(pontos, { autoAlpha: 0, scale: 0, transformOrigin: 'center' });
+
+          /* As linhas de fundo desenham-se ao longo de quase todo o percurso;
+             as setas entram mais tarde, já com o cartão a ocupar o ecrã. */
+          const linhas = tracos.filter((t) => t.hasAttribute('data-cine-linha'));
+          const setas = tracos.filter((t) => t.hasAttribute('data-cine-seta'));
+
+          /* Entra na PRÓPRIA timeline das cenas, não num ScrollTrigger à
+             parte: o `root` está pinned, portanto fica fixo, e um segundo
+             gatilho sobre o mesmo elemento nunca chegava a progredir. */
+          const total = tl.duration();
+
+          tl.to(linhas, {
+            strokeDashoffset: 0, ease: 'none',
+            duration: total * 0.82, stagger: total * 0.035,
+          }, 0);
+
+          tl.to(pontos, {
+            autoAlpha: 1, scale: 1, ease: 'back.out(2)',
+            duration: total * 0.04, stagger: total * 0.14,
+          }, total * 0.14);
+
+          tl.to(setas, {
+            strokeDashoffset: 0, ease: 'none',
+            duration: total * 0.07, stagger: total * 0.018,
+          }, total * 0.26);
+        }
+
         /* Os links #pacotes / #manutencao / #faq deixariam de funcionar dentro
            de um pin. Recalculam-se para a posição de scroll da cena certa. */
         const st = tl.scrollTrigger;
@@ -569,6 +675,61 @@ const {
       linear-gradient(to bottom, rgba(11, 31, 42, 0.05) 1px, transparent 1px);
     -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
     mask-image: radial-gradient(ellipse at center, #000 0%, transparent 70%);
+  }
+
+  /* ---------- traçado geométrico ---------- */
+  #cine .cine__tracado {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    fill: none;
+    overflow: visible;
+  }
+
+  /* Atrás do cartão (z 20), à frente da grelha (z 0) */
+  #cine .cine__tracado--tras {
+    z-index: 1;
+  }
+
+  /* À frente do cartão: é isto que faz as setas invadirem o azul */
+  #cine .cine__tracado--frente {
+    z-index: 21;
+  }
+
+  #cine .cine__tracado path {
+    stroke: #007599;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.5;
+  }
+
+  #cine .cine__tracado circle {
+    fill: #00c3ff;
+    opacity: 0.75;
+  }
+
+  /* Sobre o navy o petróleo desapareceria: as setas da frente vão a ciano */
+  #cine .cine__tracado--frente path {
+    stroke: #33ffe3;
+    stroke-width: 2;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 6px rgba(0, 195, 255, 0.55));
+  }
+
+  /* Sem JS não há scroll a desenhar nada: o traçado não aparece */
+  #cine:not([data-cine-on]) .cine__tracado {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    /* Em ecrã estreito a margem branca é quase nula e o traçado só suja */
+    #cine .cine__tracado--tras {
+      display: none;
+    }
   }
 
   /* ---------- abertura ---------- */

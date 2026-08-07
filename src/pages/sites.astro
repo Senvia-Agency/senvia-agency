@@ -10,6 +10,10 @@ import { SITE, whatsappUrl } from '../config';
 import longevStudio from '../assets/projetos/longev-studio.png';
 import deltaCapital from '../assets/projetos/delta-capital.png';
 import miraWay from '../assets/projetos/mira-way.png';
+import draCristinaSousa from '../assets/projetos/dra-cristina-sousa.png';
+import estudioTiagoPereira from '../assets/projetos/estudio-tiago-pereira.png';
+import rdExcursoes from '../assets/projetos/rd-excursoes.png';
+import clinicaRenascer from '../assets/projetos/clinica-renascer.png';
 
 /* ------------------------------------------------------------------
    Vídeo da hero
@@ -239,30 +243,72 @@ const faqs = [
   },
 ];
 
+/* Classificação por estrutura, não por opinião: Website = tem páginas
+   próprias no menu (/sobre, /contactos, ...); Landing page = tudo numa
+   única página, com âncoras ou sem menu de navegação. */
 const trabalhos = [
+  {
+    img: draCristinaSousa,
+    nome: 'Dra. Cristina Sousa',
+    tipo: 'Website',
+    href: 'https://dracristinasousa.com/',
+    url: 'dracristinasousa.com',
+    alt: 'Website da Dra. Cristina Sousa, oftalmologista e cirurgiã oculoplástica: hero "Cirurgia Oculoplástica de Excelência" e menu com Procedimentos, Feedbacks, Antes e Depois e E-book.',
+    detalhes: ['Menu com 6 secções', 'E-book de vendas', 'Antes/depois e feedbacks'],
+  },
   {
     img: longevStudio,
     nome: 'Longev Studio',
-    categoria: 'Website institucional',
-    url: 'longevstudio.pt',
+    tipo: 'Website',
+    href: 'https://longevstudio.com/',
+    url: 'longevstudio.com',
     alt: 'Website institucional do Longev Studio: menu com Equipa, Serviços e Contactos, hero "Treino de Força e Longevidade" e botão de agendamento.',
     detalhes: ['Menu multi-página', 'Agendamento de avaliação', 'Versão PT/EN'],
   },
   {
-    img: deltaCapital,
-    nome: 'Delta Capital',
-    categoria: 'Landing page',
-    url: 'deltacapital.pt',
-    alt: 'Landing page da Delta Capital, intermediário de crédito: simulador de crédito habitação, botão "Falar connosco" por WhatsApp e selo do Banco de Portugal.',
-    detalhes: ['Simulador de crédito', 'WhatsApp no topo', 'Selo Banco de Portugal'],
+    img: estudioTiagoPereira,
+    nome: 'Estúdio Tiago Pereira',
+    tipo: 'Website',
+    href: 'https://estudiotiagopereira.pt/',
+    url: 'estudiotiagopereira.pt',
+    alt: 'Website do Estúdio Tiago Pereira, especialista em lipedema: hero com estatísticas "+100 mulheres acompanhadas" e botões Agendar Consulta e Ver Programas.',
+    detalhes: ['Programas e e-books', 'Área de login', 'Prova social em números'],
+  },
+  {
+    img: clinicaRenascer,
+    nome: 'Clínica Renascer',
+    tipo: 'Landing page',
+    href: 'https://clinicarenascer.pt/',
+    url: 'clinicarenascer.pt',
+    alt: 'Landing page da Clínica Renascer, estética e bem-estar: hero com localização "Valença, Portugal" e botões Agendar Avaliação e Falar com a Equipa.',
+    detalhes: ['Telefone direto no topo', 'Agendamento de avaliação', 'Botão de WhatsApp'],
   },
   {
     img: miraWay,
     nome: 'Mira Way',
-    categoria: 'Página de captação',
-    url: 'miraway.pt',
+    tipo: 'Landing page',
+    href: 'https://miraway.senvia.pt/',
+    url: 'miraway.senvia.pt',
     alt: 'Página de captação da Mira Way para uma sessão online gratuita, com lista de benefícios, botão de registo e WhatsApp flutuante.',
     detalhes: ['Registo em sessão', 'WhatsApp flutuante', 'Prova de escassez'],
+  },
+  {
+    img: rdExcursoes,
+    nome: 'RD Excursões',
+    tipo: 'Landing page',
+    href: 'https://rdexcursoes.senvia.pt/',
+    url: 'rdexcursoes.senvia.pt',
+    alt: 'Landing page da RD Excursões, agência de viagens: hero "Descubra Portugal com a RD Excursões", filtro de mês/programa e catálogo de próximas viagens.',
+    detalhes: ['Filtro de viagens por mês', 'Catálogo de próximas excursões', 'CTAs de reserva'],
+  },
+  {
+    img: deltaCapital,
+    nome: 'Delta Capital',
+    tipo: 'Landing page',
+    href: 'https://deltacapital.pt/',
+    url: 'deltacapital.pt',
+    alt: 'Landing page da Delta Capital, intermediário de crédito: simulador de crédito habitação, botão "Falar connosco" por WhatsApp e selo do Banco de Portugal.',
+    detalhes: ['Simulador de crédito', 'WhatsApp no topo', 'Selo Banco de Portugal'],
   },
 ];
 
@@ -668,19 +714,30 @@ const jsonLd = [
           {
             trabalhos.map((t, i) => (
               <figure class:list={['sv-work__item', i === 0 && 'sv-work__item--lead']} data-reveal>
-                <BrowserFrame url={t.url}>
-                  <Image
-                    src={t.img}
-                    alt={t.alt}
-                    widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
-                    sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
-                    loading="lazy"
-                    quality={72}
-                  />
-                </BrowserFrame>
+                <a
+                  href={t.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="sv-work__link"
+                  aria-label={`Abrir o site de ${t.nome} numa nova aba`}
+                >
+                  <BrowserFrame url={t.url}>
+                    <Image
+                      src={t.img}
+                      alt={t.alt}
+                      widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
+                      sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
+                      loading="lazy"
+                      quality={72}
+                    />
+                  </BrowserFrame>
+                </a>
                 <figcaption>
-                  <span class="sv-work__name">{t.nome}</span>
-                  <span class="sv-work__cat">{t.categoria}</span>
+                  <a href={t.href} target="_blank" rel="noopener noreferrer" class="sv-work__name">
+                    {t.nome}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+                  </a>
+                  <span class="sv-work__cat">{t.tipo}</span>
                   <span class="sv-work__details">{t.detalhes.join(' · ')}</span>
                 </figcaption>
               </figure>
@@ -2027,6 +2084,18 @@ const jsonLd = [
     margin: 0;
   }
 
+  /* O mockup inteiro é um link para o site real do cliente */
+  #sv-page .sv-work__link {
+    display: block;
+    border-radius: 14px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #sv-page .sv-work__link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 48px -28px rgba(11, 31, 42, 0.35);
+  }
+
   #sv-page .sv-work__item figcaption {
     display: flex;
     flex-wrap: wrap;
@@ -2038,10 +2107,33 @@ const jsonLd = [
   }
 
   #sv-page .sv-work__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: -0.025em;
     color: var(--sv-ink);
+    /* 46px, não 44px: min-height com inline-flex arredondava para 43px
+       num teste automatizado (sub-pixel). Margem de segurança. */
+    min-height: 46px;
+    padding-block: 2px;
+  }
+
+  #sv-page .sv-work__name:hover {
+    color: var(--sv-accent-ink);
+  }
+
+  #sv-page .sv-work__name svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.55;
   }
 
   #sv-page .sv-work__cat {

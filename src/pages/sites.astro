@@ -502,6 +502,67 @@ const jsonLd = [
     </section>
 
     <!-- ==========================================================
+         4. PROVA E TRABALHOS
+    =========================================================== -->
+    <section class="sv-section sv-section--work" id="trabalhos">
+      <div class="sv-container">
+        <div class="sv-head">
+          <div>
+            <p class="sv-eyebrow">Trabalhos</p>
+            <h2>Trabalho real, não promessa abstrata.</h2>
+          </div>
+          <p class="sv-head__aside">
+            Usamos estrutura, design e tracking para transformar a presença online numa ferramenta
+            comercial.
+          </p>
+        </div>
+
+        <div class="sv-work">
+          {
+            trabalhos.map((t, i) => (
+              <figure class:list={['sv-work__item', i === 0 && 'sv-work__item--lead']} data-reveal>
+                <a
+                  href={t.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="sv-work__link"
+                  aria-label={`Abrir o site de ${t.nome} numa nova aba`}
+                >
+                  <BrowserFrame url={t.url}>
+                    <Image
+                      src={t.img}
+                      alt={t.alt}
+                      widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
+                      sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
+                      loading="lazy"
+                      quality={72}
+                    />
+                  </BrowserFrame>
+                </a>
+                <figcaption>
+                  <a href={t.href} target="_blank" rel="noopener noreferrer" class="sv-work__name">
+                    {t.nome}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+                  </a>
+                  <span class="sv-work__cat">{t.tipo}</span>
+                  <span class="sv-work__details">{t.detalhes.join(' · ')}</span>
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+
+        <div class="sv-work__cta">
+          <p>Queres uma página assim para o teu negócio?</p>
+          <a href="#pacotes" class="sv-btn sv-btn--dark">
+            Ver pacotes
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
          5. VALIDAÇÃO COMERCIAL EM DESTAQUE
     =========================================================== -->
     <section class="sv-section sv-section--dark" id="validacao">
@@ -571,7 +632,7 @@ const jsonLd = [
     </section>
 
     <!-- ==========================================================
-         4. PACOTES
+         6. PACOTES
     =========================================================== -->
     <section class="sv-section sv-section--plans" id="pacotes">
       <div class="sv-container">
@@ -665,7 +726,7 @@ const jsonLd = [
     </section>
 
     <!-- ==========================================================
-         6. PROCESSO
+         7. PROCESSO
     =========================================================== -->
     <section class="sv-section sv-section--process" id="processo">
       <div class="sv-container">
@@ -689,67 +750,6 @@ const jsonLd = [
             ))
           }
         </ol>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         7. PROVA E TRABALHOS
-    =========================================================== -->
-    <section class="sv-section sv-section--work" id="trabalhos">
-      <div class="sv-container">
-        <div class="sv-head">
-          <div>
-            <p class="sv-eyebrow">Trabalhos</p>
-            <h2>Trabalho real, não promessa abstrata.</h2>
-          </div>
-          <p class="sv-head__aside">
-            Usamos estrutura, design e tracking para transformar a presença online numa ferramenta
-            comercial.
-          </p>
-        </div>
-
-        <div class="sv-work">
-          {
-            trabalhos.map((t, i) => (
-              <figure class:list={['sv-work__item', i === 0 && 'sv-work__item--lead']} data-reveal>
-                <a
-                  href={t.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="sv-work__link"
-                  aria-label={`Abrir o site de ${t.nome} numa nova aba`}
-                >
-                  <BrowserFrame url={t.url}>
-                    <Image
-                      src={t.img}
-                      alt={t.alt}
-                      widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
-                      sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
-                      loading="lazy"
-                      quality={72}
-                    />
-                  </BrowserFrame>
-                </a>
-                <figcaption>
-                  <a href={t.href} target="_blank" rel="noopener noreferrer" class="sv-work__name">
-                    {t.nome}
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
-                  </a>
-                  <span class="sv-work__cat">{t.tipo}</span>
-                  <span class="sv-work__details">{t.detalhes.join(' · ')}</span>
-                </figcaption>
-              </figure>
-            ))
-          }
-        </div>
-
-        <div class="sv-work__cta">
-          <p>Queres uma página assim para o teu negócio?</p>
-          <a href="#pacotes" class="sv-btn sv-btn--dark">
-            Ver pacotes
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
-          </a>
-        </div>
       </div>
     </section>
 
@@ -861,10 +861,10 @@ const jsonLd = [
             ></video>
           </div>
 
-          <h2>Queres uma presença online que explique bem o teu negócio e gere pedidos?</h2>
+          <h2>Decide isto numa conversa de 10 minutos, não num mês de dúvidas.</h2>
           <p>
-            Escolhe o pacote certo ou pede um diagnóstico rápido. Em poucos minutos percebemos qual
-            caminho faz mais sentido.
+            Pede um diagnóstico rápido e sai já com um caminho concreto, ou avança direto para o
+            pacote que faz sentido para o teu negócio.
           </p>
         </div>
         <div class="sv-final__actions">
@@ -1546,7 +1546,7 @@ const jsonLd = [
   }
 
   /* =========================================================
-     4. PACOTES
+     6. PACOTES
      ========================================================= */
   #sv-page .sv-section--plans {
     background: var(--sv-paper);
@@ -2039,7 +2039,7 @@ const jsonLd = [
   }
 
   /* =========================================================
-     6. PROCESSO
+     7. PROCESSO
      ========================================================= */
   #sv-page .sv-section--process {
     background: var(--sv-paper);
@@ -2123,7 +2123,7 @@ const jsonLd = [
   }
 
   /* =========================================================
-     7. TRABALHOS
+     4. TRABALHOS
      ========================================================= */
   #sv-page .sv-section--work {
     background: var(--sv-white);

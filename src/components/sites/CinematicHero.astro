@@ -742,6 +742,16 @@ const {
     background: var(--sv-paper, #f4f7f9);
     padding: calc(5rem + 1.5rem) 1rem 3rem;
     perspective: 1500px;
+
+    /* --- Escala tipográfica das cenas ---
+       Aqui a caixa é limitada pela ALTURA do cartão (vh), não pela largura
+       da página, por isso a escala é própria e não a de #sv-page (essa
+       reutiliza-se onde faz sentido: --sv-fs-h3/label/body/small/index
+       herdam-se de #sv-page, que é ancestral de #cine no DOM). */
+    --cine-fs-h2: clamp(1.3rem, 2.2vh + 0.7rem, 1.9rem); /* título de cena "normal": Pacotes, Processo, Trabalhos, Manutenção, FAQ */
+    --cine-fs-statement: clamp(1.8rem, 4vh + 0.8rem, 3rem); /* cena "só uma frase": Dor, Solução (intro), Validação, Contacto */
+    --cine-fs-statement-lead: clamp(1rem, 1.6vh + 0.6rem, 1.2rem); /* parágrafo de apoio dessas cenas */
+    --cine-fs-solo: clamp(1.5rem, 4.4vh + 0.6rem, 2.9rem); /* um único item a preencher o cartão sozinho: passo do Processo, ponto da Solução */
   }
 
   #cine .cine__stagewrap {
@@ -860,7 +870,7 @@ const {
 
   #cine .cine__eyebrow {
     font-family: var(--sv-mono, monospace);
-    font-size: 0.74rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--sv-muted, #4f6a78);
@@ -929,7 +939,7 @@ const {
     align-items: center;
     gap: 0.5rem;
     font-family: var(--sv-mono, monospace);
-    font-size: 0.7rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--sv-muted, #4f6a78);
@@ -1378,12 +1388,12 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes h2 {
-    font-size: clamp(1.3rem, 2.2vh + 0.7rem, 1.9rem);
+    font-size: var(--cine-fs-h2);
   }
 
   #cine[data-cine-on] .cine__scenes .sv-head__aside,
   #cine[data-cine-on] .cine__scenes .sv-lead {
-    font-size: 0.92rem;
+    font-size: var(--sv-fs-body);
   }
 
   /* Pacotes: a lista de features é o que mais cresce */
@@ -1497,7 +1507,7 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes .sv-step__label {
-    font-size: clamp(1.5rem, 4.4vh + 0.6rem, 2.9rem);
+    font-size: var(--cine-fs-solo);
     line-height: 1.08;
     letter-spacing: -0.035em;
     font-weight: 700;
@@ -1531,13 +1541,13 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes #validacao h2 {
-    font-size: clamp(1.8rem, 4vh + 0.8rem, 3rem);
+    font-size: var(--cine-fs-statement);
     max-width: none;
     margin-bottom: 1.1rem;
   }
 
   #cine[data-cine-on] .cine__scenes #validacao .sv-lead {
-    font-size: clamp(1rem, 1.6vh + 0.6rem, 1.2rem);
+    font-size: var(--cine-fs-statement-lead);
     max-width: 40ch;
     margin: 0 auto 2rem;
   }
@@ -1555,13 +1565,13 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes #contacto h2 {
-    font-size: clamp(1.9rem, 4.4vh + 0.8rem, 3.2rem);
+    font-size: var(--cine-fs-statement);
     max-width: none;
     margin-bottom: 1.1rem;
   }
 
   #cine[data-cine-on] .cine__scenes #contacto p {
-    font-size: clamp(1rem, 1.6vh + 0.6rem, 1.2rem);
+    font-size: var(--cine-fs-statement-lead);
     max-width: 44ch;
     margin-inline: auto;
   }
@@ -1602,13 +1612,13 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes .sv-pain__copy h2 {
-    font-size: clamp(1.9rem, 4.6vh + 0.8rem, 3.3rem);
+    font-size: var(--cine-fs-statement);
     max-width: none;
     margin-bottom: 1.2rem;
   }
 
   #cine[data-cine-on] .cine__scenes .sv-pain__copy .sv-lead {
-    font-size: clamp(1rem, 1.7vh + 0.6rem, 1.25rem);
+    font-size: var(--cine-fs-statement-lead);
     max-width: 46ch;
     margin-inline: auto;
   }
@@ -1705,13 +1715,13 @@ const {
   }
 
   #cine[data-cine-on] .cine__scenes .sv-solution__copy h2 {
-    font-size: clamp(1.8rem, 4vh + 0.8rem, 3rem);
+    font-size: var(--cine-fs-statement);
     max-width: none;
     margin-bottom: 1.1rem;
   }
 
   #cine[data-cine-on] .cine__scenes .sv-solution__copy .sv-lead {
-    font-size: clamp(1rem, 1.6vh + 0.6rem, 1.2rem);
+    font-size: var(--cine-fs-statement-lead);
     max-width: 44ch;
     margin-inline: auto;
   }
@@ -1741,7 +1751,7 @@ const {
 
   #cine[data-cine-on] .cine__scenes .sv-solution__list h3 {
     display: block;
-    font-size: clamp(1.9rem, 5vh + 0.8rem, 3.4rem);
+    font-size: var(--cine-fs-solo);
     line-height: 1.05;
     letter-spacing: -0.04em;
     color: #fff;
@@ -1963,6 +1973,13 @@ const {
      revelá-los um por scroll (ver `umAUm` no script).
      ================================================================== */
   @media (max-width: 1023px) {
+    #cine {
+      /* Título de uma cena que ocupa o cartão sozinha em retrato (Pacotes,
+         Manutenção): sem sv-head visível, é este texto que ancora a cena,
+         por isso fica maior que --sv-fs-h3. */
+      --cine-fs-h3-portrait: 1.45rem;
+    }
+
     /* Em retrato cada centímetro conta */
     #cine[data-cine-on] .cine__card {
       height: min(88vh, 820px);
@@ -2058,7 +2075,7 @@ const {
     }
 
     #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__name {
-      font-size: 1.45rem;
+      font-size: var(--cine-fs-h3-portrait);
     }
 
     #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__amount {
@@ -2104,7 +2121,7 @@ const {
     }
 
     #cine[data-cine-on] .cine__scenes #manutencao .sv-care__item h3 {
-      font-size: 1.45rem;
+      font-size: var(--cine-fs-h3-portrait);
     }
 
     #cine[data-cine-on] .cine__scenes #manutencao .sv-care__price strong {
@@ -2203,13 +2220,12 @@ const {
 
   /* ------------------------------------------------------------------
      Texto minimo no telemovel e tablet.
-     Medido: 10.4 a 11.8px no eyebrow, no 'Desliza', no URL do mockup e
-     nos recortes. Este bloco fica no FIM de proposito: com a mesma
+     Medido: 10.4 a 11.8px no 'Desliza', no URL do mockup e nos recortes.
+     cine__eyebrow/hint já nascem em --sv-fs-label (12px) e não precisam
+     de reforço aqui. Este bloco fica no FIM de proposito: com a mesma
      especificidade das regras base, ganha quem vem depois.
      ------------------------------------------------------------------ */
   @media (max-width: 1023px) {
-    #cine .cine__eyebrow,
-    #cine .cine__hint,
     #cine .cine__badgeinner i {
       font-size: 0.78rem;
     }

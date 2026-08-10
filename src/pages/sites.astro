@@ -1070,6 +1070,18 @@ const jsonLd = [
 
     --sv-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
+    /* --- Escala tipográfica ---
+       Um valor por papel, não por secção. Cresceu ad-hoc (1rem, 1.02, 1.05,
+       1.18... para a mesma coisa: "título de cartão") de tantas correções
+       pontuais de overflow. #cine herda estas variáveis por estar dentro de
+       #sv-page no DOM, por isso servem também dentro das cenas do herói. */
+    --sv-fs-h3: 1.05rem; /* título de cartão/item: pacote, projeto, passo, plano */
+    --sv-fs-lead: clamp(1.02rem, 0.35vw + 0.95rem, 1.15rem); /* parágrafo de apoio a um título */
+    --sv-fs-body: 0.92rem; /* texto dentro de cartões: listas, descrições */
+    --sv-fs-small: 0.85rem; /* nota de rodapé, legenda, texto secundário */
+    --sv-fs-label: 0.75rem; /* etiqueta em maiúsculas: eyebrow, badge, tag (12px, já não precisa de reforço no telemóvel) */
+    --sv-fs-index: 0.8rem; /* numeração pequena: 01/02/03, círculo de passo */
+
     background: var(--sv-paper);
     color: var(--sv-text);
   }
@@ -1171,7 +1183,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-lead {
-    font-size: clamp(1.02rem, 0.35vw + 0.95rem, 1.15rem);
+    font-size: var(--sv-fs-lead);
     line-height: 1.6;
     color: var(--sv-muted);
     max-width: 46ch;
@@ -1186,7 +1198,7 @@ const jsonLd = [
     align-items: center;
     gap: 0.55rem;
     font-family: var(--sv-mono);
-    font-size: 0.72rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--sv-muted);
@@ -1210,7 +1222,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-fine {
-    font-size: 0.82rem;
+    font-size: var(--sv-fs-small);
     line-height: 1.5;
     color: var(--sv-muted);
   }
@@ -1226,7 +1238,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-head__aside {
-    font-size: 1rem;
+    font-size: var(--sv-fs-lead);
     line-height: 1.6;
     color: var(--sv-muted);
     max-width: 44ch;
@@ -1374,7 +1386,7 @@ const jsonLd = [
 
   #sv-page .sv-pain__figure figcaption {
     margin-top: 0.85rem;
-    font-size: 0.88rem;
+    font-size: var(--sv-fs-small);
     line-height: 1.5;
     color: var(--sv-muted);
     padding-left: 0.85rem;
@@ -1395,7 +1407,7 @@ const jsonLd = [
 
   #sv-page .sv-pain__num {
     font-family: var(--sv-mono);
-    font-size: 0.78rem;
+    font-size: var(--sv-fs-index);
     color: var(--sv-accent-ink);
     flex: none;
     padding-top: 0.15rem;
@@ -1453,7 +1465,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-solution__list h3 {
-    font-size: 1rem;
+    font-size: var(--sv-fs-h3);
     line-height: 1.3;
     margin-bottom: 0.3rem;
     display: flex;
@@ -1471,7 +1483,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-solution__list p {
-    font-size: 0.92rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.55;
     color: var(--sv-muted);
     padding-left: 0.9rem;
@@ -1644,7 +1656,7 @@ const jsonLd = [
     background: var(--sv-accent);
     color: #04212c;
     font-family: var(--sv-mono);
-    font-size: 0.63rem;
+    font-size: var(--sv-fs-label);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -1652,7 +1664,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan__name {
-    font-size: 1.18rem;
+    font-size: var(--sv-fs-h3);
     margin-bottom: 0.6rem;
   }
 
@@ -1698,7 +1710,7 @@ const jsonLd = [
     display: inline-block;
     align-self: flex-start;
     font-family: var(--sv-mono);
-    font-size: 0.66rem;
+    font-size: var(--sv-fs-label);
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -1710,7 +1722,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-plan__desc {
-    font-size: 0.94rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.55;
     color: var(--sv-muted);
     margin-bottom: 1.35rem;
@@ -1739,7 +1751,7 @@ const jsonLd = [
 
   #sv-page .sv-plan__incl {
     font-family: var(--sv-mono);
-    font-size: 0.65rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--sv-muted);
@@ -1754,7 +1766,7 @@ const jsonLd = [
     display: flex;
     gap: 0.6rem;
     align-items: flex-start;
-    font-size: 0.94rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.45;
     color: var(--sv-text);
     padding: 0.42rem 0;
@@ -1844,7 +1856,7 @@ const jsonLd = [
     margin-top: 1rem;
     padding-top: 0.85rem;
     border-top: 1px solid rgba(148, 163, 184, 0.22);
-    font-size: 0.78rem;
+    font-size: var(--sv-fs-small);
     line-height: 1.5;
     color: #8a98a6;
   }
@@ -1914,20 +1926,20 @@ const jsonLd = [
 
   #sv-page .sv-moments__n {
     font-family: var(--sv-mono);
-    font-size: 0.78rem;
+    font-size: var(--sv-fs-index);
     color: var(--sv-accent);
     flex: none;
     padding-top: 0.2rem;
   }
 
   #sv-page .sv-moments h3 {
-    font-size: 1.02rem;
+    font-size: var(--sv-fs-h3);
     margin-bottom: 0.25rem;
     letter-spacing: -0.02em;
   }
 
   #sv-page .sv-moments p {
-    font-size: 0.92rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.55;
     color: #cbd6de;
   }
@@ -1952,7 +1964,7 @@ const jsonLd = [
 
   #sv-page .sv-report__kicker {
     font-family: var(--sv-mono);
-    font-size: 0.63rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--sv-muted);
@@ -2032,7 +2044,7 @@ const jsonLd = [
 
   #sv-page .sv-report__caption {
     margin-top: 1rem;
-    font-size: 0.85rem;
+    font-size: var(--sv-fs-small);
     line-height: 1.55;
     color: #8a98a6;
     max-width: 42ch;
@@ -2074,12 +2086,12 @@ const jsonLd = [
     border: 1px solid var(--sv-line);
     background: var(--sv-white);
     font-family: var(--sv-mono);
-    font-size: 0.82rem;
+    font-size: var(--sv-fs-index);
     color: var(--sv-ink);
   }
 
   #sv-page .sv-step__label {
-    font-size: 1rem;
+    font-size: var(--sv-fs-h3);
     line-height: 1.4;
     color: var(--sv-ink);
     font-weight: 500;
@@ -2174,7 +2186,7 @@ const jsonLd = [
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 1.05rem;
+    font-size: var(--sv-fs-h3);
     font-weight: 700;
     letter-spacing: -0.025em;
     color: var(--sv-ink);
@@ -2202,7 +2214,7 @@ const jsonLd = [
 
   #sv-page .sv-work__cat {
     font-family: var(--sv-mono);
-    font-size: 0.68rem;
+    font-size: var(--sv-fs-label);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--sv-accent-ink);
@@ -2213,7 +2225,7 @@ const jsonLd = [
 
   #sv-page .sv-work__details {
     flex-basis: 100%;
-    font-size: 0.88rem;
+    font-size: var(--sv-fs-small);
     color: var(--sv-muted);
   }
 
@@ -2269,7 +2281,7 @@ const jsonLd = [
   }
 
   #sv-page .sv-care__item h3 {
-    font-size: 1.05rem;
+    font-size: var(--sv-fs-h3);
     margin-bottom: 0.6rem;
   }
 
@@ -2293,11 +2305,11 @@ const jsonLd = [
 
   #sv-page .sv-care__price span {
     flex-basis: 100%;
-    font-size: 0.85rem;
+    font-size: var(--sv-fs-small);
   }
 
   #sv-page .sv-care__for {
-    font-size: 0.88rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.5;
     /* na banda --sv-paper-2 o petrol normal ficava em cima do limite */
     color: var(--sv-accent-strong);
@@ -2311,7 +2323,7 @@ const jsonLd = [
     display: flex;
     gap: 0.55rem;
     align-items: flex-start;
-    font-size: 0.92rem;
+    font-size: var(--sv-fs-body);
     line-height: 1.45;
     padding: 0.35rem 0;
     color: var(--sv-text);
@@ -2384,7 +2396,7 @@ const jsonLd = [
     padding: 1.25rem 0;
     cursor: pointer;
     list-style: none;
-    font-size: clamp(1rem, 0.4vw + 0.95rem, 1.12rem);
+    font-size: var(--sv-fs-h3);
     font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--sv-ink);
@@ -2506,7 +2518,7 @@ const jsonLd = [
 
   #sv-page .sv-final__note {
     flex-basis: 100%;
-    font-size: 0.85rem !important;
+    font-size: var(--sv-fs-small) !important;
     color: #8a98a6 !important;
     margin-top: 0.25rem;
   }
@@ -2575,13 +2587,10 @@ const jsonLd = [
     #sv-page .sv-report__fields li {
       font-size: 0.86rem;
     }
-    /* Nenhuma micro-etiqueta abaixo de ~11.5px no telemóvel */
-    #sv-page .sv-eyebrow,
-    #sv-page .sv-plan__tag,
-    #sv-page .sv-plan__incl,
-    #sv-page .sv-plan__promo,
-    #sv-page .sv-report__kicker,
-    #sv-page .sv-work__cat,
+    /* --sv-fs-label já nasce em 12px: eyebrow, plan__tag, plan__incl,
+       plan__promo, report__kicker e work__cat não precisam de reforço
+       aqui. Só sv-specimen__label continua pequena de propósito (é uma
+       legenda decorativa de recorte de UI, não uma etiqueta de leitura). */
     #sv-page .sv-specimen__label {
       font-size: 0.74rem;
       letter-spacing: 0.1em;

@@ -290,20 +290,26 @@ const {
   if (root) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    /* Abaixo de 768px a sequência de cenas não cabe: medido no iPhone SE,
-       a cena dos pacotes tinha 1893px numa caixa de 598px; no iPad mini (768)
-       ainda eram 1775px numa de 858. O limiar e 1024, nao 768. Empilhados, os 3 pacotes e os 3 planos não
-       entram num ecrã, e apertar margens não resolve uma diferença de 3x.
-       No telemóvel a página fica no layout normal, que já está desenhado
-       e validado: tudo legível, scroll natural, sem cortes. */
-    const estreito = window.innerWidth < 1024;
+    /* O limiar deixou de ser de largura. O que não cabia no telemóvel eram
+       as cenas desenhadas em paisagem: 3 pacotes lado a lado davam 1893px
+       numa caixa de 598px. Agora cada cena densa tem layout de retrato e
+       revela um item por scroll (um pacote, um projeto, um plano), o mesmo
+       padrão que o Processo já usava, e cabe.
+       O que continua a não caber é altura a sério: telemóvel deitado dá um
+       cartão de ~350px e nenhuma cena se lê. Aí fica o layout normal. */
+    const semAltura = window.innerHeight < 560;
 
-    if (reduced || estreito) {
+    if (reduced || semAltura) {
       /* Sem animação: fica o estado estático, que já é o do CSS. */
       root.setAttribute('data-cine-static', '');
     } else {
       const card = root.querySelector<HTMLElement>('[data-cine-card]')!;
-      const isMobile = false;
+      const isMobile = window.innerWidth < 1024;
+
+      /* No telemóvel a barra de endereço aparece e desaparece com o scroll.
+         Isso dispara resize e, sem isto, o ScrollTrigger recalculava o pin a
+         meio do gesto: a sequência saltava para trás. */
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
       /* Só agora é que escondemos o que vai ser animado. Se este script não
          correr, nada disto acontece e a hero fica legível na mesma. */
@@ -336,7 +342,11 @@ const {
            abertura. Sem isto, 9 cenas ficavam espremidas nos mesmos 4600px
            e passavam todas de uma vez. */
         const nCenas = root.querySelectorAll('[data-cine-scenes] > *').length;
-        const comprimento = 4600 + nCenas * 700;
+        /* No telemóvel cada cena tem mais sub-passos (pacotes, trabalhos e
+           manutenção passam a um item por scroll), por isso precisa de mais
+           distância. Mas o gesto é de flick, que cobre muito pixel de uma
+           vez: a abertura encurta para compensar. */
+        const comprimento = (isMobile ? 3600 : 4600) + nCenas * (isMobile ? 820 : 700);
 
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -415,6 +425,12 @@ const {
         gsap.set(cenas, { autoAlpha: 0, y: 40 });
         /* Estado inicial dos elementos que entram um a um dentro da cena */
         gsap.set(root.querySelectorAll('.sv-plan'), { autoAlpha: 0 });
+        /* Em retrato há mais dois grupos a entrar um a um. Só no telemóvel:
+           no ecrã largo estes cabem lado a lado e entram com a cena, e
+           escondê-los aqui deixava-os invisíveis para sempre. */
+        if (isMobile) {
+          gsap.set(root.querySelectorAll('.sv-care__item, .sv-work__item'), { autoAlpha: 0 });
+        }
         gsap.set(root.querySelectorAll('[data-cine-trilho-barra]'), {
           scaleX: 0, transformOrigin: 'left center',
         });
@@ -429,13 +445,54 @@ const {
         const rotaCor = root.querySelector<SVGPathElement>('[data-cine-rota]');
         /* o nucleo herda a cor por currentColor: basta animar 'color' */
 
+        /* Em retrato algumas cenas escondem itens por CSS (os 2 últimos
+           projetos, por exemplo). Animá-los gastava passos de scroll em
+           coisas invisíveis, por isso filtram-se aqui. */
+        const visiveis = (lista: NodeListOf<HTMLElement>) =>
+          Array.from(lista).filter((el) => getComputedStyle(el).display !== 'none');
+
+        /* Tira o cabeçalho do caminho antes de um item passar a ocupar o
+           cartão todo. .sv-head vai na lista de propósito: é ele que tem o
+           border-bottom, e sem isso ficava uma linha solta a atravessar. */
+        const esconderCabecalho = (cena: HTMLElement) => {
+          const cab = ['.sv-head', '.sv-eyebrow', 'h2', '.sv-head__aside']
+            .map((s) => cena.querySelector(s))
+            .filter(Boolean);
+          if (cab.length) {
+            tl.to(cab, { autoAlpha: 0, y: -24, ease: 'power2.in', duration: 0.5 });
+          }
+        };
+
+        /* Um item de cada vez, a ocupar o cartão: o padrão do Processo,
+           reutilizado em retrato pelas cenas que em paisagem mostram
+           várias colunas ao mesmo tempo. */
+        const umAUm = (itens: HTMLElement[]) => {
+          itens.forEach((item, j) => {
+            tl.fromTo(item,
+              { autoAlpha: 0, y: 40, scale: 0.96 },
+              { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 })
+              .to({}, { duration: 0.7 });
+            if (j < itens.length - 1) {
+              tl.to(item, { autoAlpha: 0, y: -36, scale: 0.98, ease: 'power2.in', duration: 0.45 });
+            }
+          });
+        };
+
+        /* Cena -> instante da timeline em que fica visível (ver mais abaixo) */
+        const instantes = new Map<HTMLElement, number>();
+
         cenas.forEach((cena, i) => {
           if (rotaCor) {
             const cor = CORES[i % CORES.length];
             tl.to(rotaCor, { stroke: cor, ease: 'none', duration: 0.6 }, '<');
           }
-          tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 })
-            .to({}, { duration: 1.1 }); /* tempo de leitura */
+          tl.to(cena, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.9 });
+          /* Instante real em que esta cena acaba de entrar. Os links âncora
+             usam isto para saber onde parar; estimar por "2.7 por cena"
+             falhava sempre que uma cena tinha sub-passos, e em retrato
+             quase todas têm. */
+          instantes.set(cena, tl.duration());
+          tl.to({}, { duration: 1.1 }); /* tempo de leitura */
 
           /* Cenas com passos: cada item ocupa o cartão sozinho, um por scroll.
              Usado na Solução, para os 6 pontos não aparecerem todos de uma vez. */
@@ -489,15 +546,38 @@ const {
             });
           }
 
-          /* Pacotes: cada coluna entra com o seu próprio scroll */
+          /* Pacotes: em paisagem cada coluna entra com o seu próprio scroll e
+             as três ficam lado a lado para comparar. Em retrato não há três
+             colunas: cada pacote ocupa o cartão sozinho, um por scroll. */
           const planos = cena.querySelectorAll<HTMLElement>('.sv-plan');
           if (planos.length) {
-            planos.forEach((plano) => {
-              tl.fromTo(plano,
-                { autoAlpha: 0, y: 40, scale: 0.97 },
-                { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 })
-                .to({}, { duration: 0.7 });
-            });
+            if (isMobile) {
+              esconderCabecalho(cena);
+              umAUm(visiveis(planos));
+            } else {
+              planos.forEach((plano) => {
+                tl.fromTo(plano,
+                  { autoAlpha: 0, y: 40, scale: 0.97 },
+                  { autoAlpha: 1, y: 0, scale: 1, ease: 'power3.out', duration: 0.7 })
+                  .to({}, { duration: 0.7 });
+              });
+            }
+          }
+
+          /* Manutenção e Trabalhos: só em retrato. Em paisagem cabem em
+             grelha e entram com a própria cena, sem passos extra. */
+          if (isMobile) {
+            const cuidados = visiveis(cena.querySelectorAll<HTMLElement>('.sv-care__item'));
+            if (cuidados.length) {
+              esconderCabecalho(cena);
+              umAUm(cuidados);
+            }
+
+            const projetos = visiveis(cena.querySelectorAll<HTMLElement>('.sv-work__item'));
+            if (projetos.length) {
+              esconderCabecalho(cena);
+              umAUm(projetos);
+            }
           }
 
           if (i < cenas.length - 1) {
@@ -585,22 +665,22 @@ const {
            de um pin. Recalculam-se para a posição de scroll da cena certa. */
         const st = tl.scrollTrigger;
         if (st) {
-          const total = st.end - st.start;
-          const dur = tl.duration();
           document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
             const alvo = a.getAttribute('href')!.slice(1);
             if (!alvo) return;
             const cena = cenas.find((c) => c.id === alvo);
             if (!cena) return;
+            const instante = instantes.get(cena);
+            if (instante === undefined) return;
             a.addEventListener('click', (e) => {
+              /* start/end lêem-se AGORA, não na montagem: aí o ScrollTrigger
+                 ainda não os tinha calculado, davam 0 e o destino colapsava
+                 para o topo da página. Era por isso que o "Ver pacotes" da
+                 hero não fazia nada. Também mudam a cada resize. */
+              const total = st.end - st.start;
+              const dur = tl.duration();
+              if (!total || !dur) return; /* sem pin ativo, deixa o browser saltar */
               e.preventDefault();
-              /* Instante em que esta cena está totalmente visível.
-                 ABERTURA_ATE_CENAS = tempo da timeline até a 1ª cena entrar;
-                 cada cena ocupa 0.9 (entrada) + 1.1 (leitura) + 0.7 (saída). */
-              const ABERTURA_ATE_CENAS = 12.1;
-              const POR_CENA = 2.7;
-              const i = cenas.indexOf(cena);
-              const instante = ABERTURA_ATE_CENAS + i * POR_CENA + 0.9;
               window.scrollTo({
                 top: st.start + (instante / dur) * total,
                 behavior: 'smooth',
@@ -753,8 +833,13 @@ const {
 
 
 
-  /* Sem JS não há scroll a mover nada */
-  #cine:not([data-cine-on]) .cine__rota,
+  /* Sem JS não há scroll a mover nada: o rasto ficava congelado a meio.
+     (A vírgula pendente aqui, sobra da remoção da seta, deixava este
+     seletor sem bloco e engolia o @media seguinte como se fosse parte
+     dele. Ambas as regras estavam mortas.) */
+  #cine:not([data-cine-on]) .cine__rota {
+    display: none;
+  }
 
   @media (max-width: 767px) {
     /* mais discreta no telemóvel, mas continua presente */
@@ -1857,6 +1942,263 @@ const {
   }
   #cine[data-cine-static] .cine__hint {
     display: none;
+  }
+
+  /* O reveal por IntersectionObserver e o GSAP disputavam a mesma
+     propriedade: dentro do cartão as cenas estão sempre "no ecrã", o
+     observer marcava-as logo à entrada e a transição de 0.55s arrastava-se
+     por cima do tween. Dentro da sequência, quem manda é o GSAP. */
+  #cine[data-cine-on] .cine__scenes [data-reveal] {
+    transition: none !important;
+  }
+
+  /* ==================================================================
+     Sequência em retrato (telemóvel e tablet)
+
+     As cenas foram desenhadas em paisagem: colunas lado a lado. Em
+     retrato não há largura para colunas, e foi isso que antes não
+     cabia (3 pacotes davam 1893px numa caixa de 598px). A solução não
+     é apertar margens, é mudar o layout: as cenas densas passam a
+     mostrar UM item de cada vez, a ocupar o cartão, com o JS a
+     revelá-los um por scroll (ver `umAUm` no script).
+     ================================================================== */
+  @media (max-width: 1023px) {
+    /* Em retrato cada centímetro conta */
+    #cine[data-cine-on] .cine__card {
+      height: min(88vh, 820px);
+    }
+
+    #cine[data-cine-on] .cine__scenes > * {
+      padding-block: clamp(1rem, 2.5vh, 1.75rem) !important;
+    }
+
+    #cine[data-cine-on] .cine__scenes .sv-container {
+      padding-inline: clamp(1rem, 5vw, 1.75rem);
+    }
+
+    /* Títulos grandes centrados: as clamps são de altura (vh), calibradas
+       para um cartão largo. Em 340px de largura a mesma frase passa de 2
+       para 5 linhas e transborda, sem que a altura mude nada.
+       Medido antes disto: contacto +58px, solução +19, pacotes +15. */
+    #cine[data-cine-on] .cine__scenes #contacto h2,
+    #cine[data-cine-on] .cine__scenes #validacao h2,
+    #cine[data-cine-on] .cine__scenes .sv-pain__copy h2,
+    #cine[data-cine-on] .cine__scenes .sv-solution__copy h2 {
+      font-size: clamp(1.45rem, 2.6vh + 0.7rem, 2.05rem);
+    }
+
+    #cine[data-cine-on] .cine__scenes #contacto p,
+    #cine[data-cine-on] .cine__scenes #validacao .sv-lead,
+    #cine[data-cine-on] .cine__scenes .sv-pain__copy .sv-lead,
+    #cine[data-cine-on] .cine__scenes .sv-solution__copy .sv-lead {
+      font-size: 0.95rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes .sv-head h2 {
+      font-size: clamp(1.25rem, 2.2vh + 0.55rem, 1.6rem);
+    }
+
+    #cine[data-cine-on] .cine__scenes .sv-head__aside {
+      font-size: 0.85rem;
+    }
+
+    /* Etiquetas em maiúsculas: medidas a 9,3px e 11,8px no telemóvel.
+       Em caixa alta e com letter-spacing, abaixo de 12px deixa de se ler. */
+    #cine[data-cine-on] .cine__scenes .sv-eyebrow,
+    #cine[data-cine-on] .cine__scenes .sv-plan__incl,
+    #cine[data-cine-on] .cine__scenes .sv-plan__tag,
+    #cine[data-cine-on] .cine__scenes .sv-plan__promo {
+      font-size: 0.8rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes .sv-work__cat {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+    }
+
+    /* Em retrato o nome passa a ser o link principal para abrir o projeto,
+       e tinha 30px de altura. Alvo de toque decente. */
+    #cine[data-cine-on] .cine__scenes .sv-work__name {
+      min-height: 44px;
+    }
+
+    /* ---------- Pacotes: um pacote por scroll ---------- */
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plans {
+      position: absolute;
+      inset: 0;
+      display: block;
+      gap: 0;
+    }
+
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: none;
+      margin: 0;
+      padding: clamp(1.1rem, 5vw, 2rem);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      opacity: 0;
+    }
+
+    /* O recomendado continua a distinguir-se, agora por um halo no
+       cartão inteiro em vez de por uma coluna elevada. */
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan--feature {
+      background: radial-gradient(
+        120% 75% at 50% 0%,
+        rgba(0, 195, 255, 0.16) 0%,
+        rgba(0, 195, 255, 0) 68%
+      ) !important;
+      border: 0 !important;
+      padding-block: clamp(1.1rem, 5vw, 2rem) !important;
+    }
+
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__name {
+      font-size: 1.45rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__amount {
+      font-size: clamp(2rem, 6vh, 2.8rem);
+    }
+
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__desc {
+      font-size: 0.88rem;
+      max-width: 36ch;
+    }
+
+    /* 12 itens numa coluna não cabiam; em duas, cabem com folga */
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__list {
+      columns: 2;
+      column-gap: 1.1rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #pacotes .sv-plan__list li {
+      break-inside: avoid;
+      font-size: 0.8rem;
+    }
+
+    /* ---------- Manutenção: um plano por scroll ---------- */
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care {
+      position: absolute;
+      inset: 0;
+      display: block;
+      gap: 0;
+    }
+
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care__item {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      padding: clamp(1.1rem, 5vw, 2rem);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      opacity: 0;
+    }
+
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care__item h3 {
+      font-size: 1.45rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care__price strong {
+      font-size: clamp(1.8rem, 5vh, 2.4rem);
+    }
+
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care__item ul {
+      columns: 2;
+      column-gap: 1.1rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-care__item li {
+      break-inside: avoid;
+    }
+
+    /* A regra fecha a secção na versão normal; aqui os planos são
+       absolutos e ela ficaria a flutuar por cima deles. */
+    #cine[data-cine-on] .cine__scenes #manutencao .sv-rule {
+      display: none;
+    }
+
+    /* ---------- Trabalhos: um projeto por scroll ----------
+       Em grelha os mockups ficavam com ~160px de largura, ilegíveis.
+       Sozinho, cada um usa a largura toda do cartão. */
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work {
+      position: absolute;
+      inset: 0;
+      display: block;
+      gap: 0;
+    }
+
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__item {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      padding: clamp(1.1rem, 5vw, 2rem);
+      opacity: 0;
+    }
+
+    /* 5 projetos: sétimo já sai em modo cena, sexto sai aqui para não
+       esticar o scroll do telemóvel. */
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__item:nth-child(n + 6) {
+      display: none;
+    }
+
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__item figcaption {
+      position: static;
+      background: none;
+      padding: 0.85rem 0 0;
+      justify-content: center;
+    }
+
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__name {
+      font-size: 1rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__details {
+      display: block;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* O CTA levava para os pacotes, que em retrato ficam 2 cenas à
+       frente: com os projetos absolutos, ficaria a flutuar por cima. */
+    #cine[data-cine-on] .cine__scenes #trabalhos .sv-work__cta {
+      display: none;
+    }
+
+    /* ---------- FAQ ---------- */
+    #cine[data-cine-on] .cine__scenes #faq .sv-faq__aside .sv-lead {
+      display: none;
+    }
+
+    #cine[data-cine-on] .cine__scenes #faq .sv-faq__aside h2 {
+      margin-bottom: 0.75rem;
+    }
+
+    #cine[data-cine-on] .cine__scenes #faq .sv-faq__item summary {
+      padding: 0.55rem 0;
+      font-size: 0.9rem;
+    }
+
+    /* ---------- CTA final ---------- */
+    #cine[data-cine-on] .cine__scenes #contacto .sv-final__selo {
+      max-width: 8rem;
+      margin-inline: auto;
+    }
+
+    #cine[data-cine-on] .cine__scenes #contacto .sv-final__actions .sv-btn {
+      width: 100%;
+    }
   }
 
   /* ------------------------------------------------------------------

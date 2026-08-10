@@ -16,6 +16,7 @@ interface Props {
 }
 
 const props = Astro.props;
+const metaPixelId = '2027821837745963';
 
 const defaultJsonLd = {
   '@context': 'https://schema.org',
@@ -67,9 +68,39 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
     -->
 
     <SEO {...props} />
+    <script is:inline define:vars={{ metaPixelId }}>
+      !function(f,b,e,v,n,t,s) {
+        if (f.fbq) return;
+        n = f.fbq = function() {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = true;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = true;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+      fbq('init', metaPixelId);
+      fbq('track', 'PageView');
+    </script>
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
+        alt=""
+      />
+    </noscript>
     <a href="#main" class="skip-link">Saltar para o conteúdo</a>
     <Header />
     <main id="main">

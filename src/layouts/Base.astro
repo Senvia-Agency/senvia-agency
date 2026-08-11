@@ -86,8 +86,38 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
         s.parentNode.insertBefore(t, s);
       }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-      fbq('init', metaPixelId);
+      const getMetaExternalId = () => {
+        const key = 'senvia_external_id';
+        const cookieMatch = document.cookie.match(new RegExp('(?:^|; )' + key + '=([^;]+)'));
+        const cookieValue = cookieMatch ? decodeURIComponent(cookieMatch[1]) : '';
+        const storedValue = localStorage.getItem(key) || cookieValue;
+        const value = storedValue || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+        localStorage.setItem(key, value);
+        document.cookie = `${key}=${encodeURIComponent(value)}; path=/; domain=.senvia.pt; max-age=31536000; SameSite=Lax; Secure`;
+        return value;
+      };
+
+      const metaExternalId = getMetaExternalId();
+
+      fbq('init', metaPixelId, { external_id: metaExternalId });
       fbq('track', 'PageView');
+
+      const appendExternalId = (href) => {
+        try {
+          const url = new URL(href);
+          if (url.hostname === 'app.senvia.pt' && !url.searchParams.has('external_id')) {
+            url.searchParams.set('external_id', metaExternalId);
+            return url.toString();
+          }
+        } catch {}
+        return href;
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('a[href^="https://app.senvia.pt"]').forEach((link) => {
+          link.href = appendExternalId(link.href);
+        });
+      });
     </script>
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
   </head>

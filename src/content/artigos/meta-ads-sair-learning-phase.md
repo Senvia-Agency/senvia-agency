@@ -3,7 +3,7 @@ title: "Learning phase no Meta Ads sem drama"
 description: "O que realmente faz uma campanha sair da learning phase e porque mexer demais estraga a entrega."
 pubDate: "2026-09-01"
 author: "Thiago Sousa"
-category: "Meta Ads"
+category: "pmes"
 tags: ["meta ads", "learning phase", "tráfego pago", "otimização"]
 readingTime: 6
 coverImage: "/images/artigos/meta-ads-sair-learning-phase.jpg"

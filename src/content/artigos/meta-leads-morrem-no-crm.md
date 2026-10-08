@@ -3,7 +3,7 @@ title: "Meta Leads Morrem no CRM"
 description: "O problema não é o anúncio. É o tempo entre o lead entrar e alguém responder."
 pubDate: "2026-09-03"
 author: "Thiago Sousa"
-category: "CRM e Vendas"
+category: "pmes"
 tags: ["meta ads", "crm", "automação", "leads"]
 readingTime: 6
 coverImage: "/images/artigos/meta-leads-morrem-no-crm.jpg"

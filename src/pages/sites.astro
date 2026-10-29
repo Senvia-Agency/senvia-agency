@@ -2,6 +2,7 @@
 import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { SITE, whatsappUrl } from '../config';
+import SitesNav from '../components/sites/SitesNav.astro';
 import '../styles/sites-v2.css';
 
 import longevStudio from '../assets/projetos/longev-studio.png';
@@ -227,6 +228,7 @@ const win = (i: number, n: number) => ({ 'data-in': (i / n).toFixed(4), 'data-ou
   jsonLd={jsonLd}
 >
   <!-- Marca o suporte a JS antes de pintar: as camadas de texto ficam escondidas até o scroll as mostrar -->
+  <SitesNav slot="header" cta="Pedir diagnóstico" ctaHref={diagnosticoUrl} />
   <script is:inline>document.documentElement.classList.add('js');</script>
   <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />

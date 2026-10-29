@@ -1,0 +1,99 @@
+---
+/* Navbar da página /sites, no estilo da nova home: logo, menus em letra mono pequena,
+   Serviços com submenu, botão escuro de diagnóstico e menu próprio no telemóvel.
+   Os menus são os mesmos do Header.astro; fica clara por cima do mundo 3D e escurece no capítulo noturno. */
+import { SERVICE_LINKS } from '../../config';
+
+interface Props {
+  cta: string;
+  ctaHref: string;
+}
+
+const { cta, ctaHref } = Astro.props;
+const ext = ctaHref.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+const path = Astro.url.pathname;
+---
+
+<header class="snav" id="snav">
+  <a class="snav-brand" href="/" aria-label="SENVIA, início">
+    <img src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" alt="" width="30" height="30" />SENVIA
+  </a>
+  <nav class="snav-links" id="snav-links" aria-label="Navegação principal">
+    <a href="/senvia-os">SENVIA OS</a>
+    <div class="snav-dd">
+      <button type="button" class="snav-dd-t" aria-haspopup="true" aria-expanded="false">Serviços</button>
+      <div class="snav-dd-m">
+        {SERVICE_LINKS.map((item) => <a href={item.href} aria-current={item.href === path ? 'page' : undefined}>{item.label}</a>)}
+      </div>
+    </div>
+    <a href="/sobre-nos">Sobre Nós</a>
+    <a href="/blog">Blog</a>
+    <a href="/#contactos">Contactos</a>
+    <a href="/suporte">Suporte</a>
+  </nav>
+  <a class="snav-cta" href={ctaHref} {...ext}>{cta}</a>
+  <button class="snav-burger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="snav-links"><i></i><i></i></button>
+</header>
+
+<style is:global>
+  .snav{--snav-fg:#0B1F2A;--snav-fg2:#4A6170;--snav-surface:color-mix(in srgb,#F8FAFA 86%,transparent);--snav-rule:#D3DDE1;--snav-fade:rgba(238,242,243,.86);
+    position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:28px;color:var(--snav-fg);
+    padding:calc(16px + env(safe-area-inset-top,0px)) max(clamp(16px,5.5vw,84px),env(safe-area-inset-right,0px)) 16px max(clamp(16px,5.5vw,84px),env(safe-area-inset-left,0px));
+    background:linear-gradient(180deg,var(--snav-fade) 0%,color-mix(in srgb,var(--snav-fade) 0%,transparent) 100%);transition:color .6s}
+  body.night .snav{--snav-fg:#F8FAFA;--snav-fg2:#A9C3CE;--snav-surface:color-mix(in srgb,#0B1F2A 78%,transparent);--snav-rule:rgba(238,242,243,.16);--snav-fade:rgba(11,31,42,.86)}
+  .snav-brand{display:flex;align-items:center;gap:10px;font:700 19px/1 "General Sans","Segoe UI",system-ui,sans-serif;letter-spacing:.03em;color:inherit;text-decoration:none}
+  .snav-brand img{display:block;width:30px;height:30px;flex:none}
+  .snav-links{display:flex;align-items:center;gap:4px;margin-left:auto;font:500 12px/1 "DM Mono",ui-monospace,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase}
+  .snav-links>a,.snav-dd-t{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;color:var(--snav-fg2);text-decoration:none;
+    background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;transition:color .3s,background .3s}
+  .snav-links>a:hover,.snav-dd:hover .snav-dd-t,.snav-dd:focus-within .snav-dd-t,.snav-dd.open .snav-dd-t{color:var(--snav-fg);background:var(--snav-surface)}
+  .snav-dd{position:relative}
+  .snav-dd-t::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+  .snav-dd-m{position:absolute;top:100%;left:0;min-width:230px;margin-top:6px;padding:8px;border-radius:14px;display:none;flex-direction:column;gap:2px;
+    background:var(--snav-surface);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--snav-rule);box-shadow:0 14px 34px rgba(11,31,42,.12)}
+  .snav-dd-m::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
+  .snav-dd:hover .snav-dd-m,.snav-dd:focus-within .snav-dd-m,.snav-dd.open .snav-dd-m{display:flex}
+  .snav-dd-m a{padding:10px 12px;border-radius:8px;color:var(--snav-fg);text-decoration:none;text-transform:none;letter-spacing:0;font:500 15px/1.2 "General Sans","Segoe UI",system-ui,sans-serif}
+  .snav-dd-m a:hover,.snav-dd-m a[aria-current="page"]{background:color-mix(in srgb,#0E86A8 12%,transparent)}
+  .snav-cta{display:inline-flex;align-items:center;padding:10px 14px;border-radius:12px;background:var(--snav-fg);color:#F8FAFA;border:1px solid var(--snav-fg);
+    font:600 14px/1 "General Sans","Segoe UI",system-ui,sans-serif;text-decoration:none;white-space:nowrap;transition:transform .2s,background .3s,color .3s}
+  body.night .snav-cta{color:#0B1F2A}
+  .snav-cta:hover{transform:translateY(-1px)}
+  .snav a:focus-visible,.snav button:focus-visible{outline:2px solid #0E86A8;outline-offset:3px}
+  .snav-burger{display:none;width:44px;height:44px;border:0;background:none;cursor:pointer;position:relative;color:var(--snav-fg)}
+  .snav-burger i{position:absolute;left:12px;right:12px;height:2px;background:currentColor;border-radius:2px;transition:transform .3s,top .3s}
+  .snav-burger i:first-child{top:17px}.snav-burger i:last-child{top:25px}
+  .snav.open .snav-burger i:first-child{top:21px;transform:rotate(45deg)}.snav.open .snav-burger i:last-child{top:21px;transform:rotate(-45deg)}
+  @media (max-width:759px){
+    .snav{gap:10px}
+    .snav-links{display:none}
+    .snav-cta{margin-left:auto;padding:9px 12px;font-size:13px}
+    .snav-burger{display:block;margin-left:-8px}
+    /* menu aberto: lista por baixo da barra */
+    .snav.open .snav-links{display:flex;position:fixed;left:0;right:0;top:calc(68px + env(safe-area-inset-top,0px));flex-direction:column;align-items:stretch;gap:2px;margin:0;
+      padding:10px clamp(16px,5.5vw,84px) 18px;background:var(--snav-surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--snav-rule);font-size:14px}
+    .snav.open .snav-links>a,.snav.open .snav-dd-t{padding:12px 10px}
+    .snav.open .snav-dd-m{display:flex;position:static;margin:0 0 0 12px;padding:0;border:0;box-shadow:none;background:none;backdrop-filter:none}
+  }
+</style>
+
+<script>
+  // menu do telemóvel e submenu Serviços (no toque não há "passar o rato")
+  const nav = document.getElementById('snav');
+  const burger = nav?.querySelector<HTMLButtonElement>('.snav-burger');
+  burger?.addEventListener('click', () => {
+    const open = !nav!.classList.contains('open');
+    nav!.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+  });
+  const dd = nav?.querySelector<HTMLElement>('.snav-dd');
+  const ddBtn = dd?.querySelector<HTMLButtonElement>('.snav-dd-t');
+  ddBtn?.addEventListener('click', () => {
+    const open = !dd!.classList.contains('open');
+    dd!.classList.toggle('open', open);
+    ddBtn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => {
+    if (dd && !dd.contains(e.target as Node)){ dd.classList.remove('open'); ddBtn?.setAttribute('aria-expanded', 'false'); }
+  });
+</script>

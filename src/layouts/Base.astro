@@ -132,7 +132,8 @@ const jsonLd = props.jsonLd ?? defaultJsonLd;
       />
     </noscript>
     <a href="#main" class="skip-link">Saltar para o conteúdo</a>
-    <Header />
+    <!-- uma página pode trocar a navbar (ex.: /sites usa a navbar clara da nova home) -->
+    <slot name="header"><Header /></slot>
     <main id="main">
       <slot />
     </main>

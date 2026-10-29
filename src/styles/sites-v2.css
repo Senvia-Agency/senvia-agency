@@ -218,23 +218,6 @@ html:has(.sv2) .site-footer{position:relative;z-index:6;background:#0B1F2A}
 .sv2{color:var(--fg);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased;transition:color .6s}
 .sv2 p{margin:0}
 
-/* navbar do projeto em versão clara (vidro); no capítulo noturno volta a escura */
-html:has(.sv2) .site-header,html:has(.sv2) .site-header--scrolled{background:color-mix(in srgb,#F8FAFA 74%,transparent);
-  -webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);border-bottom:1px solid rgba(11,31,42,.08);box-shadow:none}
-html:has(.sv2) .site-header .brand__name{background:none;-webkit-text-fill-color:#0B1F2A;color:#0B1F2A}
-html:has(.sv2) .site-header .brand__tagline{color:#4A6170}
-html:has(.sv2) .site-header .menu-toggle{color:#0B1F2A}
-html:has(.sv2) body.night .site-header{background:color-mix(in srgb,#0B1F2A 72%,transparent);border-bottom-color:rgba(248,250,250,.08)}
-html:has(.sv2) body.night .site-header .brand__name{-webkit-text-fill-color:#F8FAFA;color:#F8FAFA}
-html:has(.sv2) body.night .site-header .brand__tagline{color:#A9C3CE}
-html:has(.sv2) body.night .site-header .menu-toggle{color:#F8FAFA}
-@media (min-width:769px){
-  html:has(.sv2) .site-header .nav__link{color:#4A6170}
-  html:has(.sv2) .site-header .nav__link:hover{color:#0B1F2A}
-  html:has(.sv2) body.night .site-header .nav__link{color:#A9C3CE}
-  html:has(.sv2) body.night .site-header .nav__link:hover{color:#F8FAFA}
-}
-
 /* indicador: os pontos levam a cada capítulo */
 .sv2 .hud .dots button:hover{opacity:1;border-color:var(--petrol-2)}
 

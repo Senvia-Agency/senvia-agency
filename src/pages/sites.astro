@@ -1,11 +1,8 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import BrowserFrame from '../components/sites/BrowserFrame.astro';
-import CinematicHero from '../components/sites/CinematicHero.astro';
 import { SITE, whatsappUrl } from '../config';
+import '../styles/sites-v2.css';
 
 import longevStudio from '../assets/projetos/longev-studio.png';
 import deltaCapital from '../assets/projetos/delta-capital.png';
@@ -16,14 +13,12 @@ import rdExcursoes from '../assets/projetos/rd-excursoes.png';
 import clinicaRenascer from '../assets/projetos/clinica-renascer.png';
 
 /* ------------------------------------------------------------------
-   Vídeo da hero
-   Caminho esperado: public/videos/sites-hero.mp4
-   A existência é verificada em build-time: se o ficheiro estiver lá, a
-   hero usa vídeo (com poster); se não, usa o screenshot real como imagem.
-   Ver public/videos/README.md.
+   Página /sites: um mundo 3D fixo atrás da página, contado em capítulos.
+   Cada capítulo é uma secção alta com um quadro sticky de 100vh; as camadas
+   de texto entram conforme o progresso do scroll (data-in / data-out).
+   O 3D e a coreografia vivem em src/scripts/sites-v2.js; os estilos em
+   src/styles/sites-v2.css (tudo dentro de .sv2).
 ------------------------------------------------------------------- */
-const HERO_VIDEO_SRC = '/videos/sites-hero.mp4';
-const hasHeroVideo = fs.existsSync(path.join(process.cwd(), 'public', 'videos', 'sites-hero.mp4'));
 
 /* ------------------------------------------------------------------
    Contactos
@@ -33,213 +28,40 @@ const briefingUrl = SITE.ctaSiteFormUrl;
 // os CTAs de WhatsApp caem no formulário, e nada quebra.
 const whatsapp = whatsappUrl('Olá! Queria um diagnóstico rápido para o site do meu negócio.');
 const diagnosticoUrl = whatsapp ?? briefingUrl;
-const isExternal = (url: string) => url.startsWith('http');
 const pacoteUrl = (slug: string) => `${briefingUrl}?pacote=${slug}`;
-const diagAttrs: Record<string, string> = isExternal(diagnosticoUrl)
-  ? { target: '_blank', rel: 'noopener noreferrer' }
-  : {};
-// Pílula de WhatsApp da hero: link real assim que houver número; até lá é só
-// anotação do mockup e fica escondida da tecnologia de apoio.
-const waAttrs: Record<string, string> = whatsapp
-  ? { target: '_blank', rel: 'noopener noreferrer' }
-  : { 'aria-hidden': 'true' };
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
 
 /* ------------------------------------------------------------------
    Conteúdo
 ------------------------------------------------------------------- */
-const dores = [
-  'O Instagram não transmite confiança suficiente.',
-  'As mensagens chegam sem contexto.',
-  'O cliente pergunta preço e desaparece.',
-  'Anúncio sem landing desperdiça dinheiro.',
-  'Site antigo não converte nem passa profissionalismo.',
-];
-
+// os 6 pontos da solução em 3 momentos de 2; o texto muda de lado e o 3D vai para o oposto
 const solucao = [
-  { title: 'Oferta clara', desc: 'Organizamos o que vendes, para quem e por que motivo te devem escolher.' },
-  { title: 'Design profissional', desc: 'Layout limpo, legível e coerente com a tua marca, em desktop e telemóvel.' },
-  { title: 'Contacto por WhatsApp ou formulário', desc: 'A mensagem já chega com contexto: serviço, nome e o que a pessoa precisa.' },
-  { title: 'SEO básico', desc: 'Títulos, descrições, estrutura e velocidade tratados desde o primeiro dia.' },
-  { title: 'Tracking de leads e cliques', desc: 'Para saberes de onde vêm os pedidos, e não andares a adivinhar.' },
-  { title: 'Publicação e manutenção', desc: 'Domínio, alojamento, SSL e o site a funcionar depois de publicado.' },
-];
-
-const pacotes = [
   {
-    slug: 'presenca',
-    nome: 'Presença',
-    preco: '280€',
-    precoNota: '+ IVA',
-    antes: null as string | null,
-    promo: null as string | null,
-    desc: 'Para negócios que precisam sair do improviso e ter uma página profissional no ar.',
-    inclui: [
-      '1 landing page/site simples',
-      'Até 5 blocos ou página única',
-      'Copy básica baseada em template',
-      'WhatsApp com mensagem organizada',
-      'Formulário simples',
-      'SEO básico',
-      'Publicação',
-      '1 revisão',
-    ],
-    cta: 'Começar com Presença',
-    destaque: false,
-    nota: null as string | null,
-  },
-  {
-    slug: 'validacao-comercial',
-    nome: 'Validação Comercial',
-    preco: '490€',
-    precoNota: '+ IVA',
-    antes: '650€ + IVA',
-    promo: 'Promoção',
-    desc: 'Para negócios que querem site, captação e um teste comercial real com anúncios.',
-    inclui: [
-      'Tudo do Pacote Presença',
-      'Site de 3 a 12 páginas',
-      'Pronto em 14 dias',
-      '14 dias de acompanhamento em Meta Ads',
-      '100€ de investimento incluído para Meta Ads',
-      '3 criativos de imagem',
-      'Configuração de público',
-      'SEO básico',
-      'Tracking de leads e cliques',
-      'Relatório detalhado',
-      'Até 30.000 visualizações*',
-      'Até 300 visitas no site',
-    ],
-    cta: 'Validar meu negócio',
-    destaque: true,
-    // Rodapé do próprio pacote: fica junto de "Até 30.000 visualizações*",
-    // para o asterisco apontar para a nota certa.
-    nota: '*Estimativa potencial baseada em campanha e distribuição. Resultados variam conforme nicho, verba, público, criativos e procura do mercado.',
-  },
-  {
-    slug: 'loja-online',
-    nome: 'Loja Online',
-    preco: '1190€',
-    precoNota: '+ IVA',
-    antes: null as string | null,
-    promo: null as string | null,
-    desc: 'Para negócios que querem vender produtos online com uma loja profissional e pronta para gestão.',
-    inclui: [
-      'Loja online responsiva',
-      'Design profissional personalizado',
-      'Páginas de produto',
-      'Carrinho e checkout',
-      'Métodos de pagamento',
-      'Configuração de envios',
-      'SEO básico para produtos',
-      'Formação para gestão da loja',
-    ],
-    cta: 'Criar loja online',
-    destaque: false,
-    nota: null as string | null,
-  },
-];
-
-const momentos = [
-  { n: '01', title: 'Criamos a presença', desc: 'Página, oferta, pontos de contacto e tracking prontos antes de gastar um euro em anúncios.' },
-  { n: '02', title: 'Ativamos a campanha', desc: '3 criativos, público configurado e 100€ de investimento incluído a correr durante 14 dias.' },
-  { n: '03', title: 'Medimos os pedidos', desc: 'No fim recebes o relatório com o que aconteceu e uma recomendação objetiva do próximo passo.' },
-];
-
-const relatorioCampos = [
-  'Investimento total',
-  'Alcance',
-  'Impressões',
-  'Cliques',
-  'CTR',
-  'Leads/contactos gerados',
-  'Custo por lead/contacto',
-  'Comparação dos 3 criativos',
-  'Melhor criativo',
-  'Público usado',
-];
-
-const processo = [
-  { n: '1', label: 'Preenches o briefing' },
-  { n: '2', label: 'Validamos o melhor caminho' },
-  { n: '3', label: 'Pagas o sinal' },
-  { n: '4', label: 'Criamos o site' },
-  { n: '5', label: 'Revisas' },
-  { n: '6', label: 'Publicamos' },
-  { n: '7', label: 'Se for Validação, ativamos os anúncios', condicional: true },
-];
-
-const manutencao = [
-  {
-    nome: 'Manutenção Básica',
-    mes: '29€/mês',
-    ano: '290€/ano',
-    para: 'Obrigatória em qualquer website.',
+    titulo: 'Clara e <em>profissional</em>.',
+    pos: 'right',
+    mobile: 'm-low',
     itens: [
-      'Alojamento',
-      'SSL',
-      'Backups',
-      'Atualizações técnicas',
-      'Monitorização básica',
-      'Pequenas correções técnicas',
-      'Site online e funcional',
+      { title: 'Oferta clara', desc: 'Organizamos o que vendes, para quem e por que motivo te devem escolher.' },
+      { title: 'Design profissional', desc: 'Layout limpo, legível e coerente com a tua marca, em desktop e telemóvel.' },
     ],
   },
   {
-    nome: 'Manutenção Pro',
-    mes: '49€/mês',
-    ano: '490€/ano',
-    para: 'Para quem quer o site a mexer todos os meses.',
+    titulo: 'Contactos <em>com contexto</em>.',
+    pos: 'bottom',
+    mobile: 'm-high',
     itens: [
-      'Tudo da Básica',
-      'Até 1 alteração simples por mês',
-      'Revisão mensal de formulário/links',
-      'Relatório simples de visitas/leads',
-      'Suporte prioritário',
+      { title: 'Contacto por WhatsApp ou formulário', desc: 'A mensagem já chega com contexto: serviço, nome e o que a pessoa precisa.' },
+      { title: 'Tracking de leads e cliques', desc: 'Para saberes de onde vêm os pedidos, e não andares a adivinhar.' },
     ],
   },
   {
-    nome: 'Manutenção Loja Online',
-    mes: '79€/mês',
-    ano: '790€/ano',
-    para: 'Obrigatória em lojas online.',
+    titulo: 'Encontrado e <em>sempre no ar</em>.',
+    pos: 'left',
+    mobile: 'm-low',
     itens: [
-      'Alojamento',
-      'SSL',
-      'Backups',
-      'Atualizações técnicas',
-      'Segurança',
-      'Verificação de checkout',
-      'Suporte técnico',
-      'Pequenas correções',
-      'Monitorização de erros críticos',
+      { title: 'SEO básico', desc: 'Títulos, descrições, estrutura e velocidade tratados desde o primeiro dia.' },
+      { title: 'Publicação e manutenção', desc: 'Domínio, alojamento, SSL e o site a funcionar depois de publicado.' },
     ],
-  },
-];
-
-const faqs = [
-  {
-    q: 'O domínio está incluído?',
-    a: 'Sim. Todos os pacotes incluem 1 ano de domínio gratuito como oferta especial, sujeito à disponibilidade do nome.',
-  },
-  {
-    q: 'Tenho de pagar manutenção?',
-    a: 'Sim. Websites exigem no mínimo Manutenção Básica para alojamento, segurança, backups e funcionamento técnico. Loja Online exige Manutenção Loja Online.',
-  },
-  {
-    q: 'O investimento em anúncios está incluído?',
-    a: 'No Pacote Validação Comercial, sim: estão incluídos 100€ de investimento para Meta Ads.',
-  },
-  {
-    q: 'Em quanto tempo fica pronto?',
-    a: 'O Pacote Validação Comercial fica pronto em até 14 dias, dependendo da entrega de materiais e validações.',
-  },
-  {
-    q: 'O Pacote Presença também tem anúncios?',
-    a: 'Não. O Pacote Presença é uma página/site simples de entrada. Para anúncios, tracking e relatório comercial, o pacote certo é o Validação Comercial.',
-  },
-  {
-    q: 'Posso pedir alterações?',
-    a: 'Sim. O Pacote Presença inclui 1 revisão. Alterações adicionais ou acompanhamento contínuo podem entrar na manutenção ou ser orçamentados à parte.',
   },
 ];
 
@@ -247,69 +69,100 @@ const faqs = [
    próprias no menu (/sobre, /contactos, ...); Landing page = tudo numa
    única página, com âncoras ou sem menu de navegação. */
 const trabalhos = [
+  { key: 'dra-cristina-sousa', img: draCristinaSousa, nome: 'Dra. Cristina Sousa', tipo: 'Website', href: 'https://dracristinasousa.com/', url: 'dracristinasousa.com', detalhes: ['Menu com 6 secções', 'E-book de vendas', 'Antes/depois e feedbacks'] },
+  { key: 'longev-studio', img: longevStudio, nome: 'Longev Studio', tipo: 'Website', href: 'https://longevstudio.com/', url: 'longevstudio.com', detalhes: ['Menu multi-página', 'Agendamento de avaliação', 'Versão PT/EN'] },
+  { key: 'estudio-tiago-pereira', img: estudioTiagoPereira, nome: 'Estúdio Tiago Pereira', tipo: 'Website', href: 'https://estudiotiagopereira.pt/', url: 'estudiotiagopereira.pt', detalhes: ['Programas e e-books', 'Área de login', 'Prova social em números'] },
+  { key: 'clinica-renascer', img: clinicaRenascer, nome: 'Clínica Renascer', tipo: 'Landing page', href: 'https://clinicarenascer.pt/', url: 'clinicarenascer.pt', detalhes: ['Telefone direto no topo', 'Agendamento de avaliação', 'Botão de WhatsApp'] },
+  { key: 'mira-way', img: miraWay, nome: 'Mira Way', tipo: 'Landing page', href: 'https://miraway.senvia.pt/', url: 'miraway.senvia.pt', detalhes: ['Registo em sessão', 'WhatsApp flutuante', 'Prova de escassez'] },
+  { key: 'rd-excursoes', img: rdExcursoes, nome: 'RD Excursões', tipo: 'Landing page', href: 'https://rdexcursoes.senvia.pt/', url: 'rdexcursoes.senvia.pt', detalhes: ['Filtro de viagens por mês', 'Catálogo de excursões', 'CTAs de reserva'] },
+  { key: 'delta-capital', img: deltaCapital, nome: 'Delta Capital', tipo: 'Landing page', href: 'https://deltacapital.pt/', url: 'deltacapital.pt', detalhes: ['Simulador de crédito', 'WhatsApp no topo', 'Selo Banco de Portugal'] },
+];
+// os ecrãs 3D usam as capturas em webp, já otimizadas pelo Astro
+const imgs = Object.fromEntries(
+  await Promise.all(trabalhos.map(async (t) => [t.key, (await getImage({ src: t.img, format: 'webp', width: 1600 })).src])),
+);
+
+const validacao = [
+  { k: 'Anúncio', pos: 'top', t: 'Mais do que um site: um <em>teste comercial</em> com dados.', d: 'Ativamos 3 criativos com 100€ de investimento incluído e um público configurado para o teu negócio.', fine: null as string | null },
+  { k: 'Página', pos: 'right', t: 'As visitas aterram numa página feita para converter.', d: 'Site de 3 a 12 páginas, pronto em 14 dias, com tracking de cliques e formulários.', fine: null },
+  { k: 'WhatsApp', pos: 'left', t: 'O contacto chega <em>com contexto</em>.', d: 'Serviço, nome e o que a pessoa precisa, direto na tua conversa de WhatsApp.', fine: null },
+  { k: 'Relatório', pos: 'top', t: 'No fim, um relatório e uma decisão.', d: 'Alcance, cliques, CTR, custo por contacto e o melhor criativo. A recomendação é uma de quatro: matar, ajustar, continuar ou escalar.', fine: '*Estimativa potencial de até 30.000 visualizações e 300 visitas. Resultados variam conforme nicho, verba, público, criativos e procura do mercado.' },
+];
+
+const pacotes = [
   {
-    img: draCristinaSousa,
-    nome: 'Dra. Cristina Sousa',
-    tipo: 'Website',
-    href: 'https://dracristinasousa.com/',
-    url: 'dracristinasousa.com',
-    alt: 'Website da Dra. Cristina Sousa, oftalmologista e cirurgiã oculoplástica: hero "Cirurgia Oculoplástica de Excelência" e menu com Procedimentos, Feedbacks, Antes e Depois e E-book.',
-    detalhes: ['Menu com 6 secções', 'E-book de vendas', 'Antes/depois e feedbacks'],
+    slug: 'presenca',
+    nome: 'Presença',
+    preco: 280,
+    antes: null as number | null,
+    desc: 'Para negócios que precisam sair do improviso e ter uma página profissional no ar.',
+    inclui: ['1 landing page ou site simples', 'WhatsApp com mensagem organizada', 'Formulário simples e SEO básico', 'Publicação e 1 revisão'],
+    cta: 'Começar com Presença',
+    destaque: false,
   },
   {
-    img: longevStudio,
-    nome: 'Longev Studio',
-    tipo: 'Website',
-    href: 'https://longevstudio.com/',
-    url: 'longevstudio.com',
-    alt: 'Website institucional do Longev Studio: menu com Equipa, Serviços e Contactos, hero "Treino de Força e Longevidade" e botão de agendamento.',
-    detalhes: ['Menu multi-página', 'Agendamento de avaliação', 'Versão PT/EN'],
+    slug: 'validacao-comercial',
+    nome: 'Validação Comercial',
+    preco: 490,
+    antes: 650,
+    desc: 'Para negócios que querem site, captação e um teste comercial real com anúncios.',
+    inclui: ['Site de 3 a 12 páginas, pronto em 14 dias', '14 dias de Meta Ads com 100€ incluídos', '3 criativos e público configurado', 'Tracking e relatório detalhado'],
+    cta: 'Validar o meu negócio',
+    destaque: true,
   },
   {
-    img: estudioTiagoPereira,
-    nome: 'Estúdio Tiago Pereira',
-    tipo: 'Website',
-    href: 'https://estudiotiagopereira.pt/',
-    url: 'estudiotiagopereira.pt',
-    alt: 'Website do Estúdio Tiago Pereira, especialista em lipedema: hero com estatísticas "+100 mulheres acompanhadas" e botões Agendar Consulta e Ver Programas.',
-    detalhes: ['Programas e e-books', 'Área de login', 'Prova social em números'],
+    slug: 'loja-online',
+    nome: 'Loja Online',
+    preco: 1190,
+    antes: null,
+    desc: 'Para negócios que querem vender produtos online com uma loja profissional e pronta para gestão.',
+    inclui: ['Loja responsiva com design próprio', 'Páginas de produto, carrinho e checkout', 'Pagamentos e envios configurados', 'Formação para gerir a loja'],
+    cta: 'Criar loja online',
+    destaque: false,
+  },
+];
+
+const manutencao = [
+  {
+    nome: 'Manutenção Básica',
+    mes: '29€',
+    ano: '290€/ano',
+    para: 'Obrigatória em qualquer website.',
+    itens: ['Alojamento', 'SSL', 'Backups', 'Atualizações técnicas', 'Monitorização básica', 'Pequenas correções técnicas', 'Site online e funcional'],
   },
   {
-    img: clinicaRenascer,
-    nome: 'Clínica Renascer',
-    tipo: 'Landing page',
-    href: 'https://clinicarenascer.pt/',
-    url: 'clinicarenascer.pt',
-    alt: 'Landing page da Clínica Renascer, estética e bem-estar: hero com localização "Valença, Portugal" e botões Agendar Avaliação e Falar com a Equipa.',
-    detalhes: ['Telefone direto no topo', 'Agendamento de avaliação', 'Botão de WhatsApp'],
+    nome: 'Manutenção Pro',
+    mes: '49€',
+    ano: '490€/ano',
+    para: 'Para quem quer o site a mexer todos os meses.',
+    itens: ['Tudo da Básica', 'Até 1 alteração simples por mês', 'Revisão mensal de formulário/links', 'Relatório simples de visitas/leads', 'Suporte prioritário'],
   },
   {
-    img: miraWay,
-    nome: 'Mira Way',
-    tipo: 'Landing page',
-    href: 'https://miraway.senvia.pt/',
-    url: 'miraway.senvia.pt',
-    alt: 'Página de captação da Mira Way para uma sessão online gratuita, com lista de benefícios, botão de registo e WhatsApp flutuante.',
-    detalhes: ['Registo em sessão', 'WhatsApp flutuante', 'Prova de escassez'],
+    nome: 'Manutenção Loja Online',
+    mes: '79€',
+    ano: '790€/ano',
+    para: 'Obrigatória em lojas online.',
+    itens: ['Alojamento', 'SSL', 'Backups', 'Atualizações técnicas', 'Segurança', 'Verificação de checkout', 'Suporte técnico', 'Pequenas correções', 'Monitorização de erros críticos'],
   },
-  {
-    img: rdExcursoes,
-    nome: 'RD Excursões',
-    tipo: 'Landing page',
-    href: 'https://rdexcursoes.senvia.pt/',
-    url: 'rdexcursoes.senvia.pt',
-    alt: 'Landing page da RD Excursões, agência de viagens: hero "Descubra Portugal com a RD Excursões", filtro de mês/programa e catálogo de próximas viagens.',
-    detalhes: ['Filtro de viagens por mês', 'Catálogo de próximas excursões', 'CTAs de reserva'],
-  },
-  {
-    img: deltaCapital,
-    nome: 'Delta Capital',
-    tipo: 'Landing page',
-    href: 'https://deltacapital.pt/',
-    url: 'deltacapital.pt',
-    alt: 'Landing page da Delta Capital, intermediário de crédito: simulador de crédito habitação, botão "Falar connosco" por WhatsApp e selo do Banco de Portugal.',
-    detalhes: ['Simulador de crédito', 'WhatsApp no topo', 'Selo Banco de Portugal'],
-  },
+];
+
+const processo = [
+  { label: 'Preenches o briefing' },
+  { label: 'Validamos o melhor caminho' },
+  { label: 'Pagas o sinal' },
+  { label: 'Criamos o site' },
+  { label: 'Revês' },
+  { label: 'Publicamos' },
+  { label: 'Se for Validação, ativamos os anúncios', condicional: true },
+];
+
+const faqs = [
+  { q: 'O domínio está incluído?', a: 'Sim. Todos os pacotes incluem 1 ano de domínio gratuito como oferta especial, sujeito à disponibilidade do nome.' },
+  { q: 'Tenho de pagar manutenção?', a: 'Sim. Websites exigem no mínimo Manutenção Básica para alojamento, segurança, backups e funcionamento técnico. Loja Online exige Manutenção Loja Online.' },
+  { q: 'O investimento em anúncios está incluído?', a: 'No Pacote Validação Comercial, sim: estão incluídos 100€ de investimento para Meta Ads.' },
+  { q: 'Em quanto tempo fica pronto?', a: 'O Pacote Validação Comercial fica pronto em até 14 dias, dependendo da entrega de materiais e validações.' },
+  { q: 'O Pacote Presença também tem anúncios?', a: 'Não. O Pacote Presença é uma página/site simples de entrada. Para anúncios, tracking e relatório comercial, o pacote certo é o Validação Comercial.' },
+  { q: 'Posso pedir alterações?', a: 'Sim. O Pacote Presença inclui 1 revisão. Alterações adicionais ou acompanhamento contínuo podem entrar na manutenção ou ser orçamentados à parte.' },
 ];
 
 /* ------------------------------------------------------------------
@@ -342,7 +195,7 @@ const jsonLd = [
       // Os preços da página são sem IVA, declarado explicitamente.
       priceSpecification: {
         '@type': 'PriceSpecification',
-        price: p.preco.replace('€', ''),
+        price: String(p.preco),
         priceCurrency: 'EUR',
         valueAddedTaxIncluded: false,
       },
@@ -360,6 +213,10 @@ const jsonLd = [
     })),
   },
 ];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+// janela de progresso do capítulo em que cada camada de texto está visível
+const win = (i: number, n: number) => ({ 'data-in': (i / n).toFixed(4), 'data-out': ((i + 1) / n).toFixed(4) });
 ---
 
 <Base
@@ -369,2235 +226,237 @@ const jsonLd = [
   image="/images/og-sites.jpg"
   jsonLd={jsonLd}
 >
-  <!-- Marca o suporte a JS antes de o herói ser processado: sem isto o browser
-       pinta o herói, o script chega ~30 kB depois e o herói pisca ao esconder-se.
-       Aqui não há flash e o LCP não é adiado. -->
-  <script is:inline>document.documentElement.classList.add('sv-js');</script>
+  <!-- Marca o suporte a JS antes de pintar: as camadas de texto ficam escondidas até o scroll as mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" />
 
-  <div id="sv-page">
-    <!-- ==========================================================
-         1. HERO
-    =========================================================== -->
-    <CinematicHero
-      pacotesHref="#pacotes"
-      diagnosticoHref={diagnosticoUrl}
-      diagnosticoAttrs={diagAttrs}
-      whatsappHref={whatsapp}
-      hasVideo={hasHeroVideo}
-      videoSrc={HERO_VIDEO_SRC}
-    >
+  <div class="sv2" id="sv2" data-imgs={JSON.stringify(imgs)}>
+    <canvas id="world" aria-hidden="true"></canvas>
+    <canvas id="fg" aria-hidden="true"></canvas>
 
-    <!-- ==========================================================
-         2. DOR
-    =========================================================== -->
-    <section class="sv-section sv-section--pain">
-      <div class="sv-container sv-pain__inner">
-        <div class="sv-pain__copy">
-          <h2>
-            O teu negócio não precisa de mais um site. Precisa de uma página que
-            <em>explique, organize e gere contactos</em>.
-          </h2>
-          <p class="sv-lead">
-            Um site bonito não chega. Se a pessoa entra, não entende a oferta e não sabe o que fazer
-            a seguir, o site falhou.
-          </p>
+    <div class="tip" id="tip" aria-hidden="true"><b></b><span></span></div>
 
-        </div>
+    <nav class="hud" aria-label="Capítulos da página">
+      <b id="hud-n" aria-hidden="true">01</b><span id="hud-name" aria-hidden="true">Início</span><span class="track" aria-hidden="true"><i id="hud-bar"></i></span><span class="dots" id="hud-dots"></span>
+    </nav>
 
-        <div class="sv-pain__right">
-          <ul class="sv-pain__list">
-            {
-              dores.map((d, i) => (
-                <li data-reveal style={`--d:${i * 70}ms`}>
-                  <span class="sv-pain__num">{String(i + 1).padStart(2, '0')}</span>
-                  <span class="sv-pain__text">{d}</span>
-                </li>
-              ))
-            }
-          </ul>
-
-          <figure class="sv-pain__figure">
-            <BrowserFrame url="miraway.pt">
-              <Image
-                src={miraWay}
-                alt="Página de captação da Mira Way com botão de registo e WhatsApp flutuante no canto inferior direito."
-                widths={[520, 780]}
-                sizes="(max-width: 900px) 88vw, 420px"
-                loading="lazy"
-                quality={68}
-              />
-            </BrowserFrame>
-            <figcaption>
-              O oposto disto: um caminho único. Entender a oferta, clicar e falar connosco pelo
-              WhatsApp ou formulário.
-            </figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         3. SOLUÇÃO
-    =========================================================== -->
-    <section class="sv-section sv-section--solution">
-      <div class="sv-container sv-solution__inner">
-        <div class="sv-solution__visual">
-          <BrowserFrame url="deltacapital.pt">
-            <Image
-              src={deltaCapital}
-              alt="Landing page da Delta Capital com simulador de crédito e botão de WhatsApp no menu."
-              widths={[640, 960, 1280]}
-              sizes="(max-width: 1023px) 92vw, 560px"
-              loading="lazy"
-              quality={70}
-            />
-          </BrowserFrame>
-
-          <div class="sv-specimens" aria-hidden="true">
-            <div class="sv-specimen">
-              <p class="sv-specimen__label">Botão de WhatsApp</p>
-              <span class="sv-specimen__wa">
-                <svg viewBox="0 0 24 24" fill="currentColor"
-                  ><path
-                    d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37s-1.04 1.01-1.04 2.47 1.06 2.86 1.21 3.06c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.5h-.01a9.5 9.5 0 0 1-4.83-1.32l-.35-.2-3.59.94.96-3.5-.23-.36a9.42 9.42 0 0 1-1.45-5.05c0-5.21 4.26-9.46 9.5-9.46 2.54 0 4.92.99 6.71 2.78a9.4 9.4 0 0 1 2.78 6.69c0 5.21-4.26 9.46-9.5 9.46m8.08-17.54A11.36 11.36 0 0 0 12.05 1C5.79 1 .7 6.07.7 12.3c0 1.99.52 3.93 1.51 5.64L.6 24l6.22-1.62a11.4 11.4 0 0 0 5.22 1.33h.01c6.26 0 11.35-5.07 11.35-11.3 0-3.02-1.18-5.86-3.32-8Z"
-                  /></svg
-                >
-                Falar connosco
-              </span>
-            </div>
-
-            <div class="sv-specimen">
-              <p class="sv-specimen__label">Formulário</p>
-              <span class="sv-field"></span>
-              <span class="sv-field sv-field--short"></span>
-            </div>
-
-            <div class="sv-specimen">
-              <p class="sv-specimen__label">Tracking</p>
-              <span class="sv-specimen__row"><i></i> Cliques no WhatsApp</span>
-              <span class="sv-specimen__row"><i></i> Formulários enviados</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="sv-solution__copy">
-          <h2>O que o teu site <em>precisa mesmo</em> de ter.</h2>
-          <p class="sv-lead sv-solution__hint">
-            <span>Desliza</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
-          </p>
-
-          <ul class="sv-solution__list">
-            {
-              solucao.map((s) => (
-                <li>
-                  <h3>{s.title}</h3>
-                  <p>{s.desc}</p>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         4. PROVA E TRABALHOS
-    =========================================================== -->
-    <section class="sv-section sv-section--work" id="trabalhos">
-      <div class="sv-container">
-        <div class="sv-head">
-          <div>
-            <p class="sv-eyebrow">Trabalhos</p>
-            <h2>Trabalho real, não promessa abstrata.</h2>
-          </div>
-          <p class="sv-head__aside">
-            Usamos estrutura, design e tracking para transformar a presença online numa ferramenta
-            comercial.
-          </p>
-        </div>
-
-        <div class="sv-work">
-          {
-            trabalhos.map((t, i) => (
-              <figure class:list={['sv-work__item', i === 0 && 'sv-work__item--lead']} data-reveal>
-                <a
-                  href={t.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="sv-work__link"
-                  aria-label={`Abrir o site de ${t.nome} numa nova aba`}
-                >
-                  <BrowserFrame url={t.url}>
-                    <Image
-                      src={t.img}
-                      alt={t.alt}
-                      widths={i === 0 ? [800, 1200, 1600] : [560, 840, 1120]}
-                      sizes={i === 0 ? '(max-width: 900px) 92vw, 1100px' : '(max-width: 900px) 92vw, 540px'}
-                      loading="lazy"
-                      quality={72}
-                    />
-                  </BrowserFrame>
-                </a>
-                <figcaption>
-                  <a href={t.href} target="_blank" rel="noopener noreferrer" class="sv-work__name">
-                    {t.nome}
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
-                  </a>
-                  <span class="sv-work__cat">{t.tipo}</span>
-                  <span class="sv-work__details">{t.detalhes.join(' · ')}</span>
-                </figcaption>
-              </figure>
-            ))
-          }
-        </div>
-
-        <div class="sv-work__cta">
-          <p>Queres uma página assim para o teu negócio?</p>
-          <a href="#pacotes" class="sv-btn sv-btn--dark">
-            Ver pacotes
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         5. VALIDAÇÃO COMERCIAL EM DESTAQUE
-    =========================================================== -->
-    <section class="sv-section sv-section--dark" id="validacao">
-      <div class="sv-container sv-validation__inner">
-        <div class="sv-validation__copy">
-          <p class="sv-eyebrow sv-eyebrow--onDark">Pacote Validação Comercial</p>
-          <h2>Mais do que um site: um <em>teste comercial com dados</em>.</h2>
-          <p class="sv-lead sv-lead--onDark">
-            O pacote Validação Comercial junta página, criativos, tráfego pago, tracking e relatório
-            para perceber se a oferta gera interesse real.
-          </p>
-
-          <ol class="sv-moments">
-            {
-              momentos.map((m) => (
-                <li>
-                  <span class="sv-moments__n">{m.n}</span>
-                  <div>
-                    <h3>{m.title}</h3>
-                    <p>{m.desc}</p>
-                  </div>
-                </li>
-              ))
-            }
-          </ol>
-
-          <a href={pacoteUrl('validacao-comercial')} target="_blank" rel="noopener noreferrer" class="sv-btn sv-btn--primary">
-            Validar meu negócio
-          </a>
-        </div>
-
-        <div class="sv-validation__report">
-          <article class="sv-report">
-            <header class="sv-report__head">
-              <div>
-                <p class="sv-report__kicker">Relatório de campanha</p>
-                <p class="sv-report__title">Validação Comercial · 14 dias</p>
+    <div class="chapters">
+      <!-- 00 início -->
+      <section class="chapter" id="inicio" data-name="Início" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-center" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Criação de sites · Portugal</p>
+              <h1 class="split">Sites que transformam visitantes em <em>pedidos</em>.</h1>
+              <p class="lede fade" style="--d:1">Páginas, sites e lojas online para negócios que precisam de parecer profissionais, explicar bem a oferta e receber contactos pelo WhatsApp ou formulário.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href="#pacotes" data-go="5">Ver pacotes</a>
+                <a class="sbtn sbtn-ghost" href={diagnosticoUrl} {...ext}>Pedir diagnóstico</a>
               </div>
-              <span class="sv-report__seal">SENVIA</span>
-            </header>
-
-            <ul class="sv-report__fields">
-              {
-                relatorioCampos.map((c) => (
-                  <li>
-                    <span>{c}</span>
-                    <i aria-hidden="true"></i>
-                  </li>
-                ))
-              }
-            </ul>
-
-            <footer class="sv-report__foot">
-              <p class="sv-report__concl">Recomendação objetiva: uma destas quatro, com justificação.</p>
-              <div class="sv-report__pills">
-                <span>Matar</span><span>Ajustar</span><span>Continuar</span><span>Escalar</span>
-              </div>
-            </footer>
-          </article>
-
-          <p class="sv-report__caption">
-            Esta é a estrutura do relatório que recebes no fim dos 14 dias. Os números são os da tua
-            campanha. Não prometemos resultados antes de os medir.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         6. PACOTES
-    =========================================================== -->
-    <section class="sv-section sv-section--plans" id="pacotes">
-      <div class="sv-container">
-        <div class="sv-head">
-          <div>
-            <p class="sv-eyebrow">Pacotes</p>
-            <h2>Pacotes com preço fechado e escopo claro.</h2>
+            </div>
           </div>
-          <p class="sv-head__aside">
-            Escolhe o ponto de partida certo para o teu negócio. Sem proposta confusa, sem conversa
-            infinita, sem surpresas no fim.
-          </p>
-        </div>
-
-        <div class="sv-plans">
-          {
-            pacotes.map((p) => (
-              <article class:list={['sv-plan', p.destaque && 'sv-plan--feature']}>
-                <div class="sv-plan__top">
-                  {p.destaque && <span class="sv-plan__tag">Recomendado</span>}
-                  <h3 class="sv-plan__name">{p.nome}</h3>
-
-                  <p class="sv-plan__price">
-                    <span class="sv-plan__amount">{p.preco}</span>
-                    <span class="sv-plan__vat">{p.precoNota}</span>
-                    {
-                      p.antes && (
-                        <s class="sv-plan__was">
-                          <span class="sr-only">Preço anterior: </span>
-                          {p.antes}
-                        </s>
-                      )
-                    }
-                  </p>
-                  {p.promo && <p class="sv-plan__promo">{p.promo}</p>}
-
-                  <p class="sv-plan__desc">{p.desc}</p>
-
-                  <a
-                    href={pacoteUrl(p.slug)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class:list={['sv-btn', p.destaque ? 'sv-btn--primary' : 'sv-btn--dark', 'sv-btn--block']}
-                  >
-                    {p.cta}
-                  </a>
-                </div>
-
-                <div class="sv-plan__body">
-                  <p class="sv-plan__incl">Inclui</p>
-                  <ul class="sv-plan__list">
-                    {p.inclui.map((item) => (
-                      <li>
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {p.nota && <p class="sv-plan__note">{p.nota}</p>}
-                </div>
-              </article>
-            ))
-          }
-        </div>
-
-        <div class="sv-plans__note">
-          <p class="sv-plans__gift">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
-            <span>
-              Todos os pacotes incluem <strong>1 ano de domínio gratuito</strong> como oferta especial.*
-            </span>
-          </p>
-          <p class="sv-fine">*Oferta sujeita à disponibilidade do nome de domínio.</p>
-
-          <div class="sv-plans__care">
-            <p>
-              <strong>Todos os websites exigem manutenção</strong> para garantir alojamento,
-              segurança, backups e suporte técnico desde o lançamento.
-            </p>
-            <a href="#manutencao" class="sv-link">
-              Ver manutenção
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
-            </a>
+          <div class="layer pos-center m-high" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Feito para o teu negócio</p>
+              <h2 class="split">Preço fechado, prazo curto e <em>um objetivo</em>.</h2>
+              <ul class="facts">
+                <li class="fade" style="--d:1"><b data-count="280" data-suffix="€">280€</b><span>desde, + IVA</span></li>
+                <li class="fade" style="--d:2"><b data-count="14">14</b><span>dias até estar no ar</span></li>
+                <li class="fade" style="--d:3"><b data-count="1">1</b><span>botão que leva a falar contigo</span></li>
+              </ul>
+            </div>
           </div>
-
-          <p class="sv-fine sv-plans__reassure">
-            Os botões acima levam-te ao briefing. Não há pagamento nesta fase.
-          </p>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ==========================================================
-         7. PROCESSO
-    =========================================================== -->
-    <section class="sv-section sv-section--process" id="processo">
-      <div class="sv-container">
-        <div class="sv-head">
-          <div>
-            <p class="sv-eyebrow">Processo</p>
-            <h2>Como funciona</h2>
+      <!-- 01 problema -->
+      <section class="chapter" id="problema" data-name="Problema" data-beats="3" style="--beats:3">
+        <div class="frame">
+          <div class="layer pos-center" data-in="0" data-out="0.3333">
+            <div class="copy">
+              <p class="eyebrow">O problema</p>
+              <h2 class="split">O teu negócio não precisa de <em>mais um site</em>.</h2>
+              <p class="lede fade" style="--d:1">Precisa de uma página que explique, organize e gere contactos. Um site bonito não chega: se a pessoa entra, não entende a oferta e não sabe o que fazer a seguir, o site falhou.</p>
+            </div>
           </div>
-          <p class="sv-head__aside">
-            Um processo simples para tirar o site do papel sem arrastar decisões durante meses.
-          </p>
-        </div>
-
-        <ol class="sv-steps">
-          {
-            processo.map((s) => (
-              <li class:list={['sv-step', s.condicional && 'sv-step--cond']}>
-                <span class="sv-step__n">{s.n}</span>
-                <span class="sv-step__label">{s.label}</span>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         8. MANUTENÇÃO
-    =========================================================== -->
-    <section class="sv-section sv-section--care" id="manutencao">
-      <div class="sv-container">
-        <div class="sv-head">
-          <div>
-            <p class="sv-eyebrow">Manutenção</p>
-            <h2>Depois de publicar, o site precisa continuar seguro e online.</h2>
+          <!-- três frases que entram uma de cada vez com o scroll; a cada uma, um losango perde a cor e cai -->
+          <div class="layer pos-center" data-in="0.3333" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Soa familiar?</p>
+              <p class="lines">
+                <span class="bl" data-at="0.04">Perfil <em>sem confiança</em>.</span>
+                <span class="bl" data-at="0.34">Mensagens <em>sem contexto</em>.</span>
+                <span class="bl" data-at="0.64">Clientes que <em class="gone">desaparecem</em>.</span>
+              </p>
+            </div>
           </div>
-          <p class="sv-head__aside">
-            Todos os websites exigem manutenção para garantir alojamento, segurança, backups e
-            suporte técnico desde o lançamento.
-          </p>
         </div>
+      </section>
 
-        <div class="sv-care">
-          {
-            manutencao.map((m) => (
-              <article class="sv-care__item">
-                <h3>{m.nome}</h3>
-                <p class="sv-care__price">
-                  <strong>{m.mes}</strong> + IVA
-                  <span>ou {m.ano} + IVA</span>
-                </p>
-                <p class="sv-care__for">{m.para}</p>
-                <ul>
-                  {m.itens.map((i) => (
-                    <li>
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" /></svg>
-                      <span>{i}</span>
-                    </li>
+      <!-- 02 solução: as peças montam um site dentro da janela de browser -->
+      <section class="chapter" id="solucao" data-name="Solução" data-beats="3" style="--beats:3">
+        <div class="frame">
+          {solucao.map((g, i) => (
+            <div class={`layer pos-${g.pos} ${g.mobile}`} {...win(i, solucao.length)}>
+              <div class="copy">
+                <p class="eyebrow">O que o teu site precisa ter <span class="n">{i + 1} de 3</span></p>
+                <h2 class="split" set:html={g.titulo} />
+                <div class="pairs">
+                  {g.itens.map((it, j) => (
+                    <div class="pair fade" style={`--d:${j + 1}`}><h3>{it.title}</h3><p>{it.desc}</p></div>
                   ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 03 trabalho: um ecrã 3D por projeto, num corredor -->
+      <section class="chapter" id="trabalho" data-name="Trabalho" data-beats={trabalhos.length} style={`--beats:${trabalhos.length}`}>
+        <div class="frame">
+          {trabalhos.map((w, i) => (
+            <div class={`layer pos-${i % 2 ? 'right' : 'left'} work ${i % 2 ? 'm-high' : 'm-low'}`} data-key={w.key} data-dom={w.url} {...win(i, trabalhos.length)}>
+              <div class="copy">
+                <p class="eyebrow">Trabalho real <span class="n">{pad(i + 1)} de {pad(trabalhos.length)}</span></p>
+                <span class="kind fade" style="--d:0">{w.tipo}</span>
+                <h2 class="split">{w.nome}</h2>
+                <ul class="tags">
+                  {w.detalhes.map((t, k) => <li class="fade" style={`--d:${k + 1}`}>{t}</li>)}
                 </ul>
+                <a class="link fade" style="--d:4" href={w.href} {...ext}>Ver {w.url}</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 04 validação (noite): o percurso anúncio, página, WhatsApp e relatório -->
+      <section class="chapter" id="validacao" data-name="Validação" data-beats={validacao.length} data-night="true" style={`--beats:${validacao.length}`}>
+        <div class="frame">
+          {validacao.map((v, i) => (
+            <div class={`layer pos-${v.pos} m-high`} {...win(i, validacao.length)}>
+              <div class="copy">
+                <p class="eyebrow">Validação Comercial · 490€ <span class="n">{pad(i + 1)} {v.k}</span></p>
+                <h2 class="split" set:html={v.t} />
+                <p class="lede fade" style="--d:1">{v.d}</p>
+                {v.fine && <p class="fine fade" style="--d:2">{v.fine}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 05 pacotes -->
+      <section class="chapter" id="pacotes" data-name="Pacotes" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer layer-plans pos-center" data-in="0" data-out="1">
+            <div class="copy wide">
+              <p class="eyebrow">Pacotes</p>
+              <h2 class="split">Preço fechado e escopo claro.</h2>
+              <div class="plans">
+                {pacotes.map((p, k) => (
+                  <article class={`plan fade${p.destaque ? ' rec' : ''}`} style={`--d:${k + 1}`}>
+                    {p.destaque && (
+                      <div class="sbadges">
+                        <span class="sbadge">Recomendado</span>
+                        {p.antes && <span class="sbadge off">Poupas {p.antes - p.preco}€</span>}
+                      </div>
+                    )}
+                    <span class="pn">{p.nome}</span>
+                    <span class="pp">
+                      <span data-count={p.preco} data-suffix="€">{p.preco}€</span>
+                      {p.antes && <s><span class="sr">antes </span>{p.antes}€</s>}
+                      <small>+ IVA</small>
+                    </span>
+                    <ul>{p.inclui.map((i) => <li>{i}</li>)}</ul>
+                    <a class={`sbtn sbtn-sm${p.destaque ? '' : ' sbtn-ghost'}`} href={pacoteUrl(p.slug)} {...ext}>{p.cta}</a>
+                  </article>
+                ))}
+              </div>
+              <div class="plan-dots" aria-hidden="true"><i></i><i class="on"></i><i></i></div>
+              <p class="fine fade" style="--d:4">Todos os sites exigem manutenção, desde 29€/mês + IVA (<a href="#manutencao">ver planos</a>). Todos os pacotes incluem 1 ano de domínio, sujeito à disponibilidade do nome.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- detalhes: secções normais, por cima do mundo 3D -->
+    <section class="info" aria-label="Manutenção, processo e perguntas frequentes">
+      <div class="info-in">
+        <div class="info-block" id="manutencao">
+          <p class="eyebrow">Manutenção</p>
+          <h2 class="split">Depois de publicar, o site continua <em>seguro e no ar</em>.</h2>
+          <p class="lede fade" style="--d:1">Todos os websites exigem manutenção para garantir alojamento, segurança, backups e suporte técnico desde o lançamento.</p>
+          <div class="care">
+            {manutencao.map((m, k) => (
+              <article class="fade" style={`--d:${k + 2}`}>
+                <h3>{m.nome}</h3>
+                <p class="cp">{m.mes}<small>/mês + IVA</small></p>
+                <p class="cy">ou {m.ano} + IVA</p>
+                <p class="for">{m.para}</p>
+                <ul>{m.itens.map((i) => <li>{i}</li>)}</ul>
               </article>
-            ))
-          }
+            ))}
+          </div>
+          <p class="rule fade" style="--d:5"><strong>Regra simples, sem letra pequena:</strong> websites exigem no mínimo Manutenção Básica. Loja Online exige Manutenção Loja Online. A manutenção é proteção do que pagaste, não uma taxa escondida.</p>
         </div>
 
-        <p class="sv-rule">
-          <strong>Regra simples, sem letra pequena:</strong> websites exigem no mínimo Manutenção
-          Básica. Loja Online exige Manutenção Loja Online. A manutenção é proteção do que pagaste.
-          Não é uma taxa escondida.
-        </p>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         9. FAQ
-    =========================================================== -->
-    <section class="sv-section sv-section--faq" id="faq">
-      <div class="sv-container sv-faq__inner">
-        <div class="sv-faq__aside">
-          <p class="sv-eyebrow">Perguntas frequentes</p>
-          <h2>As perguntas que nos fazem sempre.</h2>
-          <p class="sv-lead">
-            Se ficar alguma dúvida de fora, escreve-nos. Respondemos sem rodeios.
-          </p>
-          <a
-            href={diagnosticoUrl}
-            class="sv-link"
-            {...diagAttrs}
-          >
-            Pedir diagnóstico rápido
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-          </a>
+        <div class="info-block" id="processo">
+          <p class="eyebrow">Como funciona</p>
+          <h2 class="split">Do briefing ao site no ar, <em>sem arrastar</em>.</h2>
+          <p class="lede fade" style="--d:1">Um processo simples para tirar o site do papel sem decisões a arrastar durante meses.</p>
+          <ol class="steps">
+            {processo.map((s, k) => (
+              <li class={`fade${s.condicional ? ' cond' : ''}`} style={`--d:${k + 2}`}><b>{pad(k + 1)}</b><span>{s.label}</span></li>
+            ))}
+          </ol>
         </div>
 
-        <div class="sv-faq__list">
-          {
-            faqs.map((f) => (
-              <details class="sv-faq__item">
-                <summary>
-                  <span>{f.q}</span>
-                  <i aria-hidden="true"></i>
-                </summary>
+        <div class="info-block faq" id="faq">
+          <div class="faq-aside">
+            <p class="eyebrow">Perguntas frequentes</p>
+            <h2 class="split">As perguntas que nos fazem <em>sempre</em>.</h2>
+            <p class="lede fade" style="--d:1">Se ficar alguma dúvida de fora, escreve-nos. Respondemos sem rodeios.</p>
+            <a class="link fade" style="--d:2" href={diagnosticoUrl} {...ext}>Pedir diagnóstico rápido</a>
+          </div>
+          <div class="faqs fade" style="--d:2">
+            {faqs.map((f) => (
+              <details>
+                <summary><span>{f.q}</span><i aria-hidden="true"></i></summary>
                 <p>{f.a}</p>
               </details>
-            ))
-          }
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================
-         10. CTA FINAL
-    =========================================================== -->
-    <section class="sv-section sv-final" id="contacto">
-      <div class="sv-container sv-final__inner">
-        <div>
-          {/* Selo de marca a fechar a página. Deliberadamente pequeno: esta
-              secção existe para converter, e o vídeo não pode competir com
-              o botão. preload="none" — 4,7 MB só se descarregam se alguém
-              chegar aqui, e nunca com reduced-motion. */}
-          <div class="sv-final__selo" data-sv-selo>
-            <video
-              id="sv-logo-video"
-              muted
-              playsinline
-              preload="none"
-              width="1284"
-              height="716"
-              data-src="/videos/logo-senvia.mp4"
-              aria-hidden="true"
-              tabindex="-1"
-            ></video>
+            ))}
           </div>
-
-          <h2>Decide isto numa conversa de 10 minutos, não num mês de dúvidas.</h2>
-          <p>
-            Pede um diagnóstico rápido e sai já com um caminho concreto, ou avança direto para o
-            pacote que faz sentido para o teu negócio.
-          </p>
-        </div>
-        <div class="sv-final__actions">
-          <a
-            href={diagnosticoUrl}
-            class="sv-btn sv-btn--primary sv-btn--lg"
-            {...diagAttrs}
-          >
-            Pedir diagnóstico rápido
-          </a>
-          <a href="#pacotes" class="sv-btn sv-btn--outline sv-btn--lg">Ver pacotes</a>
-          <p class="sv-final__note">Resposta em dias úteis · Sem compromisso</p>
         </div>
       </div>
     </section>
-    </CinematicHero>
+
+    <div class="chapters">
+      <!-- 06 contacto: as peças montam a marca -->
+      <section class="chapter" id="contacto" data-name="Contacto" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer pos-bottom m-low" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Próximo passo</p>
+              <h2 class="split">Decide isto numa conversa de <em>10 minutos</em>.</h2>
+              <p class="lede fade" style="--d:1">Pede um diagnóstico rápido e sai com um caminho concreto, ou avança já para o pacote que faz sentido.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={diagnosticoUrl} {...ext}>Pedir diagnóstico rápido</a>
+                <a class="sbtn sbtn-ghost" href="#pacotes" data-go="5">Ver pacotes</a>
+              </div>
+            </div>
+          </div>
+          <div class="wordmark" aria-hidden="true">SENVIA</div>
+        </div>
+      </section>
+    </div>
   </div>
-
-  <script is:inline>
-    (function () {
-      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var targets = document.querySelectorAll('[data-reveal]');
-
-      var revealAll = function () {
-        for (var i = 0; i < targets.length; i++) targets[i].setAttribute('data-revealed', '');
-      };
-
-      /* --- Reveal discreto (só onde faz sentido) --- */
-      try {
-        if (reduced || !('IntersectionObserver' in window)) {
-          revealAll();
-        } else {
-          var io = new IntersectionObserver(
-            function (entries) {
-              for (var i = 0; i < entries.length; i++) {
-                if (entries[i].isIntersecting) {
-                  entries[i].target.setAttribute('data-revealed', '');
-                  io.unobserve(entries[i].target);
-                }
-              }
-            },
-            { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
-          );
-          for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
-        }
-      } catch (err) {
-        /* Nada pode ficar invisível por causa de um erro de script. */
-        revealAll();
-      }
-
-      /* --- Selo de marca do CTA final ---
-         4,7 MB: só se descarrega quando o selo entra no ecrã, e nunca com
-         reduced-motion. Loop infinito precisa de mecanismo de pausa
-         (WCAG 2.2.2, nível A). */
-      var selo = document.querySelector('[data-sv-selo]');
-      var logoV = document.getElementById('sv-logo-video');
-
-      if (selo && logoV && !reduced) {
-        /* A cena do CTA está sempre dentro do ecrã (posicionada absoluta),
-           só com opacity 0 — um IntersectionObserver disparava logo ao abrir
-           a página e descarregava os 4,7 MB a todos. O gatilho é a opacidade
-           real da cena. */
-        var cenaSelo = selo.closest('[data-cine-scenes] > *') || selo;
-        var carregado = false;
-
-        var talvezCarregar = function () {
-          if (carregado) return;
-          if (parseFloat(getComputedStyle(cenaSelo).opacity) < 0.5) return;
-          carregado = true;
-          window.removeEventListener('scroll', talvezCarregar);
-
-          (function () {
-            var src = document.createElement('source');
-            src.src = logoV.getAttribute('data-src');
-            src.type = 'video/mp4';
-            logoV.appendChild(src);
-            logoV.load();
-
-            /* Toca uma vez até ao fim e fica parado no último fotograma.
-               Sem loop, portanto não precisa de botão de pausa: o movimento
-               termina sozinho e não se repete. */
-            var pr = logoV.play();
-            var ligar = function () {
-              logoV.setAttribute('data-playing', '');
-            };
-            if (pr && pr.then) pr.then(ligar).catch(function () {});
-            else ligar();
-          })();
-        };
-
-        /* Sem chamada imediata: este script corre ANTES do módulo do
-           componente, portanto as cenas ainda estão a opacity 1 e o vídeo
-           era descarregado logo ao abrir a página. Só o scroll o dispara,
-           e para chegar ao CTA é sempre preciso fazer scroll. */
-        window.addEventListener('scroll', talvezCarregar, { passive: true });
-      }
-
-      /* --- Vídeo da hero: só carrega quando compensa ---
-         O resto da hero (tilt, brilho, sequência de scroll, contador) vive
-         agora no próprio componente CinematicHero.astro. Isto fica cá porque
-         é o único ponto que carrega o vídeo em si — o componente só marca o
-         <video> com data-src, não lhe injeta a fonte nem lhe chama .play(). */
-      var video = document.getElementById('sv-hero-video');
-      if (!video) return;
-
-      var saveData = navigator.connection && navigator.connection.saveData === true;
-      var wideEnough = window.innerWidth >= 768;
-
-      if (reduced || saveData || !wideEnough) return; // fica o poster estático
-
-      var start = function () {
-        var source = document.createElement('source');
-        source.src = video.getAttribute('data-src');
-        source.type = 'video/mp4';
-        video.appendChild(source);
-        video.load();
-
-        var toggle = document.getElementById('sv-hero-video-toggle');
-        var p = video.play();
-
-        var enableToggle = function () {
-          video.setAttribute('data-playing', '');
-          if (!toggle) return;
-          toggle.hidden = false;
-          var pauseIcon = toggle.querySelector('.sv-hero__vtoggle-pause');
-          var playIcon = toggle.querySelector('.sv-hero__vtoggle-play');
-          var label = toggle.querySelector('.sv-hero__vtoggle-text');
-
-          var sync = function () {
-            var paused = video.paused;
-            toggle.setAttribute('aria-pressed', String(paused));
-            pauseIcon.style.display = paused ? 'none' : '';
-            playIcon.style.display = paused ? '' : 'none';
-            label.textContent = paused ? 'Retomar animação' : 'Parar animação';
-          };
-
-          toggle.addEventListener('click', function () {
-            if (video.paused) video.play();
-            else video.pause();
-          });
-          video.addEventListener('play', sync);
-          video.addEventListener('pause', sync);
-          sync();
-        };
-
-        if (p && p.then) p.then(enableToggle).catch(function () {});
-        else enableToggle();
-      };
-
-      if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 2000 });
-      else window.setTimeout(start, 600);
-    })();
-  </script>
 </Base>
 
-<style is:global>
-  /* =========================================================
-     SENVIA, página /sites
-     Direção: editorial claro, carvão + verde. Sem dark/ciano global.
-     Todos os seletores usam o prefixo .sv- ou estão presos a #sv-page,
-     por isso este ficheiro não afeta nenhuma outra página.
-     ========================================================= */
-
-  #sv-page {
-    /* --- Paleta SENVIA --- */
-    --sv-cyan: #00c3ff; /* Primary SENVIA Cyan */
-    --sv-cyan-hover: #33ffe3; /* Hover Cyan */
-    --sv-cyan-mid: #009ccc; /* Mid Cyan Blue */
-    --sv-petrol: #007599; /* Petrol Blue */
-    --sv-petrol-dark: #004e66; /* Dark Petrol */
-    --sv-ink: #0b1f2a; /* Deep Navy, para blocos escuros e títulos */
-    --sv-ink-soft: #0f2937; /* Secondary Navy */
-
-    /* Texto sobre superfície escura (paleta SENVIA) */
-    --sv-on-dark: #f1f5f9; /* Text Light */
-    --sv-on-dark-soft: #cbd6de; /* Text Soft */
-    --sv-on-dark-muted: #8a98a6; /* Text Muted */
-    --sv-border-dark: rgba(148, 163, 184, 0.15);
-
-    /* Papéis:
-       o ciano #00c3ff só tem 2.05:1 em fundo claro, por isso nunca é texto
-       aqui. É fundo de botão (8.1:1 com navy por cima) e acento em escuro.
-       Para texto/links em claro usa-se o Petrol Blue. */
-    --sv-accent: var(--sv-cyan); /* superfícies e acentos */
-    --sv-accent-hover: var(--sv-cyan-hover);
-    --sv-accent-ink: var(--sv-petrol); /* texto de acento em claro, 4.9:1 */
-    --sv-accent-strong: var(--sv-petrol-dark); /* texto de acento forte, 8.6:1 */
-    --sv-accent-soft: #e4f4fc;
-    --sv-on-accent: #04212c; /* texto por cima do ciano */
-
-    /* Verde: só semântico (WhatsApp). Nunca como identidade da página. */
-    --sv-whatsapp: #25d366;
-
-    /* Neutros frios, derivados do navy para não destoarem do sistema */
-    --sv-paper: #f4f7f9;
-    --sv-paper-2: #e9eff3;
-    --sv-white: #ffffff;
-    --sv-text: #2c3f4b;
-    --sv-muted: #4f6a78;
-    --sv-line: #d3dde4;
-    --sv-line-soft: #e4ebf0;
-    --sv-line-ui: #788d9a; /* contorno de componentes, 3.2:1 no fundo claro */
-
-    --sv-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-
-    /* --- Escala tipográfica ---
-       Um valor por papel, não por secção. Cresceu ad-hoc (1rem, 1.02, 1.05,
-       1.18... para a mesma coisa: "título de cartão") de tantas correções
-       pontuais de overflow. #cine herda estas variáveis por estar dentro de
-       #sv-page no DOM, por isso servem também dentro das cenas do herói. */
-    --sv-fs-h3: 1.05rem; /* título de cartão/item: pacote, projeto, passo, plano */
-    --sv-fs-lead: clamp(1.02rem, 0.35vw + 0.95rem, 1.15rem); /* parágrafo de apoio a um título */
-    --sv-fs-body: 0.92rem; /* texto dentro de cartões: listas, descrições */
-    --sv-fs-small: 0.85rem; /* nota de rodapé, legenda, texto secundário */
-    --sv-fs-label: 0.75rem; /* etiqueta em maiúsculas: eyebrow, badge, tag (12px, já não precisa de reforço no telemóvel) */
-    --sv-fs-index: 0.8rem; /* numeração pequena: 01/02/03, círculo de passo */
-
-    background: var(--sv-paper);
-    color: var(--sv-text);
-  }
-
-  /* Fundo da página (evita carvão em overscroll) */
-  body:has(#sv-page) {
-    background: #f4f7f9;
-  }
-
-  /* O header e o rodapé partilhados já são navy + ciano, ou seja, já são a
-     identidade SENVIA. Nesta rota não se recolorem, só se retira o brilho
-     do botão para acompanhar o registo mais sóbrio da página. */
-  body:has(#sv-page) .site-header--scrolled {
-    box-shadow: none;
-  }
-  body:has(#sv-page) .nav .btn--primary:hover {
-    box-shadow: none;
-    transform: none;
-  }
-
-  /* O rodapé global é rgba(15,41,55,0.2): 20% de navy. Nas outras páginas
-     assenta sobre fundo escuro e lê-se navy; aqui o fundo é claro e dava
-     cinzento. Passa a navy opaco, a seguir ao CTA final que já é navy. */
-  body:has(#sv-page) .site-footer {
-    background: #0b1f2a;
-    border-top-color: rgba(148, 163, 184, 0.16);
-  }
-  /* Entre o burger (≤768px) e o desktop folgado (≥900px) o menu partilhado
-     não tem espaço: a marca e o botão partem-se em duas linhas. Aperta-se
-     aqui, só nesta rota, e o comportamento das outras páginas fica intacto. */
-  @media (min-width: 769px) and (max-width: 899px) {
-    body:has(#sv-page) .nav {
-      gap: 0.85rem;
-    }
-    body:has(#sv-page) .nav__link {
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-    body:has(#sv-page) .nav .btn--primary {
-      padding: 0.7rem 1rem;
-      font-size: 0.82rem;
-      white-space: nowrap;
-    }
-    body:has(#sv-page) .brand__text {
-      white-space: nowrap;
-    }
-    body:has(#sv-page) .brand__logo {
-      width: 2rem;
-      height: 2rem;
-    }
-  }
-
-  /* O foco global é ciano (#00c3ff): 9.2:1 em navy, mas só 1.9:1 em fundo
-     claro. Nas secções claras passa a Petrol Blue; nas escuras fica ciano.
-     Sem depender de :has(), para não cair em browsers sem suporte. */
-  #sv-page :focus-visible {
-    outline-color: var(--sv-petrol);
-  }
-  #sv-page .sv-section--dark :focus-visible,
-  #sv-page .sv-final :focus-visible {
-    outline-color: var(--sv-cyan);
-  }
-
-  /* ---------- Base ---------- */
-  #sv-page .sv-container {
-    width: 100%;
-    max-width: 1180px;
-    margin-inline: auto;
-    /* O tablet deixa de levar a mesma goteira de 20px de um telemóvel */
-    padding-inline: clamp(1.25rem, 3.6vw, 2.5rem);
-  }
-
-  #sv-page .sv-section {
-    padding-block: clamp(3.5rem, 7vw, 6.5rem);
-  }
-
-  #sv-page h1,
-  #sv-page h2,
-  #sv-page h3 {
-    color: var(--sv-ink);
-    letter-spacing: -0.032em;
-    font-weight: 700;
-  }
-
-  #sv-page h2 {
-    font-size: clamp(1.6rem, 2.4vw + 0.8rem, 2.4rem);
-    line-height: 1.12;
-    max-width: 20ch;
-  }
-
-  #sv-page h2 em,
-  #sv-page h1 em {
-    font-style: normal;
-    color: var(--sv-accent-ink);
-  }
-
-  #sv-page p {
-    margin: 0;
-  }
-
-  #sv-page .sv-lead {
-    font-size: var(--sv-fs-lead);
-    line-height: 1.6;
-    color: var(--sv-muted);
-    max-width: 46ch;
-  }
-
-  #sv-page .sv-lead--onDark {
-    color: #cbd6de;
-  }
-
-  #sv-page .sv-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--sv-muted);
-    margin-bottom: 1rem;
-  }
-
-  #sv-page .sv-eyebrow::before {
-    content: '';
-    width: 0.4rem;
-    height: 0.4rem;
-    background: var(--sv-accent-ink);
-    flex: none;
-  }
-
-  #sv-page .sv-eyebrow--onDark {
-    color: #8a98a6;
-  }
-
-  #sv-page .sv-eyebrow--onDark::before {
-    background: var(--sv-cyan);
-  }
-
-  #sv-page .sv-fine {
-    font-size: var(--sv-fs-small);
-    line-height: 1.5;
-    color: var(--sv-muted);
-  }
-
-  /* ---------- Cabeçalho de secção ---------- */
-  #sv-page .sv-head {
-    display: grid;
-    gap: 1rem 3rem;
-    align-items: end;
-    margin-bottom: clamp(2rem, 4vw, 3.25rem);
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-head__aside {
-    font-size: var(--sv-fs-lead);
-    line-height: 1.6;
-    color: var(--sv-muted);
-    max-width: 44ch;
-  }
-
-  @media (min-width: 900px) {
-    #sv-page .sv-head {
-      grid-template-columns: 1.1fr 0.9fr;
-    }
-  }
-
-  /* ---------- Botões ---------- */
-  #sv-page .sv-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 48px;
-    padding: 0.8rem 1.4rem;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    font-size: 0.98rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
-    text-align: center;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-  }
-
-  #sv-page .sv-btn svg {
-    width: 1.05rem;
-    height: 1.05rem;
-    flex: none;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.1;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  #sv-page .sv-btn--primary {
-    background: var(--sv-accent);
-    color: #04212c;
-  }
-  #sv-page .sv-btn--primary:hover {
-    background: #33ffe3;
-  }
-
-  #sv-page .sv-btn--dark {
-    background: var(--sv-ink);
-    color: #fff;
-  }
-  #sv-page .sv-btn--dark:hover {
-    background: #16323f;
-  }
-
-  /* --sv-line (#d3dde4) é para réguas decorativas: 1.28:1 no fundo claro.
-     Contornos de componentes precisam de 3:1 (WCAG 1.4.11) → --sv-line-ui. */
-  #sv-page .sv-btn--ghost {
-    background: transparent;
-    border-color: var(--sv-line-ui);
-    color: var(--sv-ink);
-  }
-  #sv-page .sv-btn--ghost:hover {
-    border-color: var(--sv-ink);
-    background: rgba(11, 31, 42, 0.04);
-  }
-
-  #sv-page .sv-btn--outline {
-    background: transparent;
-    border-color: rgba(148, 163, 184, 0.28);
-    color: #fff;
-  }
-  #sv-page .sv-btn--outline:hover {
-    border-color: #fff;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  #sv-page .sv-btn--block {
-    width: 100%;
-  }
-
-  #sv-page .sv-btn--lg {
-    min-height: 54px;
-    padding: 1rem 1.75rem;
-    font-size: 1.02rem;
-  }
-
-  #sv-page .sv-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-weight: 600;
-    color: var(--sv-accent-ink);
-    border-bottom: 1px solid currentColor;
-    padding-bottom: 2px;
-    min-height: 44px;
-  }
-  #sv-page .sv-link svg {
-    width: 1rem;
-    height: 1rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.1;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform 0.2s ease;
-  }
-  #sv-page .sv-link:hover svg {
-    transform: translateX(3px);
-  }
-
-
-  /* =========================================================
-     2. DOR
-     ========================================================= */
-  #sv-page .sv-section--pain {
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-pain__inner {
-    display: grid;
-    gap: clamp(2.5rem, 5vw, 4.5rem);
-    align-items: start;
-  }
-
-  @media (min-width: 940px) {
-    #sv-page .sv-pain__inner {
-      grid-template-columns: 1fr 1fr;
-    }
-    #sv-page .sv-pain__copy {
-      position: sticky;
-      top: 7.5rem;
-    }
-  }
-
-  #sv-page .sv-pain__copy h2 {
-    max-width: 17ch;
-    margin-bottom: 1.25rem;
-  }
-
-  #sv-page .sv-pain__figure {
-    margin: 2.75rem 0 0;
-  }
-
-  #sv-page .sv-pain__figure figcaption {
-    margin-top: 0.85rem;
-    font-size: var(--sv-fs-small);
-    line-height: 1.5;
-    color: var(--sv-muted);
-    padding-left: 0.85rem;
-    border-left: 2px solid var(--sv-accent-ink);
-  }
-
-  #sv-page .sv-pain__list {
-    border-top: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-pain__list li {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 1.35rem 0;
-    border-bottom: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-pain__num {
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-index);
-    color: var(--sv-accent-ink);
-    flex: none;
-    padding-top: 0.15rem;
-  }
-
-  #sv-page .sv-pain__text {
-    font-size: clamp(1.05rem, 0.6vw + 0.95rem, 1.3rem);
-    line-height: 1.4;
-    letter-spacing: -0.018em;
-    color: var(--sv-ink);
-    font-weight: 500;
-  }
-
-  /* =========================================================
-     3. SOLUÇÃO
-     ========================================================= */
-  #sv-page .sv-section--solution {
-    background: var(--sv-white);
-    border-block: 1px solid var(--sv-line-soft);
-  }
-
-  #sv-page .sv-solution__inner {
-    display: grid;
-    gap: clamp(2.5rem, 5vw, 4rem);
-    align-items: center;
-  }
-
-  @media (min-width: 1024px) {
-    #sv-page .sv-solution__inner {
-      grid-template-columns: 1.05fr 0.95fr;
-    }
-  }
-
-  #sv-page .sv-solution__copy h2 {
-    margin-bottom: 1.1rem;
-  }
-
-  #sv-page .sv-solution__list {
-    display: grid;
-    gap: 0;
-    margin-top: 2rem;
-    border-top: 1px solid var(--sv-line);
-  }
-
-  @media (min-width: 620px) {
-    #sv-page .sv-solution__list {
-      grid-template-columns: 1fr 1fr;
-      column-gap: 2rem;
-    }
-  }
-
-  #sv-page .sv-solution__list li {
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--sv-line-soft);
-  }
-
-  #sv-page .sv-solution__list h3 {
-    font-size: var(--sv-fs-h3);
-    line-height: 1.3;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-  }
-
-  #sv-page .sv-solution__list h3::before {
-    content: '';
-    width: 0.4rem;
-    height: 0.4rem;
-    background: var(--sv-accent-ink);
-    flex: none;
-    transform: translateY(-0.15rem);
-  }
-
-  #sv-page .sv-solution__list p {
-    font-size: var(--sv-fs-body);
-    line-height: 1.55;
-    color: var(--sv-muted);
-    padding-left: 0.9rem;
-  }
-
-  /* Recortes de UI */
-  #sv-page .sv-specimens {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-
-  #sv-page .sv-specimen {
-    padding: 0.8rem;
-    border: 1px solid var(--sv-line);
-    border-radius: 10px;
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-specimen__label {
-    font-family: var(--sv-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--sv-muted);
-    margin-bottom: 0.55rem !important;
-  }
-
-  #sv-page .sv-specimen__wa {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid var(--sv-line);
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--sv-ink);
-    white-space: nowrap;
-  }
-
-  #sv-page .sv-specimen__wa svg {
-    width: 0.85rem;
-    height: 0.85rem;
-    color: var(--sv-whatsapp);
-    flex: none;
-  }
-
-  #sv-page .sv-specimen__row {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.68rem;
-    color: var(--sv-muted);
-    margin-bottom: 0.3rem;
-  }
-
-  #sv-page .sv-specimen__row i {
-    width: 0.35rem;
-    height: 0.35rem;
-    border-radius: 50%;
-    background: var(--sv-accent-ink);
-    flex: none;
-  }
-
-  @media (max-width: 520px) {
-    #sv-page .sv-specimens {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* =========================================================
-     6. PACOTES
-     ========================================================= */
-  #sv-page .sv-section--plans {
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-plans {
-    display: grid;
-    gap: 1.25rem;
-  }
-
-  @media (min-width: 960px) {
-    #sv-page .sv-plans {
-      grid-template-columns: 1fr 1.14fr 1fr;
-      gap: 0;
-      align-items: stretch;
-    }
-  }
-
-  #sv-page .sv-plan {
-    display: flex;
-    flex-direction: column;
-    padding: 1.75rem 1.5rem;
-    border: 1px solid var(--sv-line);
-    border-radius: 14px;
-    background: var(--sv-white);
-  }
-
-  /* Empilhado (tablet/telemóvel) não deve esticar até aos 800px de largura */
-  @media (max-width: 959px) {
-    #sv-page .sv-plan {
-      width: 100%;
-      max-width: 34rem;
-      margin-inline: auto;
-    }
-  }
-
-  @media (min-width: 960px) {
-    #sv-page .sv-plan {
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      padding: 0.5rem 2rem 0;
-    }
-    /* As colunas das pontas alinham com a margem da secção */
-    #sv-page .sv-plan:first-child {
-      padding-left: 0;
-    }
-    #sv-page .sv-plan:last-child {
-      padding-right: 0;
-    }
-    #sv-page .sv-plan + .sv-plan {
-      border-left: 1px solid var(--sv-line);
-    }
-    #sv-page .sv-plan--feature,
-    #sv-page .sv-plan--feature + .sv-plan {
-      border-left: 0;
-    }
-  }
-
-  #sv-page .sv-plan--feature {
-    background: var(--sv-ink);
-    border-color: var(--sv-ink);
-    color: #cbd6de;
-  }
-
-  @media (min-width: 960px) {
-    #sv-page .sv-plan--feature {
-      position: relative;
-      background: var(--sv-ink);
-      border-radius: 16px;
-      padding: 2.25rem 2rem;
-      margin-top: -1.75rem;
-      box-shadow: 0 30px 60px -40px rgba(11, 31, 42, 0.8);
-    }
-    /* As colunas sem etiqueta reservam exatamente a mesma altura que ela ocupa,
-       para os 3 preços ficarem na mesma linha de base e a escada
-       280 → 490 → 1190 ler-se de uma só vez, em qualquer largura. */
-    #sv-page .sv-plan:not(.sv-plan--feature) .sv-plan__top {
-      padding-top: calc(1.35rem + 0.85rem);
-    }
-  }
-
-  #sv-page .sv-plan--feature h3,
-  #sv-page .sv-plan--feature .sv-plan__amount {
-    color: #fff;
-  }
-
-  #sv-page .sv-plan__tag {
-    display: block;
-    width: fit-content;
-    height: 1.35rem;
-    line-height: 1.35rem;
-    padding: 0 0.7rem;
-    border-radius: 999px;
-    background: var(--sv-accent);
-    color: #04212c;
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.85rem;
-  }
-
-  #sv-page .sv-plan__name {
-    font-size: var(--sv-fs-h3);
-    margin-bottom: 0.6rem;
-  }
-
-  #sv-page .sv-plan__price {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 0.35rem;
-  }
-
-  #sv-page .sv-plan__amount {
-    font-size: clamp(2.1rem, 1.6vw + 1.6rem, 2.7rem);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    color: var(--sv-ink);
-    font-variant-numeric: tabular-nums;
-  }
-
-  #sv-page .sv-plan__vat {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--sv-muted);
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__vat {
-    color: #8a98a6;
-  }
-
-  #sv-page .sv-plan__was {
-    font-size: 0.92rem;
-    font-weight: 500;
-    color: var(--sv-muted);
-    text-decoration-thickness: 1px;
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__was {
-    color: #8a98a6;
-  }
-
-  #sv-page .sv-plan__promo {
-    display: inline-block;
-    align-self: flex-start;
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--sv-accent);
-    border: 1px solid rgba(0, 195, 255, 0.45);
-    border-radius: 999px;
-    padding: 0.2rem 0.55rem;
-    margin-bottom: 0.9rem;
-  }
-
-  #sv-page .sv-plan__desc {
-    font-size: var(--sv-fs-body);
-    line-height: 1.55;
-    color: var(--sv-muted);
-    margin-bottom: 1.35rem;
-    min-height: 0;
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__desc {
-    color: #cbd6de;
-  }
-
-  @media (min-width: 960px) {
-    #sv-page .sv-plan__desc {
-      min-height: 4.5rem;
-    }
-  }
-
-  #sv-page .sv-plan__body {
-    margin-top: 1.5rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__body {
-    border-top-color: rgba(148, 163, 184, 0.16);
-  }
-
-  #sv-page .sv-plan__incl {
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--sv-muted);
-    margin-bottom: 0.9rem !important;
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__incl {
-    color: #8a98a6;
-  }
-
-  #sv-page .sv-plan__list li {
-    display: flex;
-    gap: 0.6rem;
-    align-items: flex-start;
-    font-size: var(--sv-fs-body);
-    line-height: 1.45;
-    color: var(--sv-text);
-    padding: 0.42rem 0;
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__list li {
-    color: #f1f5f9;
-  }
-
-  #sv-page .sv-plan__list svg,
-  #sv-page .sv-care__item svg,
-  #sv-page .sv-plans__gift svg {
-    width: 0.95rem;
-    height: 0.95rem;
-    flex: none;
-    margin-top: 0.22rem;
-    fill: none;
-    stroke: var(--sv-accent-ink);
-    stroke-width: 2.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  #sv-page .sv-plan--feature .sv-plan__list svg {
-    stroke: var(--sv-accent);
-  }
-
-  #sv-page .sv-plans__note {
-    margin-top: clamp(2rem, 4vw, 3rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--sv-line);
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  #sv-page .sv-plans__gift {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--sv-ink);
-    margin-bottom: 0.35rem;
-  }
-
-  #sv-page .sv-plans__gift strong {
-    font-weight: 700;
-  }
-
-  #sv-page .sv-plans__reassure {
-    color: var(--sv-ink);
-  }
-
-  /* Aviso explícito de manutenção, ao lado do preço, não em letra pequena.
-     A manutenção é obrigatória, por isso aparece antes de escolherem. */
-  #sv-page .sv-plans__care {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    margin-top: 0.75rem;
-    padding: 1rem 1.25rem;
-    background: var(--sv-white);
-    border: 1px solid var(--sv-line);
-    border-left: 3px solid var(--sv-accent-ink);
-    border-radius: 0 10px 10px 0;
-  }
-
-  #sv-page .sv-plans__care p {
-    font-size: 0.97rem;
-    line-height: 1.55;
-    color: var(--sv-text);
-    max-width: 62ch;
-  }
-
-  #sv-page .sv-plans__care strong {
-    color: var(--sv-ink);
-    font-weight: 700;
-  }
-
-  #sv-page .sv-plans__care .sv-link {
-    flex: none;
-  }
-
-  #sv-page .sv-plan__note {
-    margin-top: 1rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(148, 163, 184, 0.22);
-    font-size: var(--sv-fs-small);
-    line-height: 1.5;
-    color: #8a98a6;
-  }
-
-  #sv-page .sv-work__cta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    margin-top: clamp(2rem, 4vw, 3rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-work__cta p {
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--sv-ink);
-  }
-
-  /* =========================================================
-     5. VALIDAÇÃO COMERCIAL
-     ========================================================= */
-  #sv-page .sv-section--dark {
-    background: var(--sv-ink);
-    color: #cbd6de;
-  }
-
-  #sv-page .sv-section--dark h2,
-  #sv-page .sv-section--dark h3 {
-    color: #fff;
-  }
-
-  #sv-page .sv-section--dark h2 em {
-    color: var(--sv-accent);
-  }
-
-  #sv-page .sv-validation__inner {
-    display: grid;
-    gap: clamp(2.5rem, 5vw, 4rem);
-    align-items: start;
-  }
-
-  @media (min-width: 980px) {
-    #sv-page .sv-validation__inner {
-      grid-template-columns: 1fr 0.92fr;
-      gap: 4.5rem;
-    }
-  }
-
-  #sv-page .sv-validation__copy h2 {
-    margin-bottom: 1.1rem;
-  }
-
-  #sv-page .sv-moments {
-    margin: 2.25rem 0;
-    border-top: 1px solid rgba(148, 163, 184, 0.22);
-  }
-
-  #sv-page .sv-moments li {
-    display: flex;
-    gap: 1.1rem;
-    padding: 1.15rem 0;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
-  }
-
-  #sv-page .sv-moments__n {
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-index);
-    color: var(--sv-accent);
-    flex: none;
-    padding-top: 0.2rem;
-  }
-
-  #sv-page .sv-moments h3 {
-    font-size: var(--sv-fs-h3);
-    margin-bottom: 0.25rem;
-    letter-spacing: -0.02em;
-  }
-
-  #sv-page .sv-moments p {
-    font-size: var(--sv-fs-body);
-    line-height: 1.55;
-    color: #cbd6de;
-  }
-
-  /* Documento de relatório */
-  #sv-page .sv-report {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 40px 80px -50px rgba(0, 0, 0, 0.9);
-  }
-
-  #sv-page .sv-report__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.1rem 1.35rem;
-    border-bottom: 1px solid var(--sv-line);
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-report__kicker {
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--sv-muted);
-    margin-bottom: 0.2rem !important;
-  }
-
-  #sv-page .sv-report__title {
-    font-size: 0.98rem;
-    font-weight: 700;
-    color: var(--sv-ink);
-    letter-spacing: -0.02em;
-  }
-
-  #sv-page .sv-report__seal {
-    font-family: var(--sv-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    color: var(--sv-muted);
-    border: 1px solid var(--sv-line);
-    border-radius: 4px;
-    padding: 0.3rem 0.5rem;
-    flex: none;
-  }
-
-  #sv-page .sv-report__fields {
-    padding: 0.5rem 1.35rem;
-  }
-
-  #sv-page .sv-report__fields li {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.62rem 0;
-    border-bottom: 1px dashed var(--sv-line-soft);
-    font-size: 0.9rem;
-    color: var(--sv-text);
-  }
-
-  #sv-page .sv-report__fields li:last-child {
-    border-bottom: 0;
-  }
-
-  #sv-page .sv-report__fields i {
-    flex: 1;
-    height: 1px;
-    background: repeating-linear-gradient(90deg, var(--sv-line) 0 6px, transparent 6px 12px);
-    min-width: 2.5rem;
-  }
-
-  #sv-page .sv-report__foot {
-    padding: 1.15rem 1.35rem 1.35rem;
-    border-top: 1px solid var(--sv-line);
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-report__concl {
-    font-size: 0.86rem;
-    color: var(--sv-muted);
-    margin-bottom: 0.7rem !important;
-  }
-
-  #sv-page .sv-report__pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  #sv-page .sv-report__pills span {
-    padding: 0.32rem 0.75rem;
-    border: 1px solid var(--sv-line);
-    border-radius: 999px;
-    background: #fff;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--sv-ink);
-  }
-
-  #sv-page .sv-report__caption {
-    margin-top: 1rem;
-    font-size: var(--sv-fs-small);
-    line-height: 1.55;
-    color: #8a98a6;
-    max-width: 42ch;
-  }
-
-  /* =========================================================
-     7. PROCESSO
-     ========================================================= */
-  #sv-page .sv-section--process {
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-steps {
-    display: grid;
-    gap: 0;
-  }
-
-  #sv-page .sv-step {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.05rem 0 1.05rem 0;
-    border-bottom: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-step:last-child {
-    border-bottom: 0;
-  }
-
-  #sv-page .sv-step__n {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.1rem;
-    height: 2.1rem;
-    flex: none;
-    border-radius: 50%;
-    border: 1px solid var(--sv-line);
-    background: var(--sv-white);
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-index);
-    color: var(--sv-ink);
-  }
-
-  #sv-page .sv-step__label {
-    font-size: var(--sv-fs-h3);
-    line-height: 1.4;
-    color: var(--sv-ink);
-    font-weight: 500;
-  }
-
-  #sv-page .sv-step--cond .sv-step__n {
-    border-style: dashed;
-    border-color: var(--sv-accent-ink);
-    color: var(--sv-accent-ink);
-  }
-
-  #sv-page .sv-step--cond .sv-step__label {
-    color: var(--sv-accent-ink);
-  }
-
-  @media (min-width: 900px) {
-    #sv-page .sv-steps {
-      grid-template-columns: repeat(7, 1fr);
-    }
-    #sv-page .sv-step {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 0 1.1rem 0 0;
-      border: 0;
-    }
-    /* Linha que liga cada passo ao seguinte (nunca ultrapassa o último) */
-    #sv-page .sv-step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 1.05rem;
-      left: 2.55rem;
-      right: 0.3rem;
-      height: 1px;
-      background: var(--sv-line);
-    }
-    #sv-page .sv-step__label {
-      font-size: 0.9rem;
-      line-height: 1.35;
-    }
-  }
-
-  /* =========================================================
-     4. TRABALHOS
-     ========================================================= */
-  #sv-page .sv-section--work {
-    background: var(--sv-white);
-    border-block: 1px solid var(--sv-line-soft);
-  }
-
-  #sv-page .sv-work {
-    display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
-  }
-
-  @media (min-width: 900px) {
-    #sv-page .sv-work {
-      grid-template-columns: 1fr 1fr;
-    }
-    #sv-page .sv-work__item--lead {
-      grid-column: 1 / -1;
-    }
-  }
-
-  #sv-page .sv-work__item {
-    margin: 0;
-  }
-
-  /* O mockup inteiro é um link para o site real do cliente */
-  #sv-page .sv-work__link {
-    display: block;
-    border-radius: 14px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  #sv-page .sv-work__link:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 24px 48px -28px rgba(11, 31, 42, 0.35);
-  }
-
-  #sv-page .sv-work__item figcaption {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.5rem 0.9rem;
-    margin-top: 1rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-work__name {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: var(--sv-fs-h3);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--sv-ink);
-    /* 46px, não 44px: min-height com inline-flex arredondava para 43px
-       num teste automatizado (sub-pixel). Margem de segurança. */
-    min-height: 46px;
-    padding-block: 2px;
-  }
-
-  #sv-page .sv-work__name:hover {
-    color: var(--sv-accent-ink);
-  }
-
-  #sv-page .sv-work__name svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    flex: none;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0.55;
-  }
-
-  #sv-page .sv-work__cat {
-    font-family: var(--sv-mono);
-    font-size: var(--sv-fs-label);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--sv-accent-ink);
-    border: 1px solid rgba(0, 117, 153, 0.35);
-    border-radius: 999px;
-    padding: 0.18rem 0.55rem;
-  }
-
-  #sv-page .sv-work__details {
-    flex-basis: 100%;
-    font-size: var(--sv-fs-small);
-    color: var(--sv-muted);
-  }
-
-  /* =========================================================
-     8. MANUTENÇÃO
-     ========================================================= */
-  #sv-page .sv-section--care {
-    background: var(--sv-paper-2);
-  }
-
-  #sv-page .sv-care {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  @media (min-width: 860px) {
-    #sv-page .sv-care {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-    }
-    #sv-page .sv-care__item {
-      padding-inline: 2rem;
-    }
-    #sv-page .sv-care__item:first-child {
-      padding-left: 0;
-    }
-    #sv-page .sv-care__item:last-child {
-      padding-right: 0;
-    }
-    #sv-page .sv-care__item + .sv-care__item {
-      border-left: 1px solid var(--sv-line);
-    }
-
-    /* Réguas das 3 colunas alinhadas mesmo com frases de alturas diferentes.
-       Fallback (sem subgrid): min-height aproximado. */
-    #sv-page .sv-care__for {
-      min-height: 3.7rem;
-    }
-
-    @supports (grid-template-rows: subgrid) {
-      #sv-page .sv-care {
-        grid-template-rows: auto auto auto auto;
-      }
-      #sv-page .sv-care__item {
-        display: grid;
-        grid-row: span 4;
-        grid-template-rows: subgrid;
-      }
-      #sv-page .sv-care__for {
-        min-height: 0;
-      }
-    }
-  }
-
-  #sv-page .sv-care__item h3 {
-    font-size: var(--sv-fs-h3);
-    margin-bottom: 0.6rem;
-  }
-
-  #sv-page .sv-care__price {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--sv-muted);
-    margin-bottom: 0.5rem;
-  }
-
-  #sv-page .sv-care__price strong {
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    color: var(--sv-ink);
-    font-variant-numeric: tabular-nums;
-  }
-
-  #sv-page .sv-care__price span {
-    flex-basis: 100%;
-    font-size: var(--sv-fs-small);
-  }
-
-  #sv-page .sv-care__for {
-    font-size: var(--sv-fs-body);
-    line-height: 1.5;
-    /* na banda --sv-paper-2 o petrol normal ficava em cima do limite */
-    color: var(--sv-accent-strong);
-    font-weight: 600;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-care__item li {
-    display: flex;
-    gap: 0.55rem;
-    align-items: flex-start;
-    font-size: var(--sv-fs-body);
-    line-height: 1.45;
-    padding: 0.35rem 0;
-    color: var(--sv-text);
-  }
-
-  #sv-page .sv-rule {
-    margin-top: clamp(2rem, 4vw, 3rem);
-    padding: 1.15rem 1.35rem;
-    background: var(--sv-white);
-    border: 1px solid var(--sv-line);
-    border-left: 3px solid var(--sv-accent-ink);
-    border-radius: 0 10px 10px 0;
-    font-size: 0.97rem;
-    line-height: 1.6;
-    color: var(--sv-text);
-  }
-
-  #sv-page .sv-rule strong {
-    color: var(--sv-ink);
-  }
-
-  /* =========================================================
-     9. FAQ
-     ========================================================= */
-  #sv-page .sv-section--faq {
-    background: var(--sv-paper);
-  }
-
-  #sv-page .sv-faq__inner {
-    display: grid;
-    gap: clamp(2rem, 4vw, 4rem);
-    align-items: start;
-  }
-
-  @media (min-width: 940px) {
-    #sv-page .sv-faq__inner {
-      grid-template-columns: 0.8fr 1.2fr;
-    }
-    #sv-page .sv-faq__aside {
-      position: sticky;
-      top: 7.5rem;
-    }
-  }
-
-  #sv-page .sv-faq__aside h2 {
-    margin-bottom: 1rem;
-  }
-
-  #sv-page .sv-faq__aside .sv-link {
-    margin-top: 1.5rem;
-  }
-
-  #sv-page .sv-faq__item {
-    border-bottom: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-faq__item:first-child {
-    border-top: 1px solid var(--sv-line);
-  }
-
-  #sv-page .sv-faq__item:last-child {
-    border-bottom: 0;
-  }
-
-  #sv-page .sv-faq__item summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.25rem 0;
-    cursor: pointer;
-    list-style: none;
-    font-size: var(--sv-fs-h3);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--sv-ink);
-  }
-
-  #sv-page .sv-faq__item summary::-webkit-details-marker {
-    display: none;
-  }
-
-  #sv-page .sv-faq__item summary i {
-    position: relative;
-    width: 1rem;
-    height: 1rem;
-    flex: none;
-  }
-
-  #sv-page .sv-faq__item summary i::before,
-  #sv-page .sv-faq__item summary i::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    background: var(--sv-accent-ink);
-  }
-
-  #sv-page .sv-faq__item summary i::before {
-    width: 100%;
-    height: 2px;
-  }
-
-  #sv-page .sv-faq__item summary i::after {
-    width: 2px;
-    height: 100%;
-    transition: transform 0.2s ease;
-  }
-
-  #sv-page .sv-faq__item[open] summary i::after {
-    transform: scaleY(0);
-  }
-
-  #sv-page .sv-faq__item p {
-    padding: 0 3rem 1.4rem 0;
-    font-size: 0.98rem;
-    line-height: 1.65;
-    color: var(--sv-muted);
-    max-width: 62ch;
-  }
-
-  /* =========================================================
-     10. CTA FINAL
-     ========================================================= */
-  #sv-page .sv-final {
-    background: var(--sv-ink);
-    color: #cbd6de;
-    border-top: 3px solid var(--sv-accent);
-  }
-
-  #sv-page .sv-final__inner {
-    display: grid;
-    gap: clamp(2rem, 4vw, 3.5rem);
-    align-items: center;
-  }
-
-  @media (min-width: 900px) {
-    #sv-page .sv-final__inner {
-      grid-template-columns: 1.25fr 0.75fr;
-    }
-  }
-
-  #sv-page .sv-final h2 {
-    color: #fff;
-    max-width: 22ch;
-    margin-bottom: 1rem;
-  }
-
-  #sv-page .sv-final p {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: #cbd6de;
-    max-width: 48ch;
-  }
-
-  #sv-page .sv-final__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  /* Selo de marca do CTA final */
-  #sv-page .sv-final__selo {
-    position: relative;
-    width: clamp(88px, 12vh, 132px);
-    aspect-ratio: 1;
-    margin: 0 auto 1.25rem;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  #sv-page .sv-final__selo video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* o vídeo é ciano sobre preto: o modo screen funde-o com o navy */
-    mix-blend-mode: screen;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-
-  #sv-page .sv-final__selo video[data-playing] {
-    opacity: 1;
-  }
-
-
-  @media (prefers-reduced-motion: reduce) {
-    #sv-page .sv-final__selo {
-      display: none;
-    }
-  }
-
-  #sv-page .sv-final__note {
-    flex-basis: 100%;
-    font-size: var(--sv-fs-small) !important;
-    color: #8a98a6 !important;
-    margin-top: 0.25rem;
-  }
-
-  /* =========================================================
-     Movimento discreto e diferente por secção
-     ========================================================= */
-  .sv-js #sv-page .sv-anim {
-    opacity: 0;
-    transform: translateY(14px);
-    animation: sv-rise 0.65s cubic-bezier(0.22, 0.68, 0.36, 1) forwards;
-    animation-delay: var(--d, 0ms);
-  }
-
-  .sv-js #sv-page [data-reveal] {
-    opacity: 0;
-    transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 0.68, 0.36, 1);
-    transition-delay: var(--d, 0ms);
-  }
-
-  .sv-js #sv-page .sv-pain__list [data-reveal] {
-    transform: translateX(-10px);
-  }
-
-  .sv-js #sv-page .sv-work [data-reveal] {
-    transform: scale(0.985);
-  }
-
-  .sv-js #sv-page [data-reveal][data-revealed] {
-    opacity: 1;
-    transform: none;
-  }
-
-  @keyframes sv-rise {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .sv-js #sv-page .sv-anim {
-      opacity: 1;
-      transform: none;
-      animation: none;
-    }
-    .sv-js #sv-page [data-reveal] {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
-
-  /* =========================================================
-     Ajustes finos mobile
-     ========================================================= */
-  @media (max-width: 560px) {
-    #sv-page .sv-final__actions .sv-btn,
-    #sv-page .sv-validation__copy .sv-btn,
-    #sv-page .sv-work__cta .sv-btn {
-      width: 100%;
-    }
-    #sv-page .sv-faq__item p {
-      padding-right: 0;
-    }
-    #sv-page .sv-report__fields li {
-      font-size: 0.86rem;
-    }
-    /* --sv-fs-label já nasce em 12px: eyebrow, plan__tag, plan__incl,
-       plan__promo, report__kicker e work__cat não precisam de reforço
-       aqui. Só sv-specimen__label continua pequena de propósito (é uma
-       legenda decorativa de recorte de UI, não uma etiqueta de leitura). */
-    #sv-page .sv-specimen__label {
-      font-size: 0.74rem;
-      letter-spacing: 0.1em;
-    }
-    #sv-page .sv-plan__tag {
-      height: 1.6rem;
-      line-height: 1.6rem;
-    }
-  }
-</style>
+<script>
+  import '../scripts/sites-v2.js';
+</script>

@@ -1,193 +1,280 @@
 ---
 import Base from '../layouts/Base.astro';
-import CTASection from '../components/CTASection.astro';
-import { SITE, STATS } from '../config';
+import SitesNav from '../components/sites/SitesNav.astro';
+import { SITE } from '../config';
+import '../styles/home-v2.css';
 
-const services = [
+/* ------------------------------------------------------------------
+   Página inicial: sistemas à medida e sites, contados num mundo 3D.
+   Cada capítulo é uma secção alta com um quadro sticky de 100vh; as camadas
+   de texto entram conforme o progresso do scroll (data-in / data-out).
+   O 3D e a coreografia vivem em src/scripts/home-v2.js; os estilos em
+   src/styles/home-v2.css (tudo dentro de .sv2), no mesmo sistema da /sites.
+------------------------------------------------------------------- */
+
+const diagnostico = SITE.ctaFormUrl;
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
+
+// o sistema em 3 momentos de 2 ideias; o texto muda de lado e o 3D vai para o oposto
+const sistema = [
   {
-    icon: 'code',
-    title: 'Desenvolvimento de Software à Medida',
-    desc: 'Sistemas de gestão interna, portais de clientes e aplicações específicas para o seu processo. Nós construímos o motor que a sua empresa precisa.',
-    features: ['Sistemas de Gestão', 'Portais & Dashboards', 'APIs & Integrações', 'Apps Web Complexas'],
-    link: '/softwares',
-    cta: 'Saber Mais',
+    titulo: 'Tudo num <em>sítio só</em>.',
+    pos: 'right',
+    mobile: 'm-low',
+    itens: [
+      { title: 'Clientes e agenda', desc: 'Fichas, histórico e marcações da equipa, no lugar das folhas de Excel.' },
+      { title: 'Os teus dados entram', desc: 'Importamos o que já tens, para não começares do zero.' },
+    ],
   },
   {
-    icon: 'globe',
-    title: 'Sites, Landing Pages & E-commerces',
-    desc: 'Plataformas robustas, rápidas e desenhadas para converter cliques em dinheiro. Design premium com performance de topo.',
-    features: ['Sites Institucionais', 'Landing Pages de Alta Conversão', 'Lojas Online', 'Otimização SEO'],
-    link: '/sites',
-    cta: 'Saber Mais',
+    titulo: 'Trabalho que <em>se faz sozinho</em>.',
+    pos: 'bottom',
+    mobile: 'm-high',
+    itens: [
+      { title: 'Automações', desc: 'Lembretes, avisos e tarefas repetidas deixam de depender de alguém se lembrar.' },
+      { title: 'WhatsApp, email e chat interno', desc: 'Mensagens aos clientes e a conversa da equipa, tudo dentro do sistema.' },
+    ],
   },
   {
-    icon: 'cpu',
-    title: 'Automação de Processos com IA',
-    desc: 'Conectamos os seus sistemas. De chatbots inteligentes a integrações complexas que poupam centenas de horas humanas.',
-    features: ['Chatbots com IA', 'Workflows Automáticos', 'Integrações de Sistemas', 'Relatórios Inteligentes'],
-    link: '/chatbots',
-    cta: 'Saber Mais',
-  },
-  {
-    icon: 'rocket',
-    title: 'SENVIA OS — CRM com IA',
-    desc: 'O nosso produto proprietário. Um CRM completo com módulos de Leads, Clientes, Vendas, Financeiro, Marketing e muito mais. Com Inteligência Artificial integrada.',
-    features: ['CRM Completo', 'IA Integrada', 'Automações', 'Multi-Nicho'],
-    link: '/senvia-os',
-    cta: 'Conhecer o SENVIA OS',
-    highlight: true,
+    titulo: 'Números <em>em tempo real</em>.',
+    pos: 'left',
+    mobile: 'm-low',
+    itens: [
+      { title: 'Faturação, stock e relatórios', desc: 'Sabes o que entrou, o que falta e o que vende, sem montar folhas.' },
+      { title: 'Sem limite de utilizadores', desc: 'Licenças ilimitadas, servidor e backups, com manutenção desde 69€ por mês.' },
+    ],
   },
 ];
 
-const differentials = [
-  { icon: 'brain', title: 'IA em Tudo', desc: 'Inteligência Artificial integrada em cada solução que construímos. Não é um add-on — é o DNA do nosso trabalho.', stat: '100%', statLabel: 'AI-powered' },
-  { icon: 'zap', title: 'Entrega Rápida', desc: 'Semanas, não meses. A nossa stack moderna e metodologia ágil permitem entregas até 5x mais rápidas que o tradicional.', stat: '5x', statLabel: 'Mais rápido' },
-  { icon: 'users', title: 'Equipa Dedicada', desc: 'Cada projeto tem uma equipa focada. Nada de recursos partilhados ou atenção diluída. O seu projeto é a nossa prioridade.', stat: '1:1', statLabel: 'Foco total' },
-  { icon: 'headset', title: 'Suporte Contínuo', desc: 'O nosso trabalho não acaba na entrega. Suporte pós-projeto, monitorização e evolução contínua do seu sistema.', stat: '24h', statLabel: 'Tempo de resposta' },
+// três formas de trabalhar connosco; cada uma tem um dispositivo no 3D (portátil, telemóvel, janela)
+const servicos = [
+  { key: 'sistema', kind: 'O nosso foco', name: 'Sistemas à medida', cta: 'Pedir diagnóstico', href: diagnostico, externo: true, tags: ['Desde 1.500€ + IVA', 'Utilizadores e licenças ilimitados', 'Manutenção desde 69€/mês'] },
+  { key: 'sites', kind: 'Porta de entrada', name: 'Sites e lojas online', cta: 'Ver pacotes de sites', href: '/sites', externo: false, tags: ['Pacotes desde 280€ + IVA', 'Pronto em até 14 dias', 'WhatsApp e tracking incluídos'] },
+  { key: 'os', kind: 'Produto próprio', name: 'Senvia OS', cta: 'Conhecer o Senvia OS', href: '/senvia-os', externo: false, tags: ['O nosso CRM Workplace', 'Clientes, pipeline e tarefas', 'Feito e mantido pela SENVIA'] },
 ];
 
-const icons: Record<string, string> = {
-  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-  cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>',
-  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 5-.5 5-.5"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62.5-5 .5-5"/></svg>',
-  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>',
-  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  headset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
-  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-};
-
-const orbitItems = [
-  { icon: 'code', label: 'Software', angle: 0 },
-  { icon: 'globe', label: 'Websites', angle: 90 },
-  { icon: 'cpu', label: 'Automação', angle: 180 },
-  { icon: 'rocket', label: 'Chatbots', angle: 270 },
+// o processo, contado no capítulo noturno
+const processo = [
+  { k: 'Diagnóstico', pos: 'top', t: 'Primeiro, <em>percebemos o teu dia a dia</em>.', d: 'Vemos as folhas de Excel, os programas que pagas e onde se perde tempo. Sais com um caminho concreto.', fine: null as string | null },
+  { k: 'Construção', pos: 'right', t: 'Construímos o sistema <em>à tua medida</em>.', d: 'Preço fechado antes de começar. Vais vendo o sistema crescer e validas cada parte.', fine: null },
+  { k: 'Publicação', pos: 'left', t: 'Os teus dados passam para o sistema.', d: 'Importamos o que já tens em Excel, criamos os acessos da equipa e pomos tudo no ar.', fine: null },
+  { k: 'Manutenção', pos: 'top', t: 'Depois, <em>desde 69€ por mês</em>.', d: 'Servidor, backups, segurança e o sistema a funcionar. Utilizadores e licenças ilimitados, por mais gente que entre na equipa.', fine: 'Novas funcionalidades são orçamentadas à parte, só quando as pedires.' },
 ];
+
+// as cinco avaliações da ficha "Senvia Agency" no Google, tal como estão publicadas
+const avaliacoes = [
+  { nome: 'max henrique', texto: 'O Thiago me atendeu super bem e foi muito atencioso. Realizou tudo o que eu precisava para o meu site com eficiência e cuidado. Recomendo!' },
+  { nome: 'Tiago Pereira', texto: 'Recomendo vivamente! Super profissional, disponível e honesto. Preço/qualidade fantástico. Super satisfeito! Muito obrigado pelo trabalho desenvolvido!' },
+  { nome: 'Andreia Silva da Costa', texto: 'Excelência. Competência e comprometimento. Descrevem minha experiência com a equipe da Senvia.' },
+  { nome: 'Cristina Sousa', texto: 'Excelente serviço. Disponibilidade, empenho, dedicação. Super recomendo!' },
+  { nome: 'João Basilio', texto: 'Excelentes profissionais!' },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+// janela de progresso do capítulo em que cada camada de texto está visível
+const win = (i: number, n: number) => ({ 'data-in': (i / n).toFixed(4), 'data-out': ((i + 1) / n).toFixed(4) });
 ---
 
 <Base
-  title="SENVIA"
-  description="SENVIA é uma AI Software House. Desenvolvimento de software à medida, sites, e-commerces, automações com IA e o nosso CRM proprietário SENVIA OS."
+  title="Sistemas à medida e sites em Portugal"
+  description="Sistemas à medida e sites para empresas em Portugal. Sai do Excel e das licenças caras com um sistema próprio, desde 1.500€ + IVA. Sites desde 280€ + IVA."
 >
-  <!-- Hero -->
-  <section class="hero aurora-bg">
-    <div class="container">
-      <div class="hero__grid">
-        <div>
-          <span class="badge mb-6">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
-            AI Software House
-          </span>
+  <SitesNav slot="header" cta="Pedir diagnóstico" ctaHref={diagnostico} />
+  <!-- Marca o suporte a JS antes de pintar: as camadas de texto ficam escondidas até o scroll as mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" />
 
-          <h1 class="hero__title">
-            Inteligência Artificial não é o futuro.
-            <br />
-            <span class="gradient-text glow">É o agora.</span>
-          </h1>
+  <div class="sv2" id="sv2">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <canvas id="fg" aria-hidden="true"></canvas>
 
-          <p class="hero__lead">
-            A <strong>SENVIA</strong> é especializada em Inteligência Artificial e chegou para transformar a tua empresa. Software, automações e soluções digitais, tudo potenciado por IA.
-          </p>
+    <div class="tip" id="tip" aria-hidden="true"><b></b><span></span></div>
 
-          <div class="hero__actions">
-            <a href={SITE.ctaFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
-              Agendar Consultoria
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-            <a href="#servicos" class="btn btn--outline btn--lg">Ver os Nossos Serviços</a>
-          </div>
+    <nav class="hud" aria-label="Capítulos da página">
+      <b id="hud-n" aria-hidden="true">01</b><span id="hud-name" aria-hidden="true">Início</span><span class="track" aria-hidden="true"><i id="hud-bar"></i></span><span class="dots" id="hud-dots"></span>
+    </nav>
 
-          <div class="hero__stats">
-            {STATS.map((stat) => (
-              <div>
-                <p class="hero__stat-value">{stat.value}</p>
-                <p class="hero__stat-label">{stat.label}</p>
+    <div class="chapters">
+      <!-- 00 início: os dois serviços; depois o Excel vira-se no sistema -->
+      <section class="chapter" id="inicio" data-name="Início" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-center" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Software house · Portugal</p>
+              <h1 class="split">Sistemas e sites, <em>feitos à medida</em>.</h1>
+              <p class="lede fade" style="--d:1">Um sistema que tira a tua empresa do Excel e das licenças caras. Um site que transforma visitas em pedidos.</p>
+              <!-- as duas portas: cada serviço com o seu argumento e o seu caminho -->
+              <div class="doors fade" style="--d:2">
+                <a class="door" href="#conta" data-go="1"><b>Sistemas à medida</b><span>Desde 1.500€ + IVA. Depois, desde 69€ por mês.</span><i>Fazer a conta</i></a>
+                <a class="door" href="/sites"><b>Sites e lojas online</b><span>Desde 280€ + IVA, prontos em 14 dias.</span><i>Ver pacotes</i></a>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div class="hero__visual">
-          <div class="hero__visual-center">
-            <img src="/lovable-uploads/bb92eb59-bee0-4023-b121-9bccea466ca8.png" alt="SENVIA" width="64" height="64" loading="lazy" />
-            <span>AI SOFTWARE HOUSE</span>
-          </div>
-
-          {orbitItems.map((item) => {
-            const rad = (item.angle * Math.PI) / 180;
-            const radius = 180;
-            const x = Math.cos(rad) * radius;
-            const y = Math.sin(rad) * radius;
-            return (
-              <div class="hero__orbit-item" style={`transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`}>
-                <div class="hero__orbit-icon" set:html={icons[item.icon]} />
-                <span class="hero__orbit-label">{item.label}</span>
-              </div>
-            );
-          })}
-
-          <svg class="hero__orbit-circle" viewBox="0 0 500 500" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;">
-            <circle cx="250" cy="250" r="180" fill="none" stroke="rgba(0, 195, 255, 0.15)" stroke-width="0.5" stroke-dasharray="8 8" />
-          </svg>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Services -->
-  <section class="section" id="servicos">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">O que fazemos</span>
-        <h2>Engenharia de Software <span class="gradient-text">com IA</span></h2>
-        <p>Da ideia à produção. Construímos soluções digitais completas que transformam a operação do seu negócio.</p>
-      </div>
-
-      <div class="service-grid">
-        {services.map((service) => (
-          <div class:list={['service-card', { 'service-card--highlight': service.highlight }]}>
-            {service.highlight && <span class="service-card__badge">Produto Próprio</span>}
-            <div class="service-card__icon" set:html={icons[service.icon]} />
-            <h3>{service.title}</h3>
-            <p class="service-card__desc">{service.desc}</p>
-            <div class="service-card__features">
-              {service.features.map((f) => (
-                <span class="service-card__feature">{f}</span>
-              ))}
             </div>
-            <a href={service.link} class="btn btn--outline">
-              {service.cta}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Why Us -->
-  <section class="section aurora-bg" id="porque-nos">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Porque a SENVIA</span>
-        <h2>O que nos torna <span class="gradient-text">diferentes</span></h2>
-        <p>Não somos mais uma software house. Somos engenheiros que pensam como empresários.</p>
-      </div>
-
-      <div class="differential-grid">
-        {differentials.map((item) => (
-          <div class="differential-card">
-            <div class="differential-card__icon" set:html={icons[item.icon]} />
-            <p class="differential-card__stat">{item.stat}</p>
-            <p class="differential-card__stat-label">{item.statLabel}</p>
-            <h3>{item.title}</h3>
-            <p>{item.desc}</p>
+          <div class="layer pos-left m-high" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Do caos a um sistema</p>
+              <h2 class="split">Excel, papéis e apps soltas, <em>num só sítio</em>.</h2>
+              <ul class="facts">
+                <li class="fade" style="--d:1"><b data-count="1">1</b><span>sistema em vez de várias apps</span></li>
+                <li class="fade" style="--d:2"><b data-count="69" data-suffix="€">69€</b><span>desde, por mês de manutenção</span></li>
+                <li class="fade" style="--d:3"><b data-count="0" data-suffix="€">0€</b><span>em licenças: utilizadores ilimitados</span></li>
+              </ul>
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
+        </div>
+      </section>
 
-  <CTASection />
+      <!-- 01 a conta: faturas de licenças contra o recibo de 69€, ano a ano -->
+      <section class="chapter" id="conta" data-name="A conta" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high m-calc" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">A conta das licenças</p>
+              <h2 class="split">Com um sistema próprio, <em>não pagas licenças</em>.</h2>
+              <div class="calc fade" style="--d:1">
+                <label><span>Pessoas a usar</span><output id="c-n">8</output><input type="range" id="c-users" min="1" max="40" value="8" aria-label="Pessoas a usar" /></label>
+                <label><span>Licenças por pessoa, por mês</span><output id="c-p">35€</output><input type="range" id="c-price" min="10" max="120" step="5" value="35" aria-label="Licenças por pessoa, por mês" /></label>
+                <div class="calc-out">
+                  <div><small>Em licenças, ao fim de <b id="c-y">1 ano</b></small><strong id="c-lic">3.360€</strong></div>
+                  <div class="us"><small>Na SENVIA, no mesmo tempo</small><strong id="c-us">828€</strong><em>+ a construção (desde 1.500€ + IVA), paga uma vez</em></div>
+                </div>
+              </div>
+              <p class="fine fade" style="--d:2">Exemplo ilustrativo: muda os valores para os da tua empresa.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 o sistema: monta-se dentro da janela com o scroll -->
+      <section class="chapter" id="sistema" data-name="O sistema" data-beats="3" style="--beats:3">
+        <div class="frame">
+          {sistema.map((g, i) => (
+            <div class={`layer pos-${g.pos} ${g.mobile}`} {...win(i, sistema.length)}>
+              <div class="copy">
+                <p class="eyebrow">O teu sistema <span class="n">{i + 1} de 3</span></p>
+                <h2 class="split" set:html={g.titulo} />
+                <div class="pairs">
+                  {g.itens.map((it, j) => (
+                    <div class="pair fade" style={`--d:${j + 1}`}><h3>{it.title}</h3><p>{it.desc}</p></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 03 serviços: um dispositivo por serviço (sistema, sites, Senvia OS) -->
+      <section class="chapter" id="servicos" data-name="Serviços" data-beats={servicos.length} style={`--beats:${servicos.length}`}>
+        <div class="frame">
+          {servicos.map((w, i) => (
+            <div class={`layer pos-${i % 2 ? 'right' : 'left'} work ${i % 2 ? 'm-high' : 'm-low'}`} data-key={w.key} {...win(i, servicos.length)}>
+              <div class="copy">
+                <p class="eyebrow">Como trabalhar connosco <span class="n">{i + 1} de {servicos.length}</span></p>
+                <span class="kind fade" style="--d:0">{w.kind}</span>
+                <h2 class="split">{w.name}</h2>
+                <ul class="tags">
+                  {w.tags.map((t, k) => <li class="fade" style={`--d:${k + 1}`}>{t}</li>)}
+                </ul>
+                <a class="link fade" style="--d:4" href={w.href} {...(w.externo ? ext : {})}>{w.cta}</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 04 processo (noite): diagnóstico, construção, publicação, manutenção -->
+      <section class="chapter" id="processo" data-name="Processo" data-beats={processo.length} data-night="true" style={`--beats:${processo.length}`}>
+        <div class="frame">
+          {processo.map((v, i) => (
+            <div class={`layer pos-${v.pos} m-high`} {...win(i, processo.length)}>
+              <div class="copy">
+                <p class="eyebrow">Como funciona <span class="n">{pad(i + 1)} {v.k}</span></p>
+                <h2 class="split" set:html={v.t} />
+                <p class="lede fade" style="--d:1">{v.d}</p>
+                {v.fine && <p class="fine fade" style="--d:2">{v.fine}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 05 custos: o que pagas, sem surpresas -->
+      <section class="chapter" id="custos" data-name="Custos" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer layer-plans pos-center" data-in="0" data-out="1">
+            <div class="copy wide">
+              <p class="eyebrow">Custos</p>
+              <h2 class="split">O que pagas, <em>sem surpresas</em>.</h2>
+              <div class="plans">
+                <article class="plan fade" style="--d:1">
+                  <span class="pn">Construção</span>
+                  <span class="pp"><small class="from">desde</small><span data-count="1500" data-suffix="€">1.500€</span><small>+ IVA</small></span>
+                  <ul><li>Utilizadores e licenças ilimitados</li><li>Automações</li><li>WhatsApp e cliente de email</li><li>Mensagens internas da equipa</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href={diagnostico} {...ext}>Pedir diagnóstico</a>
+                </article>
+                <article class="plan rec fade" style="--d:2">
+                  <div class="sbadges"><span class="sbadge">Único custo fixo</span></div>
+                  <span class="pn">Servidor e manutenção</span>
+                  <span class="pp"><small class="from">desde</small><span data-count="69" data-suffix="€">69€</span><small>/mês</small></span>
+                  <ul><li>Servidor e alojamento</li><li>Backups e segurança</li><li>Atualizações técnicas</li><li>Sem custo por utilizador</li></ul>
+                  <a class="sbtn sbtn-sm" href={diagnostico} {...ext}>Quero o meu sistema</a>
+                </article>
+                <article class="plan fade" style="--d:3">
+                  <span class="pn">Evoluções</span>
+                  <span class="pp pp-txt">Só se quiseres</span>
+                  <ul><li>Novas funcionalidades</li><li>Ligações a outros programas</li><li>Orçamentadas à parte</li><li>Sem obrigação de pedir</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href={diagnostico} {...ext}>Falar connosco</a>
+                </article>
+              </div>
+              <div class="plan-dots" aria-hidden="true"><i></i><i class="on"></i><i></i></div>
+              <p class="fine fade" style="--d:4">Pagas a construção uma vez, desde 1.500€ + IVA, e o sistema fica só para a tua empresa. Depois, o único custo fixo é a manutenção, desde 69€ por mês.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 avaliações reais do Google (Senvia Agency, Leiria) -->
+      <section class="chapter" id="avaliacoes" data-name="Avaliações" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer layer-plans pos-bottom m-high" data-in="0" data-out="1">
+            <div class="copy wide">
+              <p class="eyebrow">Avaliações Google</p>
+              <h2 class="split">5,0 no Google. <em>Cinco estrelas</em> em todas.</h2>
+              <div class="reviews">
+                {avaliacoes.map((a, k) => (
+                  <figure class="review fade" style={`--d:${k + 1}`}><span class="stars" aria-label="5 de 5 estrelas">★★★★★</span><blockquote>{a.texto}</blockquote><figcaption>{a.nome}</figcaption></figure>
+                ))}
+              </div>
+              <a class="link fade" style="--d:6" href="https://www.google.com/search?q=Senvia+Agency+Leiria" {...ext}>Ver as avaliações no Google</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 contacto (id "contactos": é para aqui que levam a navbar e o rodapé) -->
+      <section class="chapter" id="contactos" data-name="Contacto" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer pos-bottom m-low" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Próximo passo</p>
+              <h2 class="split">Mostra-nos o teu Excel. <em>Dizemos-te o que dá para fazer</em>.</h2>
+              <p class="lede fade" style="--d:1">Numa conversa curta vemos como trabalhas hoje e sais com um caminho concreto, com ou sem a SENVIA.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={diagnostico} {...ext}>Pedir diagnóstico</a>
+                <a class="sbtn sbtn-ghost" href="/sites">Ver sites</a>
+              </div>
+            </div>
+          </div>
+          <div class="wordmark" aria-hidden="true">SENVIA</div>
+        </div>
+      </section>
+    </div>
+  </div>
 </Base>
+
+<script>
+  import '../scripts/home-v2.js';
+</script>

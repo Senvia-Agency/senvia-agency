@@ -1,0 +1,195 @@
+
+/* Layout: uma mesa de trabalho em 3D, vista de cima, fixa atrás da página. Uma única secção alta com um quadro sticky;
+   o scroll leva a câmara de objeto em objeto e as notas de papel aparecem por cima da mesa, uma de cada vez. */
+.sv2{
+  --paper:#EEF2F3; --paper-2:#F8FAFA; --ink:#0B1F2A; --ink-2:#4A6170; --line:#D3DDE1;
+  --petrol:#00708F; --petrol-2:#0E86A8; --green:#1FAF5B;
+  --note:#FFFDF8; --note-2:#F4EEE2; --note-line:#E7DDCB; --wood:#D2B48C;
+  --fg:var(--ink); --fg-2:var(--ink-2); --rule:var(--line); --surface:color-mix(in srgb,var(--paper-2) 82%,transparent);
+  --display:"General Sans","Segoe UI",system-ui,sans-serif;
+  --body:"General Sans","Segoe UI",system-ui,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --mono:"DM Mono",ui-monospace,Consolas,monospace;
+  --hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  --gx:max(clamp(16px,5vw,72px),env(safe-area-inset-left,0px));
+  --gr:max(clamp(16px,5vw,72px),env(safe-area-inset-right,0px));
+  --copy-2:#2E4451;
+  color-scheme:light;
+}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.sv2 #world{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;touch-action:pan-y}
+/* luz ambiente: os cantos da mesa ficam mais escuros, como numa fotografia */
+.sv2 .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 55% 45%,transparent 55%,rgba(70,45,20,.22))}
+
+/* topo */
+.sv2 .sbtn{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;border-radius:12px;background:var(--ink);color:var(--paper-2);
+  font:600 15px/1 var(--body);text-decoration:none;border:1px solid var(--ink);transition:transform .2s,background .3s,color .3s}
+.sv2 .sbtn:hover{transform:translateY(-1px)}
+.sv2 .sbtn-ghost{background:transparent;color:var(--ink);border-color:color-mix(in srgb,var(--ink) 25%,transparent)}
+.sv2 .sbtn-sm{padding:10px 14px;font-size:14px}
+.sv2 a:focus-visible,.sv2 .sbtn:focus-visible,.sv2 button:focus-visible{outline:2px solid var(--petrol-2);outline-offset:3px}
+
+/* a mesa: uma secção com uma paragem por objeto */
+.sv2 .desk-page{position:relative;z-index:2;pointer-events:none}
+.sv2 .track{position:relative;height:calc(var(--stops) * 100vh)}
+.sv2 .frame{position:sticky;top:0;height:100vh;overflow:hidden}
+@supports (height:100svh){.sv2 .track{height:calc(var(--stops) * 100svh)}.sv2 .frame{height:100svh}}
+
+/* as notas: folhas de papel presas com fita-cola, pousadas por cima da mesa */
+.sv2 .note{--ty:-50%;position:absolute;top:50%;width:min(31rem,40vw);display:flex;flex-direction:column;gap:16px;padding:34px 34px 30px;
+  border-radius:4px 4px 6px 6px;background:var(--note);color:var(--ink);pointer-events:auto;
+  background-image:linear-gradient(to bottom,rgba(255,255,255,.7),rgba(255,255,255,0) 30%),linear-gradient(to top,rgba(160,120,60,.05),transparent 40%);
+  box-shadow:0 1px 1px rgba(80,50,15,.10),0 12px 26px -8px rgba(80,50,15,.30),0 34px 70px -24px rgba(80,50,15,.35);
+  transform:translateY(var(--ty)) rotate(var(--rot,0deg))}
+.sv2 .note.left{left:var(--gx)}
+.sv2 .note.right{right:var(--gr)}
+/* a fita-cola */
+.sv2 .note::before{content:"";position:absolute;top:-13px;left:50%;width:118px;height:28px;translate:-50% 0;rotate:-2.5deg;
+  background:color-mix(in srgb,var(--petrol-2) 30%,rgba(255,255,255,.6));border-radius:2px;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);-webkit-mask-image:linear-gradient(90deg,transparent 0 2px,#000 2px calc(100% - 2px),transparent calc(100% - 2px));
+  mask-image:linear-gradient(90deg,transparent 0 2px,#000 2px calc(100% - 2px),transparent calc(100% - 2px))}
+.sv2 .note.right::before{rotate:3deg;left:42%}
+/* a nota segue o scroll: --v vai de 0 a 1 ao chegar à paragem; --dir diz se entra por baixo (1) ou sai por cima (-1) */
+.js .sv2 .note{--v:0;--dir:1;visibility:hidden;opacity:var(--v);
+  transform:translateY(calc(var(--ty) + (1 - var(--v)) * var(--dir) * 46px)) rotate(calc(var(--rot,0deg) + (1 - var(--v)) * var(--dir) * 2.5deg)) scale(calc(.965 + var(--v) * .035));
+  filter:blur(calc((1 - var(--v)) * 5px))}
+.js .sv2 .note.vis{visibility:visible}
+.js .sv2 .note.full{filter:none}
+/* o conteúdo entra em cascata, um elemento a seguir ao outro */
+.js .sv2 .note > *{--k:clamp(0, calc(var(--v) * 1.8 - var(--i, 0) * .16), 1);opacity:var(--k);translate:0 calc((1 - var(--k)) * var(--dir) * 16px)}
+.sv2 .hand{margin:0 0 -4px;font:700 30px/1 var(--hand);color:var(--petrol-2);rotate:-2deg;transform-origin:left}
+.sv2 h1,.sv2 h2{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.045em;text-wrap:balance;color:var(--ink)}
+.sv2 h1{font-size:clamp(2.3rem,3.5vw,3.7rem);line-height:.98}
+.sv2 h2{font-size:clamp(1.9rem,2.6vw,2.8rem);line-height:1.02}
+/* palavra-chave: serifada e sublinhada a marcador quando a nota assenta */
+.sv2 h1 em,.sv2 h2 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--petrol-2);
+  background:linear-gradient(color-mix(in srgb,var(--petrol-2) 18%,transparent),color-mix(in srgb,var(--petrol-2) 18%,transparent)) no-repeat 0 88% / 0% .32em;
+  transition:background-size .8s cubic-bezier(.2,.7,.1,1) .45s}
+.sv2 .note.on em,html:not(.js) .sv2 h1 em,html:not(.js) .sv2 h2 em{background-size:100% .32em}
+.sv2 .lede{margin:0;font-size:clamp(16px,1.15vw,18px);line-height:1.5;color:var(--copy-2);text-wrap:pretty;font-weight:500}
+.sv2 .actions{display:flex;flex-wrap:wrap;gap:10px}
+.sv2 .link{font:500 14px/1 var(--body);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px;align-self:flex-start;color:var(--petrol)}
+/* citação do fundador */
+.sv2 .quote{margin:0;font:500 clamp(15.5px,1.1vw,17px)/1.5 var(--body);color:var(--ink);border-left:3px solid var(--petrol-2);padding-left:16px}
+.sv2 .quote p{margin:0 0 8px}
+.sv2 .quote p:last-child{margin:0}
+.sv2 .who{display:flex;flex-direction:column;gap:5px}
+.sv2 .who b{font:600 18px/1.2 var(--display)}
+.sv2 .who span{font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+/* o que fazemos: três cartões que escolhem o que aparece no ecrã do portátil */
+.sv2 .doors{display:flex;flex-direction:column;gap:8px}
+.sv2 .door{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;row-gap:3px;padding:12px 14px;border-radius:10px;
+  width:100%;text-align:left;font:inherit;color:var(--ink);cursor:pointer;
+  background:var(--note-2);border:1px solid var(--note-line);transition:border-color .25s,transform .25s,background .25s,box-shadow .25s}
+.sv2 .door:hover{border-color:var(--petrol-2);background:#fff;transform:translateX(3px)}
+.sv2 .door[aria-pressed="true"]{border-color:var(--petrol-2);background:#fff;box-shadow:inset 3px 0 0 var(--petrol-2)}
+.sv2 .door b{font:600 16.5px/1.2 var(--display);letter-spacing:-.01em;grid-column:1}
+.sv2 .door span{font-size:14px;line-height:1.35;color:var(--copy-2);font-weight:500;grid-column:1}
+/* indicador de "está no ecrã": anel vazio, cheio no cartão escolhido */
+.sv2 .door::after{content:"";grid-column:2;grid-row:1 / span 2;width:12px;height:12px;border-radius:50%;border:2px solid color-mix(in srgb,var(--petrol-2) 45%,transparent);transition:background .25s,border-color .25s,box-shadow .25s}
+.sv2 .door[aria-pressed="true"]::after{background:var(--petrol-2);border-color:var(--petrol-2);box-shadow:0 0 0 4px color-mix(in srgb,var(--petrol-2) 18%,transparent)}
+/* as três regras, com a cor de cada post-it */
+.sv2 .rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.sv2 .rules li{display:flex;gap:12px;align-items:baseline;font-size:16.5px;line-height:1.4;color:var(--copy-2);font-weight:500}
+.sv2 .rules li::before{content:"";flex:none;width:14px;height:14px;border-radius:2px;background:var(--pc,#FFE07A);rotate:-4deg;translate:0 2px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.sv2 .rules li:nth-child(2)::before{--pc:#A7F0CF;rotate:3deg}
+.sv2 .rules li:nth-child(3)::before{--pc:#F9C9E0;rotate:-2deg}
+.sv2 .rules b{color:var(--ink);font-weight:600}
+/* uma avaliação real do Google */
+.sv2 .mini-review{margin:0;padding:14px 16px;border-radius:10px;background:var(--note-2);border:1px solid var(--note-line);display:flex;flex-direction:column;gap:8px}
+.sv2 .mini-review::before{content:"★★★★★";color:#F2B53A;letter-spacing:2px;font-size:14px;line-height:1}
+.sv2 .mini-review blockquote{margin:0;font-size:15.5px;line-height:1.45;font-weight:500}
+.sv2 .mini-review figcaption{font:500 11.5px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.sv2 .addr{margin:0;font:600 clamp(20px,1.6vw,24px)/1.3 var(--display);letter-spacing:-.02em}
+
+/* paragens: um botão por objeto */
+.sv2 .stops{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));translate:-50% 0;display:flex;gap:4px;padding:5px;border-radius:999px;pointer-events:auto;
+  background:color-mix(in srgb,var(--note) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 1px 1px rgba(80,50,15,.08),0 10px 24px -10px rgba(80,50,15,.35)}
+.sv2 .stops button{font:500 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:none;border:0;padding:9px 12px;border-radius:999px;cursor:pointer;transition:color .25s,background .25s}
+.sv2 .stops button:hover{color:var(--ink)}
+.sv2 .stops button.on{background:var(--ink);color:var(--paper-2)}
+.sv2 .hint{position:absolute;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));translate:-50% 0;margin:0;font:700 22px/1 var(--hand);color:color-mix(in srgb,var(--ink) 70%,transparent);
+  white-space:nowrap;transition:opacity .5s;pointer-events:none}
+.sv2 .hint .h-m{display:none}
+.sv2 .hint.off{opacity:0}
+/* etiqueta do objeto debaixo do rato */
+.sv2 .tip{position:fixed;left:0;top:0;z-index:12;pointer-events:none;padding:8px 12px;border-radius:999px;background:var(--ink);color:var(--paper-2);
+  font:500 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;opacity:0;translate:-50% calc(-100% - 16px);transition:opacity .2s}
+.sv2 .tip.on{opacity:1}
+
+/* sem JS: as notas ficam umas debaixo das outras */
+html:not(.js) .sv2 .track{height:auto}
+html:not(.js) .sv2 .frame{position:static;height:auto;display:flex;flex-direction:column;gap:40px;padding:110px var(--gx) 60px}
+html:not(.js) .sv2 .note{position:relative;top:auto;left:auto;right:auto;transform:none;width:min(36rem,100%)}
+html:not(.js) .sv2 .stops,html:not(.js) .sv2 .hint{display:none}
+
+@media (max-width:1100px) and (min-width:760px){
+  .sv2 .note{width:min(29rem,44vw);padding:28px 26px 24px;gap:13px}
+  .sv2 .stops button{padding:8px 9px;font-size:10.5px}
+}
+@media (max-width:759px){
+  /* no telemóvel a nota é uma folha pousada no fundo do ecrã; o objeto fica no espaço livre por cima */
+  .sv2 .note,.sv2 .note.left,.sv2 .note.right{--ty:0px;--rot:0deg!important;left:10px;right:10px;top:calc(114px + env(safe-area-inset-top,0px));bottom:auto;width:auto;max-height:52svh;overflow:auto;
+    padding:20px 18px 16px;gap:10px}
+  .sv2 .note::before{width:88px;height:22px;top:-10px}
+  .sv2 .hand{font-size:24px}
+  .sv2 h1{font-size:clamp(1.85rem,8.4vw,2.4rem)}
+  .sv2 h2{font-size:clamp(1.45rem,6.6vw,1.9rem)}
+  .sv2 .lede{font-size:15px}
+  .sv2 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .sv2 .actions .sbtn{justify-content:center;text-align:center;padding:12px 10px;font-size:14px}
+  .sv2 .quote{font-size:14.5px;padding-left:12px}
+  .sv2 .who b{font-size:16px}
+  .sv2 .door{padding:10px 12px}
+  .sv2 .door b{font-size:15px}
+  .sv2 .door span{font-size:13px}
+  .sv2 .rules{gap:7px}
+  .sv2 .rules li{font-size:14.5px}
+  .sv2 .mini-review{padding:11px 13px;gap:6px}
+  .sv2 .mini-review blockquote{font-size:14px}
+  /* paragens: losangos pequenos por baixo do topo */
+  .sv2 .stops{top:calc(66px + env(safe-area-inset-top,0px));bottom:auto;padding:6px 8px;gap:2px;background:color-mix(in srgb,var(--note) 70%,transparent)}
+  .sv2 .stops button{padding:6px;font-size:0;line-height:0}
+  .sv2 .stops button::before{content:"";display:block;width:7px;height:7px;border-radius:1.5px;rotate:45deg;background:color-mix(in srgb,var(--ink) 28%,transparent);transition:background .25s,scale .25s}
+  .sv2 .stops button.on{background:none}
+  .sv2 .stops button.on::before{background:var(--petrol-2);scale:1.35}
+  .sv2 .hint{bottom:calc(18px + env(safe-area-inset-bottom,0px));font-size:19px}
+  .sv2 .hint .h-d{display:none}.sv2 .hint .h-m{display:inline}
+}
+/* telemóveis com pouca altura visível (ex.: iPhone no Safari, com as barras): a nota encolhe para deixar ver o objeto */
+@media (max-width:759px) and (max-height:780px){
+  .sv2 .note,.sv2 .note.left,.sv2 .note.right{padding:17px 16px 14px;gap:8px;max-height:54svh;top:calc(110px + env(safe-area-inset-top,0px))}
+  .sv2 .hand{font-size:21px}
+  .sv2 h1{font-size:clamp(1.6rem,7.4vw,2rem)}
+  .sv2 h2{font-size:clamp(1.3rem,6vw,1.6rem)}
+  .sv2 .lede{font-size:14px;line-height:1.42}
+  .sv2 .quote .q1{display:none}
+  .sv2 .quote .q1 + p::before{content:"“"}
+  .sv2 .quote{font-size:14px}
+  .sv2 .door span{display:none}
+  .sv2 .door{padding:9px 12px}
+  .sv2 .mini-review blockquote{font-size:13.5px}
+  .sv2 .rules li{font-size:14px}
+  .sv2 .addr{font-size:18px}
+}
+@media (prefers-reduced-motion: reduce){
+  .js .sv2 .note{transform:translateY(var(--ty)) rotate(var(--rot,0deg));filter:none}
+  .js .sv2 .note > *{translate:none}
+}
+
+/* ================= integração no site (página /sobre-nos) ================= */
+/* General Sans alojada no próprio site (a CSP só deixa fontes do próprio domínio e do Google) */
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-600.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
+/* a página é a mesa (madeira); o rodapé global continua escuro e por cima do mundo 3D */
+html:has(.sv2){scroll-behavior:auto}
+html:has(.sv2) body{background:#D2B48C}
+html:has(.sv2) .site-footer{position:relative;z-index:6;background:#0B1F2A}
+.sv2{color:var(--fg);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+.sv2 p{margin:0}

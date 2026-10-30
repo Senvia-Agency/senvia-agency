@@ -735,14 +735,42 @@ function drawObjects(){ drawSystem(SYS_ALL, SYS_CV.g, SYS_CV.tex); drawExcel(); 
 // ---------- dispositivos ----------
 const SCR_RATIO = SH / SW;
 function screenMat(tex){ return new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, transparent: true }); }
+// teclado e trackpad do portátil, desenhados em canvas (as teclas ficam do lado da dobradiça)
+function keyboardTex(w, d){
+  const W = 1024, H = Math.round(W * d / w), K = mkCv(W, H), g = K.g;
+  g.fillStyle = '#C9D2D8'; g.fillRect(0, 0, W, H);
+  const pad = W * 0.035, kw0 = W - pad * 2, top = H * 0.07, rows = 6, gap = W * 0.008, rh = (H * 0.5 - gap * (rows - 1)) / rows;
+  g.fillStyle = '#B7C1C7'; rr(g, pad - gap * 1.5, top - gap * 1.5, kw0 + gap * 3, rows * rh + (rows - 1) * gap + gap * 3, 18); g.fill();
+  const cols = [14, 14, 14, 13, 12, 9];
+  cols.forEach((n, r) => {
+    const y = top + r * (rh + gap), h = r === 0 ? rh * 0.62 : rh;
+    // a última fila tem a barra de espaço larga ao centro
+    const ws = r === rows - 1 ? [1, 1, 1, 1.2, 5.2, 1.2, 1, 1, 1] : Array.from({ length: n }, (_, k) => (r === 3 && (k === 0 || k === n - 1)) || (r === 4 && (k === 0 || k === n - 1)) ? 1.6 : 1);
+    const unit = (kw0 - gap * (ws.length - 1)) / ws.reduce((a, b) => a + b, 0);
+    let x = pad;
+    ws.forEach((u) => { g.fillStyle = '#26323A'; rr(g, x, y + (r === 0 ? rh - h : 0), unit * u, h, Math.min(10, h * 0.2)); g.fill(); x += unit * u + gap; });
+  });
+  const tw = W * 0.4, th = H * 0.3, tx = (W - tw) / 2, ty = H * 0.63;
+  g.fillStyle = '#C1CBD1'; rr(g, tx, ty, tw, th, 22); g.fill(); g.strokeStyle = 'rgba(11,31,42,.12)'; g.lineWidth = 3; g.stroke();
+  K.tex.needsUpdate = true; return K.tex;
+}
 function makeLaptop(tex, sw = 2.5){
-  const g = new THREE.Group(), body = new THREE.MeshPhysicalMaterial({ color: 0xC5CFD5, roughness: 0.32, metalness: 0.35, clearcoat: 0.4, transparent: true });
-  const sh = sw * SCR_RATIO;
-  const base = new THREE.Mesh(new RoundedBoxGeometry(sw + 0.5, 0.08, 1.7, 3, 0.035), body); base.position.set(0, -sh / 2 - 0.1, 0.78); base.castShadow = true; g.add(base);
-  const lid = new THREE.Group(); lid.position.set(0, -sh / 2 - 0.08, 0); lid.rotation.x = -0.1; g.add(lid);
-  const shell = new THREE.Mesh(new RoundedBoxGeometry(sw + 0.18, sh + 0.18, 0.06, 3, 0.05), body); shell.position.set(0, sh / 2 + 0.06, -0.035); shell.castShadow = true; lid.add(shell);
+  // rig: o portátil todo inclinado para a câmara, para se ver o teclado; a tampa compensa e o ecrã fica como estava
+  const g = new THREE.Group(), rig = new THREE.Group(), TILT = 0.32, body = new THREE.MeshPhysicalMaterial({ color: 0xC5CFD5, roughness: 0.32, metalness: 0.35, clearcoat: 0.4, transparent: true });
+  const sh = sw * SCR_RATIO, lw = sw + 0.16, lh = sh + 0.16, deep = lh * 0.86, by = -sh / 2 - 0.1;
+  // base do mesmo tamanho da tampa, com teclado e trackpad por cima
+  rig.rotation.x = TILT; g.add(rig);
+  const base = new THREE.Mesh(new RoundedBoxGeometry(lw, 0.07, deep, 3, 0.03), body); base.position.set(0, by, deep / 2 + 0.02); base.castShadow = true; rig.add(base);
+  const kb = new THREE.Mesh(new THREE.PlaneGeometry(lw - 0.1, deep - 0.08), new THREE.MeshStandardMaterial({ map: keyboardTex(lw - 0.1, deep - 0.08), roughness: 0.55, metalness: 0.2, transparent: true }));
+  kb.rotation.x = -Math.PI / 2; kb.position.set(0, by + 0.036, deep / 2 + 0.02); rig.add(kb);
+  const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, lw * 0.82, 16), new THREE.MeshStandardMaterial({ color: 0x55616A, roughness: 0.4, metalness: 0.6, transparent: true }));
+  hinge.rotation.z = Math.PI / 2; hinge.position.set(0, by + 0.035, 0.0); rig.add(hinge);
+  // tampa: alumínio por fora e bordo preto à volta do ecrã
+  const lid = new THREE.Group(); lid.position.set(0, -sh / 2 - 0.08, 0); lid.rotation.x = -0.1 - TILT; rig.add(lid);
+  const shell = new THREE.Mesh(new RoundedBoxGeometry(lw, lh, 0.05, 3, 0.04), body); shell.position.set(0, sh / 2 + 0.06, -0.03); shell.castShadow = true; lid.add(shell);
+  const bezel = new THREE.Mesh(new THREE.PlaneGeometry(sw + 0.1, sh + 0.1), new THREE.MeshStandardMaterial({ color: 0x0E161B, roughness: 0.3, transparent: true })); bezel.position.set(0, sh / 2 + 0.06, -0.003); lid.add(bezel);
   const scr = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), screenMat(tex)); scr.position.set(0, sh / 2 + 0.06, 0.0); lid.add(scr);
-  g.userData.mats = [body, scr.material]; return g;
+  g.userData.mats = [body, kb.material, hinge.material, bezel.material, scr.material]; return g;
 }
 function makePhone(tex, h = 2.0){
   const g = new THREE.Group(), body = new THREE.MeshPhysicalMaterial({ color: 0x14232C, roughness: 0.3, metalness: 0.4, clearcoat: 0.8, transparent: true });

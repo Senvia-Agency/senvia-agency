@@ -43,7 +43,7 @@ export const NAV_LINKS = [
   { label: 'Serviços', hasDropdown: true },
   { label: 'Sobre Nós', href: '/sobre-nos' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Contactos', href: '/contacto' },
+  { label: 'Contactos', href: '/contactos' },
 ] as const;
 
 export const SERVICE_LINKS = [

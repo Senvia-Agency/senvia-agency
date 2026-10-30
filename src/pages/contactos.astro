@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+import SitesNav from '../components/sites/SitesNav.astro';
+import { SITE } from '../config';
+import '../styles/contactos-v2.css';
+
+/* ------------------------------------------------------------------
+   Contactos: Leiria em maqueta 3D, vista de cima. O scroll leva a câmara de canal em canal
+   (email, WhatsApp e telefone, morada) e no fim anoitece. A cidade é uma ilustração, não uma planta exata.
+   Uma secção alta com um quadro sticky; os cartões entram e saem com o scroll.
+   O 3D vive em src/scripts/contactos-v2.js; os estilos em src/styles/contactos-v2.css (tudo dentro de .sv2).
+------------------------------------------------------------------- */
+
+const demo = SITE.ctaFormUrl;
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
+---
+
+<Base
+  title="Contactos: fala connosco"
+  description="Fala com a SENVIA por email, WhatsApp ou telefone. Estamos em Leiria, na R. de Atenas 149, 2415-585 Leiria."
+  canonicalPath="/contactos"
+>
+  <SitesNav slot="header" cta="Pedir diagnóstico" ctaHref={demo} />
+  <!-- Marca o suporte a JS antes de pintar: os cartões ficam escondidos até o scroll os mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- Inter: a letra desenhada no 3D -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
+
+  <div class="sv2" id="sv2">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <div class="tip" id="tip" aria-hidden="true"></div>
+
+    <div class="map-page">
+    <!-- Leiria em maqueta: o scroll leva a câmara de canal em canal; cada cartão é uma etiqueta do mapa -->
+      <section class="track" id="inicio" style="--stops:5">
+        <div class="frame">
+          <article class="card left" data-stop="0">
+            <p class="eyebrow">Contactos</p>
+            <h1>Fala connosco. <em>Estamos em Leiria</em>.</h1>
+            <p class="lede">Do outro lado está quem faz o teu projeto. Escolhe como preferes falar.</p>
+            <div class="chans">
+              <button type="button" class="chan" data-go="1"><i style="--ic:#0E86A8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></i><b>Email</b><span>geral@senvia.pt</span></button>
+              <button type="button" class="chan" data-go="2"><i style="--ic:#1DA851"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12Z"/></svg></i><b>WhatsApp e telefone</b><span>939 135 114</span></button>
+              <button type="button" class="chan" data-go="3"><i style="--ic:#7C3AED"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg></i><b>Morada</b><span>R. de Atenas 149, Leiria</span></button>
+            </div>
+          </article>
+    
+          <article class="card right" data-stop="1" style="--dot:#0E86A8">
+            <p class="eyebrow">Email</p>
+            <h2>Preferes escrever? <em>Manda email</em>.</h2>
+            <p class="lede opt">Para propostas, dúvidas ou parcerias. Conta-nos o que precisas e respondemos com os próximos passos.</p>
+            <p class="big"><a href="mailto:geral@senvia.pt">geral@senvia.pt</a></p>
+            <div class="actions">
+              <a class="sbtn" href="mailto:geral@senvia.pt?subject=Contacto%20pelo%20site">Escrever email</a>
+              <button type="button" class="sbtn sbtn-ghost" data-copy="geral@senvia.pt">Copiar email</button>
+            </div>
+          </article>
+    
+          <article class="card left" data-stop="2" style="--dot:#1DA851">
+            <p class="eyebrow">WhatsApp e telefone</p>
+            <h2>Manda mensagem. <em>Ou liga</em>.</h2>
+            <p class="lede opt">É a forma mais rápida de falar connosco. Atende quem faz o teu projeto.</p>
+            <p class="big"><a href="tel:+351939135114">939 135 114</a></p>
+            <div class="actions">
+              <a class="sbtn sbtn-wa" href="https://wa.me/351939135114?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20SENVIA%20e%20queria%20falar%20sobre%20o%20meu%20projeto." {...ext}>Abrir WhatsApp</a>
+              <a class="sbtn sbtn-ghost" href="tel:+351939135114">Ligar</a>
+            </div>
+          </article>
+    
+          <article class="card right" data-stop="3" style="--dot:#7C3AED">
+            <p class="eyebrow">Morada</p>
+            <h2>Estamos <em>em Leiria</em>.</h2>
+            <p class="big">R. de Atenas 149<small>2415-585 Leiria</small></p>
+            <p class="lede opt">Marca uma reunião connosco e combinamos o formato que te der mais jeito.</p>
+            <div class="actions">
+              <a class="sbtn" href="https://wa.me/351939135114?text=Ol%C3%A1!%20Queria%20marcar%20uma%20reuni%C3%A3o%20com%20a%20SENVIA." {...ext}>Marcar reunião</a>
+              <a class="sbtn sbtn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=R.+de+Atenas+149+2415-585+Leiria" {...ext}>Abrir no mapa</a>
+            </div>
+          </article>
+    
+          <article class="card left" data-stop="4">
+            <p class="eyebrow">Já és cliente?</p>
+            <h2>Precisas de ajuda? <em>Estamos aqui</em>.</h2>
+            <div class="chans">
+              <a class="chan" href="/suporte"><i style="--ic:#0B1F2A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></i><b>Suporte remoto</b><span>Ajudamos-te no teu computador.</span></a>
+              <a class="chan" href="https://app.senvia.pt" {...ext}><i style="--ic:#0E86A8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></i><b>Entrar no Senvia OS</b><span>A tua área de cliente.</span></a>
+            </div>
+          </article>
+    
+          <nav class="stops" id="stops" aria-label="Canais de contacto"></nav>
+          <p class="hint" id="hint" aria-hidden="true"><span class="h-d">Faz scroll ou clica no mapa</span><span class="h-m">Desliza ou toca no mapa</span></p>
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import '../scripts/contactos-v2.js';
+</script>

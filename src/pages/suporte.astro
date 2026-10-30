@@ -1,102 +1,121 @@
 ---
 import Base from '../layouts/Base.astro';
+import SitesNav from '../components/sites/SitesNav.astro';
+import { SITE } from '../config';
+import '../styles/suporte-v2.css';
+
+/* ------------------------------------------------------------------
+   Suporte remoto: um computador em 3D a receber ajuda. Cada paragem é um passo (descarregar, instalar,
+   falar connosco, segurança) e o ecrã mostra-o a acontecer. O download vem de src/scripts/support-download.js.
+   Uma secção alta com um quadro sticky; os cartões entram e saem com o scroll.
+   O 3D vive em src/scripts/suporte-v2.js; os estilos em src/styles/suporte-v2.css (tudo dentro de .sv2).
+------------------------------------------------------------------- */
+
+const demo = SITE.ctaFormUrl;
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
 ---
 
-<Base title="Suporte remoto" description="Descarregue o SENVIA Suporte para receber assistência técnica remota no seu computador." canonicalPath="/suporte">
-  <section class="support section">
-    <div class="container">
-      <a class="support__back" href="/">← SENVIA</a>
-      <div class="support__layout">
-        <div class="support__intro">
-          <p class="support__eyebrow">Assistência técnica remota</p>
-          <h1>A ajuda chega<br />ao seu computador.</h1>
-          <p class="support__lead">Instale o SENVIA Suporte para a nossa equipa o ajudar, onde quer que esteja.</p>
+<Base
+  title="Suporte remoto"
+  description="Descarrega o SENVIA Suporte e recebe assistência técnica remota no teu computador, em Windows, macOS ou Linux."
+  canonicalPath="/suporte"
+>
+  <SitesNav slot="header" cta="Pedir diagnóstico" ctaHref={demo} />
+  <!-- Marca o suporte a JS antes de pintar: os cartões ficam escondidos até o scroll os mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- Inter: a letra desenhada no 3D -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
 
+  <div class="sv2" id="sv2">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <div class="tip" id="tip" aria-hidden="true"></div>
+
+    <div class="help-page">
+    <!-- Suporte remoto: o computador 3D mostra cada passo a acontecer no ecrã; o download e os textos de instalação vêm de support-download.js -->
+      <section class="track" id="inicio" style="--stops:5">
+        <div class="frame">
+          <article class="card left" data-stop="0">
+            <p class="eyebrow">Suporte remoto</p>
+            <h1>A ajuda chega <em>ao teu computador</em>.</h1>
+            <p class="lede opt">Instala o SENVIA Suporte e a nossa equipa ajuda-te, estejas onde estiveres.</p>
+            <div class="dl">
+              <p class="dl-status" id="support-detection" role="status" aria-live="polite">Escolhe o sistema do teu computador.</p>
+              <label for="support-system">Sistema e versão</label>
+              <select class="sel" id="support-system" name="system">
+                <option value="windows-x64">Windows · 64 bits (x64)</option>
+                <option value="windows-arm64">Windows · ARM64</option>
+                <option value="windows-x86">Windows · 32 bits (x86)</option>
+                <option value="macos">macOS · Apple Silicon e Intel</option>
+                <option value="linux-x64">Linux · 64 bits (x64)</option>
+                <option value="linux-arm64">Linux · ARM64</option>
+              </select>
+              <a id="support-download" class="sbtn support-dl" href="https://suporte.senvia.pt/download/windows-x64/SENVIA-suporte.exe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg>
+                <span>Descarregar para Windows</span>
+              </a>
+              <p class="dl-meta"><code id="support-filename">SENVIA-suporte.exe</code> <span class="ph" id="support-platform-help">Não sabes qual escolher? Windows x64 é a versão mais comum.</span></p>
+            </div>
+            <noscript><p class="dl-meta">Sem JavaScript, usa a lista de todos os downloads mais abaixo na página.</p></noscript>
+          </article>
+    
+          <article class="card right" data-stop="1" style="--dot:#0E86A8">
+            <p class="eyebrow">Passo 1</p>
+            <h2>Descarrega <em>o instalador</em>.</h2>
+            <p class="lede">Escolhe a versão para o computador que vai receber assistência.</p>
+            <div class="actions">
+              <a class="sbtn support-dl" href="https://suporte.senvia.pt/download/windows-x64/SENVIA-suporte.exe"><span>Descarregar para Windows</span></a>
+              <button type="button" class="sbtn sbtn-ghost" data-go="0">Outro sistema</button>
+            </div>
+          </article>
+    
+          <article class="card left" data-stop="2" style="--dot:#7C3AED">
+            <p class="eyebrow">Passo 2</p>
+            <h2>Abre e <em>instala</em>.</h2>
+            <p class="lede opt">Confirma a instalação só se pediste ou combinaste o suporte com a SENVIA.</p>
+            <p class="howto" id="support-instructions"><b>Como instalar no teu sistema</b><span id="support-install-help">Abre SENVIA-suporte.exe, escolhe Install / Instalar e confirma o pedido de administrador do Windows.</span></p>
+          </article>
+    
+          <article class="card right" data-stop="3" style="--dot:#1DA851">
+            <p class="eyebrow">Passo 3</p>
+            <h2>Fala com <em>a nossa equipa</em>.</h2>
+            <p class="lede">Avisa-nos quando terminares. Não precisas de nos enviar a senha do teu computador.</p>
+            <div class="actions">
+              <a class="sbtn sbtn-wa" href="https://wa.me/351939135114?text=Ol%C3%A1!%20J%C3%A1%20instalei%20o%20SENVIA%20Suporte." {...ext}>Avisar por WhatsApp</a>
+              <a class="sbtn sbtn-ghost" href="tel:+351939135114">Ligar</a>
+            </div>
+          </article>
+    
+          <article class="card left" data-stop="4" style="--dot:#F2B53A">
+            <p class="eyebrow">Segurança</p>
+            <h2>Sabe o que <em>estás a instalar</em>.</h2>
+            <div class="notice">
+              <p>O agente fica instalado e permite à equipa SENVIA prestar assistência remota, incluindo futuras ligações sem um pedido de aprovação em cada sessão. Durante o acesso ao ambiente de trabalho aparece uma barra de sessão remota. Instala apenas num equipamento para o qual tens autorização e se combinaste este acesso com a SENVIA.</p>
+              <p>Podes desinstalar o agente ou pedir-nos para retirar o acesso. <a class="link" href="mailto:geral@senvia.pt?subject=Suporte%20remoto%20SENVIA">Precisas de ajuda?</a></p>
+            </div>
+            <details class="files" id="support-versions">
+              <summary>Todos os downloads</summary>
+              <ul>
+                <li><a href="https://suporte.senvia.pt/download/windows-x64/SENVIA-suporte.exe">Windows x64</a></li>
+                <li><a href="https://suporte.senvia.pt/download/windows-arm64/SENVIA-suporte.exe">Windows ARM64</a></li>
+                <li><a href="https://suporte.senvia.pt/download/windows-x86/SENVIA-suporte.exe">Windows x86 (32 bits)</a></li>
+                <li><a href="https://suporte.senvia.pt/download/macos/SENVIA-suporte.zip">macOS</a></li>
+                <li><a href="https://suporte.senvia.pt/download/linux-x64/SENVIA-suporte.tar.gz">Linux x64</a></li>
+                <li><a href="https://suporte.senvia.pt/download/linux-arm64/SENVIA-suporte.tar.gz">Linux ARM64</a></li>
+              </ul>
+            </details>
+          </article>
+    
+          <nav class="stops" id="stops" aria-label="Passos do suporte"></nav>
+          <p class="hint" id="hint" aria-hidden="true"><span class="h-d">Faz scroll para ver os passos</span><span class="h-m">Desliza para ver os passos</span></p>
         </div>
-        <div class="support__download" aria-labelledby="download-title">
-          <svg class="support__icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 16v5M12 6v7m-3-3 3 3 3-3"/></svg>
-          <h2 id="download-title">SENVIA Suporte</h2>
-          <p id="support-detection" role="status" aria-live="polite">Escolha o sistema do seu computador.</p>
-          <label for="support-system">Sistema e versão</label>
-          <select id="support-system" name="system">
-            <option value="windows-x64">Windows · 64 bits (x64)</option>
-            <option value="windows-arm64">Windows · ARM64</option>
-            <option value="windows-x86">Windows · 32 bits (x86)</option>
-            <option value="macos">macOS · Apple Silicon e Intel</option>
-            <option value="linux-x64">Linux · 64 bits (x64)</option>
-            <option value="linux-arm64">Linux · ARM64</option>
-          </select>
-          <a id="support-download" class="btn btn--primary support__button" href="https://suporte.senvia.pt/download/windows-x64/SENVIA-suporte.exe">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg>
-            <span>Descarregar para Windows</span>
-          </a>
-          <p id="support-filename" class="support__filename">SENVIA-suporte.exe</p>
-          <p id="support-platform-help" class="support__hint">Não sabe qual escolher? Windows x64 é a versão mais comum. Pode alterar a seleção acima.</p>
-          <noscript><p>Sem JavaScript, use os <a href="#support-versions">links de download por sistema</a> abaixo.</p></noscript>
-          <details id="support-instructions"><summary>Como instalar no meu sistema?</summary><p id="support-install-help">Abra SENVIA-suporte.exe, escolha Install / Instalar e confirme o pedido de administrador do Windows.</p></details>
-        </div>
-          <ol class="support__steps">
-            <li><strong>Descarregue o instalador</strong><span>Escolha a versão para o computador que vai receber assistência.</span></li>
-            <li><strong>Abra e instale</strong><span>Confirme a instalação apenas se solicitou ou acordou o suporte com a SENVIA.</span></li>
-            <li><strong>Fale com a nossa equipa</strong><span>Avise-nos quando terminar. Não precisa de enviar uma senha do seu computador.</span></li>
-          </ol>
-      </div>
-      <aside class="support__notice" aria-labelledby="support-access-title">
-        <h2 id="support-access-title">Saiba o que está a instalar.</h2>
-        <p>O agente fica instalado e permite à equipa SENVIA prestar assistência remota, incluindo futuras ligações sem um pedido de aprovação em cada sessão. Durante o acesso ao ambiente de trabalho, é apresentada uma barra de sessão remota. Instale apenas num equipamento para o qual tem autorização e se concordou este acesso com a SENVIA.</p>
-        <p>Pode desinstalar o agente ou contactar-nos para retirar o acesso. <a href={`mailto:geral@senvia.pt?subject=Suporte%20remoto%20SENVIA`}>Precisa de ajuda?</a></p>
-      </aside>
-      <details id="support-versions" class="support__versions">
-        <summary>Todos os downloads</summary>
-        <ul>
-          <li><a href="https://suporte.senvia.pt/download/windows-x64/SENVIA-suporte.exe">Windows x64</a></li>
-          <li><a href="https://suporte.senvia.pt/download/windows-arm64/SENVIA-suporte.exe">Windows ARM64</a></li>
-          <li><a href="https://suporte.senvia.pt/download/windows-x86/SENVIA-suporte.exe">Windows x86 (32 bits)</a></li>
-          <li><a href="https://suporte.senvia.pt/download/macos/SENVIA-suporte.zip">macOS (Apple Silicon e Intel)</a></li>
-          <li><a href="https://suporte.senvia.pt/download/linux-x64/SENVIA-suporte.tar.gz">Linux x64</a></li>
-          <li><a href="https://suporte.senvia.pt/download/linux-arm64/SENVIA-suporte.tar.gz">Linux ARM64</a></li>
-        </ul>
-      </details>
+      </section>
     </div>
-  </section>
-  <script src="../scripts/support-download.js"></script>
+  </div>
 </Base>
 
-<style>
-  .support { padding-top: 10rem; }
-  .support__back { display: inline-block; color: var(--fg-soft); margin-bottom: var(--space-8); }
-  .support__back:hover, .support__notice a, .support__versions a { color: var(--accent); }
-  .support__layout { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-areas: "intro download" "steps download"; column-gap: 5rem; row-gap: var(--space-6); align-items: start; }
-  .support__intro { grid-area: intro; }
-  .support__download { grid-area: download; }
-  .support__steps { grid-area: steps; }
-  .support__eyebrow { color: var(--accent); font-weight: 500; margin-bottom: var(--space-5); }
-  .support h1 { margin-bottom: var(--space-6); }
-  .support__lead { max-width: 34rem; color: var(--fg-soft); font-size: 1.15rem; }
-  .support__steps { margin-top: var(--space-4); display: grid; gap: var(--space-6); list-style: decimal; padding-left: var(--space-5); }
-  .support__steps li { padding-left: var(--space-3); }
-  .support__steps li::marker { color: var(--accent); }
-  .support__steps strong, .support__steps span { display: block; }
-  .support__steps span { color: var(--fg-soft); margin-top: var(--space-1); }
-  .support__download { background: var(--bg-soft); padding: var(--space-8); border-radius: var(--radius-lg); min-width: 0; }
-  .support__icon { color: var(--accent); margin-bottom: var(--space-6); }
-  .support__download h2, .support__notice h2 { font-size: 1.5rem; }
-  #support-detection { color: var(--fg-soft); margin: var(--space-3) 0 var(--space-7); }
-  .support label { display: block; margin-bottom: var(--space-2); font-weight: 500; }
-  .support select { width: 100%; min-height: 3rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--fg); padding: var(--space-3); font: inherit; font-size: 1rem; }
-  .support__button { display: flex; width: 100%; margin-top: var(--space-5); gap: var(--space-3); white-space: normal; text-align: center; min-height: 3.25rem; }
-  .support__filename { text-align: center; color: var(--fg-soft); margin: var(--space-3) 0 var(--space-6); overflow-wrap: anywhere; }
-  .support__hint, .support details p { color: var(--fg-soft); font-size: .875rem; }
-  .support details p { margin-top: var(--space-4); white-space: pre-line; overflow-wrap: anywhere; }
-  .support summary { cursor: pointer; padding-block: var(--space-3); min-height: 2.75rem; }
-  .support a:focus-visible, .support select:focus-visible, .support summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-  .support__notice { margin-top: 5rem; max-width: 56rem; }
-  .support__notice h2 { margin-bottom: var(--space-4); }
-  .support__notice p { color: var(--fg-soft); }
-  .support__notice a { text-decoration: underline; text-underline-offset: 3px; }
-  .support__versions { margin-top: var(--space-7); }
-  .support__versions ul { display: flex; gap: var(--space-3) var(--space-6); flex-wrap: wrap; padding-block: var(--space-4); }
-  .support__versions a { display: inline-block; padding-block: var(--space-2); text-decoration: underline; }
-  @media (max-width: 800px) { .support__layout { grid-template-columns: 1fr; grid-template-areas: "intro" "download" "steps"; gap: var(--space-7); } .support { padding-top: 8rem; } .support__notice { margin-top: var(--space-8); } }
-  @media (max-width: 480px) { .support__download { padding: var(--space-6); } .support__back { margin-bottom: var(--space-7); } }
-</style>
+<script src="../scripts/support-download.js"></script>
+<script>
+  import '../scripts/suporte-v2.js';
+</script>

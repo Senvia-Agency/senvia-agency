@@ -1,156 +1,241 @@
 ---
 import Base from '../layouts/Base.astro';
-import CTASection from '../components/CTASection.astro';
+import SitesNav from '../components/sites/SitesNav.astro';
 import { SITE } from '../config';
+import '../styles/softwares-v2.css';
 
-const softwareTypes = [
-  { icon: 'database', title: 'Sistemas de Gestão', desc: 'ERPs, CRMs e plataformas internas que centralizam a operação do seu negócio. Automatize processos e ganhe visibilidade total.', features: ['ERP & CRM', 'Gestão de Inventário', 'Faturação Automática', 'Relatórios em Tempo Real'] },
-  { icon: 'layout', title: 'Portais & Dashboards', desc: 'Áreas de cliente, painéis de gestão e dashboards interativos. Interfaces intuitivas com dados em tempo real.', features: ['Área de Cliente', 'Painéis Interativos', 'Métricas & KPIs', 'Multi-Utilizador'] },
-  { icon: 'plug', title: 'APIs & Integrações', desc: 'Conectamos os seus sistemas. APIs robustas, webhooks e integrações com ferramentas de terceiros para um ecossistema unificado.', features: ['APIs RESTful', 'Webhooks', 'Integrações de Terceiros', 'Sincronização de Dados'] },
-  { icon: 'globe', title: 'Apps Web Complexas', desc: 'Plataformas SaaS, marketplaces e aplicações web de alta complexidade. Escaláveis, seguras e prontas para crescer.', features: ['SaaS & Plataformas', 'Marketplaces', 'Real-Time Features', 'Escalabilidade'] },
-];
+/* ------------------------------------------------------------------
+   Sistemas à medida: uma planta que vira o sistema (exemplos, sistemas já feitos, preço).
+   Cada capítulo é uma secção alta com um quadro sticky de 100vh; as camadas
+   de texto entram conforme o progresso do scroll (data-in / data-out).
+   O 3D vive em src/scripts/softwares-v2.js; os estilos em src/styles/softwares-v2.css (tudo dentro de .sv2).
+------------------------------------------------------------------- */
 
-const steps = [
-  { step: '01', icon: 'clipboard', title: 'Levantamento de Requisitos', desc: 'Mapeamos os seus processos, identificamos bottlenecks e definimos o scope funcional e técnico do projeto.' },
-  { step: '02', icon: 'pen', title: 'Arquitetura & Design', desc: 'Desenhamos a arquitetura do sistema, protótipos de UI/UX e definimos a stack tecnológica ideal.' },
-  { step: '03', icon: 'code', title: 'Desenvolvimento Ágil', desc: 'Sprints quinzenais com entregas incrementais. Código limpo, testes automatizados e revisões contínuas.' },
-  { step: '04', icon: 'rocket', title: 'Deploy & Suporte', desc: 'Lançamento em produção, formação da equipa, monitorização e suporte técnico contínuo incluído.' },
-];
-
-const differentials = [
-  { icon: 'code', title: 'Código Limpo', desc: 'Arquitetura sólida, bem documentada e fácil de manter. Sem dívida técnica escondida.' },
-  { icon: 'trending', title: 'Escalabilidade', desc: 'Sistemas preparados para crescer consigo. De 10 a 10.000 utilizadores sem reescrever.' },
-  { icon: 'shield', title: 'Segurança', desc: 'Encriptação, autenticação robusta e boas práticas de segurança em cada camada.' },
-  { icon: 'cpu', title: 'Tecnologias Modernas', desc: 'React, Node.js, TypeScript, PostgreSQL e cloud. Stack atual e comprovada.' },
-  { icon: 'headset', title: 'Suporte Dedicado', desc: 'Equipa técnica disponível pós-lançamento. Manutenção, atualizações e evolução contínua.' },
-  { icon: 'plug', title: 'Integração Total', desc: 'Conectamos com os seus sistemas existentes: ERPs, CRMs, gateways de pagamento e mais.' },
-];
-
-const icons: Record<string, string> = {
-  database: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
-  layout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
-  plug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-  clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
-  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>',
-  code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>',
-  trending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>',
-  headset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
-};
+const demo = SITE.ctaFormUrl;
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
 ---
 
 <Base
-  title="Software à Medida — Sistemas, Portais e Apps Web"
-  description="Sistemas de gestão, portais de clientes, APIs e aplicações web complexas. Construímos o motor digital que a sua empresa precisa para escalar."
+  title="Sistemas à medida para a tua empresa"
+  description="Clientes, agenda, faturas, stock e equipa num sistema só teu, desde 1.500€ + IVA e manutenção desde 69€ por mês. Sem licenças por pessoa. Pronto em 4 a 8 semanas."
   canonicalPath="/softwares"
 >
-  <section class="hero aurora-bg" style="min-height: 85vh;">
-    <div class="container">
-      <div style="max-width: 48rem; margin-inline: auto; text-align: center;">
-        <span class="badge mb-6" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Software à Medida
-        </span>
+  <SitesNav slot="header" cta="Pedir diagnóstico" ctaHref={demo} />
+  <!-- Marca o suporte a JS antes de pintar: as camadas de texto ficam escondidas até o scroll as mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- Inter: a letra dos ecrãs desenhados no 3D -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-        <h1 class="hero__title">
-          Software que Move
-          <br />
-          <span class="gradient-text glow">o Seu Negócio</span>
-        </h1>
+  <div class="sv2" id="sv2">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <canvas id="fg" aria-hidden="true"></canvas>
 
-        <p class="hero__lead" style="margin-inline: auto;">
-          Sistemas de gestão, portais de clientes, APIs e aplicações web complexas. Construímos o <strong>motor digital</strong> que a sua empresa precisa para escalar.
-        </p>
+    <nav class="hud" aria-label="Capítulos da página">
+      <b id="hud-n" aria-hidden="true">01</b><span id="hud-name" aria-hidden="true">Início</span><span class="track" aria-hidden="true"><i id="hud-bar"></i></span><span class="dots" id="hud-dots"></span>
+    </nav>
 
-        <div class="hero__actions" style="justify-content: center;">
-          <a href={SITE.ctaFormUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
-            Pedir Orçamento
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
+    <div class="chapters">
+    <!-- 00 início: a planta desenha-se e vira o sistema -->
+      <section class="chapter" id="inicio" data-name="Início" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-low" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Sistemas à medida · Portugal</p>
+              <h1 class="split">O sistema da tua empresa, <em>desenhado à medida</em>.</h1>
+              <p class="lede fade" style="--d:1">Clientes, agenda, faturas, stock e equipa num sistema só teu. Sem licenças por pessoa: pagas a construção e uma manutenção mensal.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={demo} {...ext}>Pedir diagnóstico</a>
+                <a class="sbtn sbtn-ghost" href="#exemplos" data-go="1">Ver exemplos</a>
+              </div>
+              <p class="fine fade" style="--d:3">Desde 1.500€ + IVA. Manutenção desde 69€ por mês.</p>
+            </div>
+          </div>
+          <div class="layer pos-right m-high" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">O que fica teu</p>
+              <h2 class="split">Um sistema próprio. <em>Sem licenças</em>.</h2>
+              <ul class="facts">
+                <li class="fade" style="--d:1"><b data-count="1500" data-suffix="€">1.500€</b><span>desde, a construção + IVA</span></li>
+                <li class="fade" style="--d:2"><b data-count="69" data-suffix="€">69€</b><span>desde, por mês de manutenção</span></li>
+                <li class="fade" style="--d:3"><b data-count="0" data-suffix="€">0€</b><span>em licenças: utilizadores ilimitados</span></li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Tipos de Software</span>
-        <h2>A solução certa para <span class="gradient-text">o seu desafio</span></h2>
-        <p>Cada negócio tem necessidades únicas. Desenvolvemos o software que se adapta ao seu processo.</p>
-      </div>
-
-      <div class="service-grid">
-        {softwareTypes.map((type) => (
-          <div class="service-card">
-            <div class="service-card__icon" set:html={icons[type.icon]} />
-            <h3>{type.title}</h3>
-            <p class="service-card__desc">{type.desc}</p>
-            <div class="service-card__features">
-              {type.features.map((f) => <span class="service-card__feature">{f}</span>)}
+      </section>
+    
+      <!-- 01 exemplos: stand, oficina e restauração, cada um da planta ao sistema -->
+      <section class="chapter" id="exemplos" data-name="Exemplos" data-beats="3" style="--beats:3">
+        <div class="frame">
+          <div class="layer pos-right m-low" data-in="0" data-out="0.3333">
+            <div class="copy">
+              <p class="eyebrow">Exemplos <span class="n">1 de 3</span></p>
+              <span class="kind fade" style="--d:0">Stand automóvel</span>
+              <h2 class="split">Três stands, <em>um só stock</em>.</h2>
+              <p class="lede fade" style="--d:1">Cada viatura com fotos, preço e localização. Pedes uma transferência entre stands e todos veem onde está o carro.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Stock de viaturas</li><li class="fade" style="--d:3">Transferências</li><li class="fade" style="--d:4">Vendas por stand</li></ul>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Como Trabalhamos</span>
-        <h2>Da ideia à <span class="gradient-text">produção</span></h2>
-        <p>Um processo estruturado e transparente em 4 fases.</p>
-      </div>
-
-      <div class="process-grid">
-        {steps.map((step) => (
-          <div class="process-card">
-            <span class="process-card__step">{step.step}</span>
-            <div class="process-card__icon" set:html={icons[step.icon]} />
-            <h3>{step.title}</h3>
-            <p>{step.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section bg-grid">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Porquê a SENVIA</span>
-        <h2>Engenharia com <span class="gradient-text">excelência</span></h2>
-        <p>Não entregamos apenas software. Entregamos soluções que resolvem problemas reais.</p>
-      </div>
-
-      <div class="differential-grid" style="grid-template-columns: repeat(2, 1fr);">
-        {differentials.map((item) => (
-          <div class="differential-card" style="text-align: left;">
-            <div class="differential-card__icon" style="margin: 0 0 1rem 0;">
-              <div set:html={icons[item.icon]} />
+          <div class="layer pos-left m-high" data-in="0.3333" data-out="0.6667">
+            <div class="copy">
+              <p class="eyebrow">Exemplos <span class="n">2 de 3</span></p>
+              <span class="kind fade" style="--d:0">Oficina</span>
+              <h2 class="split">A oficina <em>sem papéis no balcão</em>.</h2>
+              <p class="lede fade" style="--d:1">Cada viatura passa do diagnóstico à reparação até ficar pronta. O orçamento vai para aprovação e o cliente recebe o aviso no WhatsApp.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Viaturas</li><li class="fade" style="--d:3">Orçamentos</li><li class="fade" style="--d:4">Avisos por WhatsApp</li></ul>
             </div>
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">{item.title}</h3>
-            <p style="font-size: 0.875rem;">{item.desc}</p>
           </div>
-        ))}
-      </div>
+          <div class="layer pos-right m-low" data-in="0.6667" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Exemplos <span class="n">3 de 3</span></p>
+              <span class="kind fade" style="--d:0">Restauração</span>
+              <h2 class="split">Mesas, cozinha e stock <em>a falar entre si</em>.</h2>
+              <p class="lede fade" style="--d:1">Os pedidos chegam à cozinha, o stock desconta sozinho e o sistema avisa quando um produto está a acabar.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Mesas e pedidos</li><li class="fade" style="--d:3">Stock</li><li class="fade" style="--d:4">Turnos da equipa</li></ul>
+              <p class="fine fade" style="--d:5">Exemplos ilustrativos. Cada sistema é desenhado para a empresa.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 02 incluído em todos -->
+      <section class="chapter" id="incluido" data-name="Incluído" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Incluído em todos</p>
+              <h2 class="split">O que todos os sistemas <em>já trazem</em>.</h2>
+              <div class="pairs six">
+                <div class="pair fade" style="--d:1"><h3>Utilizadores ilimitados</h3><p>Sem custo por pessoa, nem hoje nem quando a equipa crescer.</p></div>
+                <div class="pair fade" style="--d:2"><h3>Automações</h3><p>Lembretes, avisos e tarefas repetidas, sem depender de alguém.</p></div>
+                <div class="pair fade" style="--d:3"><h3>WhatsApp</h3><p>As mensagens aos clientes dentro do sistema.</p></div>
+                <div class="pair fade" style="--d:4"><h3>Email</h3><p>Um cliente de email ligado às fichas dos clientes.</p></div>
+                <div class="pair fade" style="--d:5"><h3>Mensagens internas</h3><p>A equipa fala no sistema, não em grupos pessoais.</p></div>
+                <div class="pair fade" style="--d:6"><h3>Os teus dados</h3><p>Importamos o Excel que já tens.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 03 como funciona (noite): medir, desenhar, construir, entrar no ar -->
+      <section class="chapter" id="processo" data-name="Como funciona" data-beats="4" data-night="true" style="--beats:4">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.25">
+            <div class="copy">
+              <p class="eyebrow">Como funciona <span class="n">01 Diagnóstico</span></p>
+              <h2 class="split">Primeiro, <em>medimos</em>.</h2>
+              <p class="lede fade" style="--d:1">Vemos como trabalhas hoje: o Excel, os papéis e as apps soltas. Sais com um plano e um preço fechado.</p>
+            </div>
+          </div>
+          <div class="layer pos-right m-high" data-in="0.25" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Como funciona <span class="n">02 Desenho</span></p>
+              <h2 class="split">Desenhamos <em>contigo</em>.</h2>
+              <p class="lede fade" style="--d:1">Cada ecrã é desenhado e aprovado por ti antes de começarmos a construir.</p>
+            </div>
+          </div>
+          <div class="layer pos-left m-high" data-in="0.5" data-out="0.75">
+            <div class="copy">
+              <p class="eyebrow">Como funciona <span class="n">03 Construção</span></p>
+              <h2 class="split">Construímos <em>em 4 a 8 semanas</em>.</h2>
+              <p class="lede fade" style="--d:1">Vais vendo o sistema crescer e validas cada parte, sem surpresas no fim.</p>
+            </div>
+          </div>
+          <div class="layer pos-right m-high" data-in="0.75" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Como funciona <span class="n">04 No ar</span></p>
+              <h2 class="split">Entra no ar <em>com os teus dados</em>.</h2>
+              <p class="lede fade" style="--d:1">Importamos o que já tens e a equipa começa a usar. Depois, a manutenção mantém tudo seguro e atualizado.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 04 já fizemos: sistemas reais (ecrãs com dados fictícios) -->
+      <section class="chapter" id="feitos" data-name="Já fizemos" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-right m-low" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Já fizemos <span class="n">1 de 2</span></p>
+              <span class="kind fade" style="--d:0">Restauração · Orbis</span>
+              <h2 class="split">Orbis: o restaurante <em>todo no mesmo ritmo</em>.</h2>
+              <p class="lede fade" style="--d:1">Da mesa à cozinha, das compras à gestão, em cada unidade. Gestão, ecrã da cozinha e menu digital para o cliente.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Várias unidades</li><li class="fade" style="--d:3">Cozinha</li><li class="fade" style="--d:4">Menu digital</li><li class="fade" style="--d:5">Stock e compras</li></ul>
+              <a class="link fade" style="--d:6" href="https://orbisgroup.pt/" {...ext}>Ver orbisgroup.pt</a>
+            </div>
+          </div>
+          <div class="layer pos-left m-high" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Já fizemos <span class="n">2 de 2</span></p>
+              <span class="kind fade" style="--d:0">Energia e serviços · Perfect2Gether</span>
+              <h2 class="split">Perfect2Gether: propostas, comissões <em>e equipa</em>.</h2>
+              <p class="lede fade" style="--d:1">Um sistema comercial para energia e serviços: leads, propostas com comissões, vendas, financeiro e recursos humanos, com ponto e ausências.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Propostas</li><li class="fade" style="--d:3">Comissões</li><li class="fade" style="--d:4">Recursos humanos</li><li class="fade" style="--d:5">Mensagens internas</li></ul>
+              <p class="fine fade" style="--d:6">Ecrãs ilustrativos, com dados fictícios.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 05 preço -->
+      <section class="chapter" id="preco" data-name="Preço" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer layer-plans pos-center" data-in="0" data-out="1">
+            <div class="copy wide">
+              <p class="eyebrow">Preço</p>
+              <h2 class="split">O que pagas, <em>sem surpresas</em>.</h2>
+              <div class="plans">
+                <article class="plan fade" style="--d:1">
+                  <span class="pn">Construção</span>
+                  <span class="pp"><small class="from">desde</small><span data-count="1500" data-suffix="€">1.500€</span><small>+ IVA</small></span>
+                  <ul><li>Desenhado para a tua empresa</li><li>Utilizadores e licenças ilimitados</li><li>Automações, WhatsApp e email</li><li>Importação dos teus dados</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href={demo} {...ext}>Pedir diagnóstico</a>
+                </article>
+                <article class="plan rec fade" style="--d:2">
+                  <div class="sbadges"><span class="sbadge">Único custo fixo</span></div>
+                  <span class="pn">Servidor e manutenção</span>
+                  <span class="pp"><small class="from">desde</small><span data-count="69" data-suffix="€">69€</span><small>/mês</small></span>
+                  <ul><li>Servidor e alojamento</li><li>Backups e segurança</li><li>Atualizações técnicas</li><li>Sem custo por utilizador</li></ul>
+                  <a class="sbtn sbtn-sm" href={demo} {...ext}>Quero o meu sistema</a>
+                </article>
+                <article class="plan fade" style="--d:3">
+                  <span class="pn">Evoluções</span>
+                  <span class="pp" style="font-size:clamp(1.6rem,2.4vw,2.2rem)">Só se quiseres</span>
+                  <ul><li>Novas funcionalidades</li><li>Ligações a outros programas</li><li>Orçamentadas à parte</li><li>Sem obrigação de pedir</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href={demo} {...ext}>Falar connosco</a>
+                </article>
+              </div>
+              <div class="plan-dots" aria-hidden="true"><i></i><i class="on"></i><i></i></div>
+              <p class="fine fade" style="--d:4">Prazo habitual: 4 a 8 semanas, conforme o sistema. Valores sem IVA.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 06 começar -->
+      <section class="chapter" id="comecar" data-name="Começar" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer pos-bottom m-low" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Próximo passo</p>
+              <h2 class="split">Mostra-nos como trabalhas. <em>Desenhamos o teu sistema</em>.</h2>
+              <p class="lede fade" style="--d:1">Numa conversa curta vemos os teus processos e sais com um plano concreto, com ou sem a SENVIA.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={demo} {...ext}>Pedir diagnóstico</a>
+                <a class="sbtn sbtn-ghost" href="/senvia-os">Preferes algo pronto? Senvia OS</a>
+              </div>
+            </div>
+          </div>
+          <div class="wordmark" aria-hidden="true">SENVIA</div>
+        </div>
+      </section>
     </div>
-  </section>
-
-  <CTASection
-    title="Pronto para digitalizar o seu negócio?"
-    subtitle="Agende uma consultoria gratuita. Vamos analisar os seus processos e desenhar a solução ideal para a sua empresa."
-    ctaText="Agendar Consultoria Gratuita"
-  />
+  </div>
 </Base>
 
-<style>
-  .differential-card .differential-card__icon svg { width: 1.5rem; height: 1.5rem; color: var(--senvia-500); }
-  @media (min-width: 1024px) {
-    .differential-grid { grid-template-columns: repeat(3, 1fr) !important; }
-  }
-</style>
+<script>
+  import '../scripts/softwares-v2.js';
+</script>

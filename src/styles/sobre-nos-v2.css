@@ -187,9 +187,11 @@ html:not(.js) .sv2 .stops,html:not(.js) .sv2 .hint{display:none}
 @font-face{font-family:"General Sans";src:url("/fonts/general-sans-600.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
 @font-face{font-family:"General Sans";src:url("/fonts/general-sans-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
 
-/* a página é a mesa (madeira); o rodapé global continua escuro e por cima do mundo 3D */
-html:has(.sv2){scroll-behavior:auto}
+/* a página é a mesa (madeira); o rodapé global continua escuro e por cima do mundo 3D.
+   O html fica escuro: é o que aparece abaixo do rodapé quando o scroll estica no fim */
+html:has(.sv2){scroll-behavior:auto;background:#0B1F2A}
 html:has(.sv2) body{background:#D2B48C}
+html:has(.sv2) body.night{background:#0B1F2A}
 html:has(.sv2) .site-footer{position:relative;z-index:6;background:#0B1F2A}
 .sv2{color:var(--fg);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
 .sv2 p{margin:0}

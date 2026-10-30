@@ -696,7 +696,7 @@ canvas.addEventListener('pointerup', (e) => {
 /* ================= ciclo ================= */
 const state = { p: 0, intro: REDUCE ? 1 : 0 };
 const tmpT = V3(), tmpP = V3(), tmpQ = new THREE.Quaternion(), wobQ = new THREE.Quaternion();
-let last = performance.now(), t = 0, worldHidden = false;
+let last = performance.now(), t = 0, worldHidden = false, navDark = false;
 const vignette = document.querySelector('.sv2 .vignette');
 notes.forEach((n) => { n._v = -1; [...n.children].forEach((c, i) => c.style.setProperty('--i', i)); });
 function readP(){ return clamp((scrollY - track.offsetTop) / trackLen()) * (N - 1); }
@@ -747,7 +747,8 @@ function frame(now){
   });
   stopBtns.forEach((b, k) => b.classList.toggle('on', k === a));
   hint.classList.toggle('off', p > 0.15);
-  const past = track.getBoundingClientRect().bottom <= 0;
+  const tb = track.getBoundingClientRect().bottom, past = tb <= 0, overFooter = tb < 72;
+  if (overFooter !== navDark){ navDark = overFooter; document.body.classList.toggle('night', overFooter); }
   if (past !== worldHidden){ worldHidden = past; canvas.style.visibility = vignette.style.visibility = past ? 'hidden' : ''; }
   if (past) return;
   renderer.render(scene, camera);

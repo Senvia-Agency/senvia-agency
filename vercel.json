@@ -10,6 +10,11 @@
       "source": "/sitemap.xml",
       "destination": "/sitemap-index.xml",
       "permanent": true
+    },
+    {
+      "source": "/contacto",
+      "destination": "/contactos",
+      "permanent": true
     }
   ],
   "headers": [

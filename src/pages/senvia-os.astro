@@ -1,84 +1,285 @@
 ---
 import Base from '../layouts/Base.astro';
-import CTASection from '../components/CTASection.astro';
+import SitesNav from '../components/sites/SitesNav.astro';
 import { SITE } from '../config';
+import '../styles/senvia-os-v2.css';
 
-const modules = [
-  { icon: 'users', title: 'Leads & Clientes', desc: 'Gestão completa de leads e clientes com scoring automático por IA.' },
-  { icon: 'trending', title: 'Vendas', desc: 'Pipeline visual, previsões e automação de follow-up.' },
-  { icon: 'wallet', title: 'Financeiro', desc: 'Faturação, contas a receber e a pagar integradas.' },
-  { icon: 'mail', title: 'Marketing', desc: 'Campanhas de email, SMS e automação de nurturing.' },
-  { icon: 'chart', title: 'Relatórios & BI', desc: 'Dashboards em tempo real com insights gerados por IA.' },
-  { icon: 'bot', title: 'Agentes IA', desc: 'Agentes autónomos que trabalham 24/7 nos bastidores.' },
-];
+/* ------------------------------------------------------------------
+   Senvia OS: o próprio sistema em 3D, em camadas que se afastam e voltam a juntar.
+   Cada capítulo é uma secção alta com um quadro sticky de 100vh; as camadas
+   de texto entram conforme o progresso do scroll (data-in / data-out).
+   O 3D e os ecrãs da app (desenhados em canvas, com dados fictícios) vivem em
+   src/scripts/senvia-os-v2.js; os estilos em src/styles/senvia-os-v2.css (tudo dentro de .sv2).
+------------------------------------------------------------------- */
 
-const icons: Record<string, string> = {
-  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
-  trending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-  wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>',
-  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
-  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-  bot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>',
-  cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>',
-};
+// o separador de criar conta abre direto (Login.tsx lê ?tab=signup)
+const signup = `${SITE.appUrl}/?tab=signup`;
+const demo = SITE.ctaFormUrl;
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
 ---
 
 <Base
-  title="SENVIA OS — CRM com Inteligência Artificial"
-  description="O nosso CRM proprietário com módulos de Leads, Clientes, Vendas, Financeiro, Marketing e muito mais. Com Inteligência Artificial integrada."
+  title="Senvia OS: CRM e Workplace para equipas"
+  description="O Senvia OS junta WhatsApp, email, leads, propostas, vendas, faturação e a equipa num só sistema. 49€ por mês + IVA com 5 utilizadores. Testa grátis 14 dias, sem cartão."
   canonicalPath="/senvia-os"
 >
-  <section class="hero aurora-bg" style="min-height: 85vh;">
-    <div class="container">
-      <div style="max-width: 48rem; margin-inline: auto; text-align: center;">
-        <span class="badge mb-6">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
-          Produto Próprio
-        </span>
+  <SitesNav slot="header" cta="Testar grátis" ctaHref={signup} />
+  <!-- Marca o suporte a JS antes de pintar: as camadas de texto ficam escondidas até o scroll as mostrar -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- Inter é a letra do próprio Senvia OS, usada nos ecrãs desenhados no 3D -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
 
-        <h1 class="hero__title">
-          SENVIA OS
-          <br />
-          <span class="gradient-text glow">CRM com IA Integrada</span>
-        </h1>
+  <div class="sv2" id="sv2">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <canvas id="fg" aria-hidden="true"></canvas>
 
-        <p class="hero__lead" style="margin-inline: auto;">
-          Um CRM completo com módulos de Leads, Clientes, Vendas, Financeiro, Marketing e muito mais. Com Inteligência Artificial integrada que trabalha nos bastidores 24/7.
-        </p>
+    <nav class="hud" aria-label="Capítulos da página">
+      <b id="hud-n" aria-hidden="true">01</b><span id="hud-name" aria-hidden="true">Início</span><span class="track" aria-hidden="true"><i id="hud-bar"></i></span><span class="dots" id="hud-dots"></span>
+    </nav>
 
-        <div class="hero__actions" style="justify-content: center;">
-          <a href={SITE.appUrl} target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg glow-pulse">
-            Aceder ao SENVIA OS
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge section-header__badge">Módulos</span>
-        <h2>Tudo o que precisa para <span class="gradient-text">gerir e crescer</span></h2>
-        <p>Um sistema completo que substitui múltiplas ferramentas dispersas.</p>
-      </div>
-
-      <div class="differential-grid">
-        {modules.map((m) => (
-          <div class="differential-card">
-            <div class="differential-card__icon" set:html={icons[m.icon]} />
-            <h3>{m.title}</h3>
-            <p>{m.desc}</p>
+    <div class="chapters">
+    <!-- 00 início: a app inteira; depois desmonta-se e mostra as quatro áreas -->
+      <section class="chapter" id="inicio" data-name="Início" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Senvia OS · CRM e Workplace</p>
+              <h1 class="split">A tua empresa inteira, <em>num só sistema</em>.</h1>
+              <p class="lede fade" style="--d:1">Conversas, vendas, faturas e equipa no mesmo sítio. Feito em Portugal e pronto a usar hoje.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={signup} {...ext}>Testar grátis 14 dias</a>
+                <a class="sbtn sbtn-ghost" href={demo} {...ext}>Pedir demonstração</a>
+              </div>
+              <p class="fine fade" style="--d:3">Sem cartão. Depois, 49€ por mês + IVA.</p>
+            </div>
           </div>
-        ))}
-      </div>
+          <div class="layer pos-right m-low" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Por dentro</p>
+              <h2 class="split">Quatro áreas, <em>uma só conta</em>.</h2>
+              <div class="pairs">
+                <div class="pair fade" style="--d:1;--pc:#7C3AED"><h3>Comunicação</h3><p>Caixa de entrada, email, marketing e feed da equipa.</p></div>
+                <div class="pair fade" style="--d:2;--pc:#059669"><h3>Trabalho</h3><p>Agenda, tarefas e ponto.</p></div>
+                <div class="pair fade" style="--d:3;--pc:#0891B2"><h3>Comercial</h3><p>Leads, clientes, propostas, vendas e prospects.</p></div>
+                <div class="pair fade" style="--d:4;--pc:#4F46E5"><h3>Gestão</h3><p>Financeiro, automações e o assistente Otto.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 01 antes: as ferramentas soltas entram na app, uma a uma -->
+      <section class="chapter" id="antes" data-name="Antes" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.55">
+            <div class="copy">
+              <p class="eyebrow">Hoje, em muitas empresas</p>
+              <p class="lines">
+                <span class="bl" data-at="0.06">As conversas estão no WhatsApp <em>do comercial</em>.</span>
+                <span class="bl" data-at="0.28">As propostas, perdidas no email.</span>
+                <span class="bl" data-at="0.5">As faturas, noutro programa.</span>
+                <span class="bl" data-at="0.72">E o Excel <em>já ninguém atualiza</em>.</span>
+              </p>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.55" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Com o Senvia OS</p>
+              <h2 class="split">Entra tudo <em>no mesmo sítio</em>.</h2>
+              <ul class="facts">
+                <li class="fade" style="--d:1"><b data-count="1">1</b><span>acesso para a equipa toda</span></li>
+                <li class="fade" style="--d:2"><b data-count="5">5</b><span>utilizadores incluídos</span></li>
+                <li class="fade" style="--d:3"><b data-count="14">14</b><span>dias grátis, sem cartão</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 02 comunicação: caixa de entrada, email e campanhas, equipa -->
+      <section class="chapter" id="comunicacao" data-name="Comunicação" data-beats="3" style="--beats:3">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.3333">
+            <div class="copy">
+              <p class="eyebrow">Comunicação <span class="n">1 de 3</span></p>
+              <h2 class="split">WhatsApp, Instagram e email <em>na mesma caixa</em>.</h2>
+              <p class="lede fade" style="--d:1">Até 4 caixas de entrada, partilhadas pela equipa. Cada conversa fica ligada ao cliente e ninguém responde duas vezes.</p>
+              <ul class="tags"><li class="fade" style="--d:2">WhatsApp</li><li class="fade" style="--d:3">Instagram</li><li class="fade" style="--d:4">Messenger</li><li class="fade" style="--d:5">Email</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.3333" data-out="0.6667">
+            <div class="copy">
+              <p class="eyebrow">Comunicação <span class="n">2 de 3</span></p>
+              <h2 class="split">Email e campanhas <em>sem sair do sistema</em>.</h2>
+              <p class="lede fade" style="--d:1">Lê e responde aos emails com a assinatura da empresa. Envia campanhas às tuas listas e vê quem abriu.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Email</li><li class="fade" style="--d:3">Modelos</li><li class="fade" style="--d:4">Listas</li><li class="fade" style="--d:5">Relatórios</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-left m-high" data-in="0.6667" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Comunicação <span class="n">3 de 3</span></p>
+              <h2 class="split">A equipa fala <em>aqui dentro</em>.</h2>
+              <p class="lede fade" style="--d:1">Mensagens internas, comunicados fixados e reconhecimentos. Os assuntos da empresa deixam de andar em grupos pessoais.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Mensagens internas</li><li class="fade" style="--d:3">Feed</li><li class="fade" style="--d:4">Comunicados</li><li class="fade" style="--d:5">Reconhecimentos</li></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 03 comercial: leads, propostas, vendas e comissões -->
+      <section class="chapter" id="comercial" data-name="Comercial" data-beats="3" style="--beats:3">
+        <div class="frame">
+          <div class="layer pos-right m-low" data-in="0" data-out="0.3333">
+            <div class="copy">
+              <p class="eyebrow">Comercial <span class="n">1 de 3</span></p>
+              <h2 class="split">Cada lead <em>no sítio certo</em>.</h2>
+              <p class="lede fade" style="--d:1">Os pedidos do site, do Facebook e do Instagram entram sozinhos no funil. Arrastas de etapa em etapa e sabes sempre o que falta.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Formulários</li><li class="fade" style="--d:3">Meta</li><li class="fade" style="--d:4">Funil</li><li class="fade" style="--d:5">Prospects</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-left m-high" data-in="0.3333" data-out="0.6667">
+            <div class="copy">
+              <p class="eyebrow">Comercial <span class="n">2 de 3</span></p>
+              <h2 class="split">Propostas que <em>se acompanham</em>.</h2>
+              <p class="lede fade" style="--d:1">Crias a proposta a partir da lead, envias e vês o estado: enviada, aceite ou perdida. Quando é aceite, passa a venda.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Propostas</li><li class="fade" style="--d:3">Clientes</li><li class="fade" style="--d:4">Histórico</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.6667" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Comercial <span class="n">3 de 3</span></p>
+              <h2 class="split">Vendas e comissões <em>contadas sozinhas</em>.</h2>
+              <p class="lede fade" style="--d:1">Cada venda calcula a comissão de quem a fez. As vendas mensais cobram-se sozinhas com o Stripe.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Vendas</li><li class="fade" style="--d:3">Comissões</li><li class="fade" style="--d:4">Recorrência</li><li class="fade" style="--d:5">Stripe</li></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 04 financeiro: faturas e recibos, fluxo de caixa -->
+      <section class="chapter" id="financeiro" data-name="Financeiro" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Financeiro <span class="n">1 de 2</span></p>
+              <h2 class="split">Faturas e recibos <em>emitidos e enviados</em>.</h2>
+              <p class="lede fade" style="--d:1">Ligado ao KeyInvoice e ao InvoiceXpress: quando o cliente paga, o recibo sai e segue por email.</p>
+              <ul class="tags"><li class="fade" style="--d:2">KeyInvoice</li><li class="fade" style="--d:3">InvoiceXpress</li><li class="fade" style="--d:4">Recibos automáticos</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Financeiro <span class="n">2 de 2</span></p>
+              <h2 class="split">O dinheiro da empresa, <em>num relance</em>.</h2>
+              <p class="lede fade" style="--d:1">Faturado, recebido, pendente e despesas no mesmo ecrã. Sabes que cobranças vencem esta semana antes de te esqueceres.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Fluxo de caixa</li><li class="fade" style="--d:3">Despesas</li><li class="fade" style="--d:4">Recorrências</li></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 05 automações e Otto (noite) -->
+      <section class="chapter" id="automacoes" data-name="Automações" data-beats="2" data-night="true" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Automações <span class="n">1 de 2</span></p>
+              <h2 class="split">Fluxos que <em>trabalham por ti</em>.</h2>
+              <p class="lede fade" style="--d:1">Quando entra uma lead, o sistema manda o WhatsApp, espera pela resposta e decide o passo seguinte. Montas o fluxo sem programar.</p>
+              <ul class="tags"><li class="fade" style="--d:2">WhatsApp</li><li class="fade" style="--d:3">Email</li><li class="fade" style="--d:4">Esperar resposta</li><li class="fade" style="--d:5">Condições</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Automações <span class="n">2 de 2</span></p>
+              <h2 class="split">O Otto, <em>o assistente do sistema</em>.</h2>
+              <p class="lede fade" style="--d:1">Pergunta ao Otto quantas leads entraram ou em que etapa estão, ou pede-lhe para criar uma lead. Ele responde com os teus dados.</p>
+              <p class="fine fade" style="--d:2">O Otto só vê o que cada pessoa tem permissão para ver.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 06 trabalho: agenda, tarefas, ponto e telemóvel -->
+      <section class="chapter" id="trabalho" data-name="Trabalho" data-beats="2" style="--beats:2">
+        <div class="frame">
+          <div class="layer pos-left m-high" data-in="0" data-out="0.5">
+            <div class="copy">
+              <p class="eyebrow">Trabalho <span class="n">1 de 2</span></p>
+              <h2 class="split">A agenda da <em>equipa toda</em>.</h2>
+              <p class="lede fade" style="--d:1">Reuniões, chamadas, follow-ups e prazos no mesmo calendário, com os feriados já marcados.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Reuniões</li><li class="fade" style="--d:3">Chamadas</li><li class="fade" style="--d:4">Follow-ups</li><li class="fade" style="--d:5">Feriados</li></ul>
+            </div>
+          </div>
+          <div class="layer pos-right m-low" data-in="0.5" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Trabalho <span class="n">2 de 2</span></p>
+              <h2 class="split">Tarefas e ponto, <em>também no telemóvel</em>.</h2>
+              <p class="lede fade" style="--d:1">Cada tarefa tem dono e data. Instala o Senvia OS no telemóvel, recebe notificações de novas leads e marca o ponto onde estiveres.</p>
+              <ul class="tags"><li class="fade" style="--d:2">Tarefas</li><li class="fade" style="--d:3">Ponto</li><li class="fade" style="--d:4">Notificações</li></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 07 preço -->
+      <section class="chapter" id="preco" data-name="Preço" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer layer-plans pos-center" data-in="0" data-out="1">
+            <div class="copy wide">
+              <p class="eyebrow">Preço</p>
+              <h2 class="split">Um preço, <em>tudo incluído</em>.</h2>
+              <div class="plans">
+                <article class="plan fade" style="--d:1">
+                  <span class="pn">Teste grátis</span>
+                  <span class="pp"><span data-count="14">14</span><small>dias</small></span>
+                  <ul><li>Todas as funcionalidades</li><li>Sem cartão de crédito</li><li>Convida a tua equipa</li><li>Sem compromisso</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href={signup} {...ext}>Criar conta</a>
+                </article>
+                <article class="plan rec fade" style="--d:2">
+                  <div class="sbadges"><span class="sbadge">Tudo incluído</span></div>
+                  <span class="pn">Senvia OS</span>
+                  <span class="pp"><span data-count="49" data-suffix="€">49€</span><small>/mês + IVA</small></span>
+                  <ul><li>5 utilizadores incluídos</li><li>Utilizador extra a 5€ por mês</li><li>Formulários ilimitados</li><li>Até 4 caixas de entrada</li><li>WhatsApp, faturação e Stripe</li></ul>
+                  <a class="sbtn sbtn-sm" href={signup} {...ext}>Testar grátis 14 dias</a>
+                </article>
+                <article class="plan fade" style="--d:3">
+                  <span class="pn">Sistema à medida</span>
+                  <span class="pp"><small class="from">desde</small><span data-count="1500" data-suffix="€">1.500€</span><small>+ IVA</small></span>
+                  <ul><li>Feito só para a tua empresa</li><li>Utilizadores ilimitados</li><li>Manutenção desde 69€ por mês</li><li>Para quem precisa de mais</li></ul>
+                  <a class="sbtn sbtn-ghost sbtn-sm" href="/">Ver sistemas à medida</a>
+                </article>
+              </div>
+              <div class="plan-dots" aria-hidden="true"><i></i><i class="on"></i><i></i></div>
+              <p class="fine fade" style="--d:4">Valores sem IVA. O teste gratuito dura 14 dias e não pede cartão.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    
+      <!-- 08 começar -->
+      <section class="chapter" id="comecar" data-name="Começar" data-beats="1" style="--beats:1">
+        <div class="frame">
+          <div class="layer pos-bottom m-low" data-in="0" data-out="1">
+            <div class="copy">
+              <p class="eyebrow">Próximo passo</p>
+              <h2 class="split">Experimenta 14 dias. <em>Sem cartão</em>.</h2>
+              <p class="lede fade" style="--d:1">Crias a conta em minutos e convidas a equipa. Se preferires, mostramos-te o sistema numa chamada curta.</p>
+              <div class="actions fade" style="--d:2">
+                <a class="sbtn" href={signup} {...ext}>Testar grátis 14 dias</a>
+                <a class="sbtn sbtn-ghost" href={demo} {...ext}>Pedir demonstração</a>
+              </div>
+            </div>
+          </div>
+          <div class="wordmark" aria-hidden="true">SENVIA OS</div>
+        </div>
+      </section>
     </div>
-  </section>
-
-  <CTASection
-    title="Quer ver o SENVIA OS em ação?"
-    subtitle="Agende uma demonstração gratuita. Vamos mostrar como a IA pode transformar a sua operação comercial."
-    ctaText="Agendar Demonstração"
-  />
+  </div>
 </Base>
+
+<script>
+  import '../scripts/senvia-os-v2.js';
+</script>

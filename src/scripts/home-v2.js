@@ -804,14 +804,20 @@ let pileOp = 0, PILE = { n: 12, lic: 0.045, sen: 0.011 }, yearPulse = 0, yearSho
 // ---------- movimento por capítulo ----------
 const heroSt = { lap: { x: -4, y: 0, z: 0, ry: 0, s: 0.8, op: 0 }, ph: { x: 4, y: 0, z: 0, ry: 0, s: 0.9, op: 0 } };
 function stepTo(st, tg, k){ for (const key in tg) st[key] += (tg[key] - st[key]) * k; }
+// telemóvel, no início: o portátil e o telemóvel ficam a meio do espaço livre entre a navbar e o texto, seja qual for a altura do ecrã
+const heroCopy = ROOT.querySelector('#inicio .layer .copy');
+function heroDevY(){
+  const H = innerHeight, top = Math.max(150, heroCopy.getBoundingClientRect().top), want = (64 + top) / 2;
+  return camLook.y + (H / 2 - want) / (H / (2 * (L.camZ + 0.4) * Math.tan(THREE.MathUtils.degToRad(17))));
+}
 function updateObjects(cur, p, bf, t, dt){
-  const m = L.mobile, mo = REDUCE ? 0 : 1, k = damp(dt, 3), bob = Math.sin(t * 0.9) * 0.06 * mo;
+  const m = L.mobile, mo = REDUCE ? 0 : 1, k = damp(dt, 3), bob = Math.sin(t * 0.9) * 0.06 * mo, hy = m ? heroDevY() : 0;
   // hero: portátil (sistemas) e telemóvel (sites), um de cada lado; saem quando entra o Excel
   const inHero = cur === 0 && p < 0.55 ? 1 : 0, e = smooth(0.3, 0.55, p);
-  // no telemóvel os dois ficam juntos por cima do texto
-  stepTo(heroSt.lap, m ? { x: -0.45, y: 3.05 + bob, z: -0.6, ry: 0.3 + p * 0.8, s: 0.4, op: inHero }
+  // no telemóvel os dois ficam juntos por cima do texto (o texto desce: m-low)
+  stepTo(heroSt.lap, m ? { x: -0.1, y: hy + bob, z: -0.6, ry: 0.3 + p * 0.8, s: 0.46, op: inHero }
     : { x: -(L.heroX + 1.55) - e * 2, y: -0.25 + bob, z: -0.6, ry: 0.55 + p * 0.9, s: 0.7, op: inHero }, k);
-  stepTo(heroSt.ph, m ? { x: 1.05, y: 3.0 - bob, z: -0.2, ry: -0.3 - p * 0.8, s: 0.42, op: inHero }
+  stepTo(heroSt.ph, m ? { x: 1.2, y: hy - 0.05 - bob, z: -0.2, ry: -0.3 - p * 0.8, s: 0.52, op: inHero }
     : { x: L.heroX + 0.6 + e * 2, y: -0.05 - bob, z: -0.2, ry: -0.5 - p * 0.9, s: 0.9, op: inHero }, k);
   [[heroLaptop, heroSt.lap], [heroPhone, heroSt.ph]].forEach(([o, s]) => { o.position.set(s.x, s.y, s.z); o.rotation.set(0, s.ry, 0); o.scale.setScalar(s.s); setOp(o, s.op); });
 
@@ -1120,11 +1126,19 @@ updateCalc();
 /* câmara por capítulo */
 const camPos = new THREE.Vector3(0, 0.5, 10), camLook = new THREE.Vector3(), camPosT = new THREE.Vector3(), camLookT = new THREE.Vector3();
 // a câmara também é coreografada pelo scroll: orbita, sobe e aproxima-se dentro de cada capítulo
+// telemóvel, na conta: a câmara aponta para que as pilhas de faturas fiquem no espaço livre por baixo da calculadora,
+// qualquer que seja a altura do ecrã (no iPhone com as barras do Safari sobra pouco)
+const contaCopy = ROOT.querySelector('#conta .copy');
+function contaLookY(){
+  const H = innerHeight, free = Math.min(H - 24, Math.max(contaCopy.getBoundingClientRect().bottom, H * 0.55));
+  const want = (free + H - 24) / 2, ppu = H / (2 * (L.camZ + 0.4) * Math.tan(THREE.MathUtils.degToRad(17)));
+  return FLOOR_Y + 1.1 + (want - H / 2) / ppu;
+}
 function cameraTarget(ch, beat, bp, p){
   const Z = L.camZ, sc = REDUCE ? 0.3 : 1, LY = L.mobile ? MLY : 0;
   switch (ch){
     case 0: { const k1 = smooth(0.42, 0.92, p); camPosT.set(Math.sin(p * 0.6 - 0.1) * 2.2 * sc, 0.3 + p * 0.45, Z - p * 0.5 + k1 * 1.1); camLookT.set(0, LY + k1 * 0.1, 0); break; }
-    case 1: camPosT.set(Math.sin(p * 0.9 - 0.45) * 2.6 * sc, 1.1 + p * 0.7, Z + 0.4 - p * 0.6); camLookT.set(CX * 0.25, LY - (L.mobile ? 1.5 : 0.2), 0); break; // no telemóvel olha mais abaixo: as barras da conta ficam à vista
+    case 1: camPosT.set(Math.sin(p * 0.9 - 0.45) * 2.6 * sc, 1.1 + p * 0.7, Z + 0.4 - p * 0.6); camLookT.set(CX * 0.25, L.mobile ? contaLookY() : LY - 0.2, 0); break;
     case 2: camPosT.set(Math.sin(p * 0.7 - 0.35) * 1.6 * sc, 0.5 + p * 0.3, Z - 0.6); camLookT.set(0, LY + 0.1, 0); break;
     case 3: {
       const n = screens.length, k = Math.min(n - 1, beat), next = Math.min(n - 1, beat + 1);

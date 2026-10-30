@@ -1,0 +1,215 @@
+
+/* Layout: um mundo 3D fixo atrás de toda a página. Cada capítulo é uma secção alta com um quadro sticky de 100vh;
+   as camadas de texto dentro do quadro aparecem conforme o progresso do capítulo (data-in / data-out). */
+.sv2{
+  --paper:#EEF2F3; --paper-2:#F8FAFA; --ink:#0B1F2A; --ink-2:#4A6170; --line:#D3DDE1;
+  --petrol:#00708F; --petrol-2:#0E86A8; --green:#1FAF5B; --night:#0B1F2A;
+  --fg:var(--ink); --fg-2:var(--ink-2); --rule:var(--line); --surface:color-mix(in srgb,var(--paper-2) 82%,transparent);
+  --display:"General Sans","Segoe UI",system-ui,sans-serif;
+  --body:"General Sans","Segoe UI",system-ui,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --mono:"DM Mono",ui-monospace,Consolas,monospace;
+  --gx:max(clamp(16px,5.5vw,84px),env(safe-area-inset-left,0px));
+  --gr:max(clamp(16px,5.5vw,84px),env(safe-area-inset-right,0px));
+  --halo:var(--paper);
+  --copy-2:#2E4451;
+  color-scheme:light;
+}
+body.night .sv2{--fg:var(--paper-2);--fg-2:#A9C3CE;--rule:color-mix(in srgb,var(--paper) 18%,transparent);--surface:color-mix(in srgb,var(--night) 70%,transparent);--halo:var(--night);--copy-2:#C9DBE3}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.sv2 #world{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
+/* camada da frente: peças perto da câmara, por cima do texto, desfocadas e ténues sobre a coluna de texto */
+.sv2 #fg{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:4;pointer-events:none;filter:blur(2.6px);
+  -webkit-mask-image:var(--fgmask);mask-image:var(--fgmask)}
+
+/* topo */
+.sv2 .sbtn{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;border-radius:12px;background:var(--fg);color:var(--paper-2);
+  font:600 15px/1 var(--body);text-decoration:none;border:1px solid var(--fg);transition:transform .2s,background .3s,color .3s}
+body.night .sv2 .sbtn{color:var(--night)}
+.sv2 .sbtn:hover{transform:translateY(-1px)}
+.sv2 .sbtn-ghost{background:transparent;color:var(--fg);border-color:color-mix(in srgb,var(--fg) 25%,transparent)}
+body.night .sv2 .sbtn-ghost{color:var(--fg)}
+.sv2 .sbtn-sm{padding:10px 14px;font-size:14px}
+.sv2 a:focus-visible,.sv2 .sbtn:focus-visible,.sv2 button:focus-visible{outline:2px solid var(--petrol-2);outline-offset:3px}
+
+/* indicador de capítulo */
+.sv2 .hud{position:fixed;left:var(--gx);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:10;display:flex;align-items:center;gap:14px;
+  font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg-2);transition:color .6s}
+.sv2 .hud b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.sv2 .hud .track{width:92px;height:2px;background:var(--rule);border-radius:2px;overflow:hidden}
+.sv2 .hud .track i{display:block;height:100%;width:0;background:var(--petrol-2)}
+.sv2 .hud .dots{display:flex;gap:5px}
+.sv2 .hud .dots button{width:6px;height:6px;padding:0;cursor:pointer;background:none;transform:rotate(45deg);border:1px solid var(--fg-2);border-radius:1px;opacity:.5;transition:background .3s,opacity .3s}
+.sv2 .hud .dots button.on{background:var(--petrol-2);border-color:var(--petrol-2);opacity:1}
+
+/* capítulos */
+.sv2 .chapters{position:relative;z-index:2}
+.sv2 .chapter{position:relative;height:calc((var(--beats) + 1) * 100vh)}
+.sv2 .frame{position:sticky;top:0;height:100vh;overflow:hidden}
+@supports (height:100svh){.sv2 .chapter{height:calc((var(--beats) + 1) * 100svh)}.sv2 .frame{height:100svh}}
+.sv2 .layer{position:absolute;inset:0;display:flex;align-items:center;padding-left:var(--gx);padding-right:var(--gr);padding-block:96px 72px;pointer-events:none}
+.js .sv2 .layer{visibility:hidden;transition:visibility 0s .55s}
+.js .sv2 .layer.is-in{visibility:visible;transition-delay:0s}
+.sv2 .layer.is-in a,.sv2 .layer.is-in button,.sv2 .layer.is-in .plans{pointer-events:auto}
+.sv2 .plan-dots{display:none}
+.sv2 .copy{position:relative;max-width:min(38rem,46vw);display:flex;flex-direction:column;gap:18px}
+/* vidro fosco sem caixa atrás do texto: desfoca o 3D que passa por trás e dissolve-se nas bordas */
+.sv2 .copy::before{content:"";position:absolute;inset:-20% -14%;z-index:-1;pointer-events:none;
+  background:color-mix(in srgb,var(--halo) 55%,transparent);
+  backdrop-filter:blur(14px) saturate(1.05);-webkit-backdrop-filter:blur(14px) saturate(1.05);
+  -webkit-mask-image:radial-gradient(closest-side,#000 52%,transparent);mask-image:radial-gradient(closest-side,#000 52%,transparent);
+  transition:background .6s}
+.sv2 .copy.wide{max-width:min(64rem,100%)}
+.sv2 .copy{translate:var(--dx,0px) var(--dy,0px)}
+/* as colunas laterais encostam ao bloco centrado (texto + app 3D), não à margem do ecrã: --stage-pad vem do script */
+.sv2 .layer.pos-right{justify-content:flex-end;padding-right:max(var(--gr), var(--stage-pad, 5vw))}
+.sv2 .layer.pos-left{padding-left:max(var(--gx), var(--stage-pad, 5vw))}
+.sv2 .layer.pos-center{justify-content:center;text-align:center}
+.sv2 .layer.pos-center .copy{max-width:min(46rem,100%);align-items:center}
+.sv2 .layer.pos-center .copy.wide{max-width:min(64rem,100%)}
+.sv2 .layer.pos-bottom{justify-content:center;align-items:flex-end;text-align:center;padding-bottom:96px}
+.sv2 .layer.pos-bottom .copy{max-width:min(50rem,100%);align-items:center}
+.sv2 .plan{text-align:left}
+.sv2 .eyebrow{margin:0;font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-2);display:flex;align-items:center;gap:10px}
+.sv2 .eyebrow::before{content:"";width:7px;height:7px;background:var(--petrol-2);transform:rotate(45deg);border-radius:1px}
+.sv2 .eyebrow .n{color:var(--fg)}
+.sv2 h1,.sv2 h2{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.045em;text-wrap:balance;color:var(--fg)}
+.sv2 h1{font-size:clamp(2.6rem,4.6vw,4.9rem);line-height:.96}
+.sv2 h2{font-size:clamp(2.1rem,3.6vw,3.7rem);line-height:1}
+/* palavra-chave: a cor mais forte do ecrã, com um sublinhado que se desenha depois de o título entrar */
+.sv2 h1 em,.sv2 h2 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--petrol-2);
+  background:linear-gradient(currentColor,currentColor) no-repeat 0 92% / 0% .05em;
+  transition:background-size .9s cubic-bezier(.2,.7,.1,1) .55s}
+.sv2 .is-in h1 em,.sv2 .is-in h2 em,html:not(.js) .sv2 h1 em,html:not(.js) .sv2 h2 em{background-size:100% .05em}
+.sv2 .lede{margin:0;font-size:clamp(17px,1.3vw,19px);line-height:1.5;color:var(--copy-2);max-width:36rem;text-wrap:pretty;font-weight:500}
+.sv2 .actions{display:flex;flex-wrap:wrap;gap:10px}
+.sv2 .tags{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.sv2 .tags li{font:400 13px/1 var(--body);padding:8px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--rule);color:var(--fg)}
+.sv2 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin:6px 0 0;padding:0;list-style:none}
+.sv2 .facts li{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--rule);padding-top:14px}
+.sv2 .facts b{font:600 clamp(2.6rem,5vw,4.6rem)/1 var(--display);letter-spacing:-.05em;color:var(--fg);font-variant-numeric:tabular-nums}
+.sv2 .facts span{font-size:15px;font-weight:500;color:var(--copy-2)}
+/* as dores: frases grandes que entram uma a uma; as anteriores ficam esbatidas */
+.sv2 .lines{margin:0;display:flex;flex-direction:column;gap:.12em;font:600 clamp(2rem,3.9vw,3.9rem)/1.04 var(--display);letter-spacing:-.045em;color:var(--fg)}
+.sv2 .lines em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:#B4507A}
+.js .sv2 .lines .bl{opacity:0;transform:translateY(.35em);filter:blur(8px);transition:opacity .7s,transform .8s cubic-bezier(.2,.7,.1,1),filter .7s}
+.js .sv2 .lines .bl.on{opacity:1;transform:none;filter:none}
+.js .sv2 .lines .bl.on.past{opacity:.3}
+.sv2 .fine{margin:0;font:400 11.5px/1.5 var(--mono);color:var(--fg-2)}
+/* as quatro áreas, lado a lado */
+.sv2 .pairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;margin-top:4px;text-align:left;width:100%}
+.sv2 .pair{display:flex;flex-direction:column;gap:6px;padding-top:14px;border-top:2px solid var(--pc,var(--petrol-2))}
+.sv2 .pair h3{margin:0;font:600 clamp(18px,1.5vw,22px)/1.2 var(--display);letter-spacing:-.02em;color:var(--fg)}
+.sv2 .pair p{margin:0;font-size:clamp(15px,1.1vw,16px);line-height:1.45;color:var(--copy-2);font-weight:500}
+.sv2 .link{font:500 14px/1 var(--body);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px;align-self:flex-start}
+
+/* animação de texto: palavras sobem e ganham foco */
+.js .sv2 .w{display:inline-block;opacity:0;transform:translateY(.55em);filter:blur(8px);
+  transition:opacity .7s cubic-bezier(.2,.7,.1,1),transform .8s cubic-bezier(.2,.7,.1,1),filter .7s;transition-delay:calc(var(--i) * 32ms)}
+.js .sv2 .is-in .w{opacity:1;transform:none;filter:none}
+.js .sv2 .fade{opacity:0;transform:translateY(14px);transition:opacity .7s,transform .8s cubic-bezier(.2,.7,.1,1);transition-delay:calc(180ms + var(--d,0) * 70ms)}
+.js .sv2 .is-in .fade{opacity:1;transform:none}
+
+/* preço */
+.sv2 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:100%}
+.sv2 .plan{display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:18px;background:color-mix(in srgb,var(--paper-2) 78%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
+.sv2 .plan.rec{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.sv2 .plan .pn{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.sv2 .plan.rec .pn{color:#8FC9DA}
+.sv2 .plan .pp{font:600 clamp(2.2rem,3.6vw,3.1rem)/1 var(--display);letter-spacing:-.04em}
+.sv2 .plan .pp small{font:500 14px/1 var(--body);letter-spacing:0;color:var(--ink-2);margin-left:6px}
+.sv2 .plan .pp small.from{margin:0 6px 0 0}
+.sv2 .plan.rec .pp small{color:#A9C3CE}
+.sv2 .plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:14.5px}
+.sv2 .plan li{display:flex;gap:9px;align-items:baseline}
+.sv2 .plan li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--green);transform:translateY(-2px)}
+.sv2 .plan .sbtn{margin-top:auto;align-self:flex-start}
+.sv2 .plan.rec .sbtn{background:var(--paper-2);color:var(--ink);border-color:var(--paper-2)}
+.sv2 .sbadge{align-self:flex-start;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:6px 9px;border-radius:999px;background:var(--green);color:#06301A}
+.sv2 .sbadges{display:flex;flex-wrap:wrap;gap:6px}
+.sv2 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* final */
+.sv2 .wordmark{position:absolute;left:0;right:0;bottom:-0.16em;text-align:center;font:700 clamp(3.4rem,14vw,14rem)/1 var(--display);letter-spacing:-.06em;white-space:nowrap;
+  color:color-mix(in srgb,var(--petrol-2) 13%,transparent);pointer-events:none;user-select:none}
+
+@media (max-width:759px){
+  /* no telemóvel o texto e a app alternam: m-high sobe o texto e a app fica em baixo, m-low desce o texto e a app fica em cima */
+  .sv2 .layer,.sv2 .layer[class*="pos-"]{flex-direction:column;justify-content:center;align-items:stretch;padding:76px var(--gr) 60px var(--gx)}
+  .sv2 .layer.m-high{padding-bottom:40svh}
+  .sv2 .layer.m-low{padding-top:42svh}
+  .sv2 .layer.pos-right,.sv2 .layer.pos-left{text-align:left}
+  .sv2 .layer[class*="pos-"] .copy{max-width:none;width:100%}
+  .sv2 .copy::before{display:none}
+  .sv2 #fg{filter:blur(2px)}
+  .sv2 .copy{max-width:none;gap:12px;padding:16px;border-radius:18px;background:var(--surface);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--rule)}
+  .sv2 h1{font-size:clamp(2.1rem,9.4vw,2.8rem)}
+  .sv2 h2{font-size:clamp(1.6rem,7.6vw,2.2rem)}
+  .sv2 .lede{font-size:15.5px}
+  .sv2 .actions{display:grid;grid-template-columns:1fr;gap:10px;width:100%}
+  .sv2 .actions .sbtn{justify-content:center;text-align:center}
+  .sv2 .eyebrow{display:block;line-height:1.55;letter-spacing:.1em}
+  .sv2 .eyebrow::before{display:inline-block;margin-right:9px;vertical-align:1px}
+  .sv2 .eyebrow .n{white-space:nowrap;margin-left:.6em}
+  .sv2 .pairs{grid-template-columns:1fr 1fr;gap:10px 12px}
+  .sv2 .pair{padding-top:8px;gap:3px}
+  .sv2 .pair h3{font-size:16px}
+  .sv2 .pair p{font-size:13px}
+  .sv2 .facts{gap:12px}
+  .sv2 .facts b{font-size:1.7rem}
+  .sv2 .facts span{font-size:12px}
+  .sv2 .lines{font-size:clamp(1.55rem,7vw,2rem)}
+  .sv2 .tags li{font-size:12px;padding:7px 9px}
+  /* preço: cartões lado a lado para deslizar com o dedo; abre no recomendado */
+  .sv2 .layer-plans .copy{background:none;border:0;padding:0;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .sv2 .plans{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;
+    margin-inline:calc(-1 * var(--gx));padding:34px 11vw 6px;width:auto;align-self:stretch}
+  .sv2 .plans::-webkit-scrollbar{display:none}
+  .sv2 .plan-dots{display:flex;justify-content:center;gap:10px;margin-top:4px}
+  .sv2 .plan-dots i{width:7px;height:7px;border-radius:1.5px;transform:rotate(45deg);background:var(--rule);transition:background .3s,transform .3s}
+  .sv2 .plan-dots i.on{background:var(--petrol-2);transform:rotate(45deg) scale(1.3)}
+  .sv2 .plan{flex:0 0 78vw;scroll-snap-align:center;padding:16px;gap:10px}
+  .sv2 .plan ul{font-size:13.5px;gap:6px}
+  .sv2 .plan .pp{font-size:2rem}
+  .sv2 .hud .dots,.sv2 .hud .track{display:none}
+  .sv2 .hud{bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  .sv2 .layer-plans{overflow:auto}
+}
+@media (prefers-reduced-motion: reduce){
+  .js .sv2 .w,.js .sv2 .fade,.js .sv2 .lines .bl{transition:opacity .3s;transform:none;filter:none}
+}
+/* telemóveis com pouca altura visível (ex.: iPhone no Safari, com as barras): o texto encolhe para não tapar o 3D */
+@media (max-width:759px) and (max-height:780px){
+  .sv2 .layer,.sv2 .layer[class*="pos-"]{padding-top:68px;padding-bottom:44px}
+  .sv2 .layer.m-high{padding-bottom:38svh}
+  .sv2 .layer.m-low{padding-top:40svh}
+  .sv2 .copy{gap:9px;padding:13px 14px;border-radius:16px}
+  .sv2 h1{font-size:clamp(1.75rem,8vw,2.15rem)}
+  .sv2 h2{font-size:clamp(1.35rem,6.2vw,1.7rem)}
+  .sv2 .lede{font-size:14.5px;line-height:1.42}
+  .sv2 .fine{font-size:10.5px}
+  .sv2 .eyebrow{font-size:10.5px}
+  .sv2 .tags li{font-size:12px;padding:6px 9px}
+  .sv2 .facts b{font-size:1.4rem}
+}
+
+/* ================= integração no site (página /chatbots) ================= */
+/* General Sans alojada no próprio site (a CSP só deixa fontes do próprio domínio e do Google) */
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-500.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-600.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"General Sans";src:url("/fonts/general-sans-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+
+/* a página é clara; o rodapé global continua escuro e por cima do mundo 3D */
+html:has(.sv2){scroll-behavior:auto}
+html:has(.sv2) body{background:#EEF2F3;transition:background .6s}
+html:has(.sv2) body.night{background:#0B1F2A}
+html:has(.sv2) .site-footer{position:relative;z-index:6;background:#0B1F2A}
+.sv2{color:var(--fg);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased;transition:color .6s}
+.sv2 p{margin:0}
+
+/* indicador: os pontos levam a cada capítulo */
+.sv2 .hud .dots button:hover{opacity:1;border-color:var(--petrol-2)}
+

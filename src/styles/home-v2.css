@@ -52,6 +52,9 @@ body.night .sv2 .sbtn-ghost{color:var(--fg)}
 .sv2 .layer{position:absolute;inset:0;display:flex;align-items:center;padding-left:var(--gx);padding-right:var(--gr);padding-block:96px 72px;pointer-events:none}
 .js .sv2 .layer{visibility:hidden;transition:visibility 0s .55s}
 .js .sv2 .layer.is-in{visibility:visible;transition-delay:0s}
+/* o título do topo pinta logo (vem com is-in do HTML, sem fade: um fade esperaria pelo 3D); o 3D entra por baixo quando estiver pronto */
+.js .sv2 #world,.js .sv2 #fg{opacity:0;transition:opacity .9s ease-out}
+.js .sv2.ready3d #world,.js .sv2.ready3d #fg{opacity:1}
 .sv2 .layer.is-in a,.sv2 .layer.is-in button,.sv2 .layer.is-in .plans,.sv2 .layer.is-in .reviews,.sv2 .layer.is-in input{pointer-events:auto}
 .sv2 .plan-dots{display:none}
 .sv2 .copy{position:relative;max-width:min(31rem,40vw);display:flex;flex-direction:column;gap:18px}

@@ -39,8 +39,9 @@ function rr(g, x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w,
 
 /* ================= renderer e cena ================= */
 const canvas = document.getElementById('world');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-let DPR = Math.min(devicePixelRatio, 2);
+// no telemóvel: sem antialias e no máximo 1.5x (ecrãs 3x pintavam 4x mais píxeis por frame)
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: innerWidth >= 760, powerPreference: 'high-performance' });
+let DPR = Math.min(devicePixelRatio, innerWidth < 760 ? 1.5 : 2);
 renderer.setPixelRatio(DPR);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NeutralToneMapping;
@@ -762,3 +763,5 @@ let worldHidden = false;
 function drawAll(){ Object.values(ITEMS).forEach((K) => K.redraw()); head.redraw(); KN.forEach((K) => K.redraw(K.litDrawn)); LABELS.forEach((K) => K.redraw()); DOCS.forEach((K) => K.redraw()); trained.redraw(); report.redraw(); }
 Promise.all([400, 500, 600, 700].map((w) => document.fonts.load(`${w} 20px Inter`))).then(drawAll).catch(() => {});
 renderer.setAnimationLoop(frame);
+// o mundo 3D entra com fade depois do primeiro frame (o texto já está à vista)
+requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById('sv2').classList.add('ready3d')));

@@ -20,6 +20,9 @@ body.night .sv2{--fg:var(--paper-2);--fg-2:#A9C3CE;--rule:color-mix(in srgb,var(
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .sv2 #world{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0}
+/* o mundo 3D entra com fade depois do primeiro frame; o texto do topo já vem visível do HTML */
+.js .sv2 #world,.js .sv2 #fg{opacity:0;transition:opacity .9s ease-out}
+.js .sv2.ready3d #world,.js .sv2.ready3d #fg{opacity:1}
 /* camada da frente: losangos perto da câmara, por cima do texto, desfocados (profundidade de campo) e ténues sobre a coluna de texto */
 .sv2 #fg{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:4;pointer-events:none;filter:blur(2.6px);
   -webkit-mask-image:var(--fgmask);mask-image:var(--fgmask)}

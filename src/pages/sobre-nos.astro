@@ -27,7 +27,9 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
   <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
   <!-- Inter e Caveat: as letras desenhadas nos objetos da mesa -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap" />
+  <!-- não bloqueia a primeira pintura: as fontes entram por troca (display=swap) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap" /></noscript>
 
   <div class="sv2" id="sv2">
     <canvas id="world" aria-hidden="true"></canvas>
@@ -38,7 +40,7 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
     <!-- A mesa de trabalho da SENVIA: o scroll leva a câmara de objeto em objeto e o objeto levanta-se; cada nota de papel conta uma parte -->
       <section class="track" id="inicio" style="--stops:7">
         <div class="frame">
-          <article class="note left" data-stop="0" style="--rot:-1.2deg">
+          <article class="note left vis full on" data-stop="0" style="--rot:-1.2deg;--v:1">
             <p class="hand">Olá!</p>
             <h1>Puxa uma cadeira. <em>Vamos falar do teu negócio</em>.</h1>
             <p class="lede">Somos a SENVIA, uma software house em Leiria, desde 2025. Daqui saem sistemas à medida, sites e o nosso CRM, o Senvia OS.</p>
@@ -112,5 +114,6 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
 </Base>
 
 <script>
-  import '../scripts/sobre-nos-v2.js';
+  // o texto pinta primeiro; o 3D (three.js, ~530 KB) só carrega depois da primeira pintura
+  requestAnimationFrame(() => setTimeout(() => import('../scripts/sobre-nos-v2.js'), 0));
 </script>

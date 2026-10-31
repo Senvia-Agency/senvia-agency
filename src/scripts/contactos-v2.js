@@ -24,9 +24,9 @@ function rng(seed){ let s = seed >>> 0; return () => { s = (s * 1664525 + 101390
 
 /* ================= motor ================= */
 const canvas = document.getElementById('world');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: innerWidth >= 760, powerPreference: 'high-performance' });
 const MOBILE0 = innerWidth < 760;
-renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE0 ? 1.75 : 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE0 ? 1.5 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.toneMappingExposure = 0.9;
@@ -563,6 +563,8 @@ function frame(now){
 }
 function loop(now){ lenis?.raf(now); frame(now); requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
+// o mundo 3D entra com fade depois do primeiro frame (o texto já está à vista)
+requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById('sv2').classList.add('ready3d')));
 Promise.all([UI(500, 16), UI(600, 16), UI(700, 16), UI(800, 16), MONO(16)].map((f) => document.fonts.load(f))).then(() => {
   OBJS.forEach((o) => o.draw?.()); layout();
 });

@@ -20,6 +20,9 @@ html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 body.night .sv2{background:var(--night)}
 .sv2 #world{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;touch-action:pan-y}
+/* o mundo 3D entra com fade depois do primeiro frame; o texto do topo já vem visível do HTML */
+.js .sv2 #world,.js .sv2 #fg{opacity:0;transition:opacity .9s ease-out}
+.js .sv2.ready3d #world,.js .sv2.ready3d #fg{opacity:1}
 
 /* topo */
 body.night .sv2 .top::before{background:linear-gradient(to bottom,color-mix(in srgb,var(--night) 88%,transparent),color-mix(in srgb,var(--night) 0%,transparent))}

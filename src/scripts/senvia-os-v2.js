@@ -44,8 +44,9 @@ function stepTo(st, tg, k){ for (const key in tg) st[key] += (tg[key] - st[key])
 
 /* ================= renderer e cena ================= */
 const canvas = document.getElementById('world');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-let DPR = Math.min(devicePixelRatio, 2);
+// no telemóvel: sem antialias e no máximo 1.5x (ecrãs 3x pintavam 4x mais píxeis por frame)
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: innerWidth >= 760, powerPreference: 'high-performance' });
+let DPR = Math.min(devicePixelRatio, innerWidth < 760 ? 1.5 : 2);
 renderer.setPixelRatio(DPR);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NeutralToneMapping;
@@ -1156,3 +1157,5 @@ setModule('painel'); drawAll();
 Promise.all([400, 500, 600, 700, 800].map((w) => document.fonts.load(`${w} 20px Inter`))).then(drawAll).catch(() => {});
 setInterval(drawTop, 30000);
 renderer.setAnimationLoop(frame);
+// o mundo 3D entra com fade depois do primeiro frame (o texto já está à vista)
+requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById('sv2').classList.add('ready3d')));

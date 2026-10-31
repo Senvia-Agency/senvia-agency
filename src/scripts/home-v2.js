@@ -88,8 +88,9 @@ function rr(g, x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w,
 
 /* ================= renderer e cena ================= */
 const canvas = document.getElementById('world');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-let DPR = Math.min(devicePixelRatio, 2);
+// no telemóvel: sem antialias e no máximo 1.5x (ecrãs 3x pintavam 4x mais píxeis por frame)
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: innerWidth >= 760, powerPreference: 'high-performance' });
+let DPR = Math.min(devicePixelRatio, innerWidth < 760 ? 1.5 : 2);
 renderer.setPixelRatio(DPR);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NeutralToneMapping;
@@ -735,14 +736,56 @@ function drawObjects(){ drawSystem(SYS_ALL, SYS_CV.g, SYS_CV.tex); drawExcel(); 
 // ---------- dispositivos ----------
 const SCR_RATIO = SH / SW;
 function screenMat(tex){ return new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, transparent: true }); }
+// tampo do portátil: teclado (fila de funções, 4 filas, barra de espaço e setas) e trackpad, com fundo transparente
+// para o alumínio da base aparecer por baixo
+function drawKeyboard(W, D){
+  const K = mkCv(1024, Math.round(1024 * D / W)), g = K.g, cw = K.cv.width, ch = K.cv.height, px = cw / W;
+  const kbX = 0.07 * cw, kbW = cw - 2 * kbX, kbY = 0.05 * ch, kbH = 0.5 * ch, gap = 0.006 * cw;
+  g.fillStyle = 'rgba(30,45,55,.10)'; rr(g, kbX - gap * 2, kbY - gap * 2, kbW + gap * 4, kbH + gap * 4, 14); g.fill();
+  const ROWS = [
+    { h: 0.6, k: Array(14).fill(1) },
+    { h: 1, k: [...Array(13).fill(1), 1.5] },
+    { h: 1, k: [1.5, ...Array(12).fill(1), 1] },
+    { h: 1, k: [1.8, ...Array(11).fill(1), 1.7] },
+    { h: 1, k: [2.3, ...Array(10).fill(1), 2.2] },
+    { h: 1, k: [1, 1, 1, 1.3, 5.4, 1.3, 1, 1, 1, 1] },
+  ];
+  const unit = (kbH - gap * (ROWS.length - 1)) / ROWS.reduce((a, r) => a + r.h, 0);
+  let y = kbY;
+  ROWS.forEach((row) => {
+    const h = unit * row.h, tot = row.k.reduce((a, b) => a + b, 0), u = (kbW - gap * (row.k.length - 1)) / tot;
+    let x = kbX;
+    row.k.forEach((w) => {
+      g.fillStyle = '#26323A'; rr(g, x, y, u * w, h, 6); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.06)'; rr(g, x + 2, y + 2, u * w - 4, h * 0.45, 5); g.fill();
+      x += u * w + gap;
+    });
+    y += h + gap;
+  });
+  // trackpad
+  const tw = 0.36 * cw, th = 0.3 * ch, tx = (cw - tw) / 2, ty = kbY + kbH + 0.07 * ch;
+  g.fillStyle = 'rgba(30,45,55,.08)'; rr(g, tx, ty, tw, th, 16); g.fill();
+  g.strokeStyle = 'rgba(30,45,55,.16)'; g.lineWidth = Math.max(1.5, 0.004 * px); rr(g, tx, ty, tw, th, 16); g.stroke();
+  K.tex.needsUpdate = true; return K;
+}
 function makeLaptop(tex, sw = 2.5){
   const g = new THREE.Group(), body = new THREE.MeshPhysicalMaterial({ color: 0xC5CFD5, roughness: 0.32, metalness: 0.35, clearcoat: 0.4, transparent: true });
-  const sh = sw * SCR_RATIO;
-  const base = new THREE.Mesh(new RoundedBoxGeometry(sw + 0.5, 0.08, 1.7, 3, 0.035), body); base.position.set(0, -sh / 2 - 0.1, 0.78); base.castShadow = true; g.add(base);
-  const lid = new THREE.Group(); lid.position.set(0, -sh / 2 - 0.08, 0); lid.rotation.x = -0.1; g.add(lid);
-  const shell = new THREE.Mesh(new RoundedBoxGeometry(sw + 0.18, sh + 0.18, 0.06, 3, 0.05), body); shell.position.set(0, sh / 2 + 0.06, -0.035); shell.castShadow = true; lid.add(shell);
-  const scr = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), screenMat(tex)); scr.position.set(0, sh / 2 + 0.06, 0.0); lid.add(scr);
-  g.userData.mats = [body, scr.material]; return g;
+  const sh = sw * SCR_RATIO, W = sw + 0.22, D = sh * 0.82, T = 0.075, baseY = -sh / 2 - 0.1;
+  // base: a mesma largura da tampa (como um portátil real), com o teclado e o trackpad desenhados no tampo
+  const base = new THREE.Mesh(new RoundedBoxGeometry(W, T, D, 5, 0.03), body); base.position.set(0, baseY, D / 2 - 0.05); base.castShadow = true; g.add(base);
+  const kbMat = new THREE.MeshStandardMaterial({ map: drawKeyboard(W, D).tex, roughness: 0.6, metalness: 0.1, transparent: true, depthWrite: false });
+  const kb = new THREE.Mesh(new THREE.PlaneGeometry(W, D).rotateX(-Math.PI / 2), kbMat); kb.position.set(0, baseY + T / 2 + 0.002, D / 2 - 0.05); g.add(kb);
+  // dobradiça: barra escura entre a base e a tampa
+  const hingeMat = new THREE.MeshStandardMaterial({ color: 0x5C6A72, roughness: 0.45, metalness: 0.6, transparent: true });
+  const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, W * 0.82, 16).rotateZ(Math.PI / 2), hingeMat); hinge.position.set(0, baseY + T / 2, -0.02); g.add(hinge);
+  const lid = new THREE.Group(); lid.position.set(0, baseY + T / 2, -0.02); lid.rotation.x = -0.12; g.add(lid);
+  const shell = new THREE.Mesh(new RoundedBoxGeometry(W, sh + 0.24, 0.055, 5, 0.05), body); shell.position.set(0, sh / 2 + 0.12, -0.03); shell.castShadow = true; lid.add(shell);
+  // moldura preta à volta do ecrã, com a câmara em cima
+  const bezelMat = new THREE.MeshStandardMaterial({ color: 0x0B1116, roughness: 0.25, metalness: 0.2, transparent: true });
+  const bezel = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.07, sh + 0.17), bezelMat); bezel.position.set(0, sh / 2 + 0.12, -0.001); lid.add(bezel);
+  const cam = new THREE.Mesh(new THREE.CircleGeometry(0.014, 16), new THREE.MeshBasicMaterial({ color: 0x24323B, transparent: true })); cam.position.set(0, sh + 0.17, 0.001); lid.add(cam);
+  const scr = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), screenMat(tex)); scr.position.set(0, sh / 2 + 0.1, 0.002); lid.add(scr);
+  g.userData.mats = [body, kbMat, hingeMat, bezelMat, cam.material, scr.material]; return g;
 }
 function makePhone(tex, h = 2.0){
   const g = new THREE.Group(), body = new THREE.MeshPhysicalMaterial({ color: 0x14232C, roughness: 0.3, metalness: 0.4, clearcoat: 0.8, transparent: true });
@@ -1367,3 +1410,5 @@ let worldHidden = false;
 drawCards(); drawObjects();
 document.fonts?.ready.then(() => { drawCards(); drawObjects(); pageKey = ''; });
 renderer.setAnimationLoop(frame);
+// o mundo 3D entra com fade depois do primeiro frame (o texto já está à vista)
+requestAnimationFrame(() => requestAnimationFrame(() => ROOT.classList.add('ready3d')));

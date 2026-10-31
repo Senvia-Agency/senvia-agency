@@ -26,7 +26,9 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
   <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
   <!-- Inter: a letra desenhada no 3D -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
+  <!-- não bloqueia a primeira pintura: as fontes entram por troca (display=swap) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
 
   <div class="sv2" id="sv2">
     <canvas id="world" aria-hidden="true"></canvas>
@@ -36,7 +38,7 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
     <!-- Suporte remoto: o computador 3D mostra cada passo a acontecer no ecrã; o download e os textos de instalação vêm de support-download.js -->
       <section class="track" id="inicio" style="--stops:5">
         <div class="frame">
-          <article class="card left" data-stop="0">
+          <article class="card left vis full on" data-stop="0" style="--v:1">
             <p class="eyebrow">Suporte remoto</p>
             <h1>A ajuda chega <em>ao teu computador</em>.</h1>
             <p class="lede opt">Instala o SENVIA Suporte e a nossa equipa ajuda-te, estejas onde estiveres.</p>
@@ -117,5 +119,6 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
 
 <script src="../scripts/support-download.js"></script>
 <script>
-  import '../scripts/suporte-v2.js';
+  // o texto pinta primeiro; o 3D (three.js, ~530 KB) só carrega depois da primeira pintura
+  requestAnimationFrame(() => setTimeout(() => import('../scripts/suporte-v2.js'), 0));
 </script>

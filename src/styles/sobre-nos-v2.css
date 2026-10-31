@@ -19,6 +19,9 @@
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .sv2 #world{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;touch-action:pan-y}
+/* o mundo 3D entra com fade depois do primeiro frame; o texto do topo já vem visível do HTML */
+.js .sv2 #world,.js .sv2 #fg{opacity:0;transition:opacity .9s ease-out}
+.js .sv2.ready3d #world,.js .sv2.ready3d #fg{opacity:1}
 /* luz ambiente: os cantos da mesa ficam mais escuros, como numa fotografia */
 .sv2 .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(120% 90% at 55% 45%,transparent 55%,rgba(70,45,20,.22))}

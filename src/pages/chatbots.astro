@@ -26,7 +26,9 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
   <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/general-sans-500.woff2" as="font" type="font/woff2" crossorigin />
   <!-- Inter: a letra dos ecrãs desenhados no 3D -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" />
+  <!-- não bloqueia a primeira pintura: as fontes entram por troca (display=swap) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
 
   <div class="sv2" id="sv2">
     <canvas id="world" aria-hidden="true"></canvas>
@@ -40,7 +42,7 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
     <!-- 00 início: uma mensagem às 23h47 e o assistente responde -->
       <section class="chapter" id="inicio" data-name="Início" data-beats="2" style="--beats:2">
         <div class="frame">
-          <div class="layer pos-left m-high" data-in="0" data-out="0.5">
+          <div class="layer pos-left m-high is-in" data-in="0" data-out="0.5">
             <div class="copy">
               <p class="eyebrow">Chatbots com IA · Portugal</p>
               <h1 class="split">Um assistente que responde <em>enquanto dormes</em>.</h1>
@@ -167,5 +169,6 @@ const ext = { target: '_blank', rel: 'noopener noreferrer' };
 </Base>
 
 <script>
-  import '../scripts/chatbots-v2.js';
+  // o texto pinta primeiro; o 3D (three.js, ~530 KB) só carrega depois da primeira pintura
+  requestAnimationFrame(() => setTimeout(() => import('../scripts/chatbots-v2.js'), 0));
 </script>
